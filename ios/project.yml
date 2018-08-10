@@ -1,0 +1,80 @@
+name: project
+
+include:
+  - project-secrets.yml
+  - project-carthage.yml
+
+options:
+  deploymentTarget: # IPHONEOS_DEPLOYMENT_TARGET
+    iOS: 11.0
+  createIntermediateGroups: true
+  defaultConfig: dev-debug
+
+configs:
+  dev-debug: debug
+  test-debug: debug
+  prod-debug: debug
+  prod-release: release
+  # NOTE: configs required for all permutations of configVariants, else:
+  # https://gist.github.com/brenthargrave/ce351b24aa3fdee31d127f1c95b7470a
+  x-dev-release: release
+  x-test-release: release
+
+settings:
+
+  base:
+    TARGETED_DEVICE_FAMILY: '1' # iPhone only
+  configs:
+    ## API_ENV
+    test:
+      ENV_NAME: test
+      APP_NAME_SUFFIX: "-test"
+      BUNDLE_ID_SUFFIX: .test
+    dev:
+      ENV_NAME: dev
+      APP_NAME_SUFFIX: "-dev"
+      BUNDLE_ID_SUFFIX: .dev
+    prod:
+      ENV_NAME: prod
+
+targets:
+
+  App:
+    type: application
+    platform: iOS
+    sources:
+      - path: App
+        name: App
+
+    settings:
+      PRODUCT_NAME: $(APP_NAME)$(APP_NAME_SUFFIX)
+      PRODUCT_MODULE_NAME: App
+      PRODUCT_BUNDLE_IDENTIFIER: $(BUNDLE_ID_PREFIX)$(BUNDLE_ID_SUFFIX)
+      INFOPLIST_FILE: App/Info.plist
+      TARGETED_DEVICE_FAMILY: "$(inherited)"
+    scheme:
+      testTargets:
+        - Tests
+      configVariants:
+        - dev
+        - test
+        - prod
+    dependencies: [] # carthage.yml
+
+  Tests:
+    platform: iOS
+    type: bundle.unit-test
+    sources:
+      - Tests/Support
+    dependencies: [] # carthage.yml
+    settings:
+      TARGETED_DEVICE_FAMILY: "$(inherited)"
+      LD_RUNPATH_SEARCH_PATHS:
+        - "$(inherited)"
+        - "@executable_path/Frameworks"
+        - "@loader_path/Frameworks"
+        # additional path required for unit tests to run:
+        # https://github.com/Carthage/Carthage/issues/1002#issue-122848182
+        - "$(PROJECT_DIR)/Carthage/Build/iOS"
+      # required to test App API directly: https://git.io/fN75s
+      TEST_HOST: "$(BUILT_PRODUCTS_DIR)/$(APP_NAME) dev.app/$(APP_NAME) dev"

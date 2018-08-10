@@ -1,0 +1,7 @@
+# xcodegen: ignore  project XML
+*.xcodeproj
+
+# xcodegen: private configs
+*secrets.yml
+
+Carthage*

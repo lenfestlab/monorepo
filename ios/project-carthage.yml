@@ -1,0 +1,7 @@
+targets:
+  App:
+    dependencies:
+      - carthage: Reachability
+  Tests:
+    dependencies:
+      - target: App
