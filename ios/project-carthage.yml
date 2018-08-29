@@ -2,6 +2,8 @@ targets:
   App:
     dependencies:
       - carthage: Reachability
+      - carthage: Gloss
+      - carthage: Alamofire
   Tests:
     dependencies:
       - target: App
