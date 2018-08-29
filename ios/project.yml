@@ -24,6 +24,8 @@ settings:
 
   base:
     TARGETED_DEVICE_FAMILY: '1' # iPhone only
+    # link system frameworks - https://git.io/fAZbC
+    OTHER_LDFLAGS: "$(inherited) -framework Foundation"
   configs:
     ## API_ENV
     test:
