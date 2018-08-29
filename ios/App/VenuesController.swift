@@ -1,7 +1,8 @@
 import UIKit
 
-class VenuesController: UITableViewController {
+class VenuesController: UITableViewController, LocationManagerDelegate {
   let dataStore = VenueDataStore()
+  let locationManager = LocationManager()
   var venues:[Venue] = []
   
   func fetchData() {
@@ -15,6 +16,17 @@ class VenuesController: UITableViewController {
     super.viewDidLoad()
     self.title = "Venues"
     self.tableView.rowHeight = 90
+    locationManager.delegate = self
+    locationManager.enableBasicLocationServices()
+  }
+  
+  // MARK: - Location manager delegate
+
+  func authorized(_ locationManager: LocationManager) {
+    fetchData()
+  }
+  
+  func notAuthorized(_ locationManager: LocationManager) {
     fetchData()
   }
   
