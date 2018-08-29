@@ -1,10 +1,3 @@
-//
-//  LocationManager.swift
-//  App
-//
-//  Created by Ajay Chainani on 8/29/18.
-//
-
 import UIKit
 import CoreLocation
 
@@ -17,6 +10,7 @@ class LocationManager: NSObject, CLLocationManagerDelegate {
 
   var delegate: LocationManagerDelegate?
   var locationManager:CLLocationManager?
+  var authorized = false
 
   override init() {
     super.init()
@@ -35,10 +29,12 @@ class LocationManager: NSObject, CLLocationManagerDelegate {
       break
       
     case .restricted, .denied:
+      authorized = false
       delegate?.notAuthorized(self)
       break
       
     case .authorizedWhenInUse, .authorizedAlways:
+      authorized = true
       delegate?.authorized(self)
       locationManager?.startUpdatingLocation()
       break

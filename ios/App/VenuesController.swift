@@ -3,11 +3,15 @@ import UIKit
 class VenuesController: UITableViewController, LocationManagerDelegate {
   let dataStore = VenueDataStore()
   let locationManager = LocationManager()
+  let notificationManager = NotificationManager()
   var venues:[Venue] = []
   
   func fetchData() {
     dataStore.retrieveVenues { (success, data, count) in
       self.venues = data
+      if self.locationManager.authorized {
+        self.notificationManager.trackVenues(venues: data)
+      }
       self.tableView.reloadData()
     }
   }
@@ -18,6 +22,7 @@ class VenuesController: UITableViewController, LocationManagerDelegate {
     self.tableView.rowHeight = 90
     locationManager.delegate = self
     locationManager.enableBasicLocationServices()
+    notificationManager.requestAuthorization()
   }
   
   // MARK: - Location manager delegate
