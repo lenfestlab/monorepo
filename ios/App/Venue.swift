@@ -1,11 +1,3 @@
-//
-//  Location.swift
-//  Benji
-//
-//  Created by Ajay Chainani on 8/14/18.
-//  Copyright © 2018 Lenfest. All rights reserved.
-//
-
 import UIKit
 import Gloss
 import CoreLocation

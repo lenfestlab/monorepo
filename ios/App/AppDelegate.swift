@@ -6,6 +6,7 @@ typealias LaunchOptions = [UIApplicationLaunchOptionsKey: Any]?
 class AppDelegate: UIResponder, UIApplicationDelegate {
 
   var window: UIWindow?
+  var navController: UINavigationController?
 
   func application(
     _ application: UIApplication,
@@ -13,7 +14,9 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
     ) -> Bool {
 
     window = UIWindow(frame: UIScreen.main.bounds)
-    window?.rootViewController = UIViewController()
+    let viewController = VenuesController()
+    navController = UINavigationController(rootViewController: viewController)
+    window?.rootViewController = navController
     window?.makeKeyAndVisible()
 
     return true
