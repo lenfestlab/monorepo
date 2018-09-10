@@ -4,11 +4,14 @@ import Gloss
 
 class VenueDataStore: NSObject {
 
-  // Temporary localhost server using http-server
-  let url = "http://localhost:8081/venues.json"
-  var query: String?
-  
   func retrieveVenues(completion: @escaping (Bool, [Venue], Int) -> Void) {
+
+    let bundle = Bundle(for: type(of: self))
+    let envName = bundle.object(forInfoDictionaryKey: "ENV_NAME") as! String
+    let prot = (envName == "prod") ? "https" : "http"
+    let apiHost = bundle.object(forInfoDictionaryKey: "API_HOST") as! String
+    let url = "\(prot)://\(apiHost)/posts.json"
+
     Alamofire.request(url).responseJSON { response in
       let json = response.result.value as? JSON
       if (json == nil) {
@@ -20,7 +23,7 @@ class VenueDataStore: NSObject {
       if (meta != nil) {
         count = meta!["count"] as! Int
       }
-      let venuesJSON = json!["venues"] as? [JSON]
+      let venuesJSON = json!["data"] as? [JSON]
       if (venuesJSON == nil) {
         DispatchQueue.main.async { completion(false, [], 0) }
         return

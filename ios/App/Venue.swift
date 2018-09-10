@@ -22,8 +22,8 @@ struct Venue: JSONDecodable {
   init?(json: JSON) {
     self.title = "title" <~~ json
     self.blurb = "blurb" <~~ json
-    self.link = "link" <~~ json
-    self.images = "images" <~~ json
+    self.link = "url" <~~ json
+    self.images = "image_urls" <~~ json
     self.location = "location" <~~ json
   }
 }

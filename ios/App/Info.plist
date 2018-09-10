@@ -2,6 +2,8 @@
 <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
 <plist version="1.0">
 <dict>
+	<key>API_HOST</key>
+	<string>$(API_HOST)</string>
 	<key>BUNDLE_ID_PREFIX</key>
 	<string>$(BUNDLE_ID_PREFIX)</string>
 	<key>CFBundleDevelopmentRegion</key>
@@ -29,6 +31,10 @@
 		<key>NSAllowsLocalNetworking</key>
 		<true/>
 	</dict>
+	<key>NSLocationAlwaysAndWhenInUseUsageDescription</key>
+	<string>We monitor your location to notify you when you are near interesting spots.</string>
+	<key>NSLocationWhenInUseUsageDescription</key>
+	<string>We monitor your location to notify you when you are near interesting spots.</string>
 	<key>UIBackgroundModes</key>
 	<array>
 		<string>location</string>
@@ -45,9 +51,5 @@
 	<array>
 		<string>UIInterfaceOrientationPortrait</string>
 	</array>
-	<key>NSLocationAlwaysAndWhenInUseUsageDescription</key>
-	<string>We monitor your location to notify you when you are near interesting spots.</string>
-	<key>NSLocationWhenInUseUsageDescription</key>
-	<string>We monitor your location to notify you when you are near interesting spots.</string>
 </dict>
 </plist>
