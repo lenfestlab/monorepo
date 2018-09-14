@@ -1,3 +1,5 @@
+require 'uri'
+
 class Post < ApplicationRecord
 
   validates :lat, :lng, :title, :blurb, :url, :image_urls,
@@ -9,6 +11,14 @@ class Post < ApplicationRecord
 
   def location
     { lat: lat, lng: lng }
+  end
+
+  def image_urls
+    read_attribute(:image_urls).map { |url| ensure_https(url) }
+  end
+
+  def url
+    ensure_https(read_attribute(:url))
   end
 
   def as_json(options = nil)
@@ -23,6 +33,15 @@ class Post < ApplicationRecord
         :location
       ]
     }.merge(options || {}))
+  end
+
+
+  private
+
+  def ensure_https url_string
+    uri = URI(url_string)
+    uri.scheme = 'https'
+    uri.to_s
   end
 
 end
