@@ -33,9 +33,8 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
   }
   
   func showHomeScreen() {
-    let mapController = VenuesController()
-    let navigationController = UINavigationController(rootViewController: mapController)
-    window!.rootViewController = navigationController
+    let mapController = MapViewController()
+    window!.rootViewController = mapController
   }
 
 

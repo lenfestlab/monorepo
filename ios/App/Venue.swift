@@ -26,6 +26,10 @@ struct Venue: JSONDecodable {
     self.images = "image_urls" <~~ json
     self.location = "location" <~~ json
   }
+
+  func coordinate() -> CLLocationCoordinate2D {
+    return CLLocationCoordinate2D(latitude: (self.location?.latitude)!, longitude: (self.location?.longitude)!)
+  }
 }
 
 

@@ -4,6 +4,7 @@ targets:
       - carthage: Reachability
       - carthage: Gloss
       - carthage: Alamofire
+      - carthage: AlamofireImage
   Tests:
     dependencies:
       - target: App

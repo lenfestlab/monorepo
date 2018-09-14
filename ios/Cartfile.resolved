@@ -1,3 +1,4 @@
 github "Alamofire/Alamofire" "4.7.3"
+github "Alamofire/AlamofireImage" "3.4.0"
 github "ashleymills/Reachability.swift" "v4.2.1"
 github "hkellaway/Gloss" "2.0.1"
