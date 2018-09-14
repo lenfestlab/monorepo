@@ -21,3 +21,8 @@
 
 # Ignore master key for decrypting credentials and more.
 /config/master.key
+
+# dotenv for environment configuration
+# src: https://github.com/bkeepers/dotenv
+.env*
+!.env*.example
