@@ -9,18 +9,34 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
   var window: UIWindow?
   var navController: UINavigationController?
 
-  func application(
-    _ application: UIApplication,
-    didFinishLaunchingWithOptions launchOptions: LaunchOptions
-    ) -> Bool {
-
+  func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: LaunchOptions) -> Bool {
     window = UIWindow(frame: UIScreen.main.bounds)
-    let viewController = VenuesController()
-    navController = UINavigationController(rootViewController: viewController)
-    window?.rootViewController = navController
-    window?.makeKeyAndVisible()
+    showIntro()
+    window!.makeKeyAndVisible()
 
     return true
   }
+  
+  func showIntro() {
+    let introController = IntroViewController()
+    window!.rootViewController = introController
+  }
+  
+  func showPermissions() {
+    let permissionsController = PermissionsViewController()
+    window!.rootViewController = permissionsController
+  }
+  
+  func showNotifications() {
+    let notificationsController = NotificationViewController()
+    window!.rootViewController = notificationsController
+  }
+  
+  func showHomeScreen() {
+    let mapController = VenuesController()
+    let navigationController = UINavigationController(rootViewController: mapController)
+    window!.rootViewController = navigationController
+  }
+
 
 }

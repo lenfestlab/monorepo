@@ -1,0 +1,80 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.XIB" version="3.0" toolsVersion="13771" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" useSafeAreas="YES" colorMatched="YES">
+    <device id="retina5_9" orientation="portrait">
+        <adaptation id="fullscreen"/>
+    </device>
+    <dependencies>
+        <deployment identifier="iOS"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="13772"/>
+        <capability name="Safe area layout guides" minToolsVersion="9.0"/>
+        <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
+    </dependencies>
+    <customFonts key="customFonts">
+        <array key="HelveticaNeue.ttc">
+            <string>HelveticaNeue-Bold</string>
+        </array>
+    </customFonts>
+    <objects>
+        <placeholder placeholderIdentifier="IBFilesOwner" id="-1" userLabel="File's Owner" customClass="IntroViewController" customModule="Benji" customModuleProvider="target">
+            <connections>
+                <outlet property="doneButton" destination="hUG-bU-8Yv" id="yuf-jI-fN3"/>
+                <outlet property="view" destination="i5M-Pr-FkT" id="sfx-zR-JGt"/>
+            </connections>
+        </placeholder>
+        <placeholder placeholderIdentifier="IBFirstResponder" id="-2" customClass="UIResponder"/>
+        <view clearsContextBeforeDrawing="NO" contentMode="scaleToFill" id="i5M-Pr-FkT">
+            <rect key="frame" x="0.0" y="0.0" width="375" height="812"/>
+            <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+            <subviews>
+                <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Welcome!" textAlignment="center" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="1No-Eb-hoY">
+                    <rect key="frame" x="20" y="277" width="335" height="36"/>
+                    <fontDescription key="fontDescription" name="HelveticaNeue-Bold" family="Helvetica Neue" pointSize="30"/>
+                    <color key="textColor" red="0.26676884293556213" green="0.26676315069198608" blue="0.26676702499389648" alpha="1" colorSpace="custom" customColorSpace="displayP3"/>
+                    <nil key="highlightedColor"/>
+                </label>
+                <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="hUG-bU-8Yv">
+                    <rect key="frame" x="16" y="713" width="343" height="50"/>
+                    <color key="backgroundColor" red="0.33477279543876648" green="0.48015740513801575" blue="0.90205073356628418" alpha="1" colorSpace="custom" customColorSpace="displayP3"/>
+                    <constraints>
+                        <constraint firstAttribute="height" constant="50" id="BZd-Ff-bLm"/>
+                    </constraints>
+                    <fontDescription key="fontDescription" name="HelveticaNeue-Bold" family="Helvetica Neue" pointSize="17"/>
+                    <state key="normal" title="Get Started">
+                        <color key="titleColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
+                    </state>
+                    <connections>
+                        <action selector="doneWithSender:" destination="-1" eventType="touchUpInside" id="Uwu-HJ-cCw"/>
+                    </connections>
+                </button>
+                <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" usesAttributedText="YES" lineBreakMode="tailTruncation" numberOfLines="6" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="YHF-1K-Vww">
+                    <rect key="frame" x="20" y="343" width="335" height="77"/>
+                    <attributedString key="attributedText">
+                        <fragment content="This is a location-aware app that sends alerts about local architecture news that's relevant to you based on where you are.">
+                            <attributes>
+                                <color key="NSColor" red="0.26676884293556213" green="0.26676315069198608" blue="0.26676702499389648" alpha="1" colorSpace="custom" customColorSpace="displayP3"/>
+                                <font key="NSFont" metaFont="system" size="17"/>
+                                <paragraphStyle key="NSParagraphStyle" alignment="center" lineBreakMode="wordWrapping" baseWritingDirection="natural" lineSpacing="8" tighteningFactorForTruncation="0.0"/>
+                            </attributes>
+                        </fragment>
+                    </attributedString>
+                    <nil key="highlightedColor"/>
+                </label>
+            </subviews>
+            <color key="backgroundColor" red="1" green="1" blue="1" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+            <constraints>
+                <constraint firstItem="1No-Eb-hoY" firstAttribute="centerX" secondItem="fnl-2z-Ty3" secondAttribute="centerX" id="B4R-2w-ZpB"/>
+                <constraint firstItem="fnl-2z-Ty3" firstAttribute="trailing" secondItem="hUG-bU-8Yv" secondAttribute="trailing" constant="16" id="HQY-w7-z9b"/>
+                <constraint firstItem="YHF-1K-Vww" firstAttribute="centerY" secondItem="fnl-2z-Ty3" secondAttribute="centerY" constant="-30" id="Jz7-z5-u5S"/>
+                <constraint firstItem="fnl-2z-Ty3" firstAttribute="bottom" secondItem="hUG-bU-8Yv" secondAttribute="bottom" constant="15" id="Sj5-Ai-7fl"/>
+                <constraint firstItem="fnl-2z-Ty3" firstAttribute="trailing" secondItem="hUG-bU-8Yv" secondAttribute="trailing" constant="16" id="YIE-wf-nuC"/>
+                <constraint firstItem="1No-Eb-hoY" firstAttribute="width" secondItem="YHF-1K-Vww" secondAttribute="width" id="jll-QR-yvN"/>
+                <constraint firstItem="YHF-1K-Vww" firstAttribute="centerX" secondItem="fnl-2z-Ty3" secondAttribute="centerX" id="pNO-TZ-FP7"/>
+                <constraint firstItem="YHF-1K-Vww" firstAttribute="top" secondItem="1No-Eb-hoY" secondAttribute="bottom" constant="30" id="qe3-I3-jGU"/>
+                <constraint firstItem="hUG-bU-8Yv" firstAttribute="leading" secondItem="fnl-2z-Ty3" secondAttribute="leading" constant="16" id="udl-RL-m8V"/>
+                <constraint firstItem="1No-Eb-hoY" firstAttribute="leading" secondItem="fnl-2z-Ty3" secondAttribute="leading" constant="20" id="yWn-bB-HDN"/>
+            </constraints>
+            <viewLayoutGuide key="safeArea" id="fnl-2z-Ty3"/>
+            <point key="canvasLocation" x="33.5" y="121.5"/>
+        </view>
+    </objects>
+</document>
