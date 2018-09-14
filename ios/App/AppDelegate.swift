@@ -1,4 +1,5 @@
 import Reachability
+import UIKit
 
 typealias LaunchOptions = [UIApplicationLaunchOptionsKey: Any]?
 
