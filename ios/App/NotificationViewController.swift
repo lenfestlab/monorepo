@@ -1,11 +1,3 @@
-//
-//  NotificationViewController.swift
-//  GRE Tweets
-//
-//  Created by Ajay Chainani on 8/31/18.
-//  Copyright © 2018 Ajay Chainani. All rights reserved.
-//
-
 import UIKit
 import UserNotifications
 

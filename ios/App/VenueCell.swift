@@ -1,11 +1,3 @@
-//
-//  VenueCell.swift
-//  Benji
-//
-//  Created by Ajay Chainani on 8/30/18.
-//  Copyright © 2018 Lenfest. All rights reserved.
-//
-
 import UIKit
 import AlamofireImage
 
