@@ -7,7 +7,6 @@ typealias LaunchOptions = [UIApplicationLaunchOptionsKey: Any]?
 class AppDelegate: UIResponder, UIApplicationDelegate {
 
   var window: UIWindow?
-  var navController: UINavigationController?
 
   func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: LaunchOptions) -> Bool {
     window = UIWindow(frame: UIScreen.main.bounds)

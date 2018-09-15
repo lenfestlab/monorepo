@@ -11,12 +11,20 @@ class MapViewController: UIViewController, LocationManagerDelegate, UICollection
   let locationManager = LocationManager()
   let notificationManager = NotificationManager()
   var venues:[Venue] = []
-  
+  var currentVenue:Venue?
+
   @IBOutlet weak var collectionView:UICollectionView!
   @IBOutlet weak var mapView:MKMapView!
   @IBOutlet weak var locationButton:UIButton!
   @IBOutlet weak var settingsButton:UIButton!
 
+  @IBAction func settings(sender: UIButton) {
+    let settingsController = SettingsViewController(style: .grouped)
+    let navigationController = UINavigationController(rootViewController: settingsController)
+    navigationController.modalTransitionStyle = .flipHorizontal
+    present(navigationController, animated: true)
+  }
+  
   override func viewDidLoad() {
     super.viewDidLoad()
     
@@ -60,6 +68,13 @@ class MapViewController: UIViewController, LocationManagerDelegate, UICollection
     let  pinView = MKPinAnnotationView(annotation: annotation, reuseIdentifier: reuseId)
     pinView.canShowCallout = true
     pinView.animatesDrop = false
+    
+    if annotation.title == currentVenue?.title {
+      pinView.pinTintColor = .red
+    } else {
+      pinView.pinTintColor = .blue
+    }
+    
     pinView.accessibilityLabel = "hello"
     let btn = UIButton(type: .detailDisclosure)
     pinView.rightCalloutAccessoryView = btn
@@ -74,18 +89,30 @@ class MapViewController: UIViewController, LocationManagerDelegate, UICollection
     
   }
   
+  func reloadMap() {
+    self.mapView.removeAnnotations(self.mapView.annotations)
+    
+    for venue in self.venues {
+      let annotation = MKPointAnnotation()
+      annotation.coordinate = venue.coordinate()
+      annotation.title = venue.title
+      self.mapView.addAnnotation(annotation)
+    }
+  }
+  
   func fetchData() {
     dataStore.retrieveVenues { (success, data, count) in
       self.venues = data
+      
+      if self.venues.count > 0 {
+        self.currentVenue = self.venues.first
+        self.centerMap((self.currentVenue?.coordinate())!)
+      }
+      
       if self.locationManager.authorized {
         self.notificationManager.trackVenues(venues: data)
         
-        for venue in self.venues {
-          let annotation = MKPointAnnotation()
-          annotation.coordinate = venue.coordinate()
-          annotation.title = venue.title
-          self.mapView.addAnnotation(annotation)
-        }
+        self.reloadMap()
         
       }
       self.collectionView.reloadData()
@@ -151,8 +178,10 @@ class MapViewController: UIViewController, LocationManagerDelegate, UICollection
   }
   
   private func configureCollectionViewLayoutItemSize() {
-    collectionViewFlowLayout.sectionInset = UIEdgeInsets(top: 0, left: 20, bottom: 0, right: 20)
-    collectionViewFlowLayout.itemSize = CGSize(width: collectionView.frame.size.width - 50, height: collectionView.frame.size.height)
+    let padding = CGFloat(30)
+    collectionViewFlowLayout.sectionInset = UIEdgeInsets(top: 0, left: padding, bottom: 0, right: padding)
+    let width = collectionView.frame.size.width - 2*padding
+    collectionViewFlowLayout.itemSize = CGSize(width: width, height: collectionView.frame.size.height)
   }
   
   private func indexOfMajorCell() -> Int {
@@ -207,13 +236,19 @@ class MapViewController: UIViewController, LocationManagerDelegate, UICollection
   func selectIndex(_ indexPath:IndexPath) {
     collectionViewFlowLayout.collectionView!.scrollToItem(at: indexPath, at: .centeredHorizontally, animated: true)
     let venue:Venue = self.venues[indexPath.row]
-    self.centerMap(venue.coordinate())
+    let coordinate = venue.coordinate()
+    
+    self.currentVenue = venue
+    
+    self.reloadMap()
+    
+    self.centerMap(coordinate)
   }
   
   func centerMap(_ center: CLLocationCoordinate2D) {
-    let span = MKCoordinateSpanMake(0.10, 0.10);
+    let span = MKCoordinateSpanMake(0.010, 0.010);
     let region = MKCoordinateRegion(center: center, span: span)
-    self.mapView.setRegion(region, animated: false)
+    self.mapView.setRegion(region, animated: true)
   }
 }
 
