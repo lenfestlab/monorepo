@@ -5,6 +5,10 @@ import SafariServices
 private let reuseIdentifier = "VenueCell"
 fileprivate let sectionInsets = UIEdgeInsets(top: 0, left: 0, bottom: 0, right: 0)
 
+class ABPointAnnotation : MKPointAnnotation {
+  var index: Int = 0
+}
+
 class MapViewController: UIViewController, LocationManagerDelegate, UICollectionViewDelegate, UICollectionViewDataSource, MKMapViewDelegate {
   
   let dataStore = VenueDataStore()
@@ -56,6 +60,8 @@ class MapViewController: UIViewController, LocationManagerDelegate, UICollection
     locationManager.delegate = self
     locationManager.enableBasicLocationServices()
     notificationManager.requestAuthorization()
+    
+    fetchData()
   }
   
   func mapView(_ mapView: MKMapView, viewFor annotation: MKAnnotation) -> MKAnnotationView? {
@@ -63,16 +69,18 @@ class MapViewController: UIViewController, LocationManagerDelegate, UICollection
       //return nil so map view draws "blue dot" for standard user location
       return nil
     }
+  
     
     let reuseId = "pin"
     let  pinView = MKPinAnnotationView(annotation: annotation, reuseIdentifier: reuseId)
     pinView.canShowCallout = true
     pinView.animatesDrop = false
+    pinView.tag = (annotation as! ABPointAnnotation).index
     
     if annotation.title == currentVenue?.title {
       pinView.pinTintColor = .red
     } else {
-      pinView.pinTintColor = .blue
+      pinView.pinTintColor = .gray
     }
     
     pinView.accessibilityLabel = "hello"
@@ -82,7 +90,8 @@ class MapViewController: UIViewController, LocationManagerDelegate, UICollection
   }
   
   func mapView(_ mapView: MKMapView, didSelect view: MKAnnotationView) {
-    
+    let indexPath = IndexPath(row: view.tag, section: 0)
+    selectIndex(indexPath)
   }
   
   func mapView(_ mapView: MKMapView, annotationView view: MKAnnotationView, calloutAccessoryControlTapped control: UIControl) {
@@ -90,14 +99,16 @@ class MapViewController: UIViewController, LocationManagerDelegate, UICollection
   }
   
   func reloadMap() {
-    self.mapView.removeAnnotations(self.mapView.annotations)
-    
-    for venue in self.venues {
-      let annotation = MKPointAnnotation()
+    var annotations:[MKAnnotation] = []
+    for (index, venue) in self.venues.enumerated() {
+      let annotation = ABPointAnnotation()
       annotation.coordinate = venue.coordinate()
       annotation.title = venue.title
-      self.mapView.addAnnotation(annotation)
+      annotation.index = index
+      annotations.append(annotation)
     }
+    self.mapView.removeAnnotations(self.mapView.annotations)
+    self.mapView.addAnnotations(annotations)
   }
   
   func fetchData() {
@@ -122,11 +133,10 @@ class MapViewController: UIViewController, LocationManagerDelegate, UICollection
   // MARK: - Location manager delegate
   
   func authorized(_ locationManager: LocationManager) {
-    fetchData()
+    locationManager.startUpdatingLocation()
   }
   
   func notAuthorized(_ locationManager: LocationManager) {
-    fetchData()
   }
   
   override func didReceiveMemoryWarning() {
@@ -248,7 +258,7 @@ class MapViewController: UIViewController, LocationManagerDelegate, UICollection
   func centerMap(_ center: CLLocationCoordinate2D) {
     let span = MKCoordinateSpanMake(0.010, 0.010);
     let region = MKCoordinateRegion(center: center, span: span)
-    self.mapView.setRegion(region, animated: true)
+    self.mapView.setRegion(region, animated: false)
   }
 }
 
