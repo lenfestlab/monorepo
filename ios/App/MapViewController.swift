@@ -61,7 +61,16 @@ class MapViewController: UIViewController, LocationManagerDelegate, UICollection
     locationManager.enableBasicLocationServices()
     notificationManager.requestAuthorization()
     
+    self.mapView.showsUserLocation = true
+    
     fetchData()
+  }
+  
+  @IBAction func centerCurrentLocation() {
+    let coordinate = mapView.userLocation.location?.coordinate
+    if coordinate != nil {
+      mapView.setCenter(coordinate!, animated: true)
+    }
   }
   
   func mapView(_ mapView: MKMapView, viewFor annotation: MKAnnotation) -> MKAnnotationView? {
@@ -121,13 +130,24 @@ class MapViewController: UIViewController, LocationManagerDelegate, UICollection
       }
       
       if self.locationManager.authorized {
-        self.notificationManager.trackVenues(venues: data)
         
-        self.reloadMap()
-        
+        let radius = CLLocationDistance(60)
+        self.notificationManager.trackVenues(venues: data, radius: radius)
+        for venue in self.venues {
+          let circle = MKCircle(center: venue.coordinate(), radius: radius)
+          self.mapView.add(circle)
+        }
+        self.reloadMap()        
       }
       self.collectionView.reloadData()
     }
+  }
+  
+  func mapView(_ mapView: MKMapView, rendererFor overlay: MKOverlay) -> MKOverlayRenderer {
+    let circleView = MKCircleRenderer(overlay: overlay)
+    circleView.strokeColor = .clear
+    circleView.fillColor = UIColor.green.withAlphaComponent(0.1)
+    return circleView;
   }
   
   // MARK: - Location manager delegate
