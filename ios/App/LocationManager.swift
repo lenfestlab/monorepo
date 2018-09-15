@@ -12,6 +12,10 @@ class LocationManager: NSObject, CLLocationManagerDelegate {
   var locationManager:CLLocationManager?
   var authorized = false
 
+  func startUpdatingLocation() {
+    locationManager?.startUpdatingLocation()
+  }
+
   override init() {
     super.init()
     locationManager = CLLocationManager()
@@ -22,7 +26,12 @@ class LocationManager: NSObject, CLLocationManagerDelegate {
   }
   
   func enableBasicLocationServices() {
-    switch CLLocationManager.authorizationStatus() {
+    let status = CLLocationManager.authorizationStatus()
+    authorizationStatusUpdated(status: status)
+  }
+  
+  func authorizationStatusUpdated(status: CLAuthorizationStatus) {
+    switch status {
     case .notDetermined:
       // Request when-in-use authorization initially
       locationManager?.requestAlwaysAuthorization()
@@ -36,9 +45,12 @@ class LocationManager: NSObject, CLLocationManagerDelegate {
     case .authorizedWhenInUse, .authorizedAlways:
       authorized = true
       delegate?.authorized(self)
-      locationManager?.startUpdatingLocation()
       break
     }
+  }
+  
+  func locationManager(_ manager: CLLocationManager, didChangeAuthorization status: CLAuthorizationStatus) {
+    authorizationStatusUpdated(status: status)
   }
   
   func locationManager(_ manager: CLLocationManager,
