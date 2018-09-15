@@ -50,7 +50,9 @@ class LocationManager: NSObject, CLLocationManagerDelegate {
   }
   
   func locationManager(_ manager: CLLocationManager, didChangeAuthorization status: CLAuthorizationStatus) {
-    authorizationStatusUpdated(status: status)
+    if status != .notDetermined {
+      authorizationStatusUpdated(status: status)
+    }
   }
   
   func locationManager(_ manager: CLLocationManager,
