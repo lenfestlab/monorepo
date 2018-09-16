@@ -11,6 +11,8 @@ class ABPointAnnotation : MKPointAnnotation {
 
 class MapViewController: UIViewController, LocationManagerDelegate, UICollectionViewDelegate, UICollectionViewDataSource, MKMapViewDelegate {
   
+  let padding = CGFloat(30)
+  
   let dataStore = VenueDataStore()
   let locationManager = LocationManager()
   let notificationManager = NotificationManager()
@@ -81,7 +83,6 @@ class MapViewController: UIViewController, LocationManagerDelegate, UICollection
   
     let reuseId = "pin"
     let  pinView = MKPinAnnotationView(annotation: annotation, reuseIdentifier: reuseId)
-    pinView.canShowCallout = true
     pinView.animatesDrop = false
     pinView.tag = (annotation as! ABPointAnnotation).index
     
@@ -207,7 +208,6 @@ class MapViewController: UIViewController, LocationManagerDelegate, UICollection
   }
   
   private func configureCollectionViewLayoutItemSize() {
-    let padding = CGFloat(30)
     collectionViewFlowLayout.sectionInset = UIEdgeInsets(top: 0, left: padding, bottom: 0, right: padding)
     let width = collectionView.frame.size.width - 2*padding
     collectionViewFlowLayout.itemSize = CGSize(width: width, height: collectionView.frame.size.height)
@@ -225,6 +225,8 @@ class MapViewController: UIViewController, LocationManagerDelegate, UICollection
   func scrollViewWillBeginDragging(_ scrollView: UIScrollView) {
     indexOfCellBeforeDragging = indexOfMajorCell()
   }
+  
+  // Logic from: https://github.com/hershalle/CollectionViewWithPaging-Finish/blob/65ac92c2db31eef7404aa1013ecc1cada45ee0c8/CollectionViewWithPaging/ViewController.swift
   
   func scrollViewWillEndDragging(_ scrollView: UIScrollView, withVelocity velocity: CGPoint, targetContentOffset: UnsafeMutablePointer<CGPoint>) {
     // Stop scrollView sliding:
@@ -244,7 +246,7 @@ class MapViewController: UIViewController, LocationManagerDelegate, UICollection
     if didUseSwipeToSkipCell {
       
       let snapToIndex = indexOfCellBeforeDragging + (hasEnoughVelocityToSlideToTheNextCell ? 1 : -1)
-      let toValue = collectionViewFlowLayout.itemSize.width * CGFloat(snapToIndex)
+      let toValue = (collectionViewFlowLayout.itemSize.width + 2*padding) * CGFloat(snapToIndex)
       
       // Damping equal 1 => no oscillations => decay animation:
       UIView.animate(withDuration: 0.3, delay: 0, usingSpringWithDamping: 1, initialSpringVelocity: velocity.x, options: .allowUserInteraction, animations: {
