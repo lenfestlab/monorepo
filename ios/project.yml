@@ -21,13 +21,15 @@ configs:
   x-test-release: release
 
 settings:
-
   base:
     TARGETED_DEVICE_FAMILY: '1' # iPhone only
     # link system frameworks - https://git.io/fAZbC
     OTHER_LDFLAGS: "$(inherited) -framework Foundation"
   configs:
-    ## API_ENV
+    # > Each key will be matched to any configs that contain the key and
+    # > is case insensitive. So if you had Staging Debug and Staging Release,
+    # > you could apply settings to both of them using staging.
+    # https://git.io/fA1iI
     test:
       ENV_NAME: test
       APP_NAME_SUFFIX: "-test"
@@ -38,6 +40,7 @@ settings:
       BUNDLE_ID_SUFFIX: .dev
     prod:
       ENV_NAME: prod
+      BUNDLE_ID_SUFFIX: .prod
 
 targets:
 
@@ -62,6 +65,9 @@ targets:
         - test
         - prod
     dependencies: [] # carthage.yml
+    postbuildScripts:
+      - name: "Bump build number"
+        path: scripts/update_build_number.sh
 
   Tests:
     platform: iOS

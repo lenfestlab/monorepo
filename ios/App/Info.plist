@@ -21,7 +21,7 @@
 	<key>CFBundleShortVersionString</key>
 	<string>1.0</string>
 	<key>CFBundleVersion</key>
-	<string>1</string>
+	<string>(Set automatically in custom Build Phases script)</string>
 	<key>ENV_NAME</key>
 	<string>$(ENV_NAME)</string>
 	<key>LSRequiresIPhoneOS</key>
