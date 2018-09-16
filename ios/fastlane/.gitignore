@@ -1,0 +1,9 @@
+# https://git.io/fA1ty
+README*
+report.xml
+Preview.html
+screenshots
+test_output
+
+# save release builds
+releases/*

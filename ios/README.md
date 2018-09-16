@@ -1,5 +1,7 @@
 See `../README.md`, then:
 
+## Quickstart
+
 ```
 # Run setup script
 ./bootstrap.sh
@@ -12,4 +14,11 @@ mint run xcodegen
 
 # Open the project in Xcode, hit build
 open *.xcodeproj
+```
+
+## Deployment
+
+```
+cp .env.example .env # edit .env with correct values
+bundle exec fastlane ios beta
 ```

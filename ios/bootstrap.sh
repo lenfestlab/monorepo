@@ -12,3 +12,9 @@ mint bootstrap
 # NOTE: omit --verbose flag, causes build error:
 # https://github.com/Carthage/Carthage/issues/2249
 carthage bootstrap --platform ios --cache-builds
+
+# Deployment tools (fastlane) use Ruby
+asdf install
+gem install bundler --conservative
+bundle install
+asdf reshim ruby

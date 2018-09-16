@@ -1,0 +1,22 @@
+opt_out_usage
+skip_docs
+default_platform :ios
+
+before_all do
+  ensure_git_status_clean
+end
+
+desc "Push a new beta build to TestFlight"
+lane :beta do
+
+  build_app(
+    scheme: "App prod",
+    output_directory: "fastlane/releases",
+    output_name: "#{ENV["FASTLANE_APP_ID"]}-#{Time.now.to_i}",
+  )
+
+  upload_to_testflight(
+    changelog: File.read("metadata/changelog.txt"),
+  )
+
+end
