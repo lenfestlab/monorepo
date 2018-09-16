@@ -34,7 +34,6 @@ class MapViewController: UIViewController, LocationManagerDelegate, UICollection
     
     locationButton.layer.cornerRadius = 5.0
     locationButton.clipsToBounds = true
-    locationButton.isSelected = true
     locationButton.layer.borderColor = UIColor.lightGray.cgColor
     locationButton.layer.borderWidth = 1
 
@@ -61,16 +60,17 @@ class MapViewController: UIViewController, LocationManagerDelegate, UICollection
     locationManager.enableBasicLocationServices()
     notificationManager.requestAuthorization()
     
-    self.mapView.showsUserLocation = true
-    
     fetchData()
   }
   
+  func mapView(_ mapView: MKMapView, didUpdate userLocation: MKUserLocation) {
+    mapView.setCenter(userLocation.coordinate, animated: true)
+  }
+  
   @IBAction func centerCurrentLocation() {
-    let coordinate = mapView.userLocation.location?.coordinate
-    if coordinate != nil {
-      mapView.setCenter(coordinate!, animated: true)
-    }
+    let showsUserLocation = !locationButton.isSelected
+    locationButton.isSelected = showsUserLocation
+    self.mapView.showsUserLocation = showsUserLocation
   }
   
   func mapView(_ mapView: MKMapView, viewFor annotation: MKAnnotation) -> MKAnnotationView? {
@@ -79,7 +79,6 @@ class MapViewController: UIViewController, LocationManagerDelegate, UICollection
       return nil
     }
   
-    
     let reuseId = "pin"
     let  pinView = MKPinAnnotationView(annotation: annotation, reuseIdentifier: reuseId)
     pinView.canShowCallout = true

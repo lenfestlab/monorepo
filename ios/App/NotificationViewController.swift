@@ -10,13 +10,13 @@ class NotificationViewController: UIViewController, UNUserNotificationCenterDele
     
     doneButton.layer.cornerRadius = 5.0
     doneButton.clipsToBounds = true
-    // Do any additional setup after loading the view.
   }
   
   @IBAction func skip(sender: UIButton) {
     let application = UIApplication.shared
     let appDelegate = application.delegate as? AppDelegate
     appDelegate?.showHomeScreen()
+    UserDefaults.standard.set(true, forKey: "onboarding-completed")
   }
 
   @IBAction func done(sender: UIButton) {
@@ -24,7 +24,7 @@ class NotificationViewController: UIViewController, UNUserNotificationCenterDele
     let appDelegate = application.delegate as? AppDelegate
     self.setupRemoteNotifications(application, completionHandler: { (_, _) in
       DispatchQueue.main.async {
-//        UserDefaults.standard.set(true, forKey: "onboarding-completed")
+        UserDefaults.standard.set(true, forKey: "onboarding-completed")
         appDelegate?.showHomeScreen()
       }
     })
@@ -39,21 +39,8 @@ class NotificationViewController: UIViewController, UNUserNotificationCenterDele
     }
   }
 
-
     override func didReceiveMemoryWarning() {
         super.didReceiveMemoryWarning()
         // Dispose of any resources that can be recreated.
     }
-    
-
-    /*
-    // MARK: - Navigation
-
-    // In a storyboard-based application, you will often want to do a little preparation before navigation
-    override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
-        // Get the new view controller using segue.destinationViewController.
-        // Pass the selected object to the new view controller.
-    }
-    */
-
 }

@@ -10,7 +10,12 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
 
   func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: LaunchOptions) -> Bool {
     window = UIWindow(frame: UIScreen.main.bounds)
-    showIntro()
+    let onboardingCompleted = UserDefaults.standard.bool(forKey: "onboarding-completed")
+    if onboardingCompleted {
+      showHomeScreen()
+    } else {
+      showIntro()
+    }
     window!.makeKeyAndVisible()
 
     return true
