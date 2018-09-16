@@ -11,7 +11,7 @@ class ABPointAnnotation : MKPointAnnotation {
 
 class MapViewController: UIViewController, LocationManagerDelegate, UICollectionViewDelegate, UICollectionViewDataSource, MKMapViewDelegate {
   
-  let padding = CGFloat(30)
+  let padding = CGFloat(45)
   
   let dataStore = VenueDataStore()
   let locationManager = LocationManager()
@@ -245,8 +245,9 @@ class MapViewController: UIViewController, LocationManagerDelegate, UICollection
     
     if didUseSwipeToSkipCell {
       
+      let spacing = CGFloat(10)
       let snapToIndex = indexOfCellBeforeDragging + (hasEnoughVelocityToSlideToTheNextCell ? 1 : -1)
-      let toValue = (collectionViewFlowLayout.itemSize.width + 2*padding) * CGFloat(snapToIndex)
+      let toValue = (collectionViewFlowLayout.itemSize.width + spacing) * CGFloat(snapToIndex)
       
       // Damping equal 1 => no oscillations => decay animation:
       UIView.animate(withDuration: 0.3, delay: 0, usingSpringWithDamping: 1, initialSpringVelocity: velocity.x, options: .allowUserInteraction, animations: {
@@ -255,6 +256,8 @@ class MapViewController: UIViewController, LocationManagerDelegate, UICollection
       }, completion: nil)
       
       let venue:Venue = self.venues[snapToIndex]
+      self.currentVenue = venue
+      self.reloadMap()
       self.centerMap(venue.coordinate())
       
     } else {
@@ -265,7 +268,7 @@ class MapViewController: UIViewController, LocationManagerDelegate, UICollection
   }
   
   func selectIndex(_ indexPath:IndexPath) {
-    collectionViewFlowLayout.collectionView!.scrollToItem(at: indexPath, at: .centeredHorizontally, animated: true)
+    collectionViewFlowLayout.collectionView!.scrollToItem(at: indexPath, at: .centeredHorizontally, animated: false)
     let venue:Venue = self.venues[indexPath.row]
     let coordinate = venue.coordinate()
     
@@ -273,7 +276,7 @@ class MapViewController: UIViewController, LocationManagerDelegate, UICollection
     
     self.reloadMap()
     
-    self.centerMap(coordinate)
+    self.centerMap(coordinate)    
   }
   
   func centerMap(_ center: CLLocationCoordinate2D) {
