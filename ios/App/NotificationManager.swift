@@ -3,8 +3,13 @@ import CoreLocation
 import UserNotifications
 import Alamofire
 
+protocol NotificationManagerDelegate {
+  func recievedNotification(_ notificationManager: NotificationManager, response: UNNotificationResponse)
+}
+
 class NotificationManager: NSObject, UNUserNotificationCenterDelegate {
 
+  var delegate: NotificationManagerDelegate?
   var notificationCenter:UNUserNotificationCenter?
 
   override init() {
@@ -48,9 +53,9 @@ class NotificationManager: NSObject, UNUserNotificationCenterDelegate {
       let content = UNMutableNotificationContent()
       content.title = venue.title!
       content.body = venue.blurb!
-      content.categoryIdentifier = "alarm"
+      content.categoryIdentifier = "POST_ENTERED"
       content.sound = UNNotificationSound.default()
-
+      content.userInfo = ["VENUE_URL": venue.link?.absoluteString ?? "" ]
       if image != nil {
         let attachment = UNNotificationAttachment.create(identifier: "image", image: image!, options: [:])
         content.attachments = [attachment!]
@@ -74,5 +79,12 @@ class NotificationManager: NSObject, UNUserNotificationCenterDelegate {
   func userNotificationCenter(_ center: UNUserNotificationCenter, willPresent notification: UNNotification, withCompletionHandler completionHandler: @escaping (UNNotificationPresentationOptions) -> Void) {
     completionHandler([.alert, .sound])
   }
+  
+  func userNotificationCenter(_ center: UNUserNotificationCenter,
+                              didReceive response: UNNotificationResponse,
+                              withCompletionHandler completionHandler: @escaping () -> Void) {    
+    delegate?.recievedNotification(self, response: response)
+  }
+
   
 }
