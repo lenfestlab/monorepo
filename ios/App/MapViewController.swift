@@ -1,6 +1,7 @@
 import UIKit
 import MapKit
 import SafariServices
+import UserNotifications
 
 private let reuseIdentifier = "VenueCell"
 fileprivate let sectionInsets = UIEdgeInsets(top: 0, left: 0, bottom: 0, right: 0)
@@ -9,7 +10,7 @@ class ABPointAnnotation : MKPointAnnotation {
   var index: Int = 0
 }
 
-class MapViewController: UIViewController, LocationManagerDelegate, UICollectionViewDelegate, UICollectionViewDataSource, MKMapViewDelegate {
+class MapViewController: UIViewController, LocationManagerDelegate, UICollectionViewDelegate, UICollectionViewDataSource, MKMapViewDelegate, NotificationManagerDelegate {
   
   let padding = CGFloat(45)
   
@@ -18,12 +19,20 @@ class MapViewController: UIViewController, LocationManagerDelegate, UICollection
   let notificationManager = NotificationManager()
   var venues:[Venue] = []
   var currentVenue:Venue?
+  
+  var lastCoordinate:CLLocationCoordinate2D?
 
   @IBOutlet weak var collectionView:UICollectionView!
   @IBOutlet weak var mapView:MKMapView!
   @IBOutlet weak var locationButton:UIButton!
   @IBOutlet weak var settingsButton:UIButton!
 
+  convenience init() {
+    self.init(nibName:nil, bundle:nil)
+
+    notificationManager.delegate = self
+  }
+  
   @IBAction func settings(sender: UIButton) {
     let settingsController = SettingsViewController(style: .grouped)
     let navigationController = UINavigationController(rootViewController: settingsController)
@@ -66,13 +75,21 @@ class MapViewController: UIViewController, LocationManagerDelegate, UICollection
   }
   
   func mapView(_ mapView: MKMapView, didUpdate userLocation: MKUserLocation) {
-    mapView.setCenter(userLocation.coordinate, animated: true)
+    let coordinate = userLocation.coordinate
+    if lastCoordinate == nil {
+      mapView.setCenter(coordinate, animated: true)
+    }
+    lastCoordinate = coordinate
   }
   
   @IBAction func centerCurrentLocation() {
     let showsUserLocation = !locationButton.isSelected
     locationButton.isSelected = showsUserLocation
     self.mapView.showsUserLocation = showsUserLocation
+    
+    if lastCoordinate != nil {
+      mapView.setCenter(lastCoordinate!, animated: true)
+    }
   }
   
   func mapView(_ mapView: MKMapView, viewFor annotation: MKAnnotation) -> MKAnnotationView? {
@@ -184,12 +201,22 @@ class MapViewController: UIViewController, LocationManagerDelegate, UICollection
     return cell
   }
   
+  func openInSafari(url: URL) {
+    if self.presentedViewController != nil {
+      self.presentedViewController?.dismiss(animated: false, completion: {
+        let svc = SFSafariViewController(url: url)
+        self.present(svc, animated: true)
+      })
+    } else {
+      let svc = SFSafariViewController(url: url)
+      present(svc, animated: true)
+    }
+  }
+  
   func collectionView(_ collectionView: UICollectionView, shouldSelectItemAt indexPath: IndexPath) -> Bool {
     if indexOfMajorCell() == indexPath.row {
       let venue:Venue = self.venues[indexPath.row]
-      let url = venue.link
-      let svc = SFSafariViewController(url: url!)
-      present(svc, animated: true)
+      openInSafari(url: venue.link!)
     } else {
       selectIndex(indexPath)
     }
@@ -284,5 +311,19 @@ class MapViewController: UIViewController, LocationManagerDelegate, UICollection
     let region = MKCoordinateRegion(center: center, span: span)
     self.mapView.setRegion(region, animated: false)
   }
+  
+  func recievedNotification(_ notificationManager: NotificationManager, response: UNNotificationResponse) {
+    if response.notification.request.content.categoryIdentifier == "POST_ENTERED" {      
+      let urlString = response.notification.request.content.userInfo["VENUE_URL"]
+      let url = URL(string: urlString as! String)
+      if response.actionIdentifier == "CHECKIN_ACTION" {
+        // Check-in
+      }
+      else if url != nil {
+        openInSafari(url: url!)
+      }
+    }
+  }
+  
 }
 

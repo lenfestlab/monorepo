@@ -41,5 +41,4 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
     window!.rootViewController = mapController
   }
 
-
 }
