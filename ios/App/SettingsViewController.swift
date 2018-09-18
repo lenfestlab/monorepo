@@ -1,23 +1,16 @@
-//
-//  SettingsViewController.swift
-//  App
-//
-//  Created by Ajay Chainani on 9/14/18.
-//
-
 import UIKit
 
 class SettingsViewController: UITableViewController {
-  
+
   override func viewDidLoad() {
     super.viewDidLoad()
-    
+
     self.title = "Settings"
     self.navigationItem.leftBarButtonItem = UIBarButtonItem.init(title: "Done", style: .plain, target: self, action: #selector(dismissViewController))
 
     // Uncomment the following line to preserve selection between presentations
     // self.clearsSelectionOnViewWillAppear = false
-    
+
     tableView.rowHeight = UITableViewAutomaticDimension
     tableView.estimatedRowHeight = 125
     let nib = UINib.init(nibName: "SettingsToggleCell", bundle: nil)
@@ -27,29 +20,29 @@ class SettingsViewController: UITableViewController {
     // Uncomment the following line to display an Edit button in the navigation bar for this view controller.
     // self.navigationItem.rightBarButtonItem = self.editButtonItem
   }
-  
+
   @objc func dismissViewController() {
     dismiss(animated: true, completion: nil)
   }
-  
+
   override func didReceiveMemoryWarning() {
     super.didReceiveMemoryWarning()
     // Dispose of any resources that can be recreated.
   }
-  
+
   // MARK: - Table view data source
-  
+
   override func numberOfSections(in tableView: UITableView) -> Int {
     return 2
   }
-  
+
   override func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
     return 1
   }
-  
+
   override func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
     let cell:SettingsToggleCell = tableView.dequeueReusableCell(withIdentifier: "reuseIdentifier", for: indexPath) as! SettingsToggleCell
-    
+
     if indexPath.section == 0 {
       cell.titleLabel.text = "Enable Notifications"
       cell.descriptionLabel.text = "This App uses push notifications to send you related articles based on where you are."
@@ -67,7 +60,7 @@ class SettingsViewController: UITableViewController {
    return true
    }
    */
-  
+
   /*
    // Override to support editing the table view.
    override func tableView(_ tableView: UITableView, commit editingStyle: UITableViewCellEditingStyle, forRowAt indexPath: IndexPath) {
@@ -79,14 +72,14 @@ class SettingsViewController: UITableViewController {
    }
    }
    */
-  
+
   /*
    // Override to support rearranging the table view.
    override func tableView(_ tableView: UITableView, moveRowAt fromIndexPath: IndexPath, to: IndexPath) {
-   
+
    }
    */
-  
+
   /*
    // Override to support conditional rearranging of the table view.
    override func tableView(_ tableView: UITableView, canMoveRowAt indexPath: IndexPath) -> Bool {
@@ -94,15 +87,15 @@ class SettingsViewController: UITableViewController {
    return true
    }
    */
-  
+
   /*
    // MARK: - Navigation
-   
+
    // In a storyboard-based application, you will often want to do a little preparation before navigation
    override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
    // Get the new view controller using segue.destinationViewController.
    // Pass the selected object to the new view controller.
    }
    */
-  
+
 }
