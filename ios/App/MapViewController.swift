@@ -52,7 +52,7 @@ class MapViewController: UIViewController, LocationManagerDelegate, UICollection
     settingsButton.clipsToBounds = true
     settingsButton.layer.borderColor = UIColor.lightGray.cgColor
     settingsButton.layer.borderWidth = 1
-
+    settingsButton.isHidden = true
     
     let coordinate = CLLocationCoordinate2D(latitude: 39.9526, longitude: -75.1652)
     centerMap(coordinate)
