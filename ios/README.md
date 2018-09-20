@@ -6,6 +6,9 @@ See `../README.md`, then:
 # Run setup script
 ./bootstrap.sh
 
+# Fetch development code signing assets
+fastlane match development --readonly
+
 # Use XcodeGen to generate xcode project from ./project.yml
 # https://github.com/yonaskolb/XcodeGen
 # First edit secrets variables with your private/local values
