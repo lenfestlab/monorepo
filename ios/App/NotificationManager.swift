@@ -58,7 +58,9 @@ class NotificationManager: NSObject, UNUserNotificationCenterDelegate {
       content.userInfo = ["VENUE_URL": venue.link?.absoluteString ?? "" ]
       if image != nil {
         let attachment = UNNotificationAttachment.create(identifier: "image", image: image!, options: [:])
-        content.attachments = [attachment!]
+        if attachment != nil {
+          content.attachments = [attachment!]
+        }
       }
 
       let trigger = self.triggerForVenue(venue: venue, radius: radius)

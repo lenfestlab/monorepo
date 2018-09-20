@@ -36,8 +36,8 @@ class VenueCell: UICollectionViewCell {
   
   func setVenue(venue: Venue) {
     let text = NSMutableAttributedString(string: "")
-    let title = self.attributedText(text: String(format: "%@\n", venue.title!), font: UIFont.boldSystemFont(ofSize: 16))
-    let blurb = self.attributedText(text: venue.blurb!, font: UIFont.systemFont(ofSize: 14))
+    let title = self.attributedText(text: String(format: "%@\n", venue.title!), font: UIFont.boldSystemFont(ofSize: 14))
+    let blurb = self.attributedText(text: venue.blurb!, font: UIFont.systemFont(ofSize: 12))
     text.append(title)
     text.append(blurb)
     self.textLabel.attributedText = text

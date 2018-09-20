@@ -148,7 +148,7 @@ class MapViewController: UIViewController, LocationManagerDelegate, UICollection
       
       if self.locationManager.authorized {
         
-        let radius = CLLocationDistance(60)
+        let radius = CLLocationDistance(100)
         self.notificationManager.trackVenues(venues: data, radius: radius)
         for venue in self.venues {
           let circle = MKCircle(center: venue.coordinate(), radius: radius)
@@ -163,7 +163,7 @@ class MapViewController: UIViewController, LocationManagerDelegate, UICollection
   func mapView(_ mapView: MKMapView, rendererFor overlay: MKOverlay) -> MKOverlayRenderer {
     let circleView = MKCircleRenderer(overlay: overlay)
     circleView.strokeColor = .clear
-    circleView.fillColor = UIColor.green.withAlphaComponent(0.1)
+    circleView.fillColor = UIColor.red.withAlphaComponent(0.1)
     return circleView;
   }
   
@@ -307,7 +307,7 @@ class MapViewController: UIViewController, LocationManagerDelegate, UICollection
   }
   
   func centerMap(_ center: CLLocationCoordinate2D) {
-    let span = MKCoordinateSpanMake(0.010, 0.010);
+    let span = MKCoordinateSpanMake(0.04, 0.04);
     let region = MKCoordinateRegion(center: center, span: span)
     self.mapView.setRegion(region, animated: false)
   }
