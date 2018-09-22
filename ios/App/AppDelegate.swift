@@ -23,17 +23,20 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
   
   func showIntro() {
     let introController = IntroViewController()
-    window!.rootViewController = introController
+    let navigationController = UINavigationController(rootViewController: introController)
+    window!.rootViewController = navigationController
   }
   
   func showPermissions() {
     let permissionsController = PermissionsViewController()
-    window!.rootViewController = permissionsController
+    let navigationController = UINavigationController(rootViewController: permissionsController)
+    window!.rootViewController = navigationController
   }
   
   func showNotifications() {
     let notificationsController = NotificationViewController()
-    window!.rootViewController = notificationsController
+    let navigationController = UINavigationController(rootViewController: notificationsController)
+    window!.rootViewController = navigationController
   }
   
   func showHomeScreen() {

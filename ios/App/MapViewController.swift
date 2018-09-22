@@ -68,8 +68,6 @@ class MapViewController: UIViewController, LocationManagerDelegate, UICollection
     self.navigationItem.rightBarButtonItem = UIBarButtonItem.init(title: "List View", style: .plain, target: self, action: nil)
     
     locationManager.delegate = self
-    locationManager.enableBasicLocationServices()
-    notificationManager.requestAuthorization()
     
     fetchData()
   }
@@ -83,12 +81,16 @@ class MapViewController: UIViewController, LocationManagerDelegate, UICollection
   }
   
   @IBAction func centerCurrentLocation() {
-    let showsUserLocation = !locationButton.isSelected
-    locationButton.isSelected = showsUserLocation
-    self.mapView.showsUserLocation = showsUserLocation
-    
-    if lastCoordinate != nil {
-      mapView.setCenter(lastCoordinate!, animated: true)
+    if self.locationManager.authorized {
+      let showsUserLocation = !locationButton.isSelected
+      locationButton.isSelected = showsUserLocation
+      self.mapView.showsUserLocation = showsUserLocation
+      
+      if lastCoordinate != nil {
+        mapView.setCenter(lastCoordinate!, animated: true)
+      }
+    } else {
+      self.locationManager.enableBasicLocationServices()
     }
   }
   
@@ -146,16 +148,15 @@ class MapViewController: UIViewController, LocationManagerDelegate, UICollection
         self.centerMap((self.currentVenue?.coordinate())!)
       }
       
+      let radius = CLLocationDistance(100)
       if self.locationManager.authorized {
-        
-        let radius = CLLocationDistance(100)
         self.notificationManager.trackVenues(venues: data, radius: radius)
-        for venue in self.venues {
-          let circle = MKCircle(center: venue.coordinate(), radius: radius)
-          self.mapView.add(circle)
-        }
-        self.reloadMap()        
       }
+      for venue in self.venues {
+        let circle = MKCircle(center: venue.coordinate(), radius: radius)
+        self.mapView.add(circle)
+      }
+      self.reloadMap()
       self.collectionView.reloadData()
     }
   }
