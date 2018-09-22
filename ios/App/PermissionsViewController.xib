@@ -8,6 +8,23 @@
         <capability name="Safe area layout guides" minToolsVersion="9.0"/>
         <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
     </dependencies>
+    <customFonts key="customFonts">
+        <array key="Lato-Italic.ttf">
+            <string>Lato-Italic</string>
+        </array>
+        <array key="Lato-Regular.ttf">
+            <string>Lato-Regular</string>
+        </array>
+        <array key="WorkSans-Medium.ttf">
+            <string>WorkSans-Medium</string>
+        </array>
+        <array key="WorkSans-Regular.ttf">
+            <string>WorkSans-Regular</string>
+        </array>
+        <array key="WorkSans-SemiBold.ttf">
+            <string>WorkSans-SemiBold</string>
+        </array>
+    </customFonts>
     <objects>
         <placeholder placeholderIdentifier="IBFilesOwner" id="-1" userLabel="File's Owner" customClass="PermissionsViewController" customModule="App" customModuleProvider="target">
             <connections>
@@ -20,71 +37,81 @@
             <rect key="frame" x="0.0" y="0.0" width="375" height="812"/>
             <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
             <subviews>
-                <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="To Get Started" textAlignment="center" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="1No-Eb-hoY">
-                    <rect key="frame" x="20" y="277.33333333333331" width="335" height="36"/>
-                    <fontDescription key="fontDescription" name="HelveticaNeue-Bold" family="Helvetica Neue" pointSize="30"/>
-                    <color key="textColor" red="0.26676884293556213" green="0.26676315069198608" blue="0.26676702499389648" alpha="1" colorSpace="custom" customColorSpace="displayP3"/>
-                    <nil key="highlightedColor"/>
-                </label>
                 <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="hUG-bU-8Yv">
-                    <rect key="frame" x="16" y="713" width="343" height="50"/>
-                    <color key="backgroundColor" red="0.33477279543876648" green="0.48015740513801575" blue="0.90205073356628418" alpha="1" colorSpace="custom" customColorSpace="displayP3"/>
+                    <rect key="frame" x="48" y="678" width="279" height="60"/>
                     <constraints>
-                        <constraint firstAttribute="height" constant="50" id="BZd-Ff-bLm"/>
+                        <constraint firstAttribute="height" constant="60" id="BZd-Ff-bLm"/>
+                        <constraint firstAttribute="width" constant="279" id="bCh-ec-ayk"/>
                     </constraints>
-                    <fontDescription key="fontDescription" name="HelveticaNeue-Bold" family="Helvetica Neue" pointSize="17"/>
-                    <state key="normal" title="Share your location">
-                        <color key="titleColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
+                    <fontDescription key="fontDescription" name="WorkSans-Regular" family="Work Sans" pointSize="20"/>
+                    <state key="normal" title="Enable Location" backgroundImage="blue-button">
+                        <color key="titleColor" white="0.0" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                     </state>
                     <connections>
                         <action selector="doneWithSender:" destination="-1" eventType="touchUpInside" id="Uwu-HJ-cCw"/>
                     </connections>
                 </button>
-                <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" usesAttributedText="YES" lineBreakMode="tailTruncation" numberOfLines="6" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="YHF-1K-Vww">
-                    <rect key="frame" x="20" y="343.33333333333331" width="335" height="77"/>
-                    <attributedString key="attributedText">
-                        <fragment content="This app is going to track your location and send alerts to you based on where you are. Please enable the app to do so.">
-                            <attributes>
-                                <color key="NSColor" red="0.26676884293556213" green="0.26676315069198608" blue="0.26676702499389648" alpha="1" colorSpace="custom" customColorSpace="displayP3"/>
-                                <font key="NSFont" metaFont="system" size="17"/>
-                                <paragraphStyle key="NSParagraphStyle" alignment="center" lineBreakMode="wordWrapping" baseWritingDirection="natural" lineSpacing="8" tighteningFactorForTruncation="0.0"/>
-                            </attributes>
-                        </fragment>
-                    </attributedString>
-                    <nil key="highlightedColor"/>
-                </label>
                 <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="qIi-4s-8BE">
-                    <rect key="frame" x="315" y="44" width="60" height="50"/>
+                    <rect key="frame" x="306" y="66" width="35" height="40"/>
                     <constraints>
-                        <constraint firstAttribute="width" constant="60" id="bAl-HW-9t3"/>
-                        <constraint firstAttribute="height" constant="50" id="xfm-tR-3wu"/>
+                        <constraint firstAttribute="width" constant="35" id="bAl-HW-9t3"/>
+                        <constraint firstAttribute="height" constant="40" id="xfm-tR-3wu"/>
                     </constraints>
-                    <fontDescription key="fontDescription" type="system" pointSize="17"/>
+                    <fontDescription key="fontDescription" name="Lato-Italic" family="Lato" pointSize="20"/>
                     <state key="normal" title="Skip">
-                        <color key="titleColor" white="0.66666666666666663" alpha="1" colorSpace="calibratedWhite"/>
+                        <color key="titleColor" red="0.71372549019999998" green="0.31764705879999999" blue="0.12549019610000001" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                     </state>
                     <connections>
                         <action selector="skipWithSender:" destination="-1" eventType="touchUpInside" id="iVo-c1-bYJ"/>
                     </connections>
                 </button>
+                <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Locate Me" textAlignment="center" lineBreakMode="tailTruncation" numberOfLines="2" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="amA-yx-rke">
+                    <rect key="frame" x="126.33333333333331" y="223.33333333333334" width="122.66666666666669" height="28.333333333333343"/>
+                    <fontDescription key="fontDescription" name="WorkSans-SemiBold" family="Work Sans" pointSize="24"/>
+                    <nil key="highlightedColor"/>
+                </label>
+                <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Step 2 of 2:" textAlignment="center" lineBreakMode="tailTruncation" numberOfLines="2" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="ZnV-KD-aIL">
+                    <rect key="frame" x="136.33333333333334" y="183.33333333333334" width="102.66666666666666" height="30"/>
+                    <constraints>
+                        <constraint firstAttribute="height" constant="30" id="ju0-Ut-g1B"/>
+                    </constraints>
+                    <fontDescription key="fontDescription" name="WorkSans-Medium" family="Work Sans" pointSize="18"/>
+                    <nil key="highlightedColor"/>
+                </label>
+                <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Arts and architecture news finds you based on where you are.  " textAlignment="center" lineBreakMode="tailTruncation" numberOfLines="6" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="RRk-QL-q0P">
+                    <rect key="frame" x="33" y="483.66666666666669" width="309" height="48.000000000000057"/>
+                    <fontDescription key="fontDescription" name="Lato-Regular" family="Lato" pointSize="20"/>
+                    <nil key="highlightedColor"/>
+                </label>
+                <imageView opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" insetsLayoutMarginsFromSafeArea="NO" image="map" translatesAutoresizingMaskIntoConstraints="NO" id="6Pu-Ho-1ri">
+                    <rect key="frame" x="26.666666666666657" y="285.66666666666669" width="322" height="163"/>
+                    <constraints>
+                        <constraint firstAttribute="height" constant="163" id="cE1-Wc-ERe"/>
+                    </constraints>
+                </imageView>
             </subviews>
             <color key="backgroundColor" red="1" green="1" blue="1" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
             <constraints>
-                <constraint firstItem="1No-Eb-hoY" firstAttribute="centerX" secondItem="fnl-2z-Ty3" secondAttribute="centerX" id="B4R-2w-ZpB"/>
-                <constraint firstItem="fnl-2z-Ty3" firstAttribute="trailing" secondItem="hUG-bU-8Yv" secondAttribute="trailing" constant="16" id="HQY-w7-z9b"/>
-                <constraint firstItem="YHF-1K-Vww" firstAttribute="centerY" secondItem="fnl-2z-Ty3" secondAttribute="centerY" constant="-30" id="Jz7-z5-u5S"/>
-                <constraint firstItem="fnl-2z-Ty3" firstAttribute="bottom" secondItem="hUG-bU-8Yv" secondAttribute="bottom" constant="15" id="Sj5-Ai-7fl"/>
-                <constraint firstItem="fnl-2z-Ty3" firstAttribute="trailing" secondItem="hUG-bU-8Yv" secondAttribute="trailing" constant="16" id="YIE-wf-nuC"/>
-                <constraint firstItem="qIi-4s-8BE" firstAttribute="top" secondItem="fnl-2z-Ty3" secondAttribute="top" id="jNS-ME-7ai"/>
-                <constraint firstItem="1No-Eb-hoY" firstAttribute="width" secondItem="YHF-1K-Vww" secondAttribute="width" id="jll-QR-yvN"/>
-                <constraint firstItem="YHF-1K-Vww" firstAttribute="centerX" secondItem="fnl-2z-Ty3" secondAttribute="centerX" id="pNO-TZ-FP7"/>
-                <constraint firstItem="YHF-1K-Vww" firstAttribute="top" secondItem="1No-Eb-hoY" secondAttribute="bottom" constant="30" id="qe3-I3-jGU"/>
-                <constraint firstItem="hUG-bU-8Yv" firstAttribute="leading" secondItem="fnl-2z-Ty3" secondAttribute="leading" constant="16" id="udl-RL-m8V"/>
-                <constraint firstItem="fnl-2z-Ty3" firstAttribute="trailing" secondItem="qIi-4s-8BE" secondAttribute="trailing" id="w53-BR-5IN"/>
-                <constraint firstItem="1No-Eb-hoY" firstAttribute="leading" secondItem="fnl-2z-Ty3" secondAttribute="leading" constant="20" id="yWn-bB-HDN"/>
+                <constraint firstItem="6Pu-Ho-1ri" firstAttribute="centerY" secondItem="fnl-2z-Ty3" secondAttribute="centerY" constant="-44" id="DaW-Vw-zRc"/>
+                <constraint firstItem="RRk-QL-q0P" firstAttribute="leading" secondItem="fnl-2z-Ty3" secondAttribute="leading" constant="33" id="F3I-5k-goS"/>
+                <constraint firstItem="6Pu-Ho-1ri" firstAttribute="top" secondItem="amA-yx-rke" secondAttribute="bottom" constant="34" id="Hdy-py-AjX"/>
+                <constraint firstItem="fnl-2z-Ty3" firstAttribute="bottom" secondItem="hUG-bU-8Yv" secondAttribute="bottom" constant="40" id="Sj5-Ai-7fl"/>
+                <constraint firstItem="amA-yx-rke" firstAttribute="centerX" secondItem="fnl-2z-Ty3" secondAttribute="centerX" id="TnZ-rj-zQg"/>
+                <constraint firstItem="RRk-QL-q0P" firstAttribute="top" secondItem="6Pu-Ho-1ri" secondAttribute="bottom" constant="35" id="bti-i6-VQd"/>
+                <constraint firstItem="ZnV-KD-aIL" firstAttribute="centerX" secondItem="fnl-2z-Ty3" secondAttribute="centerX" id="g0m-Qc-OUD"/>
+                <constraint firstItem="qIi-4s-8BE" firstAttribute="top" secondItem="fnl-2z-Ty3" secondAttribute="top" constant="22" id="jNS-ME-7ai"/>
+                <constraint firstItem="hUG-bU-8Yv" firstAttribute="centerX" secondItem="fnl-2z-Ty3" secondAttribute="centerX" id="lmO-Jw-AC5"/>
+                <constraint firstItem="fnl-2z-Ty3" firstAttribute="trailing" secondItem="qIi-4s-8BE" secondAttribute="trailing" constant="34" id="w53-BR-5IN"/>
+                <constraint firstItem="6Pu-Ho-1ri" firstAttribute="centerX" secondItem="fnl-2z-Ty3" secondAttribute="centerX" id="w5F-70-kzt"/>
+                <constraint firstItem="fnl-2z-Ty3" firstAttribute="trailing" secondItem="RRk-QL-q0P" secondAttribute="trailing" constant="33" id="wlE-c0-ueV"/>
+                <constraint firstItem="amA-yx-rke" firstAttribute="top" secondItem="ZnV-KD-aIL" secondAttribute="bottom" constant="10" id="x0R-EC-jQO"/>
             </constraints>
             <viewLayoutGuide key="safeArea" id="fnl-2z-Ty3"/>
-            <point key="canvasLocation" x="33.5" y="121.5"/>
+            <point key="canvasLocation" x="39" y="-78"/>
         </view>
     </objects>
+    <resources>
+        <image name="blue-button" width="36" height="60"/>
+        <image name="map" width="322" height="171"/>
+    </resources>
 </document>
