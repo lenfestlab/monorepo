@@ -1,14 +1,14 @@
 import UIKit
 
 class PermissionsViewController: UIViewController, LocationManagerDelegate {
-  
+
   let locationManager = LocationManager()
 
   @IBOutlet weak var doneButton: UIButton!
-  
+
   override func viewDidLoad() {
     super.viewDidLoad()
-    
+
     self.title = "Here"
     if let fontStyle = UIFont(name: "WorkSans-Medium", size: 18) {
       navigationController?.navigationBar.titleTextAttributes = [NSAttributedStringKey.font: fontStyle]
@@ -22,11 +22,11 @@ class PermissionsViewController: UIViewController, LocationManagerDelegate {
     doneButton.clipsToBounds = true
     // Do any additional setup after loading the view.
   }
-  
+
   func authorized(_ locationManager: LocationManager) {
     next()
   }
-  
+
   func notAuthorized(_ locationManager: LocationManager) {
     next()
   }
@@ -42,19 +42,19 @@ class PermissionsViewController: UIViewController, LocationManagerDelegate {
   }
 
   @IBAction func done(sender: UIButton) {
-    
+
     let alertController = UIAlertController(title: "Hi! Please choose \"Always Allow\"", message: "This lets us send you notifications while you walk around town.", preferredStyle: .alert)
-    
+
     let action1 = UIAlertAction(title: "Got it!", style: .default) { (action:UIAlertAction) in
       print("You've pressed default");
       self.locationManager.enableBasicLocationServices()
     }
-    
+
     alertController.addAction(action1)
     self.present(alertController, animated: true, completion: nil)
 
   }
-  
+
   override func didReceiveMemoryWarning() {
     super.didReceiveMemoryWarning()
     // Dispose of any resources that can be recreated.

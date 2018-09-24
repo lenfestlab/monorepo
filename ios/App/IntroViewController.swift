@@ -1,12 +1,12 @@
 import UIKit
 
 class IntroViewController: UIViewController {
-  
+
   @IBOutlet weak var doneButton: UIButton!
-  
+
   override func viewDidLoad() {
     super.viewDidLoad()
-    
+
     self.title = "Here"
     if let fontStyle = UIFont(name: "WorkSans-Medium", size: 18) {
       navigationController?.navigationBar.titleTextAttributes = [NSAttributedStringKey.font: fontStyle]
@@ -19,13 +19,13 @@ class IntroViewController: UIViewController {
     self.view.backgroundColor = UIColor.offBlue()
     // Do any additional setup after loading the view.
   }
-  
+
   @IBAction func done(sender: UIButton) {
     let application = UIApplication.shared
     let appDelegate = application.delegate as? AppDelegate
     appDelegate?.showPermissions()
   }
-  
+
   override func didReceiveMemoryWarning() {
     super.didReceiveMemoryWarning()
     // Dispose of any resources that can be recreated.
