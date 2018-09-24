@@ -296,7 +296,7 @@ class MapViewController: UIViewController, LocationManagerDelegate, UICollection
   }
 
   func selectIndex(_ indexPath:IndexPath) {
-    collectionViewFlowLayout.collectionView!.scrollToItem(at: indexPath, at: .centeredHorizontally, animated: false)
+    collectionViewFlowLayout.collectionView!.scrollToItem(at: indexPath, at: .centeredHorizontally, animated: true)
     let venue:Venue = self.venues[indexPath.row]
     let coordinate = venue.coordinate()
 

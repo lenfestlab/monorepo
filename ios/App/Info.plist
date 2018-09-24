@@ -62,6 +62,7 @@
 		<string>WorkSans-Medium.ttf</string>
 		<string>WorkSans-Regular.ttf</string>
 		<string>WorkSans-SemiBold.ttf</string>
+		<string>WorkSans-Bold.ttf</string>
 		<string>Lato-Italic.ttf</string>
 	</array>
 	<key>UISupportedInterfaceOrientations</key>

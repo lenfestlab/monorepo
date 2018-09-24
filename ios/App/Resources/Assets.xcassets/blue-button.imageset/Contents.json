@@ -2,14 +2,17 @@
   "images" : [
     {
       "resizing" : {
-        "mode" : "3-part-horizontal",
+        "mode" : "9-part",
         "center" : {
           "mode" : "tile",
-          "width" : 1
+          "width" : 1,
+          "height" : 1
         },
         "cap-insets" : {
-          "right" : 30,
-          "left" : 30
+          "bottom" : 30,
+          "top" : 29,
+          "right" : 9,
+          "left" : 8
         }
       },
       "idiom" : "universal",
@@ -18,14 +21,17 @@
     },
     {
       "resizing" : {
-        "mode" : "3-part-horizontal",
+        "mode" : "9-part",
         "center" : {
           "mode" : "tile",
-          "width" : 1
+          "width" : 1,
+          "height" : 1
         },
         "cap-insets" : {
-          "right" : 40,
-          "left" : 55
+          "bottom" : 60,
+          "top" : 59,
+          "right" : 18,
+          "left" : 16
         }
       },
       "idiom" : "universal",
@@ -34,14 +40,17 @@
     },
     {
       "resizing" : {
-        "mode" : "3-part-horizontal",
+        "mode" : "9-part",
         "center" : {
           "mode" : "tile",
-          "width" : 1
+          "width" : 1,
+          "height" : 1
         },
         "cap-insets" : {
-          "right" : 59,
-          "left" : 49
+          "bottom" : 90,
+          "top" : 89,
+          "right" : 27,
+          "left" : 24
         }
       },
       "idiom" : "universal",
