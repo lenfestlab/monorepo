@@ -1,14 +1,7 @@
-//
-//  ColorPallete.swift
-//  App
-//
-//  Created by Ajay Chainani on 9/20/18.
-//
-
 import UIKit
 
 extension UIColor {
-  
+
   class func beige() -> UIColor{
     return UIColor.init(red: 252/255, green: 247/255, blue: 239/255, alpha: 1)
   }
