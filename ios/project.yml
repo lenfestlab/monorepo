@@ -22,7 +22,7 @@ configs:
 
 settings:
   base:
-    APP_NAME: Inga App
+    APP_NAME: Here
     TARGETED_DEVICE_FAMILY: '1' # iPhone only
     # link system frameworks - https://git.io/fAZbC
     OTHER_LDFLAGS: "$(inherited) -framework Foundation"
