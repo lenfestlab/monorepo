@@ -5,6 +5,31 @@ targets:
       - carthage: Gloss
       - carthage: Alamofire
       - carthage: AlamofireImage
+
+      # Firebase - https://git.io/fAxBS
+      - carthage: Firebase
+        embed: false
+      - carthage: FirebaseAnalytics
+        embed: false
+      - carthage: FirebaseCore
+        embed: false
+      - carthage: FirebaseCoreDiagnostics
+        embed: false
+      - carthage: FirebaseCrash
+        embed: false
+      - carthage: FirebaseInstanceID
+        embed: false
+      - carthage: GoogleAppMeasurement
+        embed: false
+      - carthage: GoogleToolboxForMac
+        embed: false
+      - carthage: GoogleUtilities
+        embed: false
+      - carthage: nanopb
+        embed: false
+      - carthage: Protobuf
+        embed: false
+
   Tests:
     dependencies:
       - target: App

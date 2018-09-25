@@ -11,10 +11,13 @@ mint bootstrap
 # Carthage for iOS deps
 # NOTE: omit --verbose flag, causes build error:
 # https://github.com/Carthage/Carthage/issues/2249
-carthage bootstrap --platform ios --cache-builds
+carthage update --platform ios --cache-builds
 
 # Deployment tools (fastlane) use Ruby
 asdf install
 gem install bundler --conservative
 bundle install
 asdf reshim ruby
+
+# ignore local changes to Firebase config: https://stackoverflow.com/a/4633776
+git update-index --assume-unchanged ./App/Resources/GoogleService-Info.plist

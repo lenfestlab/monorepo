@@ -1,2 +1,4 @@
 brew "asdf"
+brew "carthage"
+brew "git-lfs"
 brew "mint"
