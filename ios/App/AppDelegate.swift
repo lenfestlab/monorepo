@@ -1,5 +1,7 @@
 import Reachability
 import UIKit
+import Firebase
+import FirebaseAnalytics
 
 typealias LaunchOptions = [UIApplicationLaunchOptionsKey: Any]?
 
@@ -18,6 +20,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
     }
     window!.makeKeyAndVisible()
 
+    FirebaseApp.configure()
     return true
   }
   
@@ -28,6 +31,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
   }
   
   func showPermissions() {
+    Analytics.logEvent("viewed_location_permission_pitch", parameters: [:])
     let permissionsController = PermissionsViewController()
     let navigationController = UINavigationController(rootViewController: permissionsController)
     window!.rootViewController = navigationController

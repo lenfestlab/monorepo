@@ -14,7 +14,7 @@ heroku local
 ## Replace local db w/ copy of remote database
 
 ```
-heroku local:run rails db:drop
+DISABLE_DATABASE_ENVIRONMENT_CHECK=1 heroku local:run -e .env.dev bundle exec rails db:drop
 heroku pg:pull DATABASE_URL lenfest_development -r prod
 ```
 

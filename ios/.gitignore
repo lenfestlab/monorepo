@@ -5,3 +5,7 @@
 *secrets.yml
 
 Carthage*
+
+# Firebase environment config files
+firebase*
+*GoogleService-Info.plist

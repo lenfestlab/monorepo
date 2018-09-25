@@ -25,7 +25,8 @@ settings:
     APP_NAME: Here
     TARGETED_DEVICE_FAMILY: '1' # iPhone only
     # link system frameworks - https://git.io/fAZbC
-    OTHER_LDFLAGS: "$(inherited) -framework Foundation"
+    # -ObjC required by crashlytics: https://git.io/fAQPW
+    OTHER_LDFLAGS: "$(inherited) -framework Foundation -ObjC"
   configs:
     # > Each key will be matched to any configs that contain the key and
     # > is case insensitive. So if you had Staging Debug and Staging Release,
@@ -66,6 +67,9 @@ targets:
         - test
         - prod
     dependencies: [] # carthage.yml
+    prebuildScripts:
+      - name: Copy Firebase config
+        path: scripts/copy_firebase_config.sh
     postbuildScripts:
       - name: "Bump build number"
         path: scripts/update_build_number.sh
