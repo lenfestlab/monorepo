@@ -6,17 +6,20 @@ targets:
       - carthage: Alamofire
       - carthage: AlamofireImage
 
+      # Crashlytics
+      - carthage: Fabric
+      - carthage: Crashlytics
+
       # Firebase - https://git.io/fAxBS
-      - carthage: Firebase
-        embed: false
+      # NOTE: omit base framework, per: https://git.io/fAjxM
       - carthage: FirebaseAnalytics
         embed: false
       - carthage: FirebaseCore
         embed: false
       - carthage: FirebaseCoreDiagnostics
         embed: false
-      - carthage: FirebaseCrash
-        embed: false
+      #- carthage: FirebaseCrash
+        #embed: false
       - carthage: FirebaseInstanceID
         embed: false
       - carthage: GoogleAppMeasurement

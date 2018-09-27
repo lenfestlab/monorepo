@@ -27,6 +27,15 @@ settings:
     # link system frameworks - https://git.io/fAZbC
     # -ObjC required by crashlytics: https://git.io/fAQPW
     OTHER_LDFLAGS: "$(inherited) -framework Foundation -ObjC"
+    # Override to ensure dSYm, enable forced crashes:
+    # See "Adjust your project's debug settings": https://goo.gl/ZRLPwG
+    # ...else build warning:
+    # > -1: DEBUG_INFORMATION_FORMAT should be set to dwarf-with-dsym for all
+    # > configurations. This could also be a timing issue, make sure the
+    # > Fabric run script build phase is the last build phase and no other
+    # > scripts have moved the dSYM from the location Xcode generated it.
+    # > Unable to process Here.app.dSYM at path...
+    DEBUG_INFORMATION_FORMAT: "dwarf-with-dsym"
   configs:
     # > Each key will be matched to any configs that contain the key and
     # > is case insensitive. So if you had Staging Debug and Staging Release,
@@ -73,6 +82,12 @@ targets:
     postbuildScripts:
       - name: "Bump build number"
         path: scripts/update_build_number.sh
+      # Firebase + Crashlytics - https://goo.gl/R55q6w
+      - name: "Run Crashlytics"
+        inputFiles:
+          - $(BUILT_PRODUCTS_DIR)/$(INFOPLIST_PATH)
+        script: |
+            ${SRCROOT}/Carthage/Build/iOS/Fabric.framework/run
 
   Tests:
     platform: iOS
