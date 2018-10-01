@@ -48,7 +48,9 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
 
   func showHomeScreen() {
     let mapController = MapViewController()
-    window!.rootViewController = mapController
+    let navigationController = UINavigationController(rootViewController: mapController)
+    navigationController.isNavigationBarHidden = true
+    window!.rootViewController = navigationController
   }
 
 }

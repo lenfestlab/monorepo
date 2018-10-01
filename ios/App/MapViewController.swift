@@ -16,7 +16,7 @@ class MapViewController: UIViewController, LocationManagerDelegate, UICollection
 
   let dataStore = VenueDataStore()
   let locationManager = LocationManager()
-  let notificationManager = NotificationManager()
+  let notificationManager = NotificationManager.shared
   var venues:[Venue] = []
   var currentVenue:Venue?
 
@@ -27,6 +27,11 @@ class MapViewController: UIViewController, LocationManagerDelegate, UICollection
   @IBOutlet weak var locationButton:UIButton!
   @IBOutlet weak var settingsButton:UIButton!
 
+  override func viewWillAppear(_ animated: Bool) {
+    super.viewWillAppear(animated)
+    navigationController?.isNavigationBarHidden = true
+  }
+  
   convenience init() {
     self.init(nibName:nil, bundle:nil)
 
@@ -35,9 +40,8 @@ class MapViewController: UIViewController, LocationManagerDelegate, UICollection
 
   @IBAction func settings(sender: UIButton) {
     let settingsController = SettingsViewController(style: .grouped)
-    let navigationController = UINavigationController(rootViewController: settingsController)
-    navigationController.modalTransitionStyle = .flipHorizontal
-    present(navigationController, animated: true)
+    navigationController?.isNavigationBarHidden = false
+    navigationController?.pushViewController(settingsController, animated: true)
   }
 
   override func viewDidLoad() {
@@ -47,12 +51,6 @@ class MapViewController: UIViewController, LocationManagerDelegate, UICollection
     locationButton.clipsToBounds = true
     locationButton.layer.borderColor = UIColor.lightGray.cgColor
     locationButton.layer.borderWidth = 1
-
-    settingsButton.layer.cornerRadius = 5.0
-    settingsButton.clipsToBounds = true
-    settingsButton.layer.borderColor = UIColor.lightGray.cgColor
-    settingsButton.layer.borderWidth = 1
-    settingsButton.isHidden = true
 
     let coordinate = CLLocationCoordinate2D(latitude: 39.9526, longitude: -75.1652)
     centerMap(coordinate)

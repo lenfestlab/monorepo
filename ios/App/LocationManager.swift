@@ -1,14 +1,16 @@
 import UIKit
 import CoreLocation
 
-protocol LocationManagerDelegate {
+protocol LocationManagerDelegate: class {
   func authorized(_ locationManager: LocationManager)
   func notAuthorized(_ locationManager: LocationManager)
 }
 
 class LocationManager: NSObject, CLLocationManagerDelegate {
 
-  var delegate: LocationManagerDelegate?
+  static let shared = LocationManager()
+
+  weak var delegate: LocationManagerDelegate?
   var locationManager:CLLocationManager?
   var authorized = false
 

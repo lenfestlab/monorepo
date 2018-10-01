@@ -40,10 +40,10 @@ class NotificationViewController: UIViewController, UNUserNotificationCenterDele
   func setupRemoteNotifications(_ application: UIApplication, completionHandler: @escaping (Bool, Error?) -> Swift.Void) {
     UNUserNotificationCenter.current().delegate = self
 
-    let authOptions: UNAuthorizationOptions = [.alert, .badge, .sound]
-    UNUserNotificationCenter.current().requestAuthorization(options: authOptions) { (success, error) in
+    NotificationManager.requestAuthorization() { (success, error) in
       completionHandler(success, error)
     }
+        
   }
 
     override func didReceiveMemoryWarning() {
