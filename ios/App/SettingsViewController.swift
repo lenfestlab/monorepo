@@ -1,101 +1,222 @@
 import UIKit
+import CoreLocation
+import UserNotifications
 
-class SettingsViewController: UITableViewController {
+class SettingsViewController: UITableViewController, SettingsToggleCellDelegate, LocationManagerDelegate {
+  
+  let locationManager = LocationManager()
+  private var notification: NSObjectProtocol?
+  
+  deinit {
+    // make sure to remove the observer when this view controller is dismissed/deallocated
+    
+    if let notification = notification {
+      NotificationCenter.default.removeObserver(notification)
+    }
+  }
 
+  func authorized(_ locationManager: LocationManager) {
+    self.loadSettings()
+    self.tableView.reloadData()
+  }
+  
+  func notAuthorized(_ locationManager: LocationManager) {
+    self.loadSettings()
+    self.tableView.reloadData()
+  }
+  
+  func switchTriggered(sender: UISwitch) {
+    switch sender.tag {
+    case 0:
+      print("Enable Notifications")
+      
+      if NotificationManager.shared.authorizationStatus == .notDetermined {
+        NotificationManager.requestAuthorization() { (success, error) in
+          self.loadSettings()
+          DispatchQueue.main.async {
+            self.tableView.reloadData()
+          }
+        }
+      } else if let url = URL(string: UIApplicationOpenSettingsURLString) {
+        // If general location settings are enabled then open location settings for the app
+        UIApplication.shared.open(url, options: [:], completionHandler: nil)
+      }
+
+    case 1:
+      print("Access Location")
+      if CLLocationManager.authorizationStatus() == .notDetermined {
+        locationManager.enableBasicLocationServices()
+      } else if let url = URL(string: UIApplicationOpenSettingsURLString) {
+        // If general location settings are enabled then open location settings for the app
+        UIApplication.shared.open(url, options: [:], completionHandler: nil)
+      }
+    default:
+      print("unknown switch")
+    }
+  }
+  
+  func loadSettings() {
+    
+    self.settings =
+      [
+        [
+          "title":"PERMISSIONS",
+          "rows":[
+            [
+              "identifier": "setting",
+              "title":"Enable Notifications",
+              "description":"This App uses push notifications to send you related articles based on where you are.",
+              "toggle": NotificationManager.shared.authorizationStatus == .authorized
+            ],
+            [
+              "identifier": "setting",
+              "title":"Access Location",
+              "description":"This App serves best with access to your location. Map and notification features uses your location to display and send content from your nearby locations.",
+              "toggle": CLLocationManager.authorizationStatus() == .authorizedAlways || CLLocationManager.authorizationStatus() == .authorizedWhenInUse
+            ]
+          ]
+        ],
+        [
+          "title":"GENERAL",
+          "rows":[
+            [
+              "identifier": "default",
+              "title":"About Us",
+              ],
+            [
+              "identifier": "default",
+              "title":"Privacy Policy",
+              ],
+            [
+              "identifier": "default",
+              "title":"Term of Service",
+              ],
+            [
+              "identifier": "button",
+              "title":"Leave Your Feedback",
+              ]
+          ]
+        ]
+        
+    ]
+
+  }
+  
+  override init(style: UITableViewStyle) {
+    super.init(style: style)
+
+  }
+  
+  required init?(coder aDecoder: NSCoder) {
+    fatalError("init(coder:) has not been implemented")
+  }
+  
+  var settings:[[String:Any?]] = [[:]]
+  
   override func viewDidLoad() {
     super.viewDidLoad()
+    
+    locationManager.delegate = self
+
+    loadSettings()
+    notification = NotificationCenter.default.addObserver(forName: .UIApplicationWillEnterForeground, object: nil, queue: .main) {
+      [unowned self] notification in
+      NotificationManager.shared.refreshAuthorizationStatus {
+        self.loadSettings()
+        DispatchQueue.main.async {
+          self.tableView.reloadData()
+        }
+      }
+    }
 
     self.title = "Settings"
-    self.navigationItem.leftBarButtonItem = UIBarButtonItem.init(title: "Done", style: .plain, target: self, action: #selector(dismissViewController))
-
-    // Uncomment the following line to preserve selection between presentations
-    // self.clearsSelectionOnViewWillAppear = false
-
+    if let fontStyle = UIFont(name: "WorkSans-Medium", size: 18) {
+      navigationController?.navigationBar.titleTextAttributes = [NSAttributedStringKey.font: fontStyle]
+    }
+    navigationController?.navigationBar.barTintColor =  UIColor.beige()
+    navigationController?.navigationBar.tintColor =  UIColor.offRed()
+    navigationController?.navigationBar.isTranslucent =  false
+    
+    self.tableView.backgroundColor = UIColor.white
+    
     tableView.rowHeight = UITableViewAutomaticDimension
     tableView.estimatedRowHeight = 125
+    
     let nib = UINib.init(nibName: "SettingsToggleCell", bundle: nil)
-    tableView.register(nib, forCellReuseIdentifier: "reuseIdentifier")
+    tableView.register(nib, forCellReuseIdentifier: "setting")
+    
+    let buttonNib = UINib.init(nibName: "ButtonCell", bundle: nil)
+    tableView.register(buttonNib, forCellReuseIdentifier: "button")
+    
+    tableView.register(UITableViewCell.self, forCellReuseIdentifier: "default")
+    
     tableView.allowsSelection = false
-
+    
     // Uncomment the following line to display an Edit button in the navigation bar for this view controller.
     // self.navigationItem.rightBarButtonItem = self.editButtonItem
   }
-
+  
   @objc func dismissViewController() {
     dismiss(animated: true, completion: nil)
   }
-
+  
   override func didReceiveMemoryWarning() {
     super.didReceiveMemoryWarning()
     // Dispose of any resources that can be recreated.
   }
-
+  
   // MARK: - Table view data source
-
+  
   override func numberOfSections(in tableView: UITableView) -> Int {
-    return 2
+    return settings.count
   }
-
+  
   override func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-    return 1
+    let section = settings[section]
+    let rows = section["rows"] as! [Any]
+    return rows.count
   }
-
-  override func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
-    let cell:SettingsToggleCell = tableView.dequeueReusableCell(withIdentifier: "reuseIdentifier", for: indexPath) as! SettingsToggleCell
-
-    if indexPath.section == 0 {
-      cell.titleLabel.text = "Enable Notifications"
-      cell.descriptionLabel.text = "This App uses push notifications to send you related articles based on where you are."
+  
+  override func tableView(_ tableView: UITableView, heightForHeaderInSection section: Int) -> CGFloat {
+    return CGFloat(55);
+  }
+  
+  override func tableView(_ tableView: UITableView, viewForHeaderInSection section: Int) -> UIView? {
+    let section = settings[section]
+    let title = section["title"] as! String
+    let label = UILabel(frame: .zero)
+    label.text = "    \(title)"
+    label.textColor = UIColor.gray
+    label.font =  UIFont(name: "WorkSans-Medium", size: 16)
+    return label
+  }
+  
+  override func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {    
+    let section = settings[indexPath.section]
+    let rows = section["rows"] as! [Any]
+    let row = rows[indexPath.row] as! [String:Any]
+    let identifier = row["identifier"] as! String
+    
+    if identifier == "setting" {
+      let cell:SettingsToggleCell = tableView.dequeueReusableCell(withIdentifier: identifier, for: indexPath) as! SettingsToggleCell
+      cell.titleLabel.text = row["title"] as? String
+      cell.descriptionLabel.text = row["description"] as? String
+      cell.permissionSwitch.isOn = row["toggle"] as? Bool == true
+      cell.permissionSwitch.tag = indexPath.row
+      cell.delegate = self
+      return cell
+    } else if identifier == "button" {
+      let cell:ButtonCell = tableView.dequeueReusableCell(withIdentifier: identifier, for: indexPath) as! ButtonCell
+      cell.button.titleLabel?.text = row["title"] as? String
+      return cell
     } else {
-      cell.titleLabel.text = "Access Location"
-      cell.descriptionLabel.text = "This App serves best with access to your location. Map and notification features uses your location to display and send content from your nearby locations."
+      let cell = tableView.dequeueReusableCell(withIdentifier: identifier, for: indexPath)
+      cell.textLabel?.text = row["title"] as? String
+      cell.textLabel?.font = UIFont(name: "WorkSans-Medium", size: 16)
+      cell.detailTextLabel?.text = row["description"] as? String
+      cell.accessoryView = UIImageView(image: UIImage(named: "disclosure-indicator"))
+      return cell
     }
-    return cell
   }
-
-  /*
-   // Override to support conditional editing of the table view.
-   override func tableView(_ tableView: UITableView, canEditRowAt indexPath: IndexPath) -> Bool {
-   // Return false if you do not want the specified item to be editable.
-   return true
-   }
-   */
-
-  /*
-   // Override to support editing the table view.
-   override func tableView(_ tableView: UITableView, commit editingStyle: UITableViewCellEditingStyle, forRowAt indexPath: IndexPath) {
-   if editingStyle == .delete {
-   // Delete the row from the data source
-   tableView.deleteRows(at: [indexPath], with: .fade)
-   } else if editingStyle == .insert {
-   // Create a new instance of the appropriate class, insert it into the array, and add a new row to the table view
-   }
-   }
-   */
-
-  /*
-   // Override to support rearranging the table view.
-   override func tableView(_ tableView: UITableView, moveRowAt fromIndexPath: IndexPath, to: IndexPath) {
-
-   }
-   */
-
-  /*
-   // Override to support conditional rearranging of the table view.
-   override func tableView(_ tableView: UITableView, canMoveRowAt indexPath: IndexPath) -> Bool {
-   // Return false if you do not want the item to be re-orderable.
-   return true
-   }
-   */
-
-  /*
-   // MARK: - Navigation
-
-   // In a storyboard-based application, you will often want to do a little preparation before navigation
-   override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
-   // Get the new view controller using segue.destinationViewController.
-   // Pass the selected object to the new view controller.
-   }
-   */
-
+    
 }

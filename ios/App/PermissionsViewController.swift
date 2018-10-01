@@ -2,7 +2,7 @@ import UIKit
 
 class PermissionsViewController: UIViewController, LocationManagerDelegate {
 
-  let locationManager = LocationManager()
+  var locationManager = LocationManager()
 
   @IBOutlet weak var doneButton: UIButton!
 
@@ -59,6 +59,6 @@ class PermissionsViewController: UIViewController, LocationManagerDelegate {
     super.didReceiveMemoryWarning()
     // Dispose of any resources that can be recreated.
   }
-
+  
 }
 

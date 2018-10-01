@@ -3,29 +3,43 @@ import CoreLocation
 import UserNotifications
 import Alamofire
 
-protocol NotificationManagerDelegate {
+protocol NotificationManagerDelegate: class {
   func recievedNotification(_ notificationManager: NotificationManager, response: UNNotificationResponse)
 }
 
 class NotificationManager: NSObject, UNUserNotificationCenterDelegate {
 
-  var delegate: NotificationManagerDelegate?
-  var notificationCenter:UNUserNotificationCenter?
+  static let shared = NotificationManager()
 
+  weak var delegate: NotificationManagerDelegate?
+  var notificationCenter:UNUserNotificationCenter?
+  var authorizationStatus:UNAuthorizationStatus = .notDetermined
+  
+  func refreshAuthorizationStatus(completionHandler: @escaping () -> Void) {
+    notificationCenter?.getNotificationSettings { (settings) in
+      print("Checking notification status")
+      self.authorizationStatus = settings.authorizationStatus
+      completionHandler()
+    }
+  }
+  
   override init() {
     super.init()
     notificationCenter = UNUserNotificationCenter.current()
     notificationCenter?.delegate = self
+    refreshAuthorizationStatus {}
   }
   
-  func requestAuthorization(){
-    notificationCenter?.requestAuthorization(options: [.alert, .badge, .sound]) { (granted, error) in
+  class func requestAuthorization(completionHandler: @escaping (Bool, Error?) -> Void){
+    let authOptions: UNAuthorizationOptions = [.alert, .badge, .sound]
+    UNUserNotificationCenter.current().requestAuthorization(options: authOptions) { (granted, error) in
       if granted {
         print("NotificationCenter Authorization Granted!")
       }
+      completionHandler(granted,error)
     }
   }
-  
+
   func triggerForVenue(venue: Venue, radius: CLLocationDistance) -> UNLocationNotificationTrigger {
     let center = venue.coordinate()
     let region = CLCircularRegion(center: center, radius: radius, identifier: venue.title!)
@@ -36,7 +50,6 @@ class NotificationManager: NSObject, UNUserNotificationCenterDelegate {
   }
 
   func getImage(_ url:String,handler: @escaping (UIImage?)->Void) {
-    print(url)
     Alamofire.request(url, method: .get).responseImage { response in
       if let data = response.result.value {
         handler(data)
