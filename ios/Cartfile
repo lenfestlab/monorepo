@@ -5,4 +5,7 @@ github "Alamofire/AlamofireImage" ~> 3.4
 
 # Firebase experimental carthage support: https://git.io/fAxBS
 binary "https://dl.google.com/dl/firebase/ios/carthage/FirebaseAnalyticsBinary.json"
-binary "https://dl.google.com/dl/firebase/ios/carthage/FirebaseCrashBinary.json"
+# Crashlytics: https://git.io/fAjag
+binary "https://building42.github.io/Specs/Carthage/iOS/Fabric.json"
+binary "https://building42.github.io/Specs/Carthage/iOS/Answers.json"
+binary "https://building42.github.io/Specs/Carthage/iOS/Crashlytics.json"
