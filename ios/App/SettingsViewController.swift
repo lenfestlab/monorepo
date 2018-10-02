@@ -1,6 +1,7 @@
 import UIKit
 import CoreLocation
 import UserNotifications
+import SafariServices
 
 class SettingsViewController: UITableViewController, SettingsToggleCellDelegate, LocationManagerDelegate {
   
@@ -14,7 +15,7 @@ class SettingsViewController: UITableViewController, SettingsToggleCellDelegate,
       NotificationCenter.default.removeObserver(notification)
     }
   }
-
+  
   func authorized(_ locationManager: LocationManager) {
     self.loadSettings()
     self.tableView.reloadData()
@@ -41,7 +42,7 @@ class SettingsViewController: UITableViewController, SettingsToggleCellDelegate,
         // If general location settings are enabled then open location settings for the app
         UIApplication.shared.open(url, options: [:], completionHandler: nil)
       }
-
+      
     case 1:
       print("Access Location")
       if CLLocationManager.authorizationStatus() == .notDetermined {
@@ -82,14 +83,17 @@ class SettingsViewController: UITableViewController, SettingsToggleCellDelegate,
             [
               "identifier": "default",
               "title":"About Us",
+              "path":"about",
               ],
             [
               "identifier": "default",
               "title":"Privacy Policy",
+              "path":"privacy",
               ],
             [
               "identifier": "default",
               "title":"Term of Service",
+              "path":"tos",
               ],
             [
               "identifier": "button",
@@ -99,12 +103,12 @@ class SettingsViewController: UITableViewController, SettingsToggleCellDelegate,
         ]
         
     ]
-
+    
   }
   
   override init(style: UITableViewStyle) {
     super.init(style: style)
-
+    
   }
   
   required init?(coder aDecoder: NSCoder) {
@@ -119,7 +123,7 @@ class SettingsViewController: UITableViewController, SettingsToggleCellDelegate,
     self.tableView.separatorColor = UIColor.init(red: 241/255, green: 221/255, blue: 187/255, alpha: 1)
     
     locationManager.delegate = self
-
+    
     loadSettings()
     notification = NotificationCenter.default.addObserver(forName: .UIApplicationWillEnterForeground, object: nil, queue: .main) {
       [unowned self] notification in
@@ -130,7 +134,7 @@ class SettingsViewController: UITableViewController, SettingsToggleCellDelegate,
         }
       }
     }
-
+    
     self.title = "Settings"
     if let fontStyle = UIFont(name: "WorkSans-Medium", size: 18) {
       navigationController?.navigationBar.titleTextAttributes = [NSAttributedStringKey.font: fontStyle]
@@ -151,8 +155,6 @@ class SettingsViewController: UITableViewController, SettingsToggleCellDelegate,
     tableView.register(buttonNib, forCellReuseIdentifier: "button")
     
     tableView.register(UITableViewCell.self, forCellReuseIdentifier: "default")
-    
-    tableView.allowsSelection = false
     
     // Uncomment the following line to display an Edit button in the navigation bar for this view controller.
     // self.navigationItem.rightBarButtonItem = self.editButtonItem
@@ -193,7 +195,7 @@ class SettingsViewController: UITableViewController, SettingsToggleCellDelegate,
     return label
   }
   
-  override func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {    
+  override func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
     let section = settings[indexPath.section]
     let rows = section["rows"] as! [Any]
     let row = rows[indexPath.row] as! [String:Any]
@@ -206,10 +208,12 @@ class SettingsViewController: UITableViewController, SettingsToggleCellDelegate,
       cell.permissionSwitch.isOn = row["toggle"] as? Bool == true
       cell.permissionSwitch.tag = indexPath.row
       cell.delegate = self
+      cell.selectionStyle = .none
       return cell
     } else if identifier == "button" {
       let cell:ButtonCell = tableView.dequeueReusableCell(withIdentifier: identifier, for: indexPath) as! ButtonCell
       cell.button.titleLabel?.text = row["title"] as? String
+      cell.selectionStyle = .none
       return cell
     } else {
       let cell = tableView.dequeueReusableCell(withIdentifier: identifier, for: indexPath)
@@ -220,5 +224,20 @@ class SettingsViewController: UITableViewController, SettingsToggleCellDelegate,
       return cell
     }
   }
-    
+  
+  override func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
+    let section = settings[indexPath.section]
+    let rows = section["rows"] as! [Any]
+    let row = rows[indexPath.row] as! [String:Any]
+    if let path = row["path"] as? String {
+      let bundle = Bundle(for: type(of: self))
+      let envName = bundle.object(forInfoDictionaryKey: "ENV_NAME") as! String
+      let prot = (envName == "prod") ? "https" : "http"
+      let apiHost = bundle.object(forInfoDictionaryKey: "API_HOST") as! String
+      let url = URL(string: "\(prot)://\(apiHost)/\(path)")
+      let svc = SFSafariViewController(url: url!)
+      self.present(svc, animated: true)
+    }
+  }
+  
 }
