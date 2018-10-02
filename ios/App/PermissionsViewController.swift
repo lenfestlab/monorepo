@@ -32,9 +32,10 @@ class PermissionsViewController: UIViewController, LocationManagerDelegate {
   }
 
   func next() {
+    UserDefaults.standard.set(true, forKey: "onboarding-completed")
     let application = UIApplication.shared
     let appDelegate = application.delegate as? AppDelegate
-    appDelegate?.showNotifications()
+    appDelegate?.showHomeScreen()
   }
 
   @IBAction func skip(sender: UIButton) {

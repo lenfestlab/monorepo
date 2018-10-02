@@ -23,7 +23,7 @@ class IntroViewController: UIViewController {
   @IBAction func done(sender: UIButton) {
     let application = UIApplication.shared
     let appDelegate = application.delegate as? AppDelegate
-    appDelegate?.showPermissions()
+    appDelegate?.showNotifications()
   }
 
   override func didReceiveMemoryWarning() {

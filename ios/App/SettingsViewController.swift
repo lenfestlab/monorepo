@@ -31,7 +31,7 @@ class SettingsViewController: UITableViewController, SettingsToggleCellDelegate,
       print("Enable Notifications")
       
       if NotificationManager.shared.authorizationStatus == .notDetermined {
-        NotificationManager.requestAuthorization() { (success, error) in
+        NotificationManager.shared.requestAuthorization() { (success, error) in
           self.loadSettings()
           DispatchQueue.main.async {
             self.tableView.reloadData()
@@ -72,7 +72,7 @@ class SettingsViewController: UITableViewController, SettingsToggleCellDelegate,
               "identifier": "setting",
               "title":"Access Location",
               "description":"This App serves best with access to your location. Map and notification features uses your location to display and send content from your nearby locations.",
-              "toggle": CLLocationManager.authorizationStatus() == .authorizedAlways || CLLocationManager.authorizationStatus() == .authorizedWhenInUse
+              "toggle": CLLocationManager.authorizationStatus() == .authorizedAlways
             ]
           ]
         ],
