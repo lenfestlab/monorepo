@@ -1,10 +1,3 @@
-//
-//  ButtonCell.swift
-//  App
-//
-//  Created by Ajay Chainani on 9/30/18.
-//
-
 import UIKit
 
 class ButtonCell: UITableViewCell {

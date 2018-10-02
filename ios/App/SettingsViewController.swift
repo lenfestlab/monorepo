@@ -116,6 +116,8 @@ class SettingsViewController: UITableViewController, SettingsToggleCellDelegate,
   override func viewDidLoad() {
     super.viewDidLoad()
     
+    self.tableView.separatorColor = UIColor.init(red: 241/255, green: 221/255, blue: 187/255, alpha: 1)
+    
     locationManager.delegate = self
 
     loadSettings()
