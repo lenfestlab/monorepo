@@ -22,8 +22,7 @@ class NotificationViewController: UIViewController, UNUserNotificationCenterDele
   @IBAction func skip(sender: UIButton) {
     let application = UIApplication.shared
     let appDelegate = application.delegate as? AppDelegate
-    appDelegate?.showHomeScreen()
-    UserDefaults.standard.set(true, forKey: "onboarding-completed")
+    appDelegate?.showPermissions()
   }
 
   @IBAction func done(sender: UIButton) {
@@ -31,8 +30,7 @@ class NotificationViewController: UIViewController, UNUserNotificationCenterDele
     let appDelegate = application.delegate as? AppDelegate
     self.setupRemoteNotifications(application, completionHandler: { (_, _) in
       DispatchQueue.main.async {
-        UserDefaults.standard.set(true, forKey: "onboarding-completed")
-        appDelegate?.showHomeScreen()
+        appDelegate?.showPermissions()
       }
     })
   }
@@ -40,7 +38,7 @@ class NotificationViewController: UIViewController, UNUserNotificationCenterDele
   func setupRemoteNotifications(_ application: UIApplication, completionHandler: @escaping (Bool, Error?) -> Swift.Void) {
     UNUserNotificationCenter.current().delegate = self
 
-    NotificationManager.requestAuthorization() { (success, error) in
+    NotificationManager.shared.requestAuthorization() { (success, error) in
       completionHandler(success, error)
     }
         

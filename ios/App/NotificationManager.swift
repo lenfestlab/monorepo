@@ -30,13 +30,15 @@ class NotificationManager: NSObject, UNUserNotificationCenterDelegate {
     refreshAuthorizationStatus {}
   }
   
-  class func requestAuthorization(completionHandler: @escaping (Bool, Error?) -> Void){
+  func requestAuthorization(completionHandler: @escaping (Bool, Error?) -> Void){
     let authOptions: UNAuthorizationOptions = [.alert, .badge, .sound]
     UNUserNotificationCenter.current().requestAuthorization(options: authOptions) { (granted, error) in
-      if granted {
-        print("NotificationCenter Authorization Granted!")
+      self.refreshAuthorizationStatus {
+        if granted {
+          print("NotificationCenter Authorization Granted!")
+        }
+        completionHandler(granted,error)
       }
-      completionHandler(granted,error)
     }
   }
 
