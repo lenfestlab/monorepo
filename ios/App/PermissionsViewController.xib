@@ -1,10 +1,11 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<document type="com.apple.InterfaceBuilder3.CocoaTouch.XIB" version="3.0" toolsVersion="14113" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" useSafeAreas="YES" colorMatched="YES">
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.XIB" version="3.0" toolsVersion="14313.18" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" useSafeAreas="YES" colorMatched="YES">
     <device id="retina5_9" orientation="portrait">
         <adaptation id="fullscreen"/>
     </device>
     <dependencies>
-        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="14088"/>
+        <deployment identifier="iOS"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="14283.14"/>
         <capability name="Safe area layout guides" minToolsVersion="9.0"/>
         <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
     </dependencies>
@@ -37,14 +38,16 @@
             <rect key="frame" x="0.0" y="0.0" width="375" height="812"/>
             <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
             <subviews>
-                <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="hUG-bU-8Yv">
+                <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="hUG-bU-8Yv">
                     <rect key="frame" x="48" y="678" width="279" height="60"/>
                     <constraints>
                         <constraint firstAttribute="height" constant="60" id="BZd-Ff-bLm"/>
                         <constraint firstAttribute="width" constant="279" id="bCh-ec-ayk"/>
                     </constraints>
                     <fontDescription key="fontDescription" name="WorkSans-Regular" family="Work Sans" pointSize="20"/>
-                    <state key="normal" title="Enable Location" backgroundImage="blue-button">
+                    <inset key="contentEdgeInsets" minX="0.0" minY="0.0" maxX="-9" maxY="0.0"/>
+                    <inset key="imageEdgeInsets" minX="0.0" minY="0.0" maxX="30" maxY="0.0"/>
+                    <state key="normal" title="Enable Location" image="location-button" backgroundImage="blue-button">
                         <color key="titleColor" white="0.0" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                     </state>
                     <connections>
@@ -111,7 +114,8 @@
         </view>
     </objects>
     <resources>
-        <image name="blue-button" width="36" height="60"/>
+        <image name="blue-button" width="17" height="60"/>
+        <image name="location-button" width="30" height="30"/>
         <image name="map" width="322" height="171"/>
     </resources>
 </document>
