@@ -2,19 +2,17 @@ require 'uri'
 
 class Post < ApplicationRecord
 
-  validates :lat, :lng, :title, :blurb, :url, :image_urls,
+  validates :lat, :lng, :title, :blurb, :url, :image_url,
     presence: true
-
-  rails_admin do
-    configure(:image_urls, :json) #  https://git.io/fARYJ
-  end
 
   def location
     { lat: lat, lng: lng }
   end
 
   def image_urls
-    read_attribute(:image_urls).map { |url| ensure_https(url) }
+    [
+      ensure_https(image_url)
+    ]
   end
 
   def url
@@ -26,10 +24,10 @@ class Post < ApplicationRecord
       only: [
         :title,
         :blurb,
-        :url,
-        :image_urls
+        :url
       ],
       methods: [
+        :image_urls,
         :location
       ]
     }.merge(options || {}))
