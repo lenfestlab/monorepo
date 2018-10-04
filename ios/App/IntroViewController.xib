@@ -47,17 +47,17 @@
                     </connections>
                 </button>
                 <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="We're happy you're here!" textAlignment="center" lineBreakMode="tailTruncation" numberOfLines="2" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="1No-Eb-hoY">
-                    <rect key="frame" x="20" y="69.5" width="335" height="84.5"/>
+                    <rect key="frame" x="20" y="70" width="335" height="84.5"/>
                     <fontDescription key="fontDescription" name="WorkSans-Medium" family="Work Sans" pointSize="36"/>
                     <nil key="highlightedColor"/>
                 </label>
                 <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="The Here app sends notifications about local arts and architecture news happening near you." textAlignment="center" lineBreakMode="tailTruncation" numberOfLines="6" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="YHF-1K-Vww">
-                    <rect key="frame" x="34" y="340" width="307" height="72"/>
+                    <rect key="frame" x="34" y="339.5" width="307" height="72"/>
                     <fontDescription key="fontDescription" name="Lato-Regular" family="Lato" pointSize="20"/>
                     <nil key="highlightedColor"/>
                 </label>
                 <imageView opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" insetsLayoutMarginsFromSafeArea="NO" image="intro-image" translatesAutoresizingMaskIntoConstraints="NO" id="LoI-jC-Rhf">
-                    <rect key="frame" x="157.5" y="196" width="60" height="101"/>
+                    <rect key="frame" x="116" y="196.5" width="143" height="100"/>
                 </imageView>
             </subviews>
             <color key="backgroundColor" red="1" green="1" blue="1" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
@@ -81,6 +81,6 @@
     </objects>
     <resources>
         <image name="intro-button" width="16" height="60"/>
-        <image name="intro-image" width="60" height="101"/>
+        <image name="intro-image" width="143" height="100"/>
     </resources>
 </document>

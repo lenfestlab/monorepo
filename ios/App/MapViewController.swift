@@ -99,14 +99,15 @@ class MapViewController: UIViewController, LocationManagerDelegate, UICollection
     }
 
     let reuseId = "pin"
-    let  pinView = MKPinAnnotationView(annotation: annotation, reuseIdentifier: reuseId)
+    
+    let  pinView = MKAnnotationView(annotation: annotation, reuseIdentifier: reuseId)
     pinView.animatesDrop = false
     pinView.tag = (annotation as! ABPointAnnotation).index
 
     if annotation.title == currentVenue?.title {
-      pinView.pinTintColor = .red
+      pinView.image = UIImage(named: "selected-pin")
     } else {
-      pinView.pinTintColor = .gray
+      pinView.image = UIImage(named: "pin")
     }
 
     pinView.accessibilityLabel = "hello"
@@ -157,13 +158,6 @@ class MapViewController: UIViewController, LocationManagerDelegate, UICollection
       self.reloadMap()
       self.collectionView.reloadData()
     }
-  }
-
-  func mapView(_ mapView: MKMapView, rendererFor overlay: MKOverlay) -> MKOverlayRenderer {
-    let circleView = MKCircleRenderer(overlay: overlay)
-    circleView.strokeColor = .clear
-    circleView.fillColor = UIColor.red.withAlphaComponent(0.1)
-    return circleView;
   }
 
   // MARK: - Location manager delegate
