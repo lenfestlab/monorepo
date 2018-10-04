@@ -101,7 +101,6 @@ class MapViewController: UIViewController, LocationManagerDelegate, UICollection
     let reuseId = "pin"
     
     let  pinView = MKAnnotationView(annotation: annotation, reuseIdentifier: reuseId)
-    pinView.animatesDrop = false
     pinView.tag = (annotation as! ABPointAnnotation).index
 
     if annotation.title == currentVenue?.title {

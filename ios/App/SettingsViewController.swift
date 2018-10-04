@@ -98,6 +98,7 @@ class SettingsViewController: UITableViewController, SettingsToggleCellDelegate,
             [
               "identifier": "button",
               "title":"Leave Your Feedback",
+              "action":"feedback"
               ]
           ]
         ]
@@ -158,10 +159,6 @@ class SettingsViewController: UITableViewController, SettingsToggleCellDelegate,
     
     // Uncomment the following line to display an Edit button in the navigation bar for this view controller.
     // self.navigationItem.rightBarButtonItem = self.editButtonItem
-  }
-  
-  @objc func dismissViewController() {
-    dismiss(animated: true, completion: nil)
   }
   
   override func didReceiveMemoryWarning() {
@@ -237,7 +234,30 @@ class SettingsViewController: UITableViewController, SettingsToggleCellDelegate,
       let url = URL(string: "\(prot)://\(apiHost)/\(path)")
       let svc = SFSafariViewController(url: url!)
       self.present(svc, animated: true)
+    } else if let action = row["action"] as? String {
+      if action == "feedback" {
+        sendFeedback(to: ["sarah.schmalbach@gmail.com"], subject: "Feedback for Here")
+      }
     }
+  }
+  
+}
+
+import MessageUI
+
+extension SettingsViewController: MFMailComposeViewControllerDelegate {
+  
+  func sendFeedback(to: [String], subject: String) {
+    let mailComposerVC = MFMailComposeViewController()
+    mailComposerVC.mailComposeDelegate = self
+    mailComposerVC.setToRecipients(to)
+    mailComposerVC.setSubject(subject)
+    mailComposerVC.setMessageBody("", isHTML: false)
+    present(mailComposerVC, animated: true, completion: nil)
+  }
+  
+  func mailComposeController(_ controller: MFMailComposeViewController, didFinishWith result: MFMailComposeResult, error: Error?) {
+    controller.dismiss(animated: true, completion: nil)
   }
   
 }
