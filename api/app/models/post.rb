@@ -2,11 +2,20 @@ require 'uri'
 
 class Post < ApplicationRecord
 
-  validates :lat, :lng, :title, :blurb, :url, :image_url,
+  has_many :places
+    # NOTE: omit inverse_of as rec'd by rails_admin docs, else complex form:
+    # https://screenshots.brent.is/1538661448.png
+    #inverse_of: :post
+
+  validates :title, :blurb, :url, :image_url,
     presence: true
 
+  accepts_nested_attributes_for :places,
+    allow_destroy: true
+
   def location
-    { lat: lat, lng: lng }
+    place = places.first
+    { lat: place.lat, lng: place.lng }
   end
 
   def image_urls

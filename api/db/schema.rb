@@ -10,20 +10,33 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2018_10_03_214204) do
+ActiveRecord::Schema.define(version: 2018_10_04_132258) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
 
+  create_table "places", force: :cascade do |t|
+    t.decimal "lat", precision: 10, scale: 6, null: false
+    t.decimal "lng", precision: 10, scale: 6, null: false
+    t.bigint "post_id"
+    t.string "title"
+    t.text "blurb"
+    t.text "image_url"
+    t.text "text"
+    t.integer "radius"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["post_id"], name: "index_places_on_post_id"
+  end
+
   create_table "posts", force: :cascade do |t|
-    t.decimal "lat", precision: 10, scale: 6
-    t.decimal "lng", precision: 10, scale: 6
     t.string "title"
     t.text "blurb"
     t.string "url", null: false
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.text "image_url"
+    t.integer "radius"
   end
 
 end
