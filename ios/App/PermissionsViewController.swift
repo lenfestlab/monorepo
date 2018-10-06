@@ -1,7 +1,8 @@
 import UIKit
+import CoreLocation
 
 class PermissionsViewController: UIViewController, LocationManagerDelegate {
-
+  
   var locationManager = LocationManager()
 
   @IBOutlet weak var doneButton: UIButton!
@@ -31,6 +32,9 @@ class PermissionsViewController: UIViewController, LocationManagerDelegate {
     next()
   }
 
+  func locationUpdated(_ locationManager: LocationManager, coordinate: CLLocationCoordinate2D) {
+  }
+  
   func next() {
     UserDefaults.standard.set(true, forKey: "onboarding-completed")
     let application = UIApplication.shared

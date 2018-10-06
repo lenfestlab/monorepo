@@ -1,10 +1,11 @@
 import UIKit
 import Alamofire
 import Gloss
+import CoreLocation
 
 class VenueDataStore: NSObject {
 
-  func retrieveVenues(completion: @escaping (Bool, [Venue], Int) -> Void) {
+  func retrieveVenues(latitude: CLLocationDegrees, longitude: CLLocationDegrees, completion: @escaping (Bool, [Venue], Int) -> Void) {
 
     let bundle = Bundle(for: type(of: self))
     let envName = bundle.object(forInfoDictionaryKey: "ENV_NAME") as! String
@@ -12,7 +13,8 @@ class VenueDataStore: NSObject {
     let apiHost = bundle.object(forInfoDictionaryKey: "API_HOST") as! String
     let url = "\(prot)://\(apiHost)/posts.json"
 
-    Alamofire.request(url).responseJSON { response in
+    let params = ["latitude": latitude, "longitude": longitude, "limit": 20]
+    Alamofire.request(url, parameters: params).responseJSON { response in
       let json = response.result.value as? JSON
       if (json == nil) {
         DispatchQueue.main.async { completion(false, [], 0) }
