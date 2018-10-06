@@ -66,8 +66,6 @@ class MapViewController: UIViewController, LocationManagerDelegate, UICollection
     self.navigationItem.rightBarButtonItem = UIBarButtonItem.init(title: "List View", style: .plain, target: self, action: nil)
 
     locationManager.delegate = self
-
-    fetchData()
   }
 
   func mapView(_ mapView: MKMapView, didUpdate userLocation: MKUserLocation) {
@@ -137,8 +135,9 @@ class MapViewController: UIViewController, LocationManagerDelegate, UICollection
     self.mapView.addAnnotations(annotations)
   }
 
-  func fetchData() {
-    dataStore.retrieveVenues { (success, data, count) in
+  func fetchData(latitude:CLLocationDegrees, longitude:CLLocationDegrees) {
+    
+    dataStore.retrieveVenues(latitude: latitude, longitude: longitude) { (success, data, count) in
       self.venues = data
 
       if self.venues.count > 0 {
@@ -148,7 +147,7 @@ class MapViewController: UIViewController, LocationManagerDelegate, UICollection
 
       let radius = CLLocationDistance(100)
       if self.locationManager.authorized {
-        self.notificationManager.trackVenues(venues: data, radius: radius)
+        VenueManager.shared.trackVenues(venues: data, radius: radius)
       }
       for venue in self.venues {
         let circle = MKCircle(center: venue.coordinate(), radius: radius)
@@ -161,8 +160,13 @@ class MapViewController: UIViewController, LocationManagerDelegate, UICollection
 
   // MARK: - Location manager delegate
 
+  func locationUpdated(_ locationManager: LocationManager, coordinate: CLLocationCoordinate2D) {
+    fetchData(latitude: coordinate.latitude, longitude: coordinate.longitude)
+  }
+  
   func authorized(_ locationManager: LocationManager) {
-    locationManager.startUpdatingLocation()
+    centerCurrentLocation()
+    locationManager.startMonitoringSignificantLocationChanges()
   }
 
   func notAuthorized(_ locationManager: LocationManager) {

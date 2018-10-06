@@ -4,6 +4,8 @@ import UserNotifications
 import SafariServices
 
 class SettingsViewController: UITableViewController, SettingsToggleCellDelegate, LocationManagerDelegate {
+  func locationUpdated(_ locationManager: LocationManager, coordinate: CLLocationCoordinate2D) {
+  }
   
   let locationManager = LocationManager()
   private var notification: NSObjectProtocol?
