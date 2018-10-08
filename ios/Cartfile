@@ -2,6 +2,7 @@ github "ashleymills/Reachability.swift"
 github "Alamofire/Alamofire" ~> 4.7
 github "hkellaway/Gloss"
 github "Alamofire/AlamofireImage" ~> 3.4
+github "konkab/AlamofireNetworkActivityLogger" ~> 2.3
 github "omaralbeik/UserDefaultsStore" ~> 1.0
 
 # Firebase experimental carthage support: https://git.io/fAxBS

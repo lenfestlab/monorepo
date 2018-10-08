@@ -13,8 +13,15 @@ class PlaceManager: NSObject {
     return placesStore.object(withId: identifier)
   }
   
+  func removeAllMonitoredRegions() {
+    for region in (LocationManager.shared.locationManager?.monitoredRegions)! {
+      LocationManager.shared.locationManager?.stopMonitoring(for: region)
+    }
+  }
   
   func trackPlaces(places: [Place], radius: CLLocationDistance) {
+    removeAllMonitoredRegions()
+    
     try! placesStore.save(places)
     
     let center = UNUserNotificationCenter.current()
@@ -35,7 +42,7 @@ class PlaceManager: NSObject {
   
   class func regionForPlace(place: Place, radius: CLLocationDistance) -> CLCircularRegion {
     let center = place.coordinate()
-    let region = CLCircularRegion(center: center, radius: radius, identifier: place.title!)
+    let region = CLCircularRegion(center: center, radius: radius, identifier: place.identifier)
     region.notifyOnEntry = true
     region.notifyOnExit = false
     return region
