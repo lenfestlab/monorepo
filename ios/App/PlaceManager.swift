@@ -42,24 +42,30 @@ class PlaceManager: NSObject {
   }
   
   class func contentForPlace(place: Place, completionHandler: @escaping (UNMutableNotificationContent) -> Void) {
-    let url = place.images![0]
-    getImage(url.absoluteString) { (image) in
-      
-      let content = UNMutableNotificationContent()
-      content.title = place.title!
-      content.body = place.blurb!
-      content.categoryIdentifier = "POST_ENTERED"
-      content.sound = UNNotificationSound.default()
-      content.userInfo = ["PLACE_URL": place.link?.absoluteString ?? "" ]
-      if image != nil {
-        let attachment = UNNotificationAttachment.create(identifier: "image", image: image!, options: [:])
-        if attachment != nil {
-          content.attachments = [attachment!]
-        }
+    if let url = place.imageURL {
+      getImage(url.absoluteString) { (image) in
+        contentForPlace(place: place, image: image, completionHandler: completionHandler)
       }
-      
-      completionHandler(content)
+    } else {
+      contentForPlace(place: place, image: nil, completionHandler: completionHandler)
     }
+  }
+  
+  class func contentForPlace(place: Place, image: UIImage?, completionHandler: @escaping (UNMutableNotificationContent) -> Void) {
+    let content = UNMutableNotificationContent()
+    content.title = place.title!
+    content.body = place.blurb!
+    content.categoryIdentifier = "POST_ENTERED"
+    content.sound = UNNotificationSound.default()
+    content.userInfo = ["PLACE_URL": place.post.link.absoluteString ]
+    if image != nil {
+      let attachment = UNNotificationAttachment.create(identifier: "image", image: image!, options: [:])
+      if attachment != nil {
+        content.attachments = [attachment!]
+      }
+    }
+    
+    completionHandler(content)
   }
   
   class func trackPlace(place: Place, radius: CLLocationDistance, center:UNUserNotificationCenter) {

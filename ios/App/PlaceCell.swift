@@ -39,22 +39,27 @@ class PlaceCell: UICollectionViewCell {
   }
   
   func setPlace(place: Place) {
+    let post = place.post
     let text = NSMutableAttributedString(string: "")
     
     let boldFont = UIFont(name: "WorkSans-Bold", size: 14)
     let regularFont = UIFont(name: "Lato-Regular", size: 14)
-    let title = self.attributedText(text: String(format: "%@\n\n", place.title!), font: boldFont!)
-    let blurb = self.attributedText(text: place.blurb!, font: regularFont!)
+    let title = self.attributedText(text: String(format: "%@\n\n", post.title!), font: boldFont!)
+    let blurb = self.attributedText(text: post.blurb!, font: regularFont!)
     text.append(title)
     text.append(blurb)
     self.textLabel.attributedText = text
     self.textLabel.lineBreakMode = .byTruncatingTail
-
-    if place.images?.count ?? 0 > 0 {
-      let url = place.images![0]
+    
+    if let url = post.imageURL {
       self.imageView.af_setImage(withURL: url)
     }
-    
+  }
+  
+  override func prepareForReuse() {
+    super.prepareForReuse()
+    self.textLabel.text = nil
+    self.imageView.image = nil
   }
   
 }
