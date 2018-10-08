@@ -11,7 +11,7 @@ class PlaceDataStore: NSObject {
     let envName = bundle.object(forInfoDictionaryKey: "ENV_NAME") as! String
     let prot = (envName == "prod") ? "https" : "http"
     let apiHost = bundle.object(forInfoDictionaryKey: "API_HOST") as! String
-    let url = "\(prot)://\(apiHost)/posts.json"
+    let url = "\(prot)://\(apiHost)/places.json"
 
     let params = ["latitude": latitude, "longitude": longitude, "limit": 20]
     Alamofire.request(url, parameters: params).responseJSON { response in

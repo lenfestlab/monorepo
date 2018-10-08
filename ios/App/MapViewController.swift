@@ -214,7 +214,7 @@ class MapViewController: UIViewController, LocationManagerDelegate, LocationMana
   func collectionView(_ collectionView: UICollectionView, shouldSelectItemAt indexPath: IndexPath) -> Bool {
     if indexOfMajorCell() == indexPath.row {
       let place:Place = self.places[indexPath.row]
-      openInSafari(url: place.link!)
+      openInSafari(url: place.post.link)
     } else {
       selectIndex(indexPath)
     }
