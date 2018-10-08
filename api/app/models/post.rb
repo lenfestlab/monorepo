@@ -33,13 +33,31 @@ class Post < ApplicationRecord
       only: [
         :title,
         :blurb,
-        :url
+        :url,
+        :image_url
       ],
       methods: [
-        :image_urls,
-        :location
+        :identifier,
+        :image_urls, # NOTE: deprecated
+        :location # NOTE: deprecafted
       ]
     }.merge(options || {}))
+  end
+
+  def self.default_radius
+    ENV["DEFAULT_RADIUS"] || 100
+  end
+
+  rails_admin do
+
+    configure :identifier do
+      hide
+    end
+
+    configure :radius do
+      help "Meters. Optional, if blank defaults to #{Post.default_radius}"
+    end
+
   end
 
 

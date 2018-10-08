@@ -10,10 +10,11 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2018_10_04_132258) do
+ActiveRecord::Schema.define(version: 2018_10_08_194546) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
+  enable_extension "uuid-ossp"
 
   create_table "places", force: :cascade do |t|
     t.decimal "lat", precision: 10, scale: 6, null: false
@@ -26,6 +27,8 @@ ActiveRecord::Schema.define(version: 2018_10_04_132258) do
     t.integer "radius"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.uuid "identifier", default: -> { "uuid_generate_v4()" }
+    t.index ["lat", "lng"], name: "index_places_on_lat_and_lng"
     t.index ["post_id"], name: "index_places_on_post_id"
   end
 
@@ -37,6 +40,7 @@ ActiveRecord::Schema.define(version: 2018_10_04_132258) do
     t.datetime "updated_at", null: false
     t.text "image_url"
     t.integer "radius"
+    t.uuid "identifier", default: -> { "uuid_generate_v4()" }
   end
 
 end
