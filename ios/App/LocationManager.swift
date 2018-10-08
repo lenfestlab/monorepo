@@ -101,9 +101,9 @@ class LocationManager: NSObject, CLLocationManagerDelegate {
         identifiers?.append(identifier)
         UserDefaults.standard.set(identifiers, forKey: "recieved-notification-identifiers")
         
-        let venue = VenueManager.shared.venueForIdentifier(identifier: identifier)
-        if venue != nil {
-          VenueManager.contentForVenue(venue: venue!) { (content) in
+        let place = PlaceManager.shared.placeForIdentifier(identifier: identifier)
+        if place != nil {
+          PlaceManager.contentForPlace(place: place!) { (content) in
             let request = UNNotificationRequest(identifier: UUID().uuidString, content: content, trigger: nil)
             let center = UNUserNotificationCenter.current()            
             center.add(request)

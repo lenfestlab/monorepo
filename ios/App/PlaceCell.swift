@@ -1,7 +1,7 @@
 import UIKit
 import AlamofireImage
 
-class VenueCell: UICollectionViewCell {
+class PlaceCell: UICollectionViewCell {
   
   @IBOutlet weak var textLabel: UILabel!
   @IBOutlet weak var imageView: UIImageView!
@@ -38,20 +38,20 @@ class VenueCell: UICollectionViewCell {
     return attributedString
   }
   
-  func setVenue(venue: Venue) {
+  func setPlace(place: Place) {
     let text = NSMutableAttributedString(string: "")
     
     let boldFont = UIFont(name: "WorkSans-Bold", size: 14)
     let regularFont = UIFont(name: "Lato-Regular", size: 14)
-    let title = self.attributedText(text: String(format: "%@\n\n", venue.title!), font: boldFont!)
-    let blurb = self.attributedText(text: venue.blurb!, font: regularFont!)
+    let title = self.attributedText(text: String(format: "%@\n\n", place.title!), font: boldFont!)
+    let blurb = self.attributedText(text: place.blurb!, font: regularFont!)
     text.append(title)
     text.append(blurb)
     self.textLabel.attributedText = text
     self.textLabel.lineBreakMode = .byTruncatingTail
 
-    if venue.images?.count ?? 0 > 0 {
-      let url = venue.images![0]
+    if place.images?.count ?? 0 > 0 {
+      let url = place.images![0]
       self.imageView.af_setImage(withURL: url)
     }
     

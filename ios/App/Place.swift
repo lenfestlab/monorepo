@@ -13,9 +13,9 @@ struct Location: JSONDecodable, Codable {
   }
 }
 
-struct Venue: JSONDecodable, Codable, Identifiable {
+struct Place: JSONDecodable, Codable, Identifiable {
   
-  static let idKey = \Venue.identifier
+  static let idKey = \Place.identifier
 
   var identifier: String
   let title: String?
