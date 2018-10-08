@@ -3,7 +3,7 @@ import MapKit
 import SafariServices
 import UserNotifications
 
-private let reuseIdentifier = "VenueCell"
+private let reuseIdentifier = "PlaceCell"
 fileprivate let sectionInsets = UIEdgeInsets(top: 0, left: 0, bottom: 0, right: 0)
 
 class ABPointAnnotation : MKPointAnnotation {
@@ -14,11 +14,11 @@ class MapViewController: UIViewController, LocationManagerDelegate, LocationMana
 
   let padding = CGFloat(45)
 
-  let dataStore = VenueDataStore()
+  let dataStore = PlaceDataStore()
   let locationManager = LocationManager()
   let notificationManager = NotificationManager.shared
-  var venues:[Venue] = []
-  var currentVenue:Venue?
+  var places:[Place] = []
+  var currentPlace:Place?
 
   var lastCoordinate:CLLocationCoordinate2D?
 
@@ -52,12 +52,9 @@ class MapViewController: UIViewController, LocationManagerDelegate, LocationMana
     locationButton.layer.borderColor = UIColor.lightGray.cgColor
     locationButton.layer.borderWidth = 1
 
-    let coordinate = CLLocationCoordinate2D(latitude: 39.9526, longitude: -75.1652)
-    centerMap(coordinate)
-
     // Register cell classes
 
-    let nib = UINib(nibName: "VenueCell", bundle:nil)
+    let nib = UINib(nibName: "PlaceCell", bundle:nil)
     self.collectionView.register(nib, forCellWithReuseIdentifier: reuseIdentifier)
 
     self.navigationController?.navigationBar.isTranslucent = false
@@ -67,6 +64,10 @@ class MapViewController: UIViewController, LocationManagerDelegate, LocationMana
 
     locationManager.delegate = self
     locationManager.authorizationDelegate = self
+    
+    let coordinate = CLLocationCoordinate2D(latitude: 39.9526, longitude: -75.1652)
+    centerMap(coordinate)
+    fetchData(latitude: coordinate.latitude, longitude: coordinate.longitude)
   }
 
   func mapView(_ mapView: MKMapView, didUpdate userLocation: MKUserLocation) {
@@ -102,7 +103,7 @@ class MapViewController: UIViewController, LocationManagerDelegate, LocationMana
     let  pinView = MKAnnotationView(annotation: annotation, reuseIdentifier: reuseId)
     pinView.tag = (annotation as! ABPointAnnotation).index
 
-    if annotation.title == currentVenue?.title {
+    if annotation.title == currentPlace?.title {
       pinView.image = UIImage(named: "selected-pin")
     } else {
       pinView.image = UIImage(named: "pin")
@@ -125,10 +126,10 @@ class MapViewController: UIViewController, LocationManagerDelegate, LocationMana
 
   func reloadMap() {
     var annotations:[MKAnnotation] = []
-    for (index, venue) in self.venues.enumerated() {
+    for (index, place) in self.places.enumerated() {
       let annotation = ABPointAnnotation()
-      annotation.coordinate = venue.coordinate()
-      annotation.title = venue.title
+      annotation.coordinate = place.coordinate()
+      annotation.title = place.title
       annotation.index = index
       annotations.append(annotation)
     }
@@ -138,20 +139,20 @@ class MapViewController: UIViewController, LocationManagerDelegate, LocationMana
 
   func fetchData(latitude:CLLocationDegrees, longitude:CLLocationDegrees) {
     
-    dataStore.retrieveVenues(latitude: latitude, longitude: longitude) { (success, data, count) in
-      self.venues = data
+    dataStore.retrievePlaces(latitude: latitude, longitude: longitude) { (success, data, count) in
+      self.places = data
 
-      if self.venues.count > 0 {
-        self.currentVenue = self.venues.first
-        self.centerMap((self.currentVenue?.coordinate())!)
+      if self.places.count > 0 {
+        self.currentPlace = self.places.first
+        self.centerMap((self.currentPlace?.coordinate())!)
       }
 
       let radius = CLLocationDistance(100)
       if self.locationManager.authorized {
-        VenueManager.shared.trackVenues(venues: data, radius: radius)
+        PlaceManager.shared.trackPlaces(places: data, radius: radius)
       }
-      for venue in self.venues {
-        let circle = MKCircle(center: venue.coordinate(), radius: radius)
+      for place in self.places {
+        let circle = MKCircle(center: place.coordinate(), radius: radius)
         self.mapView.add(circle)
       }
       self.reloadMap()
@@ -186,15 +187,15 @@ class MapViewController: UIViewController, LocationManagerDelegate, LocationMana
   }
 
   func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
-    return venues.count
+    return places.count
   }
 
   func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
-    let cell = collectionView.dequeueReusableCell(withReuseIdentifier: reuseIdentifier, for: indexPath) as! VenueCell
+    let cell = collectionView.dequeueReusableCell(withReuseIdentifier: reuseIdentifier, for: indexPath) as! PlaceCell
 
     // Configure the cell
-    let venue:Venue = self.venues[indexPath.row]
-    cell.setVenue(venue: venue)
+    let place:Place = self.places[indexPath.row]
+    cell.setPlace(place: place)
     return cell
   }
 
@@ -212,8 +213,8 @@ class MapViewController: UIViewController, LocationManagerDelegate, LocationMana
 
   func collectionView(_ collectionView: UICollectionView, shouldSelectItemAt indexPath: IndexPath) -> Bool {
     if indexOfMajorCell() == indexPath.row {
-      let venue:Venue = self.venues[indexPath.row]
-      openInSafari(url: venue.link!)
+      let place:Place = self.places[indexPath.row]
+      openInSafari(url: place.link!)
     } else {
       selectIndex(indexPath)
     }
@@ -279,10 +280,10 @@ class MapViewController: UIViewController, LocationManagerDelegate, LocationMana
         scrollView.layoutIfNeeded()
       }, completion: nil)
 
-      let venue:Venue = self.venues[snapToIndex]
-      self.currentVenue = venue
+      let place:Place = self.places[snapToIndex]
+      self.currentPlace = place
       self.reloadMap()
-      self.centerMap(venue.coordinate())
+      self.centerMap(place.coordinate())
 
     } else {
       // This is a much better way to scroll to a cell:
@@ -293,10 +294,10 @@ class MapViewController: UIViewController, LocationManagerDelegate, LocationMana
 
   func selectIndex(_ indexPath:IndexPath) {
     collectionViewFlowLayout.collectionView!.scrollToItem(at: indexPath, at: .centeredHorizontally, animated: true)
-    let venue:Venue = self.venues[indexPath.row]
-    let coordinate = venue.coordinate()
+    let place:Place = self.places[indexPath.row]
+    let coordinate = place.coordinate()
 
-    self.currentVenue = venue
+    self.currentPlace = place
 
     self.reloadMap()
 
@@ -311,7 +312,7 @@ class MapViewController: UIViewController, LocationManagerDelegate, LocationMana
 
   func recievedNotification(_ notificationManager: NotificationManager, response: UNNotificationResponse) {
     if response.notification.request.content.categoryIdentifier == "POST_ENTERED" {
-      let urlString = response.notification.request.content.userInfo["VENUE_URL"]
+      let urlString = response.notification.request.content.userInfo["PLACE_URL"]
       let url = URL(string: urlString as! String)
       if response.actionIdentifier == "CHECKIN_ACTION" {
         // Check-in

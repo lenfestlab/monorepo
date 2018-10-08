@@ -3,9 +3,9 @@ import Alamofire
 import Gloss
 import CoreLocation
 
-class VenueDataStore: NSObject {
+class PlaceDataStore: NSObject {
 
-  func retrieveVenues(latitude: CLLocationDegrees, longitude: CLLocationDegrees, completion: @escaping (Bool, [Venue], Int) -> Void) {
+  func retrievePlaces(latitude: CLLocationDegrees, longitude: CLLocationDegrees, completion: @escaping (Bool, [Place], Int) -> Void) {
 
     let bundle = Bundle(for: type(of: self))
     let envName = bundle.object(forInfoDictionaryKey: "ENV_NAME") as! String
@@ -25,12 +25,12 @@ class VenueDataStore: NSObject {
       if (meta != nil) {
         count = meta!["count"] as! Int
       }
-      let venuesJSON = json!["data"] as? [JSON]
-      if (venuesJSON == nil) {
+      let placesJSON = json!["data"] as? [JSON]
+      if (placesJSON == nil) {
         DispatchQueue.main.async { completion(false, [], 0) }
         return
       }
-      guard let venues = [Venue].from(jsonArray: venuesJSON!) else {
+      guard let places = [Place].from(jsonArray: placesJSON!) else {
         print("Error")
         DispatchQueue.main.async {
           completion(false, [], 0)
@@ -38,7 +38,7 @@ class VenueDataStore: NSObject {
         return
       }
       DispatchQueue.main.async {
-        completion(true, venues, count)
+        completion(true, places, count)
       }
     }
   }
