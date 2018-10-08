@@ -5,6 +5,7 @@ targets:
       - carthage: Gloss
       - carthage: Alamofire
       - carthage: AlamofireImage
+      - carthage: UserDefaultsStore
 
       # Crashlytics
       - carthage: Fabric
