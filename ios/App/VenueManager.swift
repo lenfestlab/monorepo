@@ -1,31 +1,23 @@
-//
-//  VenueManager.swift
-//  App
-//
-//  Created by Ajay Chainani on 10/6/18.
-//
-
 import UIKit
 import UserNotifications
 import CoreLocation
 import Alamofire
+import UserDefaultsStore
 
 class VenueManager: NSObject {
 
   static let shared = VenueManager()
   var data:[String: Venue] = [:]
-  
+  let venuesStore = UserDefaultsStore<Venue>(uniqueIdentifier: "venues")!
+
   func venueForIdentifier(identifier: String) -> Venue? {
-    return data[identifier]
+    return venuesStore.object(withId: identifier)
   }
   
   
   func trackVenues(venues: [Venue], radius: CLLocationDistance) {
     
-    for venue in venues {
-      let identifier = venue.title
-      data[identifier ?? ""] = venue
-    }
+    try! venuesStore.save(venues)
     
     let center = UNUserNotificationCenter.current()
 //    center.removeAllPendingNotificationRequests() // deletes pending scheduled notifications, there is a schedule limit qty
