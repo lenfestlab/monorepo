@@ -3,9 +3,12 @@ import CoreLocation
 import UserNotifications
 
 protocol LocationManagerDelegate: class {
+  func locationUpdated(_ locationManager: LocationManager, coordinate: CLLocationCoordinate2D)
+}
+
+protocol LocationManagerAuthorizationDelegate: class {
   func authorized(_ locationManager: LocationManager)
   func notAuthorized(_ locationManager: LocationManager)
-  func locationUpdated(_ locationManager: LocationManager, coordinate: CLLocationCoordinate2D)
 }
 
 class LocationManager: NSObject, CLLocationManagerDelegate {
@@ -13,6 +16,7 @@ class LocationManager: NSObject, CLLocationManagerDelegate {
   static let shared = LocationManager()
 
   weak var delegate: LocationManagerDelegate?
+  weak var authorizationDelegate: LocationManagerAuthorizationDelegate?
   var locationManager:CLLocationManager?
   var authorized = false
 
@@ -47,12 +51,12 @@ class LocationManager: NSObject, CLLocationManagerDelegate {
       
     case .restricted, .denied:
       authorized = false
-      delegate?.notAuthorized(self)
+      authorizationDelegate?.notAuthorized(self)
       break
       
     case .authorizedWhenInUse, .authorizedAlways:
       authorized = true
-      delegate?.authorized(self)
+      authorizationDelegate?.authorized(self)
       break
     }
   }
