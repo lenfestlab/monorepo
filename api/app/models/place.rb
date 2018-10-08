@@ -11,9 +11,9 @@ class Place < ApplicationRecord
     presence: true
 
   reverse_geocoded_by :lat, :lng
-  # NOTE: AR.includes, .count incompat w/ geocoder:
+  # NOTE: AR.includes incompat w/ geocoder:
   # https://git.io/fxZrb
-  scope :preloaded_near, -> (coordinates, limit) {
+  scope :preloaded_near, -> (coordinates) {
     near(coordinates)
       .joins(:post)
       .preload(:post)
