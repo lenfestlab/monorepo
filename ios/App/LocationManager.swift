@@ -98,11 +98,11 @@ class LocationManager: NSObject, CLLocationManagerDelegate {
       if identifiers!.contains(identifier)  {
         print(identifiers!)
       } else {
-        identifiers?.append(identifier)
-        UserDefaults.standard.set(identifiers, forKey: "recieved-notification-identifiers")
-        
         let place = PlaceManager.shared.placeForIdentifier(identifier: identifier)
         if place != nil {
+          identifiers?.append(identifier)
+          UserDefaults.standard.set(identifiers, forKey: "recieved-notification-identifiers")
+
           PlaceManager.contentForPlace(place: place!) { (content) in
             let request = UNNotificationRequest(identifier: UUID().uuidString, content: content, trigger: nil)
             let center = UNUserNotificationCenter.current()            

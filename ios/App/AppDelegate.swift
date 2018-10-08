@@ -4,6 +4,7 @@ import Firebase
 import FirebaseAnalytics
 import Crashlytics
 import Fabric
+import AlamofireNetworkActivityLogger
 
 typealias LaunchOptions = [UIApplicationLaunchOptionsKey: Any]?
 
@@ -13,6 +14,8 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
   var window: UIWindow?
 
   func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: LaunchOptions) -> Bool {
+    NetworkActivityLogger.shared.startLogging()
+    
     window = UIWindow(frame: UIScreen.main.bounds)
     let onboardingCompleted = UserDefaults.standard.bool(forKey: "onboarding-completed")
     if onboardingCompleted {

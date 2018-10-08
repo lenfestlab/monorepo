@@ -3,9 +3,12 @@ targets:
     dependencies:
       - carthage: Reachability
       - carthage: Gloss
+      - carthage: UserDefaultsStore
+      
+      # Alamofire
       - carthage: Alamofire
       - carthage: AlamofireImage
-      - carthage: UserDefaultsStore
+      - carthage: AlamofireNetworkActivityLogger
 
       # Crashlytics
       - carthage: Fabric
