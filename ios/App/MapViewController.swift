@@ -10,7 +10,7 @@ class ABPointAnnotation : MKPointAnnotation {
   var index: Int = 0
 }
 
-class MapViewController: UIViewController, LocationManagerDelegate, UICollectionViewDelegate, UICollectionViewDataSource, MKMapViewDelegate, NotificationManagerDelegate {
+class MapViewController: UIViewController, LocationManagerDelegate, LocationManagerAuthorizationDelegate, UICollectionViewDelegate, UICollectionViewDataSource, MKMapViewDelegate, NotificationManagerDelegate {
 
   let padding = CGFloat(45)
 
@@ -66,6 +66,7 @@ class MapViewController: UIViewController, LocationManagerDelegate, UICollection
     self.navigationItem.rightBarButtonItem = UIBarButtonItem.init(title: "List View", style: .plain, target: self, action: nil)
 
     locationManager.delegate = self
+    locationManager.authorizationDelegate = self
   }
 
   func mapView(_ mapView: MKMapView, didUpdate userLocation: MKUserLocation) {

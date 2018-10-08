@@ -1,7 +1,7 @@
 import UIKit
 import CoreLocation
 
-class PermissionsViewController: UIViewController, LocationManagerDelegate {
+class PermissionsViewController: UIViewController, LocationManagerAuthorizationDelegate {
   
   var locationManager = LocationManager()
 
@@ -17,7 +17,7 @@ class PermissionsViewController: UIViewController, LocationManagerDelegate {
     navigationController?.navigationBar.barTintColor =  UIColor.beige()
     navigationController?.navigationBar.isTranslucent =  false
 
-    locationManager.delegate = self
+    locationManager.authorizationDelegate = self
 
     doneButton.layer.cornerRadius = 5.0
     doneButton.clipsToBounds = true
@@ -30,9 +30,6 @@ class PermissionsViewController: UIViewController, LocationManagerDelegate {
 
   func notAuthorized(_ locationManager: LocationManager) {
     next()
-  }
-
-  func locationUpdated(_ locationManager: LocationManager, coordinate: CLLocationCoordinate2D) {
   }
   
   func next() {

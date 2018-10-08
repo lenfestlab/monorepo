@@ -3,9 +3,7 @@ import CoreLocation
 import UserNotifications
 import SafariServices
 
-class SettingsViewController: UITableViewController, SettingsToggleCellDelegate, LocationManagerDelegate {
-  func locationUpdated(_ locationManager: LocationManager, coordinate: CLLocationCoordinate2D) {
-  }
+class SettingsViewController: UITableViewController, SettingsToggleCellDelegate, LocationManagerAuthorizationDelegate {
   
   let locationManager = LocationManager()
   private var notification: NSObjectProtocol?
@@ -125,7 +123,7 @@ class SettingsViewController: UITableViewController, SettingsToggleCellDelegate,
     
     self.tableView.separatorColor = UIColor.init(red: 241/255, green: 221/255, blue: 187/255, alpha: 1)
     
-    locationManager.delegate = self
+    locationManager.authorizationDelegate = self
     
     loadSettings()
     notification = NotificationCenter.default.addObserver(forName: .UIApplicationWillEnterForeground, object: nil, queue: .main) {
