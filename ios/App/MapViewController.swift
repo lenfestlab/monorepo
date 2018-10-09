@@ -306,7 +306,7 @@ class MapViewController: UIViewController, LocationManagerDelegate, UICollection
 
   func recievedNotification(_ notificationManager: NotificationManager, response: UNNotificationResponse) {
     if response.notification.request.content.categoryIdentifier == "POST_ENTERED" {
-      let urlString = response.notification.request.content.userInfo["VENUE_URL"]
+      let urlString = response.notification.request.content.userInfo["url"]
       let url = URL(string: urlString as! String)
       if response.actionIdentifier == "CHECKIN_ACTION" {
         // Check-in
