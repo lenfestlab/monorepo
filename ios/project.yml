@@ -13,12 +13,14 @@ options:
 configs:
   dev-debug: debug
   test-debug: debug
+  stag-debug: debug
   prod-debug: debug
   prod-release: release
   # NOTE: configs required for all permutations of configVariants, else:
   # https://gist.github.com/brenthargrave/ce351b24aa3fdee31d127f1c95b7470a
   x-dev-release: release
   x-test-release: release
+  x-stag-release: release
 
 settings:
   base:
@@ -49,6 +51,10 @@ settings:
       ENV_NAME: dev
       APP_NAME_SUFFIX: "-dev"
       BUNDLE_ID_SUFFIX: .dev
+    stag:
+      ENV_NAME: stag
+      APP_NAME_SUFFIX: "-stag"
+      BUNDLE_ID_SUFFIX: .stag
     prod:
       ENV_NAME: prod
       BUNDLE_ID_SUFFIX: .prod
@@ -74,6 +80,7 @@ targets:
       configVariants:
         - dev
         - test
+        - stag
         - prod
     dependencies: [] # carthage.yml
     prebuildScripts:

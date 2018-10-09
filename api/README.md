@@ -22,6 +22,8 @@ heroku pg:pull DATABASE_URL lenfest_development -r prod
 
 ```
 heroku git:remote -r prod -a lenfest-benji-production
-
 (cd ..; git push prod --force `git subtree split --prefix api HEAD`:refs/heads/master)
+
+heroku git:remote -r stag -a lenfest-benji-staging
+(cd ..; git push stag --force `git subtree split --prefix api HEAD`:refs/heads/master)
 ```

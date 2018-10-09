@@ -9,7 +9,7 @@ class PlaceDataStore: NSObject {
 
     let bundle = Bundle(for: type(of: self))
     let envName = bundle.object(forInfoDictionaryKey: "ENV_NAME") as! String
-    let prot = (envName == "prod") ? "https" : "http"
+    let prot = (["prod", "stag"].contains(envName)) ? "https" : "http"
     let apiHost = bundle.object(forInfoDictionaryKey: "API_HOST") as! String
     let url = "\(prot)://\(apiHost)/places.json"
 
