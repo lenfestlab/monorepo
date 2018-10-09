@@ -84,7 +84,7 @@ class MapViewController: UIViewController, LocationManagerDelegate, LocationMana
       locationButton.isSelected = showsUserLocation
       self.mapView.showsUserLocation = showsUserLocation
 
-      if lastCoordinate != nil {
+      if showsUserLocation && lastCoordinate != nil {
         mapView.setCenter(lastCoordinate!, animated: true)
       }
     } else {
