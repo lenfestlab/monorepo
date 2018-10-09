@@ -20,6 +20,7 @@ class PlaceManager: NSObject {
   }
   
   func trackPlaces(places: [Place], radius: CLLocationDistance) {
+    
     removeAllMonitoredRegions()
     
     try! placesStore.save(places)
@@ -64,7 +65,7 @@ class PlaceManager: NSObject {
     content.body = place.blurb!
     content.categoryIdentifier = "POST_ENTERED"
     content.sound = UNNotificationSound.default()
-    content.userInfo = ["PLACE_URL": place.post.link.absoluteString ]
+    content.userInfo = ["PLACE_URL": place.post.link.absoluteString, "identifier": place.identifier ]
     if image != nil {
       let attachment = UNNotificationAttachment.create(identifier: "image", image: image!, options: [:])
       if attachment != nil {

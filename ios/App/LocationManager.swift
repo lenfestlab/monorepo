@@ -79,6 +79,7 @@ class LocationManager: NSObject, CLLocationManagerDelegate {
 
   func locationManager(_ manager: CLLocationManager, monitoringDidFailFor region: CLRegion?, withError error: Error) {
     print("Monitoring failed for region with identifier: \(region!.identifier)")
+    print(error)
   }
   
   func locationManager(_ manager: CLLocationManager, didFailWithError error: Error) {
@@ -87,27 +88,20 @@ class LocationManager: NSObject, CLLocationManagerDelegate {
 
   func locationManager(_ manager: CLLocationManager, didEnterRegion region: CLRegion) {
     if region is CLCircularRegion {
-      
       let identifier = region.identifier
-      
-      var identifiers = UserDefaults.standard.array(forKey: "recieved-notification-identifiers") as? [String]
-      if identifiers == nil {
-        identifiers = []
-      }
+      var identifiers = NotificationManager.identifiers()
+      let sendAgainAt = identifiers[identifier]
+      let now = Date(timeIntervalSinceNow: 0)
+      if sendAgainAt != nil && sendAgainAt?.compare(now) == ComparisonResult.orderedDescending  {
+        print(identifiers)
+      } else if let place = PlaceManager.shared.placeForIdentifier(identifier: identifier) {
+          identifiers[identifier] = Date(timeIntervalSinceNow: 60 * 60 * 24 * 10000)
+          NotificationManager.saveIdentifiers(identifiers)
 
-      if identifiers!.contains(identifier)  {
-        print(identifiers!)
-      } else {
-        let place = PlaceManager.shared.placeForIdentifier(identifier: identifier)
-        if place != nil {
-          identifiers?.append(identifier)
-          UserDefaults.standard.set(identifiers, forKey: "recieved-notification-identifiers")
-
-          PlaceManager.contentForPlace(place: place!) { (content) in
+          PlaceManager.contentForPlace(place: place) { (content) in
             let request = UNNotificationRequest(identifier: UUID().uuidString, content: content, trigger: nil)
             let center = UNUserNotificationCenter.current()            
             center.add(request)
-          }
         }
       }
       
