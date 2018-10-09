@@ -11,10 +11,15 @@ class Place < ApplicationRecord
     presence: true
 
   reverse_geocoded_by :lat, :lng
+
+  def self.default_search_radius # km
+    ENV["DEFAULT_SEARCH_RADIUS"] || 200
+  end
+
   # NOTE: AR.includes incompat w/ geocoder:
   # https://git.io/fxZrb
   scope :preloaded_near, -> (coordinates) {
-    near(coordinates)
+    near(coordinates, Place.default_search_radius, units: :km)
       .joins(:post)
       .preload(:post)
   }
