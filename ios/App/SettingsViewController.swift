@@ -58,11 +58,37 @@ class SettingsViewController: UITableViewController, SettingsToggleCellDelegate,
   
   func loadSettings() {
     
+    var rows = [
+      [
+        "identifier": "default",
+        "title":"About Us",
+        "path":"about",
+        ],
+      [
+        "identifier": "default",
+        "title":"Privacy Policy",
+        "path":"privacy",
+        ],
+      [
+        "identifier": "default",
+        "title":"Term of Service",
+        "path":"tos",
+        ]
+    ]
+    
+    if MFMailComposeViewController.canSendMail() {
+      rows.append([
+        "identifier": "button",
+        "title":"Leave Your Feedback",
+        "action":"feedback"
+        ])
+    }
+    
     self.settings =
       [
         [
-          "title":"PERMISSIONS",
-          "rows":[
+          "title": "PERMISSIONS",
+          "rows": [
             [
               "identifier": "setting",
               "title":"Enable Notifications",
@@ -78,29 +104,8 @@ class SettingsViewController: UITableViewController, SettingsToggleCellDelegate,
           ]
         ],
         [
-          "title":"GENERAL",
-          "rows":[
-            [
-              "identifier": "default",
-              "title":"About Us",
-              "path":"about",
-              ],
-            [
-              "identifier": "default",
-              "title":"Privacy Policy",
-              "path":"privacy",
-              ],
-            [
-              "identifier": "default",
-              "title":"Term of Service",
-              "path":"tos",
-              ],
-            [
-              "identifier": "button",
-              "title":"Leave Your Feedback",
-              "action":"feedback"
-              ]
-          ]
+          "title": "GENERAL",
+          "rows": rows
         ]
         
     ]
