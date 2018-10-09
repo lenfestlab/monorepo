@@ -4,7 +4,7 @@ targets:
       - carthage: Reachability
       - carthage: Gloss
       - carthage: UserDefaultsStore
-      
+
       # Alamofire
       - carthage: Alamofire
       - carthage: AlamofireImage
@@ -12,7 +12,9 @@ targets:
 
       # Crashlytics
       - carthage: Fabric
+        embed: false
       - carthage: Crashlytics
+        embed: false
 
       # Firebase - https://git.io/fAxBS
       # NOTE: omit base framework, per: https://git.io/fAjxM
