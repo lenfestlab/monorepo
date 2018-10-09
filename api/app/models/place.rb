@@ -22,10 +22,14 @@ class Place < ApplicationRecord
 
   delegate :url, to: :post
 
-  [:title, :blurb, :image_url].each do |attr|
+  [:title, :blurb].each do |attr|
     define_method(attr) do
       read_attribute(attr) || post.send(attr)
     end
+  end
+
+  def image_url
+    Post.ensure_https(read_attribute(:image_url)) || post.image_url
   end
 
   def location

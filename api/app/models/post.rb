@@ -18,14 +18,19 @@ class Post < ApplicationRecord
     { lat: place.lat, lng: place.lng }
   end
 
+  def image_url
+    Post.ensure_https read_attribute(:image_url)
+  end
+
+  # NOTE: deprecated
   def image_urls
     [
-      ensure_https(image_url)
+      image_url
     ]
   end
 
   def url
-    ensure_https(read_attribute(:url))
+    Post.ensure_https read_attribute(:url)
   end
 
   def as_json(options = nil)
@@ -34,10 +39,10 @@ class Post < ApplicationRecord
         :title,
         :blurb,
         :url,
-        :image_url
       ],
       methods: [
         :identifier,
+        :image_url,
         :image_urls, # NOTE: deprecated
         :location # NOTE: deprecafted
       ]
@@ -46,6 +51,13 @@ class Post < ApplicationRecord
 
   def self.default_radius
     ENV["DEFAULT_RADIUS"] || 100
+  end
+
+  def self.ensure_https url_string
+    return nil unless url_string
+    uri = URI(url_string)
+    uri.scheme = 'https'
+    uri.to_s
   end
 
   rails_admin do
@@ -58,15 +70,6 @@ class Post < ApplicationRecord
       help "Meters. Optional, if blank defaults to #{Post.default_radius}"
     end
 
-  end
-
-
-  private
-
-  def ensure_https url_string
-    uri = URI(url_string)
-    uri.scheme = 'https'
-    uri.to_s
   end
 
 end
