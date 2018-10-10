@@ -9,18 +9,17 @@ class PlaceManager: NSObject {
   static let shared = PlaceManager()
   let placesStore = UserDefaultsStore<Place>(uniqueIdentifier: "places")!
 
-  func placeForIdentifier(identifier: String) -> Place? {
+  func placeForIdentifier(_ identifier: String) -> Place? {
     return placesStore.object(withId: identifier)
   }
   
   func removeAllMonitoredRegions() {
-    for region in (LocationManager.shared.locationManager?.monitoredRegions)! {
-      LocationManager.shared.locationManager?.stopMonitoring(for: region)
+    for region in LocationManager.shared.locationManager.monitoredRegions {
+      LocationManager.shared.locationManager.stopMonitoring(for: region) // asynchronous
     }
   }
   
   func trackPlaces(places: [Place], radius: CLLocationDistance) {
-    
     removeAllMonitoredRegions()
     
     try! placesStore.save(places)
@@ -78,7 +77,7 @@ class PlaceManager: NSObject {
   
   class func trackPlace(place: Place, radius: CLLocationDistance, center:UNUserNotificationCenter) {
     let region = self.regionForPlace(place: place, radius: radius)
-    LocationManager.shared.locationManager?.startMonitoring(for: region)
+    LocationManager.shared.locationManager.startMonitoring(for: region)
   }
 
 }

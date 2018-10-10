@@ -7,7 +7,7 @@ struct AnalyticsEvent {
   var name: String
   var metadata: [String : String]
 
-  init(name: String, metadata: [String: String] = [:], category: Category, label: String? = nil, location: Location? = nil) {
+  init(name: String, metadata: [String: String] = [:], category: Category, label: String? = nil, location: CLLocationCoordinate2D? = nil) {
     var metadata:[String:String] = [:]
     metadata["event-category"] = category.description
     if label != nil {
@@ -42,7 +42,7 @@ struct AnalyticsEvent {
     if status == CLAuthorizationStatus.authorizedWhenInUse {
       label = "authorized-when-in-use"
     } else if status == CLAuthorizationStatus.authorizedAlways {
-      label = "authorized-alwaysb"
+      label = "authorized-always"
     } else if status == CLAuthorizationStatus.denied {
       label = "denied"
     }
@@ -50,39 +50,39 @@ struct AnalyticsEvent {
     return AnalyticsEvent(name: "enable-location-tracking", category: .onboarding, label:label)
   }
 
-  static func notificationShown(post: Post, currentLocation: Location) -> AnalyticsEvent {
+  static func notificationShown(post: Post, currentLocation: CLLocationCoordinate2D?) -> AnalyticsEvent {
     return AnalyticsEvent(name: "shows", category: .notification, label:post.link.absoluteString, location:currentLocation)
   }
 
-  static func tapsNotificationDefaultTapToClickThrough(post: Post, currentLocation: Location) -> AnalyticsEvent {
+  static func tapsNotificationDefaultTapToClickThrough(post: Post, currentLocation: CLLocationCoordinate2D?) -> AnalyticsEvent {
     return AnalyticsEvent(name:  "taps", category: .notification, label:post.link.absoluteString, location:currentLocation)
   }
 
-  static func tapsOpenInNotificationCTA(post: Post, currentLocation: Location) -> AnalyticsEvent {
+  static func tapsOpenInNotificationCTA(post: Post, currentLocation: CLLocationCoordinate2D?) -> AnalyticsEvent {
     return AnalyticsEvent(name:  "open", category: .notification, label:post.link.absoluteString, location:currentLocation)
   }
 
-  static func tapsShareInNotificationCTA(post: Post, currentLocation: Location) -> AnalyticsEvent {
+  static func tapsShareInNotificationCTA(post: Post, currentLocation: CLLocationCoordinate2D?) -> AnalyticsEvent {
     return AnalyticsEvent(name:  "share", category: .notification, label:post.link.absoluteString, location:currentLocation)
   }
 
-  static func tapsPingMeLaterInNotificationCTA(post: Post, currentLocation: Location) -> AnalyticsEvent {
+  static func tapsPingMeLaterInNotificationCTA(post: Post, currentLocation: CLLocationCoordinate2D?) -> AnalyticsEvent {
     return AnalyticsEvent(name:  "ping-me-later", category: .notification, label:post.link.absoluteString, location:currentLocation)
   }
 
-  static func mapViewed(currentLocation: Location) -> AnalyticsEvent {
-    return AnalyticsEvent(name:  "open-map", category: .app, location:currentLocation)
+  static func mapViewed(currentLocation: CLLocationCoordinate2D?, source url:URL?) -> AnalyticsEvent {
+    return AnalyticsEvent(name:  "open-map", category: .app, label:url?.absoluteString, location:currentLocation)
   }
 
-  static func tapsOnPin(post: Post, currentLocation: Location) -> AnalyticsEvent {
+  static func tapsOnPin(post: Post, currentLocation: CLLocationCoordinate2D?) -> AnalyticsEvent {
     return AnalyticsEvent(name:  "click-pin", category: .app, label:post.link.absoluteString, location:currentLocation)
   }
 
-  static func tapsOnViewArticle(post: Post, currentLocation: Location) -> AnalyticsEvent {
+  static func tapsOnViewArticle(post: Post, currentLocation: CLLocationCoordinate2D?) -> AnalyticsEvent {
     return AnalyticsEvent(name:  "view-article", category: .app, label:post.link.absoluteString, location:currentLocation)
   }
 
-  static func swipesCarousel(post: Post, currentLocation: Location) -> AnalyticsEvent {
+  static func swipesCarousel(post: Post, currentLocation: CLLocationCoordinate2D?) -> AnalyticsEvent {
     return AnalyticsEvent(name:  "swipe-carousel", category: .app, label:post.link.absoluteString, location:currentLocation)
   }
 
@@ -142,8 +142,6 @@ class LocalLogAnalyticsEngine: AnalyticsEngine {
 }
 
 class AnalyticsManager: NSObject {
-
-  static let shared = AnalyticsManager(engine: LocalLogAnalyticsEngine())
 
   private let engine: AnalyticsEngine
 
