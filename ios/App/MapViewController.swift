@@ -15,10 +15,11 @@ class MapViewController: UIViewController, LocationManagerDelegate, LocationMana
   let padding = CGFloat(45)
 
   let dataStore = PlaceDataStore()
-  let locationManager = LocationManager()
+  let locationManager = LocationManager.shared
   let notificationManager = NotificationManager.shared
   var places:[Place] = []
   var currentPlace:Place?
+  var lastViewedURL:URL?
 
   var lastCoordinate:CLLocationCoordinate2D?
 
@@ -27,19 +28,32 @@ class MapViewController: UIViewController, LocationManagerDelegate, LocationMana
   @IBOutlet weak var locationButton:UIButton!
   @IBOutlet weak var settingsButton:UIButton!
 
+  private let analytics: AnalyticsManager
+
+  init(analytics: AnalyticsManager) {
+    self.analytics = analytics
+    super.init(nibName: nil, bundle: nil)
+    notificationManager.delegate = self
+  }
+
+  required init?(coder aDecoder: NSCoder) {
+    fatalError("init(coder:) has not been implemented")
+  }
+
+  override func viewDidAppear(_ animated: Bool) {
+    super.viewDidAppear(animated)
+    // Currently we send the map viewed data regardless of whether we have the coordinates yet or not
+    self.analytics.log(.mapViewed(currentLocation: self.lastCoordinate, source: self.lastViewedURL))
+    self.lastViewedURL = nil
+  }
+
   override func viewWillAppear(_ animated: Bool) {
     super.viewWillAppear(animated)
     navigationController?.isNavigationBarHidden = true
   }
-  
-  convenience init() {
-    self.init(nibName:nil, bundle:nil)
-
-    notificationManager.delegate = self
-  }
 
   @IBAction func settings(sender: UIButton) {
-    let settingsController = SettingsViewController(style: .grouped)
+    let settingsController = SettingsViewController(analytics: self.analytics)
     navigationController?.isNavigationBarHidden = false
     navigationController?.pushViewController(settingsController, animated: true)
   }
@@ -117,7 +131,10 @@ class MapViewController: UIViewController, LocationManagerDelegate, LocationMana
 
   func mapView(_ mapView: MKMapView, didSelect view: MKAnnotationView) {
     let indexPath = IndexPath(row: view.tag, section: 0)
-    selectIndex(indexPath)
+    let place:Place = self.places[indexPath.row]
+    analytics.log(.tapsOnPin(post: place.post, currentLocation: self.lastCoordinate))
+    scrollToItem(at: indexPath)
+    updateCurrentPlace(place: place)
   }
 
   func mapView(_ mapView: MKMapView, annotationView view: MKAnnotationView, calloutAccessoryControlTapped control: UIControl) {
@@ -163,15 +180,36 @@ class MapViewController: UIViewController, LocationManagerDelegate, LocationMana
   // MARK: - Location manager delegate
 
   func locationUpdated(_ locationManager: LocationManager, coordinate: CLLocationCoordinate2D) {
+    lastCoordinate = coordinate
     fetchData(latitude: coordinate.latitude, longitude: coordinate.longitude)
   }
+
+  func regionEngtered(_ locationManager: LocationManager, region: CLCircularRegion) {
+    let identifier = region.identifier
+    var identifiers = NotificationManager.identifiers()
+    let sendAgainAt = identifiers[identifier]
+    let now = Date(timeIntervalSinceNow: 0)
+    if sendAgainAt != nil && sendAgainAt?.compare(now) == ComparisonResult.orderedDescending  {
+      print(identifiers)
+    } else if let place = PlaceManager.shared.placeForIdentifier(identifier) {
+      identifiers[identifier] = Date(timeIntervalSinceNow: 60 * 60 * 24 * 10000)
+      NotificationManager.saveIdentifiers(identifiers)
+
+      PlaceManager.contentForPlace(place: place) { (content) in
+        self.analytics.log(.notificationShown(post: place.post, currentLocation: place.coordinate()))
+        let request = UNNotificationRequest(identifier: UUID().uuidString, content: content, trigger: nil)
+        let center = UNUserNotificationCenter.current()
+        center.add(request)
+      }
+    }
+  }
   
-  func authorized(_ locationManager: LocationManager) {
+  func authorized(_ locationManager: LocationManager, status: CLAuthorizationStatus) {
     centerCurrentLocation()
     locationManager.startMonitoringSignificantLocationChanges()
   }
 
-  func notAuthorized(_ locationManager: LocationManager) {
+  func notAuthorized(_ locationManager: LocationManager, status: CLAuthorizationStatus) {
   }
 
   override func didReceiveMemoryWarning() {
@@ -200,6 +238,7 @@ class MapViewController: UIViewController, LocationManagerDelegate, LocationMana
   }
 
   func openInSafari(url: URL) {
+    self.lastViewedURL = url
     if self.presentedViewController != nil {
       self.presentedViewController?.dismiss(animated: false, completion: {
         let svc = SFSafariViewController(url: url)
@@ -214,9 +253,12 @@ class MapViewController: UIViewController, LocationManagerDelegate, LocationMana
   func collectionView(_ collectionView: UICollectionView, shouldSelectItemAt indexPath: IndexPath) -> Bool {
     if indexOfMajorCell() == indexPath.row {
       let place:Place = self.places[indexPath.row]
+      analytics.log(.tapsOnViewArticle(post: place.post, currentLocation: self.lastCoordinate))
       openInSafari(url: place.post.link)
     } else {
-      selectIndex(indexPath)
+      scrollToItem(at: indexPath)
+      let place:Place = self.places[indexPath.row]
+      updateCurrentPlace(place: place)
     }
     return true
   }
@@ -268,8 +310,8 @@ class MapViewController: UIViewController, LocationManagerDelegate, LocationMana
     let majorCellIsTheCellBeforeDragging = indexOfMajorCell == indexOfCellBeforeDragging
     let didUseSwipeToSkipCell = majorCellIsTheCellBeforeDragging && (hasEnoughVelocityToSlideToTheNextCell || hasEnoughVelocityToSlideToThePreviousCell)
 
+    var place:Place
     if didUseSwipeToSkipCell {
-
       let spacing = CGFloat(10)
       let snapToIndex = indexOfCellBeforeDragging + (hasEnoughVelocityToSlideToTheNextCell ? 1 : -1)
       let toValue = (collectionViewFlowLayout.itemSize.width + spacing) * CGFloat(snapToIndex)
@@ -280,34 +322,40 @@ class MapViewController: UIViewController, LocationManagerDelegate, LocationMana
         scrollView.layoutIfNeeded()
       }, completion: nil)
 
-      let place:Place = self.places[snapToIndex]
-      self.currentPlace = place
-      self.reloadMap()
-      self.centerMap(place.coordinate())
-
+      place = self.places[snapToIndex]
     } else {
-      // This is a much better way to scroll to a cell:
       let indexPath = IndexPath(row: indexOfMajorCell, section: 0)
-      selectIndex(indexPath)
+      scrollToItem(at: indexPath)
+      place = self.places[indexPath.row]
     }
+
+    analytics.log(.swipesCarousel(post: place.post, currentLocation: self.lastCoordinate))
+    updateCurrentPlace(place: place)
   }
 
-  func selectIndex(_ indexPath:IndexPath) {
-    collectionViewFlowLayout.collectionView!.scrollToItem(at: indexPath, at: .centeredHorizontally, animated: true)
-    let place:Place = self.places[indexPath.row]
+  func updateCurrentPlace(place: Place) {
     let coordinate = place.coordinate()
-
     self.currentPlace = place
-
     self.reloadMap()
-
     self.centerMap(coordinate)
+  }
+
+  func scrollToItem(at indexPath:IndexPath) {
+    collectionViewFlowLayout.collectionView!.scrollToItem(at: indexPath, at: .centeredHorizontally, animated: true)
   }
 
   func centerMap(_ center: CLLocationCoordinate2D) {
     let span = MKCoordinateSpanMake(0.04, 0.04);
     let region = MKCoordinateRegion(center: center, span: span)
     self.mapView.setRegion(region, animated: false)
+  }
+
+  func recievedPingMeLater(_ notificationManager: NotificationManager, identifier: String) {
+    print(identifier)
+    if let place = PlaceManager.shared.placeForIdentifier(identifier) {
+      let post = place.post
+      analytics.log(.tapsPingMeLaterInNotificationCTA(post: post, currentLocation: self.lastCoordinate))
+    }
   }
 
   func recievedNotification(_ notificationManager: NotificationManager, response: UNNotificationResponse) {
@@ -317,7 +365,10 @@ class MapViewController: UIViewController, LocationManagerDelegate, LocationMana
       if response.actionIdentifier == "CHECKIN_ACTION" {
         // Check-in
       }
-      else if url != nil {
+      else if let identifier = response.notification.request.content.userInfo["identifier"] as? String {
+        if let place = PlaceManager.shared.placeForIdentifier(identifier) {
+          analytics.log(.tapsNotificationDefaultTapToClickThrough(post: place.post, currentLocation: self.lastCoordinate))
+        }
         openInSafari(url: url!)
       }
     }
