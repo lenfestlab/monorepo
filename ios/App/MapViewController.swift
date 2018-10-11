@@ -27,11 +27,6 @@ class MapViewController: UIViewController, LocationManagerDelegate, LocationMana
   @IBOutlet weak var locationButton:UIButton!
   @IBOutlet weak var settingsButton:UIButton!
 
-  override func viewWillAppear(_ animated: Bool) {
-    super.viewWillAppear(animated)
-    navigationController?.isNavigationBarHidden = true
-  }
-  
   convenience init() {
     self.init(nibName:nil, bundle:nil)
 
@@ -57,10 +52,13 @@ class MapViewController: UIViewController, LocationManagerDelegate, LocationMana
     let nib = UINib(nibName: "PlaceCell", bundle:nil)
     self.collectionView.register(nib, forCellWithReuseIdentifier: reuseIdentifier)
 
-    self.navigationController?.navigationBar.isTranslucent = false
-
-    self.navigationItem.leftBarButtonItem = UIBarButtonItem.init(title: "Settings", style: .plain, target: self, action: nil)
-    self.navigationItem.rightBarButtonItem = UIBarButtonItem.init(title: "List View", style: .plain, target: self, action: nil)
+    self.title = "Here"
+    if let fontStyle = UIFont(name: "WorkSans-Medium", size: 22) {
+      navigationController?.navigationBar.titleTextAttributes = [NSAttributedStringKey.font: fontStyle]
+    }
+    navigationController?.navigationBar.barTintColor =  UIColor.beige()
+    navigationController?.navigationBar.tintColor =  UIColor.offRed()
+    navigationController?.navigationBar.isTranslucent =  false
 
     locationManager.delegate = self
     locationManager.authorizationDelegate = self
