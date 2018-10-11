@@ -73,6 +73,7 @@ class SettingsViewController: UITableViewController, SettingsToggleCellDelegate,
         "identifier": "default",
         "title":"Term of Service",
         "path":"tos",
+        "inset":"zero",
         ]
     ]
     
@@ -223,6 +224,10 @@ class SettingsViewController: UITableViewController, SettingsToggleCellDelegate,
       cell.textLabel?.font = UIFont(name: "WorkSans-Medium", size: 16)
       cell.detailTextLabel?.text = row["description"] as? String
       cell.accessoryView = UIImageView(image: UIImage(named: "disclosure-indicator"))
+      if (row["inset"] as? String) == "zero" {
+        cell.separatorInset = .zero
+      }
+
       return cell
     }
   }
