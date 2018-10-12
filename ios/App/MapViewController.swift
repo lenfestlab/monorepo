@@ -13,6 +13,7 @@ class ABPointAnnotation : MKPointAnnotation {
 class MapViewController: UIViewController, LocationManagerDelegate, LocationManagerAuthorizationDelegate, UICollectionViewDelegate, UICollectionViewDataSource, MKMapViewDelegate, NotificationManagerDelegate {
 
   let padding = CGFloat(45)
+  let spacing = CGFloat(0)
 
   let dataStore = PlaceDataStore()
   let locationManager = LocationManager()
@@ -35,7 +36,6 @@ class MapViewController: UIViewController, LocationManagerDelegate, LocationMana
 
   @IBAction func settings(sender: UIButton) {
     let settingsController = SettingsViewController(style: .grouped)
-    navigationController?.isNavigationBarHidden = false
     navigationController?.pushViewController(settingsController, animated: true)
   }
 
@@ -53,12 +53,12 @@ class MapViewController: UIViewController, LocationManagerDelegate, LocationMana
     self.collectionView.register(nib, forCellWithReuseIdentifier: reuseIdentifier)
 
     self.title = "Here"
-    if let fontStyle = UIFont(name: "WorkSans-Medium", size: 22) {
+    if let fontStyle = UIFont(name: "WorkSans-Medium", size: 18) {
       navigationController?.navigationBar.titleTextAttributes = [NSAttributedStringKey.font: fontStyle]
     }
     navigationController?.navigationBar.barTintColor =  UIColor.beige()
     navigationController?.navigationBar.tintColor =  UIColor.offRed()
-    navigationController?.navigationBar.isTranslucent =  false
+    navigationController?.navigationBar.isTranslucent = false
 
     locationManager.delegate = self
     locationManager.authorizationDelegate = self
@@ -66,6 +66,9 @@ class MapViewController: UIViewController, LocationManagerDelegate, LocationMana
     let coordinate = CLLocationCoordinate2D(latitude: 39.9526, longitude: -75.1652)
     centerMap(coordinate)
     fetchData(latitude: coordinate.latitude, longitude: coordinate.longitude)
+
+    self.navigationItem.rightBarButtonItem = UIBarButtonItem(customView: self.settingsButton)
+
   }
 
   func mapView(_ mapView: MKMapView, didUpdate userLocation: MKUserLocation) {
@@ -238,7 +241,8 @@ class MapViewController: UIViewController, LocationManagerDelegate, LocationMana
 
   private func indexOfMajorCell() -> Int {
     let itemWidth = collectionViewFlowLayout.itemSize.width
-    let proportionalOffset = collectionViewFlowLayout.collectionView!.contentOffset.x / itemWidth
+    let offset = collectionViewFlowLayout.collectionView!.contentOffset.x
+    let proportionalOffset = offset / itemWidth
     let index = Int(round(proportionalOffset))
     let numberOfItems = collectionView.numberOfItems(inSection: 0)
     let safeIndex = max(0, min(numberOfItems - 1, index))
@@ -268,7 +272,6 @@ class MapViewController: UIViewController, LocationManagerDelegate, LocationMana
 
     if didUseSwipeToSkipCell {
 
-      let spacing = CGFloat(10)
       let snapToIndex = indexOfCellBeforeDragging + (hasEnoughVelocityToSlideToTheNextCell ? 1 : -1)
       let toValue = (collectionViewFlowLayout.itemSize.width + spacing) * CGFloat(snapToIndex)
 
