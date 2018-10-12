@@ -143,12 +143,6 @@ class SettingsViewController: UITableViewController, SettingsToggleCellDelegate,
     }
     
     self.title = "Settings"
-    if let fontStyle = UIFont(name: "WorkSans-Medium", size: 18) {
-      navigationController?.navigationBar.titleTextAttributes = [NSAttributedStringKey.font: fontStyle]
-    }
-    navigationController?.navigationBar.barTintColor =  UIColor.beige()
-    navigationController?.navigationBar.tintColor =  UIColor.offRed()
-    navigationController?.navigationBar.isTranslucent =  false
     
     self.tableView.backgroundColor = UIColor.white
     
