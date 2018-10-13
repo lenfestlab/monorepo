@@ -1,5 +1,11 @@
 RailsAdmin.config do |config|
 
+  config.authenticate_with do
+    authenticate_or_request_with_http_basic('Lenfest Lab Admin') do |username, password|
+      username == 'admin' && password == ENV["ADMIN_BASIC_PASSWORD"]
+    end
+  end
+
   ### Popular gems integration
 
   ## == Devise ==
