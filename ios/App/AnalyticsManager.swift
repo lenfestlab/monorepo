@@ -78,8 +78,8 @@ struct AnalyticsEvent {
     return AnalyticsEvent(name:  "open", category: .notification, label:post.link.absoluteString, location:currentLocation)
   }
 
-  static func tapsShareInNotificationCTA(post: Post, currentLocation: CLLocationCoordinate2D?) -> AnalyticsEvent {
-    return AnalyticsEvent(name:  "share", category: .notification, label:post.link.absoluteString, location:currentLocation)
+  static func tapsShareInNotificationCTA(url: URL, currentLocation: CLLocationCoordinate2D?) -> AnalyticsEvent {
+    return AnalyticsEvent(name:  "share", category: .notification, label:url.absoluteString, location:currentLocation)
   }
 
   static func tapsPingMeLaterInNotificationCTA(post: Post, currentLocation: CLLocationCoordinate2D?) -> AnalyticsEvent {

@@ -1,17 +1,17 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<document type="com.apple.InterfaceBuilder3.CocoaTouch.XIB" version="3.0" toolsVersion="14313.18" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" useSafeAreas="YES" colorMatched="YES">
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.XIB" version="3.0" toolsVersion="14460.23.1" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" useSafeAreas="YES" colorMatched="YES">
     <device id="retina5_9" orientation="portrait">
         <adaptation id="fullscreen"/>
     </device>
     <dependencies>
-        <deployment identifier="iOS"/>
-        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="14283.14"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="14460.16.1"/>
         <capability name="Safe area layout guides" minToolsVersion="9.0"/>
         <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
     </dependencies>
     <objects>
         <placeholder placeholderIdentifier="IBFilesOwner" id="-1" userLabel="File's Owner" customClass="MapViewController" customModule="App" customModuleProvider="target">
             <connections>
+                <outlet property="activitylabel" destination="su0-RL-PEx" id="2VM-kw-LfN"/>
                 <outlet property="collectionView" destination="xfc-ON-2uS" id="wiN-FJ-1lN"/>
                 <outlet property="locationButton" destination="N35-07-4di" id="VuC-Ij-yda"/>
                 <outlet property="mapView" destination="Dzc-xs-8qs" id="jcm-5S-C5D"/>
@@ -63,12 +63,23 @@
                     <rect key="frame" x="0.0" y="0.0" width="375" height="10"/>
                     <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
                 </view>
+                <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="" textAlignment="center" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="su0-RL-PEx">
+                    <rect key="frame" x="0.0" y="0.0" width="375" height="50"/>
+                    <color key="backgroundColor" red="1" green="1" blue="1" alpha="0.53654751712328763" colorSpace="custom" customColorSpace="displayP3"/>
+                    <constraints>
+                        <constraint firstAttribute="height" constant="50" id="vnz-gj-Pth"/>
+                    </constraints>
+                    <fontDescription key="fontDescription" type="boldSystem" pointSize="16"/>
+                    <nil key="textColor"/>
+                    <nil key="highlightedColor"/>
+                </label>
             </subviews>
             <color key="backgroundColor" red="1" green="1" blue="1" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
             <constraints>
                 <constraint firstItem="Dzc-xs-8qs" firstAttribute="top" secondItem="i5M-Pr-FkT" secondAttribute="top" constant="-250" id="1bc-Pc-XrY"/>
                 <constraint firstItem="Dzc-xs-8qs" firstAttribute="leading" secondItem="i5M-Pr-FkT" secondAttribute="leading" id="4wz-hH-HSb"/>
                 <constraint firstItem="7i9-py-jn9" firstAttribute="top" secondItem="fq1-Xw-T1U" secondAttribute="top" id="6JJ-ZN-3On"/>
+                <constraint firstItem="su0-RL-PEx" firstAttribute="leading" secondItem="fq1-Xw-T1U" secondAttribute="leading" id="EGZ-TI-VSO"/>
                 <constraint firstItem="xfc-ON-2uS" firstAttribute="trailing" secondItem="i5M-Pr-FkT" secondAttribute="trailing" id="PaD-KR-psm"/>
                 <constraint firstItem="fq1-Xw-T1U" firstAttribute="bottom" secondItem="xfc-ON-2uS" secondAttribute="bottom" constant="40" id="ToX-J0-ser"/>
                 <constraint firstAttribute="trailing" secondItem="7i9-py-jn9" secondAttribute="trailing" id="Udq-5w-cMf"/>
@@ -76,9 +87,11 @@
                 <constraint firstItem="xfc-ON-2uS" firstAttribute="top" secondItem="N35-07-4di" secondAttribute="bottom" constant="20" id="YzJ-91-ZMD"/>
                 <constraint firstAttribute="bottom" secondItem="7i9-py-jn9" secondAttribute="bottom" constant="714" id="ZWv-hW-iVX"/>
                 <constraint firstAttribute="bottom" secondItem="Dzc-xs-8qs" secondAttribute="bottom" id="aCd-38-guG"/>
+                <constraint firstItem="fq1-Xw-T1U" firstAttribute="trailing" secondItem="su0-RL-PEx" secondAttribute="trailing" id="aYS-T1-7nD"/>
                 <constraint firstAttribute="trailing" secondItem="Dzc-xs-8qs" secondAttribute="trailing" id="as8-4p-fve"/>
                 <constraint firstItem="7i9-py-jn9" firstAttribute="leading" secondItem="i5M-Pr-FkT" secondAttribute="leading" id="kjc-1R-T7G"/>
                 <constraint firstItem="xfc-ON-2uS" firstAttribute="leading" secondItem="i5M-Pr-FkT" secondAttribute="leading" id="nk2-DI-C0L"/>
+                <constraint firstItem="su0-RL-PEx" firstAttribute="top" secondItem="fq1-Xw-T1U" secondAttribute="top" id="u4C-4Z-Q6i"/>
                 <constraint firstItem="Dzc-xs-8qs" firstAttribute="leading" secondItem="i5M-Pr-FkT" secondAttribute="leading" id="x0o-WW-VSY"/>
                 <constraint firstItem="Dzc-xs-8qs" firstAttribute="trailing" secondItem="i5M-Pr-FkT" secondAttribute="trailing" id="xGi-Mq-2q8"/>
                 <constraint firstItem="7i9-py-jn9" firstAttribute="top" secondItem="fq1-Xw-T1U" secondAttribute="top" id="yqD-RG-BLL"/>
