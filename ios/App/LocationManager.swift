@@ -90,6 +90,11 @@ class LocationManager: NSObject, CLLocationManagerDelegate {
   func locationManager(_ manager: CLLocationManager, didEnterRegion region: CLRegion) {
     if region is CLCircularRegion {
       self.delegate?.regionEngtered(self, region: region as! CLCircularRegion)
+      if MotionManager.shared.currentActivity?.automotive == true {
+        print("Currently driving")
+        return
+      }
+
       let identifier = region.identifier
       var identifiers = NotificationManager.shared.identifiers
       let sendAgainAt = identifiers[identifier]

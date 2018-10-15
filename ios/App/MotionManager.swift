@@ -12,36 +12,20 @@ class MotionManager: NSObject {
   static let shared = MotionManager()
 
   let manager = CMMotionActivityManager()
+  var currentActivity:CMMotionActivity?
 
   class func isActivityAvailable() -> Bool {
     return CMMotionActivityManager.isActivityAvailable()
   }
 
-  func track(handler: @escaping (String) -> Void) {
+  func track(handler: @escaping (CMMotionActivity) -> Void) {
     manager.startActivityUpdates(to: .main) { (activity) in
       guard let activity = activity else {
         return
       }
 
-      var modes: Set<String> = []
-      if activity.walking {
-        modes.insert("🚶‍")
-      }
-
-      if activity.running {
-        modes.insert("🏃‍")
-      }
-
-      if activity.cycling {
-        modes.insert("🚴‍")
-      }
-
-      if activity.automotive {
-        modes.insert("🚗")
-      }
-
-      print(modes.joined(separator: ", "))
-      handler(modes.joined(separator: ", "))
+      self.currentActivity = activity
+      handler(activity)
     }
   }
 
