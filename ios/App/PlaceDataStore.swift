@@ -7,11 +7,8 @@ class PlaceDataStore: NSObject {
 
   func retrievePlaces(latitude: CLLocationDegrees, longitude: CLLocationDegrees, completion: @escaping (Bool, [Place], Int) -> Void) {
 
-    let bundle = Bundle(for: type(of: self))
-    let envName = bundle.object(forInfoDictionaryKey: "ENV_NAME") as! String
-    let prot = (["prod", "stag"].contains(envName)) ? "https" : "http"
-    let apiHost = bundle.object(forInfoDictionaryKey: "API_HOST") as! String
-    let url = "\(prot)://\(apiHost)/places.json"
+    let env = Env()
+    let url = "\(env.apiBaseUrlString)/places.json"
 
     let params = ["lat": latitude, "lng": longitude, "limit": 10]
     Alamofire.request(url, parameters: params).responseJSON { response in

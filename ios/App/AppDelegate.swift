@@ -1,7 +1,6 @@
 import Reachability
 import UIKit
 import Firebase
-import FirebaseAnalytics
 import Crashlytics
 import Fabric
 import AlamofireNetworkActivityLogger
@@ -11,12 +10,14 @@ typealias LaunchOptions = [UIApplicationLaunchOptionsKey: Any]?
 @UIApplicationMain
 class AppDelegate: UIResponder, UIApplicationDelegate {
 
-  private let analytics: AnalyticsManager = AnalyticsManager(engine: LocalLogAnalyticsEngine())
-
   var window: UIWindow?
+  var analytics: AnalyticsManager!
 
   func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: LaunchOptions) -> Bool {
     NetworkActivityLogger.shared.startLogging()
+
+    let env = Env()
+    self.analytics = AnalyticsManager(env)
 
     window = UIWindow(frame: UIScreen.main.bounds)
     let onboardingCompleted = UserDefaults.standard.bool(forKey: "onboarding-completed")
@@ -39,7 +40,6 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
   }
 
   func showPermissions() {
-    Analytics.logEvent("viewed_location_permission_pitch", parameters: [:])
     let permissionsController = PermissionsViewController(analytics: self.analytics)
     let navigationController = UINavigationController(rootViewController: permissionsController)
     window!.rootViewController = navigationController

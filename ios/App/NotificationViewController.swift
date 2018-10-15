@@ -53,7 +53,7 @@ class NotificationViewController: UIViewController, UNUserNotificationCenterDele
 
     notificationManager.requestAuthorization() { (status, error) in
       completionHandler(status, error)
-      self.analytics.log(.selectsNotificationPerfmissions(authorizationStatus: status))
+      self.analytics.log(.selectsNotificationPermissions(authorizationStatus: status))
     }
         
   }

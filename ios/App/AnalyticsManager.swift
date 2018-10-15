@@ -2,28 +2,41 @@ import UIKit
 import UserNotifications
 import CoreLocation
 import Gloss
+import GoogleReporter
+
+typealias Meta = Dictionary<String, String>
+
+enum Category: String {
+  case onboarding, notification, settings
+  case app = "in-app"
+}
 
 struct AnalyticsEvent {
-  var name: String
-  var metadata: [String : String]
+  var name: String // NOTE: GA "action": https://goo.gl/opYrNg
+  var category: Category
+  var label: String? = ""
+  var value: Int?
+  var metadata: Meta = [:]
 
-  init(name: String, metadata: [String: String] = [:], category: Category, label: String? = nil, location: CLLocationCoordinate2D? = nil) {
-    var metadata:[String:String] = [:]
-    metadata["event-category"] = category.description
-    if label != nil {
-      metadata["event-label"] = label
-    }
-
-    if location != nil {
-      metadata["latitude"] = String(format:"%f", location!.latitude)
-      metadata["longitude"] = String(format:"%f", location!.longitude)
-    }
-
+  init(
+    name: String,
+    metadata meta: Meta = [:],
+    category: Category,
+    label: String? = "",
+    location: CLLocationCoordinate2D? = nil
+    ) {
     self.name = name
-    self.metadata = metadata
+    self.category = category
+    self.label = label
+    self.metadata = meta
+    if location != nil {
+      let lat = String(format:"%f", location!.latitude)
+      let lng = String(format:"%f", location!.longitude)
+      self.metadata["dimension2"] = "\(lat),\(lng)"
+    }
   }
 
-  static func selectsNotificationPerfmissions(authorizationStatus: UNAuthorizationStatus) -> AnalyticsEvent{
+  static func selectsNotificationPermissions(authorizationStatus: UNAuthorizationStatus) -> AnalyticsEvent{
     var label = "not-determined"
     if authorizationStatus == UNAuthorizationStatus.authorized {
       label = "authorized"
@@ -104,53 +117,58 @@ struct AnalyticsEvent {
 
 }
 
-enum Category : CustomStringConvertible {
-  case onboarding
-  case notification
-  case app
-  case settings
+class AnalyticsManager {
 
-  var description : String {
-    switch self {
-    // Use Internationalization, as appropriate.
-    case .onboarding: return "onboarding"
-    case .notification: return "notification"
-    case .app: return "in-app"
-    case .settings: return "settings"
-    }
-  }
-}
+  private var ga: GoogleReporter
 
-protocol AnalyticsEngine: class {
-  func sendAnalyticsEvent(named name: String, metadata: [String : String])
-}
+  init(_ env: Env) {
+    self.ga = GoogleReporter.shared // NOTE: init private, must use `.shared`
 
-// Use this for testing local testing purposes
-class LocalLogAnalyticsEngine: AnalyticsEngine {
+    ga.configure(withTrackerId: env.get(.googleAnalyticsTrackingId))
 
-  var installationId:String
+    ga.anonymizeIP = false // pending GDPR compliance - https://git.io/fxuUt
 
-  init() {
-    self.installationId = "tempId"
-  }
+    ga.quietMode = ["prod", "stag"].contains(env.get(.name))
 
-  func sendAnalyticsEvent(named name: String, metadata: [String: String] = [:]) {
-    let data = metadata.merging( ["installation-id" : installationId, "event-name": name], uniquingKeysWith: { (_, new) in new })
-    print(data)
-  }
+    // "Client ID" - "cid" param - https://goo.gl/gexXmE
+    // > This field is required if User ID (uid) is not specified in the request.
+    // > This anonymously identifies a particular user, device, or browser instance.
+    // > ...For mobile apps, this is randomly generated for each particular instance
+    // > of an application install. The value of this field should be a random
+    // > UUID (version 4)...
+    // GoogleReporter defaults to `UIDevice().identifierForVendor`: https://git.io/fxuMc
+    // > The value of this property is the same for apps that come from the same
+    // > vendor running on the same device. A different value is returned for
+    // > apps on the same device that come from different vendors, and for
+    // > apps on different devices regardless of vendor.
+    // NOTE: the value is reset if our app is deleted/reinstalled.
+    ga.usesVendorIdentifier = true
 
-}
+    ga.customDimensionArguments = [
+      // "t" (hit type) defaults to "event" - https://git.io/fxuMm
+      "ds": "app", // "Data source" - https://goo.gl/BNTRMF
 
-class AnalyticsManager: NSObject {
+      //"installation-id"
+      "dimension1": env.installationId // same value as "cid" param above
 
-  private let engine: AnalyticsEngine
-
-  init(engine: AnalyticsEngine) {
-    self.engine = engine
+      // "User ID" - https://goo.gl/ZXsk6q
+      // > This is intended to be a known identifier for a user provided by the
+      // > site owner/tracking library user. It must not itself be PII
+      // > (personally identifiable information). The value should never be
+      // > persisted in GA cookies or other Analytics provided storage.
+      // NOTE: deliberately omitted; to persist id across deletes/installs,
+      // fetch the iCloud ID (async), set as the "uid" custom dimension, per:
+      // https://goo.gl/5QFvkb
+      // "uid": env.userId,
+    ]
   }
 
   func log(_ event: AnalyticsEvent) {
-    engine.sendAnalyticsEvent(named: event.name, metadata: event.metadata)
+    ga.event(
+      event.category.rawValue,
+      action: event.name,
+      label: (event.label ?? ""),
+      parameters: event.metadata)
   }
 
 }
