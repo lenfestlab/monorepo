@@ -55,6 +55,8 @@
 		<string>Lato-Italic.ttf</string>
 		<string>Lato-Light.ttf</string>
 	</array>
+	<key>NSMotionUsageDescription</key>
+	<string>We monitor your motion to notify you when you are near interesting spots.</string>
 	<key>UIBackgroundModes</key>
 	<array>
 		<string>location</string>
