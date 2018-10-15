@@ -89,14 +89,14 @@ class LocationManager: NSObject, CLLocationManagerDelegate {
   func locationManager(_ manager: CLLocationManager, didEnterRegion region: CLRegion) {
     if region is CLCircularRegion {
       let identifier = region.identifier
-      var identifiers = NotificationManager.identifiers()
+      var identifiers = NotificationManager.shared.identifiers
       let sendAgainAt = identifiers[identifier]
       let now = Date(timeIntervalSinceNow: 0)
       if sendAgainAt != nil && sendAgainAt?.compare(now) == ComparisonResult.orderedDescending  {
         print(identifiers)
       } else if let place = PlaceManager.shared.placeForIdentifier(identifier: identifier) {
           identifiers[identifier] = Date(timeIntervalSinceNow: 60 * 60 * 24 * 10000)
-          NotificationManager.saveIdentifiers(identifiers)
+          NotificationManager.shared.saveIdentifiers(identifiers)
 
           PlaceManager.contentForPlace(place: place) { (content) in
             let request = UNNotificationRequest(identifier: UUID().uuidString, content: content, trigger: nil)

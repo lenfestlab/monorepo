@@ -12,6 +12,7 @@
     <objects>
         <placeholder placeholderIdentifier="IBFilesOwner" id="-1" userLabel="File's Owner" customClass="MapViewController" customModule="App" customModuleProvider="target">
             <connections>
+                <outlet property="activitylabel" destination="hnO-bO-gdM" id="H9C-HH-4j4"/>
                 <outlet property="collectionView" destination="xfc-ON-2uS" id="wiN-FJ-1lN"/>
                 <outlet property="locationButton" destination="N35-07-4di" id="VuC-Ij-yda"/>
                 <outlet property="mapView" destination="Dzc-xs-8qs" id="jcm-5S-C5D"/>
@@ -79,6 +80,17 @@
                         <action selector="settingsWithSender:" destination="-1" eventType="touchUpInside" id="CsB-KI-OE4"/>
                     </connections>
                 </button>
+                <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="" textAlignment="center" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="hnO-bO-gdM">
+                    <rect key="frame" x="87.666666666666686" y="76" width="200" height="30"/>
+                    <color key="backgroundColor" white="1" alpha="0.5" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                    <constraints>
+                        <constraint firstAttribute="width" constant="200" id="oAR-Fh-fxL"/>
+                        <constraint firstAttribute="height" constant="30" id="zlb-he-DFc"/>
+                    </constraints>
+                    <fontDescription key="fontDescription" name="HelveticaNeue-Bold" family="Helvetica Neue" pointSize="14"/>
+                    <color key="textColor" white="0.33333333333333331" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                    <nil key="highlightedColor"/>
+                </label>
             </subviews>
             <color key="backgroundColor" red="1" green="1" blue="1" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
             <constraints>
@@ -87,7 +99,9 @@
                 <constraint firstItem="7i9-py-jn9" firstAttribute="top" secondItem="fq1-Xw-T1U" secondAttribute="top" id="6JJ-ZN-3On"/>
                 <constraint firstItem="bRf-kB-VZj" firstAttribute="top" secondItem="7i9-py-jn9" secondAttribute="bottom" id="HMA-YL-p5G"/>
                 <constraint firstItem="7i9-py-jn9" firstAttribute="top" secondItem="bRf-kB-VZj" secondAttribute="top" constant="-10" id="Mhv-68-Qm7"/>
+                <constraint firstItem="hnO-bO-gdM" firstAttribute="centerX" secondItem="fq1-Xw-T1U" secondAttribute="centerX" id="OgT-pz-2NY"/>
                 <constraint firstItem="xfc-ON-2uS" firstAttribute="trailing" secondItem="i5M-Pr-FkT" secondAttribute="trailing" id="PaD-KR-psm"/>
+                <constraint firstItem="hnO-bO-gdM" firstAttribute="top" secondItem="7i9-py-jn9" secondAttribute="bottom" constant="22" id="R8h-6Z-b27"/>
                 <constraint firstItem="fq1-Xw-T1U" firstAttribute="bottom" secondItem="xfc-ON-2uS" secondAttribute="bottom" constant="40" id="ToX-J0-ser"/>
                 <constraint firstAttribute="trailing" secondItem="7i9-py-jn9" secondAttribute="trailing" id="Udq-5w-cMf"/>
                 <constraint firstItem="fq1-Xw-T1U" firstAttribute="trailing" secondItem="N35-07-4di" secondAttribute="trailing" constant="15" id="WnZ-g7-HkX"/>
@@ -102,7 +116,7 @@
             </constraints>
             <nil key="simulatedTopBarMetrics"/>
             <viewLayoutGuide key="safeArea" id="fq1-Xw-T1U"/>
-            <point key="canvasLocation" x="34.5" y="53"/>
+            <point key="canvasLocation" x="34.399999999999999" y="52.463054187192121"/>
         </view>
     </objects>
     <resources>

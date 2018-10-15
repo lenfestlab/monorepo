@@ -26,10 +26,20 @@ class MapViewController: UIViewController, LocationManagerDelegate, LocationMana
   @IBOutlet weak var mapView:MKMapView!
   @IBOutlet weak var locationButton:UIButton!
   @IBOutlet weak var settingsButton:UIButton!
+  @IBOutlet weak var activitylabel:UILabel!
 
   override func viewWillAppear(_ animated: Bool) {
     super.viewWillAppear(animated)
     navigationController?.isNavigationBarHidden = true
+
+    if MotionManager.isActivityAvailable() {
+      MotionManager.shared.track { (modes) in
+        self.activitylabel.text = modes
+      }
+    } else {
+      self.activitylabel.isHidden = true
+    }
+
   }
   
   convenience init() {

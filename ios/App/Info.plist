@@ -43,6 +43,8 @@
 	<string>We monitor your location to notify you when you are near interesting spots.</string>
 	<key>NSLocationWhenInUseUsageDescription</key>
 	<string>We monitor your location to notify you when you are near interesting spots.</string>
+	<key>NSMotionUsageDescription</key>
+	<string>We monitor your motion to notify you when you are near interesting spots.</string>
 	<key>UIBackgroundModes</key>
 	<array>
 		<string>location</string>
