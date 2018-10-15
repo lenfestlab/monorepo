@@ -5,9 +5,21 @@ import SafariServices
 
 class SettingsViewController: UITableViewController, SettingsToggleCellDelegate, LocationManagerAuthorizationDelegate {
   
-  let locationManager = LocationManager()
+  let locationManager = LocationManager.shared
   private var notification: NSObjectProtocol?
-  
+
+  private let analytics: AnalyticsManager
+  private let notificationManager = NotificationManager.shared
+
+  init(analytics: AnalyticsManager) {
+    self.analytics = analytics
+    super.init(style: .grouped)
+  }
+
+  required init?(coder aDecoder: NSCoder) {
+    fatalError("init(coder:) has not been implemented")
+  }
+
   deinit {
     // make sure to remove the observer when this view controller is dismissed/deallocated
     
@@ -16,12 +28,12 @@ class SettingsViewController: UITableViewController, SettingsToggleCellDelegate,
     }
   }
   
-  func authorized(_ locationManager: LocationManager) {
+  func authorized(_ locationManager: LocationManager, status: CLAuthorizationStatus) {
     self.loadSettings()
     self.tableView.reloadData()
   }
   
-  func notAuthorized(_ locationManager: LocationManager) {
+  func notAuthorized(_ locationManager: LocationManager, status: CLAuthorizationStatus) {
     self.loadSettings()
     self.tableView.reloadData()
   }
@@ -30,9 +42,9 @@ class SettingsViewController: UITableViewController, SettingsToggleCellDelegate,
     switch sender.tag {
     case 0:
       print("Enable Notifications")
-      
-      if NotificationManager.shared.authorizationStatus == .notDetermined {
-        NotificationManager.shared.requestAuthorization() { (success, error) in
+      analytics.log(.changeNotificationSettings(enabled: sender.isOn))
+      if notificationManager.authorizationStatus == .notDetermined {
+        notificationManager.requestAuthorization() { (success, error) in
           self.loadSettings()
           DispatchQueue.main.async {
             self.tableView.reloadData()
@@ -45,12 +57,18 @@ class SettingsViewController: UITableViewController, SettingsToggleCellDelegate,
       
     case 1:
       print("Access Location")
+      analytics.log(.changeLocationSettings(enabled: sender.isOn))
       if CLLocationManager.authorizationStatus() == .notDetermined {
         locationManager.enableBasicLocationServices()
       } else if let url = URL(string: UIApplicationOpenSettingsURLString) {
         // If general location settings are enabled then open location settings for the app
         UIApplication.shared.open(url, options: [:], completionHandler: nil)
       }
+
+    case 2:
+      print("Clear History")
+      NotificationManager.saveIdentifiers([:])
+
     default:
       print("unknown switch")
     }
@@ -93,14 +111,21 @@ class SettingsViewController: UITableViewController, SettingsToggleCellDelegate,
               "identifier": "setting",
               "title":"Enable Notifications",
               "description":"This App uses push notifications to send you related articles based on where you are.",
-              "toggle": NotificationManager.shared.authorizationStatus == .authorized
+              "toggle": notificationManager.authorizationStatus == .authorized
             ],
             [
               "identifier": "setting",
               "title":"Access Location",
               "description":"This App serves best with access to your location. Map and notification features uses your location to display and send content from your nearby locations.",
               "toggle": CLLocationManager.authorizationStatus() == .authorizedAlways
+            ],
+            [
+              "identifier": "setting",
+              "title":"Clear History",
+              "description":"We remember which notifications you have already seen. Turn this off to clear your history, so you can get the notifications again.",
+              "toggle": true
             ]
+
           ]
         ],
         [
@@ -110,15 +135,6 @@ class SettingsViewController: UITableViewController, SettingsToggleCellDelegate,
         
     ]
     
-  }
-  
-  override init(style: UITableViewStyle) {
-    super.init(style: style)
-    
-  }
-  
-  required init?(coder aDecoder: NSCoder) {
-    fatalError("init(coder:) has not been implemented")
   }
   
   var settings:[[String:Any?]] = [[:]]
@@ -133,12 +149,12 @@ class SettingsViewController: UITableViewController, SettingsToggleCellDelegate,
     loadSettings()
     notification = NotificationCenter.default.addObserver(forName: .UIApplicationWillEnterForeground, object: nil, queue: .main) {
       [unowned self] notification in
-      NotificationManager.shared.refreshAuthorizationStatus {
+      self.notificationManager.refreshAuthorizationStatus(completionHandler: { (status) in
         self.loadSettings()
         DispatchQueue.main.async {
           self.tableView.reloadData()
         }
-      }
+      })
     }
     
     self.title = "Settings"

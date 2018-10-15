@@ -5,6 +5,7 @@ import Alamofire
 
 protocol NotificationManagerDelegate: class {
   func recievedNotification(_ notificationManager: NotificationManager, response: UNNotificationResponse)
+  func recievedPingMeLater(_ notificationManager: NotificationManager, identifier: String)
 }
 
 class NotificationManager: NSObject, UNUserNotificationCenterDelegate {
@@ -15,11 +16,11 @@ class NotificationManager: NSObject, UNUserNotificationCenterDelegate {
   var notificationCenter:UNUserNotificationCenter?
   var authorizationStatus:UNAuthorizationStatus = .notDetermined
   
-  func refreshAuthorizationStatus(completionHandler: @escaping () -> Void) {
+  func refreshAuthorizationStatus(completionHandler: @escaping (UNAuthorizationStatus) -> Void) {
     notificationCenter?.getNotificationSettings { (settings) in
       print("Checking notification status")
       self.authorizationStatus = settings.authorizationStatus
-      completionHandler()
+      completionHandler(settings.authorizationStatus)
     }
   }
   
@@ -27,7 +28,7 @@ class NotificationManager: NSObject, UNUserNotificationCenterDelegate {
     super.init()
     notificationCenter = UNUserNotificationCenter.current()
     notificationCenter?.delegate = self
-    refreshAuthorizationStatus {}
+    refreshAuthorizationStatus { (status) in }
     setCategories()
   }
   
@@ -37,15 +38,15 @@ class NotificationManager: NSObject, UNUserNotificationCenterDelegate {
     UNUserNotificationCenter.current().setNotificationCategories([alarmCategory])
   }
 
-  func requestAuthorization(completionHandler: @escaping (Bool, Error?) -> Void){
+  func requestAuthorization(completionHandler: @escaping (UNAuthorizationStatus, Error?) -> Void){
     let authOptions: UNAuthorizationOptions = [.alert, .badge, .sound]
     UNUserNotificationCenter.current().requestAuthorization(options: authOptions) { (granted, error) in
-      self.refreshAuthorizationStatus {
+      self.refreshAuthorizationStatus(completionHandler: { (status) in
         if granted {
           print("NotificationCenter Authorization Granted!")
         }
-        completionHandler(granted,error)
-      }
+        completionHandler(status, error)
+      })
     }
   }
   
@@ -63,6 +64,7 @@ class NotificationManager: NSObject, UNUserNotificationCenterDelegate {
         var identifiers = NotificationManager.identifiers()
         identifiers[identifier] = Date(timeIntervalSinceNow: 60 * 60 * 24)
         NotificationManager.saveIdentifiers(identifiers)
+        delegate?.recievedPingMeLater(self, identifier: identifier)
       }
     } else {
       delegate?.recievedNotification(self, response: response)

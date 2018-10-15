@@ -11,6 +11,7 @@ struct Location: JSONDecodable, Codable {
     self.latitude = ("lat" <~~ json)!
     self.longitude = ("lng" <~~ json)!
   }
+
 }
 
 struct Post: JSONDecodable, Codable, Identifiable {
