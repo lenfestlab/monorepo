@@ -2,6 +2,7 @@ import UIKit
 import MapKit
 import SafariServices
 import UserNotifications
+import CoreMotion
 
 private let reuseIdentifier = "PlaceCell"
 fileprivate let sectionInsets = UIEdgeInsets(top: 0, left: 0, bottom: 0, right: 0)
@@ -33,8 +34,28 @@ class MapViewController: UIViewController, LocationManagerDelegate, LocationMana
     navigationController?.isNavigationBarHidden = true
 
     if MotionManager.isActivityAvailable() {
-      MotionManager.shared.track { (modes) in
-        self.activitylabel.text = modes
+      MotionManager.shared.track { (activity) in
+
+        var modes: Set<String> = []
+        if activity.walking {
+          modes.insert("🚶‍")
+        }
+
+        if activity.running {
+          modes.insert("🏃‍")
+        }
+
+        if activity.cycling {
+          modes.insert("🚴‍")
+        }
+
+        if activity.automotive {
+          modes.insert("🚗")
+        }
+
+        print(modes.joined(separator: ", "))
+
+        self.activitylabel.text = modes.joined(separator: ", ")
       }
     } else {
       self.activitylabel.isHidden = true
