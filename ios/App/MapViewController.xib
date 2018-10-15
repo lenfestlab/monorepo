@@ -1,11 +1,11 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<document type="com.apple.InterfaceBuilder3.CocoaTouch.XIB" version="3.0" toolsVersion="14460.23.1" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" useSafeAreas="YES" colorMatched="YES">
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.XIB" version="3.0" toolsVersion="14313.18" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" useSafeAreas="YES" colorMatched="YES">
     <device id="retina5_9" orientation="portrait">
         <adaptation id="fullscreen"/>
     </device>
     <dependencies>
         <deployment identifier="iOS"/>
-        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="14460.16.1"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="14283.14"/>
         <capability name="Safe area layout guides" minToolsVersion="9.0"/>
         <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
     </dependencies>
@@ -15,7 +15,6 @@
                 <outlet property="collectionView" destination="xfc-ON-2uS" id="wiN-FJ-1lN"/>
                 <outlet property="locationButton" destination="N35-07-4di" id="VuC-Ij-yda"/>
                 <outlet property="mapView" destination="Dzc-xs-8qs" id="jcm-5S-C5D"/>
-                <outlet property="settingsButton" destination="bRf-kB-VZj" id="kh6-Tw-uVf"/>
                 <outlet property="view" destination="i5M-Pr-FkT" id="sfx-zR-JGt"/>
             </connections>
         </placeholder>
@@ -48,11 +47,10 @@
                     </connections>
                 </collectionView>
                 <button opaque="NO" contentMode="scaleAspectFit" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="N35-07-4di">
-                    <rect key="frame" x="320" y="340" width="40" height="40"/>
-                    <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
+                    <rect key="frame" x="317" y="337" width="43" height="43"/>
                     <constraints>
-                        <constraint firstAttribute="width" constant="40" id="MMV-uy-irk"/>
-                        <constraint firstAttribute="height" constant="40" id="twR-ev-MoJ"/>
+                        <constraint firstAttribute="width" constant="43" id="MMV-uy-irk"/>
+                        <constraint firstAttribute="height" constant="43" id="twR-ev-MoJ"/>
                     </constraints>
                     <inset key="imageEdgeInsets" minX="-2" minY="0.0" maxX="0.0" maxY="0.0"/>
                     <state key="normal" image="location"/>
@@ -65,40 +63,25 @@
                     <rect key="frame" x="0.0" y="0.0" width="375" height="10"/>
                     <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
                 </view>
-                <button opaque="NO" contentMode="scaleAspectFit" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="bRf-kB-VZj">
-                    <rect key="frame" x="320" y="10" width="43" height="43"/>
-                    <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
-                    <constraints>
-                        <constraint firstAttribute="height" constant="43" id="IZS-GP-iDD"/>
-                        <constraint firstAttribute="width" constant="43" id="Wi2-xI-bZ0"/>
-                    </constraints>
-                    <inset key="imageEdgeInsets" minX="-2" minY="0.0" maxX="0.0" maxY="0.0"/>
-                    <state key="normal" image="settings-button"/>
-                    <state key="selected" image="location-enabled"/>
-                    <connections>
-                        <action selector="settingsWithSender:" destination="-1" eventType="touchUpInside" id="CsB-KI-OE4"/>
-                    </connections>
-                </button>
             </subviews>
             <color key="backgroundColor" red="1" green="1" blue="1" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
             <constraints>
                 <constraint firstItem="Dzc-xs-8qs" firstAttribute="top" secondItem="i5M-Pr-FkT" secondAttribute="top" constant="-250" id="1bc-Pc-XrY"/>
                 <constraint firstItem="Dzc-xs-8qs" firstAttribute="leading" secondItem="i5M-Pr-FkT" secondAttribute="leading" id="4wz-hH-HSb"/>
                 <constraint firstItem="7i9-py-jn9" firstAttribute="top" secondItem="fq1-Xw-T1U" secondAttribute="top" id="6JJ-ZN-3On"/>
-                <constraint firstItem="bRf-kB-VZj" firstAttribute="top" secondItem="7i9-py-jn9" secondAttribute="bottom" id="HMA-YL-p5G"/>
-                <constraint firstItem="7i9-py-jn9" firstAttribute="top" secondItem="bRf-kB-VZj" secondAttribute="top" constant="-10" id="Mhv-68-Qm7"/>
                 <constraint firstItem="xfc-ON-2uS" firstAttribute="trailing" secondItem="i5M-Pr-FkT" secondAttribute="trailing" id="PaD-KR-psm"/>
                 <constraint firstItem="fq1-Xw-T1U" firstAttribute="bottom" secondItem="xfc-ON-2uS" secondAttribute="bottom" constant="40" id="ToX-J0-ser"/>
                 <constraint firstAttribute="trailing" secondItem="7i9-py-jn9" secondAttribute="trailing" id="Udq-5w-cMf"/>
                 <constraint firstItem="fq1-Xw-T1U" firstAttribute="trailing" secondItem="N35-07-4di" secondAttribute="trailing" constant="15" id="WnZ-g7-HkX"/>
                 <constraint firstItem="xfc-ON-2uS" firstAttribute="top" secondItem="N35-07-4di" secondAttribute="bottom" constant="20" id="YzJ-91-ZMD"/>
+                <constraint firstAttribute="bottom" secondItem="7i9-py-jn9" secondAttribute="bottom" constant="714" id="ZWv-hW-iVX"/>
                 <constraint firstAttribute="bottom" secondItem="Dzc-xs-8qs" secondAttribute="bottom" id="aCd-38-guG"/>
                 <constraint firstAttribute="trailing" secondItem="Dzc-xs-8qs" secondAttribute="trailing" id="as8-4p-fve"/>
                 <constraint firstItem="7i9-py-jn9" firstAttribute="leading" secondItem="i5M-Pr-FkT" secondAttribute="leading" id="kjc-1R-T7G"/>
                 <constraint firstItem="xfc-ON-2uS" firstAttribute="leading" secondItem="i5M-Pr-FkT" secondAttribute="leading" id="nk2-DI-C0L"/>
-                <constraint firstItem="fq1-Xw-T1U" firstAttribute="trailing" secondItem="bRf-kB-VZj" secondAttribute="trailing" constant="12" id="qGt-Y2-Vnf"/>
                 <constraint firstItem="Dzc-xs-8qs" firstAttribute="leading" secondItem="i5M-Pr-FkT" secondAttribute="leading" id="x0o-WW-VSY"/>
                 <constraint firstItem="Dzc-xs-8qs" firstAttribute="trailing" secondItem="i5M-Pr-FkT" secondAttribute="trailing" id="xGi-Mq-2q8"/>
+                <constraint firstItem="7i9-py-jn9" firstAttribute="top" secondItem="fq1-Xw-T1U" secondAttribute="top" id="yqD-RG-BLL"/>
             </constraints>
             <simulatedNavigationBarMetrics key="simulatedTopBarMetrics" translucent="NO" prompted="NO"/>
             <viewLayoutGuide key="safeArea" id="fq1-Xw-T1U"/>
@@ -106,8 +89,7 @@
         </view>
     </objects>
     <resources>
-        <image name="location" width="16" height="16"/>
-        <image name="location-enabled" width="16" height="16"/>
-        <image name="settings-button" width="43" height="43"/>
+        <image name="location" width="43" height="43"/>
+        <image name="location-enabled" width="43" height="43"/>
     </resources>
 </document>

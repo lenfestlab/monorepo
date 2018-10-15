@@ -26,7 +26,6 @@ class MapViewController: UIViewController, LocationManagerDelegate, LocationMana
   @IBOutlet weak var collectionView:UICollectionView!
   @IBOutlet weak var mapView:MKMapView!
   @IBOutlet weak var locationButton:UIButton!
-  @IBOutlet weak var settingsButton:UIButton!
 
   convenience init() {
     self.init(nibName:nil, bundle:nil)
@@ -34,18 +33,13 @@ class MapViewController: UIViewController, LocationManagerDelegate, LocationMana
     notificationManager.delegate = self
   }
 
-  @IBAction func settings(sender: UIButton) {
+  @objc func settings() {
     let settingsController = SettingsViewController(style: .grouped)
     navigationController?.pushViewController(settingsController, animated: true)
   }
 
   override func viewDidLoad() {
     super.viewDidLoad()
-
-    locationButton.layer.cornerRadius = 5.0
-    locationButton.clipsToBounds = true
-    locationButton.layer.borderColor = UIColor.lightGray.cgColor
-    locationButton.layer.borderWidth = 1
 
     // Register cell classes
 
@@ -67,7 +61,7 @@ class MapViewController: UIViewController, LocationManagerDelegate, LocationMana
     centerMap(coordinate)
     fetchData(latitude: coordinate.latitude, longitude: coordinate.longitude)
 
-    self.navigationItem.rightBarButtonItem = UIBarButtonItem(customView: self.settingsButton)
+    self.navigationItem.rightBarButtonItem = UIBarButtonItem(image: UIImage(named: "settings-button"), style: .plain, target: self, action: #selector(settings))
 
   }
 
