@@ -4,6 +4,8 @@
 <dict>
 	<key>API_HOST</key>
 	<string>$(API_HOST)</string>
+	<key>APP_NAME</key>
+	<string>$(APP_NAME)</string>
 	<key>BUNDLE_ID_PREFIX</key>
 	<string>$(BUNDLE_ID_PREFIX)</string>
 	<key>CFBundleDevelopmentRegion</key>
@@ -55,6 +57,8 @@
 		<string>Lato-Italic.ttf</string>
 		<string>Lato-Light.ttf</string>
 	</array>
+	<key>NSMotionUsageDescription</key>
+	<string>We monitor your motion to notify you when you are near interesting spots.</string>
 	<key>UIBackgroundModes</key>
 	<array>
 		<string>location</string>

@@ -4,18 +4,20 @@ import UserNotifications
 import Alamofire
 
 protocol NotificationManagerDelegate: class {
-  func recievedNotification(_ notificationManager: NotificationManager, response: UNNotificationResponse)
-  func recievedPingMeLater(_ notificationManager: NotificationManager, identifier: String)
+  func receivedNotification(_ notificationManager: NotificationManager, response: UNNotificationResponse)
+  func receivedPingMeLater(_ notificationManager: NotificationManager, identifier: String)
 }
 
 class NotificationManager: NSObject, UNUserNotificationCenterDelegate {
 
   static let shared = NotificationManager()
 
+  var identifiers:[String: Date]
+
   weak var delegate: NotificationManagerDelegate?
   var notificationCenter:UNUserNotificationCenter?
   var authorizationStatus:UNAuthorizationStatus = .notDetermined
-  
+
   func refreshAuthorizationStatus(completionHandler: @escaping (UNAuthorizationStatus) -> Void) {
     notificationCenter?.getNotificationSettings { (settings) in
       print("Checking notification status")
@@ -23,18 +25,25 @@ class NotificationManager: NSObject, UNUserNotificationCenterDelegate {
       completionHandler(settings.authorizationStatus)
     }
   }
-  
+
   override init() {
+    var identifiers = UserDefaults.standard.dictionary(forKey: "received-notification-identifiers") as? [String: Date]
+    if identifiers == nil {
+      identifiers = [:]
+    }
+    self.identifiers = identifiers!
+
     super.init()
     notificationCenter = UNUserNotificationCenter.current()
     notificationCenter?.delegate = self
     refreshAuthorizationStatus { (status) in }
     setCategories()
   }
-  
+
   func setCategories(){
     let laterAction = UNNotificationAction(identifier: "later", title: "Ping Me Later", options: [])
-    let alarmCategory = UNNotificationCategory(identifier: "POST_ENTERED", actions: [laterAction], intentIdentifiers: [], options: [])
+    let shareAction = UNNotificationAction(identifier: "share", title: "Share", options: [.foreground])
+    let alarmCategory = UNNotificationCategory(identifier: "POST_ENTERED", actions: [laterAction, shareAction], intentIdentifiers: [], options: [])
     UNUserNotificationCenter.current().setNotificationCategories([alarmCategory])
   }
 
@@ -49,41 +58,34 @@ class NotificationManager: NSObject, UNUserNotificationCenterDelegate {
       })
     }
   }
-  
+
   func userNotificationCenter(_ center: UNUserNotificationCenter, willPresent notification: UNNotification, withCompletionHandler completionHandler: @escaping (UNNotificationPresentationOptions) -> Void) {
     completionHandler([.alert, .sound])
   }
-  
-  
+
+
   func userNotificationCenter(_ center: UNUserNotificationCenter,
                               didReceive response: UNNotificationResponse,
                               withCompletionHandler completionHandler: @escaping () -> Void) {
     let actionIdentifier = response.actionIdentifier
     if actionIdentifier == "later"{
       if let identifier = response.notification.request.content.userInfo["identifier"] as? String {
-        var identifiers = NotificationManager.identifiers()
+        var identifiers = NotificationManager.shared.identifiers
         identifiers[identifier] = Date(timeIntervalSinceNow: 60 * 60 * 24)
-        NotificationManager.saveIdentifiers(identifiers)
-        delegate?.recievedPingMeLater(self, identifier: identifier)
+        NotificationManager.shared.saveIdentifiers(identifiers)
+        delegate?.receivedPingMeLater(self, identifier: identifier)
       }
     } else {
-      delegate?.recievedNotification(self, response: response)
+      delegate?.receivedNotification(self, response: response)
     }
-    
+
     completionHandler()
   }
 
-  class func identifiers() -> [String: Date] {
-    var identifiers = UserDefaults.standard.dictionary(forKey: "recieved-notification-identifiers") as? [String: Date]
-    if identifiers == nil {
-      identifiers = [:]
-    }
-    return identifiers!
-  }
-  
-  class func saveIdentifiers(_ identifiers: [String : Date]) {
-    UserDefaults.standard.set(identifiers, forKey: "recieved-notification-identifiers")
+  func saveIdentifiers(_ identifiers: [String : Date]) {
+    UserDefaults.standard.set(identifiers, forKey: "received-notification-identifiers")
+    self.identifiers = identifiers
   }
 
-  
+
 }

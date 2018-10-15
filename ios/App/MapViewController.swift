@@ -3,6 +3,7 @@ import MapKit
 import SafariServices
 import UserNotifications
 import UPCarouselFlowLayout
+import CoreMotion
 
 private let reuseIdentifier = "PlaceCell"
 fileprivate let sectionInsets = UIEdgeInsets(top: 0, left: 0, bottom: 0, right: 0)
@@ -30,6 +31,13 @@ class MapViewController: UIViewController, LocationManagerDelegate, LocationMana
   @IBOutlet weak var locationButton:UIButton!
 
   private let analytics: AnalyticsManager
+  @IBOutlet weak var settingsButton:UIButton!
+  @IBOutlet weak var activitylabel:UILabel!
+
+  override func viewWillAppear(_ animated: Bool) {
+    super.viewWillAppear(animated)
+
+  }
 
   init(analytics: AnalyticsManager) {
     self.analytics = analytics
@@ -51,10 +59,57 @@ class MapViewController: UIViewController, LocationManagerDelegate, LocationMana
   @IBAction func settings(sender: UIButton) {
     let settingsController = SettingsViewController(analytics: self.analytics)
     navigationController?.pushViewController(settingsController, animated: true)
+    // https://stackoverflow.com/a/23133995
+    navigationItem.backBarButtonItem =
+      UIBarButtonItem(
+        title: "Back",
+        style: .plain,
+        target: nil,
+        action: nil)
   }
 
   override func viewDidLoad() {
     super.viewDidLoad()
+
+    let env = Env()
+    if env.isPreProduction && MotionManager.isActivityAvailable() {
+      MotionManager.shared.startActivityUpdates { (activity) in
+
+        var modes: Set<String> = []
+        if activity.stationary {
+          modes.insert("stationary")
+        }
+
+        if activity.walking {
+          modes.insert("walking")
+        }
+
+        if activity.running {
+          modes.insert("running")
+        }
+
+        if activity.cycling {
+          modes.insert("cycling")
+        }
+
+        if activity.automotive {
+          modes.insert("automotive")
+        }
+
+        print(modes.joined(separator: ", "))
+
+        let dateFormatter : DateFormatter = DateFormatter()
+        dateFormatter.dateFormat = "yyyy-MM-dd HH:mm:ss"
+        let date = Date()
+        let dateString = dateFormatter.string(from: date)
+
+        if modes.count > 0 {
+          self.activitylabel.text = "\(dateString) \(modes.joined(separator: ", "))"
+        }
+      }
+    } else {
+      self.activitylabel.isHidden = true
+    }
 
     let layout = UPCarouselFlowLayout()
     layout.scrollDirection = .horizontal
@@ -70,7 +125,7 @@ class MapViewController: UIViewController, LocationManagerDelegate, LocationMana
     let nib = UINib(nibName: "PlaceCell", bundle:nil)
     self.collectionView.register(nib, forCellWithReuseIdentifier: reuseIdentifier)
 
-    self.title = "Here"
+    self.title = env.appName
     if let fontStyle = UIFont(name: "WorkSans-Medium", size: 18) {
       navigationController?.navigationBar.titleTextAttributes = [NSAttributedStringKey.font: fontStyle]
     }
@@ -191,15 +246,21 @@ class MapViewController: UIViewController, LocationManagerDelegate, LocationMana
   }
 
   func regionEngtered(_ locationManager: LocationManager, region: CLCircularRegion) {
+    let env = Env()
+    if env.isPreProduction && MotionManager.shared.isDriving {
+      print("Currently driving")
+      return
+    }
+
     let identifier = region.identifier
-    var identifiers = NotificationManager.identifiers()
+    var identifiers = NotificationManager.shared.identifiers
     let sendAgainAt = identifiers[identifier]
     let now = Date(timeIntervalSinceNow: 0)
     if sendAgainAt != nil && sendAgainAt?.compare(now) == ComparisonResult.orderedDescending  {
       print(identifiers)
     } else if let place = PlaceManager.shared.placeForIdentifier(identifier) {
       identifiers[identifier] = Date(timeIntervalSinceNow: 60 * 60 * 24 * 10000)
-      NotificationManager.saveIdentifiers(identifiers)
+      NotificationManager.shared.saveIdentifiers(identifiers)
 
       PlaceManager.contentForPlace(place: place) { (content) in
         self.analytics.log(.notificationShown(post: place.post, currentLocation: place.coordinate()))
@@ -243,16 +304,16 @@ class MapViewController: UIViewController, LocationManagerDelegate, LocationMana
     return cell
   }
 
-  func openInSafari(url: URL) {
+  func openInSafari(url: URL, completion: (() -> Void)? = nil) {
     self.lastViewedURL = url
     if self.presentedViewController != nil {
       self.presentedViewController?.dismiss(animated: false, completion: {
         let svc = SFSafariViewController(url: url)
-        self.present(svc, animated: true)
+        self.present(svc, animated: true, completion: completion)
       })
     } else {
       let svc = SFSafariViewController(url: url)
-      present(svc, animated: true)
+      present(svc, animated: true, completion: completion)
     }
   }
 
@@ -325,7 +386,7 @@ class MapViewController: UIViewController, LocationManagerDelegate, LocationMana
     self.mapView.setRegion(region, animated: true)
   }
 
-  func recievedPingMeLater(_ notificationManager: NotificationManager, identifier: String) {
+  func receivedPingMeLater(_ notificationManager: NotificationManager, identifier: String) {
     print(identifier)
     if let place = PlaceManager.shared.placeForIdentifier(identifier) {
       let post = place.post
@@ -333,14 +394,15 @@ class MapViewController: UIViewController, LocationManagerDelegate, LocationMana
     }
   }
 
-  func recievedNotification(_ notificationManager: NotificationManager, response: UNNotificationResponse) {
+  func receivedNotification(_ notificationManager: NotificationManager, response: UNNotificationResponse) {
     if response.notification.request.content.categoryIdentifier == "POST_ENTERED" {
       let urlString = response.notification.request.content.userInfo["PLACE_URL"]
       let url = URL(string: urlString as! String)
-      if response.actionIdentifier == "CHECKIN_ACTION" {
-        // Check-in
-      }
-      else if let identifier = response.notification.request.content.userInfo["identifier"] as? String {
+      if response.actionIdentifier == "share" {
+        analytics.log(.tapsShareInNotificationCTA(url: url!, currentLocation: self.lastCoordinate))
+        let activityViewController = UIActivityViewController(activityItems: [url!], applicationActivities: nil)
+        self.present(activityViewController, animated: true)
+      } else if let identifier = response.notification.request.content.userInfo["identifier"] as? String {
         if let place = PlaceManager.shared.placeForIdentifier(identifier) {
           analytics.log(.tapsNotificationDefaultTapToClickThrough(post: place.post, currentLocation: self.lastCoordinate))
         }

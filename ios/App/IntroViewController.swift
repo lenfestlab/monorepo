@@ -17,8 +17,9 @@ class IntroViewController: UIViewController {
 
   override func viewDidLoad() {
     super.viewDidLoad()
+    let env = Env()
 
-    self.title = "Here"
+    self.title = env.appName
     if let fontStyle = UIFont(name: "WorkSans-Medium", size: 18) {
       navigationController?.navigationBar.titleTextAttributes = [NSAttributedStringKey.font: fontStyle]
     }
