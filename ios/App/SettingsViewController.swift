@@ -232,11 +232,8 @@ class SettingsViewController: UITableViewController, SettingsToggleCellDelegate,
     let rows = section["rows"] as! [Any]
     let row = rows[indexPath.row] as! [String:Any]
     if let path = row["path"] as? String {
-      let bundle = Bundle(for: type(of: self))
-      let envName = bundle.object(forInfoDictionaryKey: "ENV_NAME") as! String
-      let prot = (envName == "prod") ? "https" : "http"
-      let apiHost = bundle.object(forInfoDictionaryKey: "API_HOST") as! String
-      let url = URL(string: "\(prot)://\(apiHost)/\(path)")
+      let env = Env()
+      let url = URL(string: env.apiBaseUrlString)
       let svc = SFSafariViewController(url: url!)
       self.present(svc, animated: true)
     } else if let action = row["action"] as? String {
