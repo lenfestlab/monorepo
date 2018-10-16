@@ -1,4 +1,5 @@
 require 'uri'
+require 'cgi'
 
 class Post < ApplicationRecord
 
@@ -30,7 +31,8 @@ class Post < ApplicationRecord
   end
 
   def url
-    Post.ensure_https read_attribute(:url)
+    secure_url = Post.ensure_https read_attribute(:url)
+    Post.append_analytics_params secure_url
   end
 
   def as_json(options = nil)
@@ -57,6 +59,22 @@ class Post < ApplicationRecord
     return nil unless url_string
     uri = URI(url_string)
     uri.scheme = 'https'
+    uri.to_s
+  end
+
+  def self.append_analytics_params url_string
+    return nil unless url_string
+    params = {
+      utm_source: ENV["UTM_SOURCE"],
+      utm_medium: ENV["UTM_MEDIUM"],
+      utm_campaign: ENV["UTM_CAMPAIGN"],
+      utm_term: ENV["UTM_TERM"]
+    }
+    uri = URI(url_string)
+    if (query = uri.query) && (old_params = CGI.parse(query))
+      params = old_params.merge!(params)
+    end
+    uri.query = URI.encode_www_form(params)
     uri.to_s
   end
 

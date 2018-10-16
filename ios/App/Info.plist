@@ -4,6 +4,8 @@
 <dict>
 	<key>API_HOST</key>
 	<string>$(API_HOST)</string>
+	<key>GOOGLE_ANALYTICS_TID</key>
+	<string>$(GOOGLE_ANALYTICS_TID)</string>
 	<key>BUNDLE_ID_PREFIX</key>
 	<string>$(BUNDLE_ID_PREFIX)</string>
 	<key>CFBundleDevelopmentRegion</key>

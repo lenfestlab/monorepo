@@ -1,7 +1,6 @@
 import Reachability
 import UIKit
 import Firebase
-import FirebaseAnalytics
 import Crashlytics
 import Fabric
 import AlamofireNetworkActivityLogger
@@ -12,10 +11,14 @@ typealias LaunchOptions = [UIApplicationLaunchOptionsKey: Any]?
 class AppDelegate: UIResponder, UIApplicationDelegate {
 
   var window: UIWindow?
+  var analytics: AnalyticsManager!
 
   func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: LaunchOptions) -> Bool {
     NetworkActivityLogger.shared.startLogging()
-    
+
+    let env = Env()
+    self.analytics = AnalyticsManager(env)
+
     window = UIWindow(frame: UIScreen.main.bounds)
     let onboardingCompleted = UserDefaults.standard.bool(forKey: "onboarding-completed")
     if onboardingCompleted {
@@ -31,26 +34,25 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
   }
 
   func showIntro() {
-    let introController = IntroViewController()
+    let introController = IntroViewController(analytics: self.analytics)
     let navigationController = UINavigationController(rootViewController: introController)
     window!.rootViewController = navigationController
   }
 
   func showPermissions() {
-    Analytics.logEvent("viewed_location_permission_pitch", parameters: [:])
-    let permissionsController = PermissionsViewController()
+    let permissionsController = PermissionsViewController(analytics: self.analytics)
     let navigationController = UINavigationController(rootViewController: permissionsController)
     window!.rootViewController = navigationController
   }
 
   func showNotifications() {
-    let notificationsController = NotificationViewController()
+    let notificationsController = NotificationViewController(analytics: self.analytics)
     let navigationController = UINavigationController(rootViewController: notificationsController)
     window!.rootViewController = navigationController
   }
 
   func showHomeScreen() {
-    let mapController = MapViewController()
+    let mapController = MapViewController(analytics: self.analytics)
     let navigationController = UINavigationController(rootViewController: mapController)
     window!.rootViewController = navigationController
   }
