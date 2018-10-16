@@ -47,14 +47,8 @@ class MapViewController: UIViewController, LocationManagerDelegate, LocationMana
     self.lastViewedURL = nil
   }
 
-  override func viewWillAppear(_ animated: Bool) {
-    super.viewWillAppear(animated)
-    navigationController?.isNavigationBarHidden = true
-  }
-
   @IBAction func settings(sender: UIButton) {
     let settingsController = SettingsViewController(analytics: self.analytics)
-    navigationController?.isNavigationBarHidden = false
     navigationController?.pushViewController(settingsController, animated: true)
   }
 
@@ -79,7 +73,7 @@ class MapViewController: UIViewController, LocationManagerDelegate, LocationMana
 
     let coordinate = CLLocationCoordinate2D(latitude: 39.9526, longitude: -75.1652)
     centerMap(coordinate)
-    fetchData(latitude: coordinate.latitude, longitude: coordinate.longitude)
+    fetchMapData(latitude: coordinate.latitude, longitude: coordinate.longitude)
 
     self.navigationItem.rightBarButtonItem = UIBarButtonItem(image: UIImage(named: "settings-button"), style: .plain, target: self, action: #selector(settings))
 
@@ -156,8 +150,15 @@ class MapViewController: UIViewController, LocationManagerDelegate, LocationMana
   }
 
   func fetchData(latitude:CLLocationDegrees, longitude:CLLocationDegrees) {
+    dataStore.retrievePlaces(latitude: latitude, longitude: longitude, limit: 10) { (success, data, count) in
+      if self.locationManager.authorized {
+        PlaceManager.shared.trackPlaces(places: data)
+      }
+    }
+  }
 
-    dataStore.retrievePlaces(latitude: latitude, longitude: longitude) { (success, data, count) in
+  func fetchMapData(latitude:CLLocationDegrees, longitude:CLLocationDegrees) {
+    dataStore.retrievePlaces(latitude: latitude, longitude: longitude, limit: 1000) { (success, data, count) in
       self.places = data
 
       if self.places.count > 0 {
@@ -165,18 +166,11 @@ class MapViewController: UIViewController, LocationManagerDelegate, LocationMana
         self.centerMap((self.currentPlace?.coordinate())!)
       }
 
-      let radius = CLLocationDistance(100)
-      if self.locationManager.authorized {
-        PlaceManager.shared.trackPlaces(places: data, radius: radius)
-      }
-      for place in self.places {
-        let circle = MKCircle(center: place.coordinate(), radius: radius)
-        self.mapView.add(circle)
-      }
       self.reloadMap()
       self.collectionView.reloadData()
     }
   }
+
 
   // MARK: - Location manager delegate
 

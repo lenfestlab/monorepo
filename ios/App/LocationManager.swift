@@ -31,7 +31,7 @@ class LocationManager: NSObject, CLLocationManagerDelegate {
 
   override init() {
     locationManager = CLLocationManager()
-    locationManager.desiredAccuracy = kCLLocationAccuracyThreeKilometers
+    locationManager.desiredAccuracy = kCLLocationAccuracyHundredMeters
     locationManager.pausesLocationUpdatesAutomatically = false
     locationManager.allowsBackgroundLocationUpdates = true
     super.init()

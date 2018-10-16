@@ -44,6 +44,7 @@ struct Place: JSONDecodable, Codable, Identifiable {
   let imageURL: URL?
   let location: Location?
   let post: Post
+  let radius: Double?
 
   init?(json: JSON) {
     self.identifier = ("identifier" <~~ json)!
@@ -52,6 +53,7 @@ struct Place: JSONDecodable, Codable, Identifiable {
     self.imageURL = "image_url" <~~ json
     self.location = "location" <~~ json
     self.post = ("post" <~~ json)!
+    self.radius = "radius" <~~ json
   }
   
   func coordinate() -> CLLocationCoordinate2D {

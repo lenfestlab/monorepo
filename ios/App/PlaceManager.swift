@@ -19,14 +19,14 @@ class PlaceManager: NSObject {
     }
   }
   
-  func trackPlaces(places: [Place], radius: CLLocationDistance) {
+  func trackPlaces(places: [Place]) {
     removeAllMonitoredRegions()
     
     try! placesStore.save(places)
     
     let center = UNUserNotificationCenter.current()
     for place in places {
-      PlaceManager.trackPlace(place: place, radius: radius, center: center)
+      PlaceManager.trackPlace(place: place, radius: place.radius ?? 100, center: center)
     }
   }
   
