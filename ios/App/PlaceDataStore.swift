@@ -5,12 +5,12 @@ import CoreLocation
 
 class PlaceDataStore: NSObject {
 
-  func retrievePlaces(latitude: CLLocationDegrees, longitude: CLLocationDegrees, completion: @escaping (Bool, [Place], Int) -> Void) {
+  func retrievePlaces(latitude: CLLocationDegrees, longitude: CLLocationDegrees, limit: Int, completion: @escaping (Bool, [Place], Int) -> Void) {
 
     let env = Env()
     let url = "\(env.apiBaseUrlString)/places.json"
 
-    let params = ["lat": latitude, "lng": longitude, "limit": 10]
+    let params = ["lat": latitude, "lng": longitude, "limit": limit] as [String : Any]
     Alamofire.request(url, parameters: params).responseJSON { response in
       let json = response.result.value as? JSON
       if (json == nil) {
