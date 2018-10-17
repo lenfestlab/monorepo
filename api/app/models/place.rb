@@ -13,7 +13,7 @@ class Place < ApplicationRecord
   reverse_geocoded_by :lat, :lng
 
   def self.default_search_radius # km
-    ENV["DEFAULT_SEARCH_RADIUS"] || 200
+    ENV["DEFAULT_SEARCH_RADIUS"].to_i || 200
   end
 
   # NOTE: AR.includes incompat w/ geocoder:
@@ -27,9 +27,11 @@ class Place < ApplicationRecord
 
   delegate :url, to: :post
 
-  [:title, :blurb].each do |attr|
+  [:title, :blurb, :radius].each do |attr|
     define_method(attr) do
-      read_attribute(attr) || post.send(attr)
+      read_attribute(attr) ||
+        post.send(attr) ||
+        Post.default_trigger_radius
     end
   end
 
@@ -51,6 +53,7 @@ class Place < ApplicationRecord
         :blurb,
         :image_url,
         :location,
+        :radius,
         :post
       ]
     }.merge(options || {}))

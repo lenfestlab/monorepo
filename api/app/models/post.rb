@@ -51,8 +51,8 @@ class Post < ApplicationRecord
     }.merge(options || {}))
   end
 
-  def self.default_radius
-    ENV["DEFAULT_RADIUS"] || 100
+  def self.default_trigger_radius
+    ENV["DEFAULT_TRIGGER_RADIUS"].to_i || 100
   end
 
   def self.ensure_https url_string
@@ -85,7 +85,7 @@ class Post < ApplicationRecord
     end
 
     configure :radius do
-      help "Meters. Optional, if blank defaults to #{Post.default_radius}"
+      help "Meters. Optional, if blank defaults to #{Post.default_trigger_radius}"
     end
 
   end
