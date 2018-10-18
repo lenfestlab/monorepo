@@ -50,6 +50,9 @@ struct AnalyticsEvent {
   static let tapsGetNotifiedButton = AnalyticsEvent(name: "enable-notifications", category: .onboarding, label: "Get Notified")
   static let tapsEnableLocationButton = AnalyticsEvent(name: "enable-location-tracking", category: .onboarding, label: "enable-location")
 
+  static let tapsSkipLocationButton = AnalyticsEvent(name: "enable-location-tracking", category: .onboarding, label: "skip")
+  static let tapsSkipNotifificationsButton = AnalyticsEvent(name: "enable-notifications", category: .onboarding, label: "skip")
+
   static func selectsLocationTrackingPerfmissions(status: CLAuthorizationStatus) -> AnalyticsEvent {
     var label = "not-determined"
     if status == CLAuthorizationStatus.authorizedWhenInUse {
@@ -84,7 +87,12 @@ struct AnalyticsEvent {
   }
 
   static func mapViewed(currentLocation: CLLocationCoordinate2D?, source url:URL?) -> AnalyticsEvent {
-    return AnalyticsEvent(name:  "open-map", category: .app, label:url?.absoluteString, location:currentLocation)
+    var label = "direct"
+    if url != nil {
+      label = (url?.absoluteString)!
+    }
+
+    return AnalyticsEvent(name:  "open-map", category: .app, label:label, location:currentLocation)
   }
 
   static func tapsOnPin(post: Post, currentLocation: CLLocationCoordinate2D?) -> AnalyticsEvent {

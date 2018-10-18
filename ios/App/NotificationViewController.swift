@@ -32,6 +32,7 @@ class NotificationViewController: UIViewController, UNUserNotificationCenterDele
   }
 
   @IBAction func skip(sender: UIButton) {
+    self.analytics.log(.tapsSkipNotifificationsButton)
     let application = UIApplication.shared
     let appDelegate = application.delegate as? AppDelegate
     appDelegate?.showPermissions()
