@@ -32,7 +32,7 @@ struct AnalyticsEvent {
     if location != nil {
       let lat = String(format:"%f", location!.latitude)
       let lng = String(format:"%f", location!.longitude)
-      self.metadata["dimension2"] = "\(lat),\(lng)"
+      self.metadata["cd2"] = "\(lat),\(lng)"
     }
   }
 
@@ -149,7 +149,7 @@ class AnalyticsManager {
       "ds": "app", // "Data source" - https://goo.gl/BNTRMF
 
       //"installation-id"
-      "dimension1": env.installationId // same value as "cid" param above
+      "cd1": env.installationId // same value as "cid" param above
 
       // "User ID" - https://goo.gl/ZXsk6q
       // > This is intended to be a known identifier for a user provided by the
