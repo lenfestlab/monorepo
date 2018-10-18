@@ -53,6 +53,7 @@ class PermissionsViewController: UIViewController, LocationManagerAuthorizationD
   }
 
   @IBAction func skip(sender: UIButton) {
+    self.analytics.log(.tapsSkipLocationButton)
     next()
   }
 
