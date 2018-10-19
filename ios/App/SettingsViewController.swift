@@ -67,6 +67,7 @@ class SettingsViewController: UITableViewController, SettingsToggleCellDelegate,
 
     case 2:
       print("Clear History")
+      analytics.log(.clearHistory())
       NotificationManager.saveIdentifiers([:])
 
     default:

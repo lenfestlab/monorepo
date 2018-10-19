@@ -123,6 +123,10 @@ struct AnalyticsEvent {
     }
   }
 
+  static func clearHistory() -> AnalyticsEvent {
+    return AnalyticsEvent(name: "clear-history", category: .settings)
+  }
+
 }
 
 class AnalyticsManager {
