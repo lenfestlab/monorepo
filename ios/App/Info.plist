@@ -4,8 +4,6 @@
 <dict>
 	<key>API_HOST</key>
 	<string>$(API_HOST)</string>
-	<key>GOOGLE_ANALYTICS_TID</key>
-	<string>$(GOOGLE_ANALYTICS_TID)</string>
 	<key>BUNDLE_ID_PREFIX</key>
 	<string>$(BUNDLE_ID_PREFIX)</string>
 	<key>CFBundleDevelopmentRegion</key>
@@ -21,11 +19,13 @@
 	<key>CFBundlePackageType</key>
 	<string>APPL</string>
 	<key>CFBundleShortVersionString</key>
-	<string>1.0</string>
+	<string>1.0.0</string>
 	<key>CFBundleVersion</key>
 	<string>(Set automatically in custom Build Phases script)</string>
 	<key>ENV_NAME</key>
 	<string>$(ENV_NAME)</string>
+	<key>GOOGLE_ANALYTICS_TID</key>
+	<string>$(GOOGLE_ANALYTICS_TID)</string>
 	<key>LSRequiresIPhoneOS</key>
 	<true/>
 	<key>NSAppTransportSecurity</key>
@@ -45,6 +45,16 @@
 	<string>We monitor your location to notify you when you are near interesting spots.</string>
 	<key>NSLocationWhenInUseUsageDescription</key>
 	<string>We monitor your location to notify you when you are near interesting spots.</string>
+	<key>UIAppFonts</key>
+	<array>
+		<string>Lato-Regular.ttf</string>
+		<string>WorkSans-Medium.ttf</string>
+		<string>WorkSans-Regular.ttf</string>
+		<string>WorkSans-SemiBold.ttf</string>
+		<string>WorkSans-Bold.ttf</string>
+		<string>Lato-Italic.ttf</string>
+		<string>Lato-Light.ttf</string>
+	</array>
 	<key>UIBackgroundModes</key>
 	<array>
 		<string>location</string>
@@ -58,16 +68,6 @@
 	</array>
 	<key>UIRequiresFullScreen</key>
 	<true/>
-	<key>UIAppFonts</key>
-	<array>
-		<string>Lato-Regular.ttf</string>
-		<string>WorkSans-Medium.ttf</string>
-		<string>WorkSans-Regular.ttf</string>
-		<string>WorkSans-SemiBold.ttf</string>
-		<string>WorkSans-Bold.ttf</string>
-		<string>Lato-Italic.ttf</string>
-		<string>Lato-Light.ttf</string>
-	</array>
 	<key>UISupportedInterfaceOrientations</key>
 	<array>
 		<string>UIInterfaceOrientationPortrait</string>
