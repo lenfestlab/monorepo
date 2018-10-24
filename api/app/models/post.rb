@@ -20,7 +20,9 @@ class Post < ApplicationRecord
   end
 
   def image_url
-    Post.ensure_https read_attribute(:image_url)
+    Post.ensure_https(
+      Post.ensure_present(
+        read_attribute(:image_url)))
   end
 
   # NOTE: deprecated
@@ -53,6 +55,10 @@ class Post < ApplicationRecord
 
   def self.default_trigger_radius
     ENV["DEFAULT_TRIGGER_RADIUS"].to_i || 100
+  end
+
+  def self.ensure_present string
+    string.present? ? string : nil
   end
 
   def self.ensure_https url_string
