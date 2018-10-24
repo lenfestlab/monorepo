@@ -24,19 +24,20 @@ class Place < ApplicationRecord
       .preload(:post)
   }
 
-
   delegate :url, to: :post
 
   [:title, :blurb, :radius].each do |attr|
     define_method(attr) do
-      read_attribute(attr) ||
-        post.send(attr) ||
+      Post.ensure_present(read_attribute(attr)) ||
+        Post.ensure_present(post.send(attr)) ||
         Post.default_trigger_radius
     end
   end
 
   def image_url
-    Post.ensure_https(read_attribute(:image_url)) || post.image_url
+    Post.ensure_https(
+      Post.ensure_present(
+        read_attribute(:image_url))) || post.image_url
   end
 
   def location
