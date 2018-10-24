@@ -5,7 +5,8 @@ targets:
       - carthage: Gloss
       - carthage: UserDefaultsStore
       - carthage: GoogleReporter
-
+      - carthage: UPCarouselFlowLayout
+      
       # Alamofire
       - carthage: Alamofire
       - carthage: AlamofireImage

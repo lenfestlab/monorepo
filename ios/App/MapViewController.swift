@@ -2,6 +2,7 @@ import UIKit
 import MapKit
 import SafariServices
 import UserNotifications
+import UPCarouselFlowLayout
 
 private let reuseIdentifier = "PlaceCell"
 fileprivate let sectionInsets = UIEdgeInsets(top: 0, left: 0, bottom: 0, right: 0)
@@ -54,6 +55,15 @@ class MapViewController: UIViewController, LocationManagerDelegate, LocationMana
 
   override func viewDidLoad() {
     super.viewDidLoad()
+
+    let layout = UPCarouselFlowLayout()
+    layout.scrollDirection = .horizontal
+    let width = collectionView.frame.size.width - 2*padding
+    layout.spacingMode = .fixed(spacing: 0)
+    layout.sideItemScale = 1.0
+    layout.itemSize = CGSize(width: width, height: collectionView.frame.size.height)
+
+    self.collectionView.collectionViewLayout = layout
 
     // Register cell classes
 
@@ -259,7 +269,6 @@ class MapViewController: UIViewController, LocationManagerDelegate, LocationMana
     return true
   }
 
-  private var indexOfCellBeforeDragging = 0
   private var collectionViewFlowLayout: UICollectionViewFlowLayout {
     return self.collectionView.collectionViewLayout as! UICollectionViewFlowLayout
   }
@@ -286,46 +295,11 @@ class MapViewController: UIViewController, LocationManagerDelegate, LocationMana
     return safeIndex
   }
 
-  func scrollViewWillBeginDragging(_ scrollView: UIScrollView) {
-    indexOfCellBeforeDragging = indexOfMajorCell()
-  }
 
-  // Logic from: https://github.com/hershalle/CollectionViewWithPaging-Finish/blob/65ac92c2db31eef7404aa1013ecc1cada45ee0c8/CollectionViewWithPaging/ViewController.swift
-
-  func scrollViewWillEndDragging(_ scrollView: UIScrollView, withVelocity velocity: CGPoint, targetContentOffset: UnsafeMutablePointer<CGPoint>) {
-    // Stop scrollView sliding:
-    targetContentOffset.pointee = scrollView.contentOffset
-
-    // calculate where scrollView should snap to:
-    let indexOfMajorCell = self.indexOfMajorCell()
-
-    // calculate conditions:
-    let dataSourceCount = collectionView(collectionView!, numberOfItemsInSection: 0)
-    let swipeVelocityThreshold: CGFloat = 0.5 // after some trail and error
-    let hasEnoughVelocityToSlideToTheNextCell = indexOfCellBeforeDragging + 1 < dataSourceCount && velocity.x > swipeVelocityThreshold
-    let hasEnoughVelocityToSlideToThePreviousCell = indexOfCellBeforeDragging - 1 >= 0 && velocity.x < -swipeVelocityThreshold
-    let majorCellIsTheCellBeforeDragging = indexOfMajorCell == indexOfCellBeforeDragging
-    let didUseSwipeToSkipCell = majorCellIsTheCellBeforeDragging && (hasEnoughVelocityToSlideToTheNextCell || hasEnoughVelocityToSlideToThePreviousCell)
-
+  func scrollViewDidEndDecelerating(_ scrollView: UIScrollView) {
     var place:Place
-    if didUseSwipeToSkipCell {
-      let spacing = CGFloat(10)
-      let snapToIndex = indexOfCellBeforeDragging + (hasEnoughVelocityToSlideToTheNextCell ? 1 : -1)
-      let toValue = (collectionViewFlowLayout.itemSize.width + spacing) * CGFloat(snapToIndex)
-
-      // Damping equal 1 => no oscillations => decay animation:
-      UIView.animate(withDuration: 0.3, delay: 0, usingSpringWithDamping: 1, initialSpringVelocity: velocity.x, options: .allowUserInteraction, animations: {
-        scrollView.contentOffset = CGPoint(x: toValue, y: 0)
-        scrollView.layoutIfNeeded()
-      }, completion: nil)
-
-      place = self.places[snapToIndex]
-    } else {
-      let indexPath = IndexPath(row: indexOfMajorCell, section: 0)
-      scrollToItem(at: indexPath)
-      place = self.places[indexPath.row]
-    }
-
+    let snapToIndex = indexOfMajorCell()
+    place = self.places[snapToIndex]
     analytics.log(.swipesCarousel(post: place.post, currentLocation: self.lastCoordinate))
     updateCurrentPlace(place: place)
   }
