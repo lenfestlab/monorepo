@@ -8,7 +8,10 @@ Rails.application.routes.draw do
   # static pages
   get "/privacy", to: redirect("privacy.html")
   get "/tos", to: redirect("tos.html")
-  get "/about", to: redirect("https://medium.com/the-lenfest-local-lab")
+
+  get "/about", to: redirect(
+    (ENV["APP_ABOUT_URL"] ||
+     "https://medium.com/the-lenfest-local-lab"))
 
   get "force_exception" => "application#force_exception"
 end
