@@ -43,6 +43,8 @@ class MapViewController: UIViewController, LocationManagerDelegate, LocationMana
     self.analytics = analytics
     super.init(nibName: nil, bundle: nil)
     notificationManager.delegate = self
+    locationManager.delegate = self
+    locationManager.authorizationDelegate = self
   }
 
   required init?(coder aDecoder: NSCoder) {
@@ -81,7 +83,7 @@ class MapViewController: UIViewController, LocationManagerDelegate, LocationMana
           activity.formattedDescription,
           "isDriving: \(mm.isDriving)",
           "stoppedDrivingAt: \(mm.stoppedDrivingAtFormatted)",
-          "hasBeenDriving [< \(mm.drivingThreshold) min]: \(mm.hasBeenDriving)",
+          "hasBeenDriving [< \(mm.drivingThreshold) min ago]: \(mm.hasBeenDriving)",
           "=> skipNotifications: \(mm.skipNotifications)"
         ]
 
@@ -113,11 +115,7 @@ class MapViewController: UIViewController, LocationManagerDelegate, LocationMana
     navigationController?.navigationBar.tintColor =  UIColor.offRed()
     navigationController?.navigationBar.isTranslucent = false
 
-    locationManager.delegate = self
-    locationManager.authorizationDelegate = self
-
     let coordinate = CLLocationCoordinate2D(latitude: 39.9526, longitude: -75.1652)
-    self.lastCoordinate = coordinate
     centerMap(coordinate, span: MKCoordinateSpanMake(0.04, 0.04))
     fetchMapData(latitude: coordinate.latitude, longitude: coordinate.longitude)
 
@@ -129,6 +127,7 @@ class MapViewController: UIViewController, LocationManagerDelegate, LocationMana
     let coordinate = userLocation.coordinate
     if lastCoordinate == nil {
       mapView.setCenter(coordinate, animated: true)
+      fetchData(latitude: coordinate.latitude, longitude: coordinate.longitude)
     }
     lastCoordinate = coordinate
   }
@@ -196,6 +195,7 @@ class MapViewController: UIViewController, LocationManagerDelegate, LocationMana
   }
 
   func fetchData(latitude:CLLocationDegrees, longitude:CLLocationDegrees) {
+    print("fetchData: \(latitude) \(longitude)")
     dataStore.retrievePlaces(latitude: latitude, longitude: longitude, limit: 10) { (success, data, count) in
       if self.locationManager.authorized {
         PlaceManager.shared.trackPlaces(places: data)
@@ -221,47 +221,18 @@ class MapViewController: UIViewController, LocationManagerDelegate, LocationMana
   // MARK: - Location manager delegate
 
   func locationUpdated(_ locationManager: LocationManager, coordinate: CLLocationCoordinate2D) {
+    print("mapviewcontroller locationManager locationUpdated: \(coordinate)")
     lastCoordinate = coordinate
     fetchData(latitude: coordinate.latitude, longitude: coordinate.longitude)
   }
 
-  func regionEngtered(_ locationManager: LocationManager, region: CLCircularRegion) {
-    let env = Env()
-    if env.isPreProduction && MotionManager.shared.skipNotifications {
-      print("skip due to motion state")
-      return
-    }
-
-    let identifier = region.identifier
-    var identifiers = NotificationManager.shared.identifiers
-    let sendAgainAt = identifiers[identifier]
-    let now = Date(timeIntervalSinceNow: 0)
-    if sendAgainAt != nil && sendAgainAt?.compare(now) == ComparisonResult.orderedDescending  {
-      print(identifiers)
-    } else if let place = PlaceManager.shared.placeForIdentifier(identifier) {
-      identifiers[identifier] = Date(timeIntervalSinceNow: 60 * 60 * 24 * 10000)
-      NotificationManager.shared.saveIdentifiers(identifiers)
-
-      PlaceManager.contentForPlace(place: place) { (content) in
-        self.analytics.log(.notificationShown(post: place.post, currentLocation: place.coordinate()))
-        let request = UNNotificationRequest(identifier: UUID().uuidString, content: content, trigger: nil)
-        let center = UNUserNotificationCenter.current()
-        center.add(request)
-      }
-    }
-  }
-
   func authorized(_ locationManager: LocationManager, status: CLAuthorizationStatus) {
+    print("locationManagerDelegate authorized")
     centerCurrentLocation()
-    locationManager.startMonitoringSignificantLocationChanges()
   }
 
   func notAuthorized(_ locationManager: LocationManager, status: CLAuthorizationStatus) {
-  }
-
-  override func didReceiveMemoryWarning() {
-    super.didReceiveMemoryWarning()
-    // Dispose of any resources that can be recreated.
+    print("locationManagerDelegate notAuthorized")
   }
 
 
@@ -367,7 +338,7 @@ class MapViewController: UIViewController, LocationManagerDelegate, LocationMana
   }
 
   func receivedPingMeLater(_ notificationManager: NotificationManager, identifier: String) {
-    print(identifier)
+    print("notificationManagerDelegate receivedPingMeLater: \(identifier)")
     if let place = PlaceManager.shared.placeForIdentifier(identifier) {
       let post = place.post
       analytics.log(.tapsPingMeLaterInNotificationCTA(post: post, currentLocation: self.lastCoordinate))
@@ -375,6 +346,7 @@ class MapViewController: UIViewController, LocationManagerDelegate, LocationMana
   }
 
   func receivedNotification(_ notificationManager: NotificationManager, response: UNNotificationResponse) {
+    print("notificationManagerDelegate receivedNotification: \(response)")
     if response.notification.request.content.categoryIdentifier == "POST_ENTERED" {
       let urlString = response.notification.request.content.userInfo["PLACE_URL"]
       let url = URL(string: urlString as! String)
