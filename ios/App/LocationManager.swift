@@ -4,7 +4,6 @@ import UserNotifications
 
 protocol LocationManagerDelegate: class {
   func locationUpdated(_ locationManager: LocationManager, coordinate: CLLocationCoordinate2D)
-  func regionEngtered(_ locationManager: LocationManager, region: CLCircularRegion)
 }
 
 protocol LocationManagerAuthorizationDelegate: class {
@@ -22,10 +21,12 @@ class LocationManager: NSObject, CLLocationManagerDelegate {
   var authorized = false
 
   func startMonitoringSignificantLocationChanges() {
+    print("locationManager startMonitoringSignificantLocationChanges")
     locationManager.startMonitoringSignificantLocationChanges()
   }
 
   func startUpdatingLocation() {
+    print("locationManager startUpdatingLocation")
     locationManager.startUpdatingLocation()
   }
 
@@ -39,26 +40,24 @@ class LocationManager: NSObject, CLLocationManagerDelegate {
   }
 
   func enableBasicLocationServices() {
+    print("locationManager enableBasicLocationServices")
     let status = CLLocationManager.authorizationStatus()
     authorizationStatusUpdated(status: status)
   }
 
   func authorizationStatusUpdated(status: CLAuthorizationStatus) {
+    print("locationManager authorizationStatusUpdated: \(status.rawValue)")
     switch status {
     case .notDetermined:
       // Request when-in-use authorization initially
       locationManager.requestAlwaysAuthorization()
-      break
-
     case .restricted, .denied:
       authorized = false
-      authorizationDelegate?.notAuthorized(self, status: status)
-      break
-
+      authorizationDelegate!.notAuthorized(self, status: status)
     case .authorizedWhenInUse, .authorizedAlways:
       authorized = true
-      authorizationDelegate?.authorized(self, status: status)
-      break
+      authorizationDelegate!.authorized(self, status: status)
+      self.startMonitoringSignificantLocationChanges()
     }
   }
 
@@ -70,27 +69,67 @@ class LocationManager: NSObject, CLLocationManagerDelegate {
 
   func locationManager(_ manager: CLLocationManager,
                        didUpdateLocations locations: [CLLocation]) {
+    print("locationManager:didUpdateLocations \(locations)")
     let latestLocation: CLLocation = locations[locations.count - 1]
     let latitude = String(latestLocation.coordinate.latitude)
     let longitude = String(latestLocation.coordinate.longitude)
-    print("\(latitude) \(longitude)")
+    print("\t \(latitude) \(longitude)")
 
     self.delegate?.locationUpdated(self, coordinate: latestLocation.coordinate)
   }
 
   func locationManager(_ manager: CLLocationManager, monitoringDidFailFor region: CLRegion?, withError error: Error) {
-    print("Monitoring failed for region with identifier: \(region!.identifier)")
+    print("locationManager failed for region with identifier: \(region!.identifier) ")
     print(error)
   }
 
   func locationManager(_ manager: CLLocationManager, didFailWithError error: Error) {
-    print("Location Manager failed with the following error: \(error)")
+    print("locationManager failed with the following error: \(error)")
   }
 
   func locationManager(_ manager: CLLocationManager, didEnterRegion region: CLRegion) {
-    if region is CLCircularRegion {
-      self.delegate?.regionEngtered(self, region: region as! CLCircularRegion)
+    print("locationManager:didEnterRegion \(region)")
+    self.analytics!.log(.regionEntered(source: "LocationManager"))
+
+    if let region = region as? CLCircularRegion {
+
+      if Env().isPreProduction && MotionManager.shared.skipNotifications {
+        self.analytics!.log(.notificationSkipped(region.center))
+        return
+      }
+
+      let identifier = region.identifier
+      var identifiers = NotificationManager.shared.identifiers
+      let sendAgainAt = identifiers[identifier]
+      let now = Date()
+      if sendAgainAt != nil && sendAgainAt?.compare(now) == ComparisonResult.orderedDescending  {
+        print("\t sendAgainAt \(sendAgainAt!)")
+      } else if let place = PlaceManager.shared.placeForIdentifier(identifier) {
+        print("\t place \(place)")
+        identifiers[identifier] = Date(timeIntervalSinceNow: 60 * 60 * 24 * 10000)
+        NotificationManager.shared.saveIdentifiers(identifiers)
+
+        PlaceManager.contentForPlace(place: place) { (content) in
+          self.analytics!.log(.notificationShown(post: place.post, currentLocation: place.coordinate()))
+          let request = UNNotificationRequest(identifier: UUID().uuidString, content: content, trigger: nil)
+          let center = UNUserNotificationCenter.current()
+          center.add(request, withCompletionHandler: { (error) in
+            if let error = error {
+              print("\n\t ERROR: \(error)")
+            } else {
+              print("\n\t request fulfilled \(request)")
+            }
+          })
+        }
+      }
     }
+  }
+
+  var analytics: AnalyticsManager?
+  static func sharedWith(analytics: AnalyticsManager) -> LocationManager {
+    let manager = LocationManager.shared
+    manager.analytics = analytics
+    return manager
   }
 
 }

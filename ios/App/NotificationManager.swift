@@ -60,6 +60,7 @@ class NotificationManager: NSObject, UNUserNotificationCenterDelegate {
   }
 
   func userNotificationCenter(_ center: UNUserNotificationCenter, willPresent notification: UNNotification, withCompletionHandler completionHandler: @escaping (UNNotificationPresentationOptions) -> Void) {
+    print("notificationmanager userNotificationCenter willPresent: \(notification) withCompletionHandler")
     completionHandler([.alert, .sound])
   }
 

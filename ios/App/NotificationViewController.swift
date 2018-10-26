@@ -47,25 +47,19 @@ class NotificationViewController: UIViewController, UNUserNotificationCenterDele
     self.analytics.log(.tapsGetNotifiedButton)
     let application = UIApplication.shared
     let appDelegate = application.delegate as? AppDelegate
-    self.setupRemoteNotifications(application, completionHandler: { (_, _) in
+    self.requestAuthorization(application, completionHandler: { (_, _) in
       DispatchQueue.main.async {
         appDelegate?.showPermissions()
       }
     })
   }
 
-  func setupRemoteNotifications(_ application: UIApplication, completionHandler: @escaping (UNAuthorizationStatus, Error?) -> Swift.Void) {
-    UNUserNotificationCenter.current().delegate = self
-
+  func requestAuthorization(_ application: UIApplication, completionHandler: @escaping (UNAuthorizationStatus, Error?) -> Void) {
     notificationManager.requestAuthorization() { (status, error) in
       completionHandler(status, error)
       self.analytics.log(.selectsNotificationPermissions(authorizationStatus: status))
     }
-        
+
   }
 
-    override func didReceiveMemoryWarning() {
-        super.didReceiveMemoryWarning()
-        // Dispose of any resources that can be recreated.
-    }
 }

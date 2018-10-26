@@ -4,10 +4,14 @@ import CoreLocation
 import Gloss
 import GoogleReporter
 import CoreMotion
+import Firebase
+typealias FirebaseAnalytics = Analytics
+
 
 typealias Meta = Dictionary<String, String>
 
 enum Category: String {
+  case debug // for pre-production use only
   case onboarding, notification, settings
   case app = "in-app"
 }
@@ -16,7 +20,6 @@ struct AnalyticsEvent {
   var name: String // NOTE: GA "action": https://goo.gl/opYrNg
   var category: Category
   var label: String? = ""
-  var value: Int?
   var metadata: Meta = [:]
 
   init(
@@ -33,7 +36,9 @@ struct AnalyticsEvent {
     if location != nil {
       let lat = String(format:"%f", location!.latitude)
       let lng = String(format:"%f", location!.longitude)
-      self.metadata["cd2"] = "\(lat),\(lng)"
+      let latlng = "\(lat),\(lng)"
+      self.metadata["lat-lng"] = latlng
+      self.metadata["cd2"] = latlng
     }
   }
 
@@ -144,20 +149,41 @@ struct AnalyticsEvent {
     return AnalyticsEvent(name: "clear-history", category: .settings)
   }
 
+  static func notificationSkipped(_ location: CLLocationCoordinate2D?) -> AnalyticsEvent {
+    return
+      AnalyticsEvent(
+        name: "notification-skipped",
+        metadata: ["cause": "motion"],
+        category: .debug,
+        label: "motion",
+        location: location)
+  }
+
+  static func regionEntered(source: String) -> AnalyticsEvent {
+    return
+      AnalyticsEvent(
+        name: "region-entered",
+        metadata: ["source": source],
+        category: .debug,
+        label: source)
+  }
+
 }
 
 class AnalyticsManager {
 
+  private let env: Env
   private var ga: GoogleReporter
 
   init(_ env: Env) {
+    self.env = env
     self.ga = GoogleReporter.shared // NOTE: init private, must use `.shared`
 
     ga.configure(withTrackerId: env.get(.googleAnalyticsTrackingId))
 
     ga.anonymizeIP = false // pending GDPR compliance - https://git.io/fxuUt
 
-    ga.quietMode = ["prod", "stag"].contains(env.get(.name))
+    ga.quietMode = env.isNamed(.prod)
 
     // "Client ID" - "cid" param - https://goo.gl/gexXmE
     // > This field is required if User ID (uid) is not specified in the request.
@@ -190,14 +216,52 @@ class AnalyticsManager {
       // https://goo.gl/5QFvkb
       // "uid": env.userId,
     ]
+
+    // Firebase
+    ["installation_id", "cd1"].forEach { propName in
+      FirebaseAnalytics.setUserProperty(env.installationId, forName: propName)
+    }
+
   }
 
   func log(_ event: AnalyticsEvent) {
-    ga.event(
-      event.category.rawValue,
-      action: event.name,
-      label: (event.label ?? ""),
-      parameters: event.metadata)
+    let action = event.name
+    let category = event.category.rawValue
+    let label = (event.label ?? "")
+
+    // Google Analytics
+    if ![.debug].contains(event.category) { // skip events used for debugging
+      ga.event(category, action: action, label: label, parameters: event.metadata)
+    }
+
+    // Firebase
+    guard env.isPreProduction else { return } // no need for FIR in prod yet
+    // ... > Event name must contain only letters, numbers, or underscores
+    let name = event.name.replacingOccurrences(of: "-", with: "_")
+    var firebaseParams = event.metadata as Dictionary<String, NSObject>
+    // > Event parameter name must contain only letters, numbers, or underscores: lat-lng
+    firebaseParams.replacingOccurrencesInAllKeys(of: "-", with: "_")
+    firebaseParams.merge([
+      // > Parameter name uses reserved prefix. Ignoring parameter: ga_category
+      "category": category as NSObject,
+      // TODO: if FIR support requested in prod, must first resolve FIR/GA data
+      // model incompatibility, eg:
+      // > Event parameter value is too long. The maximum supported length is 100: https://...
+      "label": label.prefix(100) as NSObject,
+    ]) { (_, new) -> NSObject in new }
+    FirebaseAnalytics.logEvent(name, parameters: firebaseParams)
   }
 
+}
+
+public extension Dictionary where Key: StringProtocol {
+
+  public mutating func replacingOccurrencesInAllKeys(of: String, with: String) {
+    for key in keys {
+      // https://stackoverflow.com/questions/33180028/extend-dictionary-where-key-is-of-type-string
+      if let newKey = String(describing: key).replacingOccurrences(of: of, with: with) as? Key {
+        self[newKey] = removeValue(forKey: key)
+      }
+    }
+  }
 }

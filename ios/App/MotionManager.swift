@@ -41,7 +41,7 @@ extension CMMotionActivity {
   var formattedDescription: String {
     let startedAt = self.startDate.toFormat("HH:mm:ss")
     let modeList = self.modes.map({ $0.rawValue }).joined(separator: ",")
-    return "[\(startedAt)] [\(modeList)] (\(confidence))"
+    return "\(startedAt) [\(modeList)] (confidence: \(confidence))"
   }
 }
 

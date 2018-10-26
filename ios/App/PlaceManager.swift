@@ -20,6 +20,8 @@ class PlaceManager: NSObject {
   }
   
   func trackPlaces(places: [Place]) {
+    print("placeManager trackPlaces: \(places)")
+
     removeAllMonitoredRegions()
     
     try! placesStore.save(places)
@@ -49,6 +51,7 @@ class PlaceManager: NSObject {
   }
   
   class func contentForPlace(place: Place, completionHandler: @escaping (UNMutableNotificationContent) -> Void) {
+    print("placeManager contentForPlace \(place)")
     if let url = place.imageURL {
       getImage(url.absoluteString) { (image) in
         contentForPlace(place: place, image: image, completionHandler: completionHandler)
@@ -80,6 +83,8 @@ class PlaceManager: NSObject {
       let attachment = UNNotificationAttachment.create(identifier: "image", image: image!, options: [:])
       if attachment != nil {
         content.attachments = [attachment!]
+      } else {
+        print("ERROR: notification attachment nil \(placeURL)")
       }
     }
     
@@ -88,6 +93,7 @@ class PlaceManager: NSObject {
 
   
   class func trackPlace(place: Place, radius: CLLocationDistance, center:UNUserNotificationCenter) {
+    print("placeManager trackPlace: \(place) \n")
     let region = self.regionForPlace(place: place, radius: radius)
     LocationManager.shared.locationManager.startMonitoring(for: region)
   }

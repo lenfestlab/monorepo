@@ -12,12 +12,18 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
 
   var window: UIWindow?
   var analytics: AnalyticsManager!
+  var locationManager: LocationManager!
 
   func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: LaunchOptions) -> Bool {
     NetworkActivityLogger.shared.startLogging()
 
     let env = Env()
+
+    FirebaseApp.configure()
+    Fabric.sharedSDK().debug = env.isPreProduction
+
     self.analytics = AnalyticsManager(env)
+    self.locationManager = LocationManager.sharedWith(analytics: analytics)
 
     window = UIWindow(frame: UIScreen.main.bounds)
     let onboardingCompleted = UserDefaults.standard.bool(forKey: "onboarding-completed")
@@ -28,8 +34,6 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
     }
     window!.makeKeyAndVisible()
 
-    FirebaseApp.configure()
-    Fabric.sharedSDK().debug = true
     return true
   }
 
