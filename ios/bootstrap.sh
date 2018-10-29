@@ -11,7 +11,7 @@ mint bootstrap
 # Carthage for iOS deps
 # NOTE: omit --verbose flag, causes build error:
 # https://github.com/Carthage/Carthage/issues/2249
-carthage update --platform ios --cache-builds
+carthage bootstrap --platform ios --cache-builds
 
 # Deployment tools (fastlane) use Ruby
 asdf install

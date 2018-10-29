@@ -6,7 +6,7 @@ targets:
       - carthage: UserDefaultsStore
       - carthage: GoogleReporter
       - carthage: UPCarouselFlowLayout
-      
+
       # Alamofire
       - carthage: Alamofire
       - carthage: AlamofireImage
@@ -32,13 +32,9 @@ targets:
         embed: false
       - carthage: GoogleAppMeasurement
         embed: false
-      - carthage: GoogleToolboxForMac
-        embed: false
       - carthage: GoogleUtilities
         embed: false
       - carthage: nanopb
-        embed: false
-      - carthage: Protobuf
         embed: false
 
   Tests:

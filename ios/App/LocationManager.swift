@@ -101,7 +101,7 @@ class LocationManager: NSObject, CLLocationManagerDelegate {
       let now = Date(timeIntervalSinceNow: 0)
       if sendAgainAt != nil && sendAgainAt?.compare(now) == ComparisonResult.orderedDescending  {
         print(identifiers)
-      } else if let place = PlaceManager.shared.placeForIdentifier(identifier: identifier) {
+      } else if let place = PlaceManager.shared.placeForIdentifier(identifier) {
           identifiers[identifier] = Date(timeIntervalSinceNow: 60 * 60 * 24 * 10000)
           NotificationManager.shared.saveIdentifiers(identifiers)
 

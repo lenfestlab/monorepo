@@ -1,10 +1,3 @@
-//
-//  MotionManager.swift
-//  App
-//
-//  Created by Ajay Chainani on 10/14/18.
-//
-
 import UIKit
 import CoreMotion
 
