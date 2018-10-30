@@ -11,7 +11,7 @@ class MotionManager: NSObject {
     return CMMotionActivityManager.isActivityAvailable()
   }
 
-  func track(handler: @escaping (CMMotionActivity) -> Void) {
+  func startActivityUpdates(handler: @escaping (CMMotionActivity) -> Void) {
     manager.startActivityUpdates(to: .main) { (activity) in
       guard let activity = activity else {
         return

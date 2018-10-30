@@ -37,38 +37,6 @@ class MapViewController: UIViewController, LocationManagerDelegate, LocationMana
   override func viewWillAppear(_ animated: Bool) {
     super.viewWillAppear(animated)
 
-    if MotionManager.isActivityAvailable() {
-      MotionManager.shared.track { (activity) in
-
-        var modes: Set<String> = []
-        if activity.walking {
-          modes.insert("🚶‍")
-        }
-
-        if activity.running {
-          modes.insert("🏃‍")
-        }
-
-        if activity.cycling {
-          modes.insert("🚴‍")
-        }
-
-        if activity.automotive {
-          modes.insert("🚗")
-        }
-
-        print(modes.joined(separator: ", "))
-
-        if modes.count == 0 {
-          self.activitylabel.isHidden = true
-        } else {
-          self.activitylabel.text = modes.joined(separator: ", ")
-        }
-      }
-    } else {
-      self.activitylabel.isHidden = true
-    }
-
   }
 
   init(analytics: AnalyticsManager) {
@@ -95,6 +63,45 @@ class MapViewController: UIViewController, LocationManagerDelegate, LocationMana
 
   override func viewDidLoad() {
     super.viewDidLoad()
+
+    if MotionManager.isActivityAvailable() {
+      MotionManager.shared.startActivityUpdates { (activity) in
+
+        var modes: Set<String> = []
+        if activity.stationary {
+          modes.insert("stationary")
+        }
+
+        if activity.walking {
+          modes.insert("walking")
+        }
+
+        if activity.running {
+          modes.insert("running")
+        }
+
+        if activity.cycling {
+          modes.insert("cycling")
+        }
+
+        if activity.automotive {
+          modes.insert("automotive")
+        }
+
+        print(modes.joined(separator: ", "))
+
+        let dateFormatter : DateFormatter = DateFormatter()
+        dateFormatter.dateFormat = "yyyy-MM-dd HH:mm:ss"
+        let date = Date()
+        let dateString = dateFormatter.string(from: date)
+
+        if modes.count > 0 {
+          self.activitylabel.text = "\(dateString) \(modes.joined(separator: ", "))"
+        }
+      }
+    } else {
+      self.activitylabel.isHidden = true
+    }
 
     let layout = UPCarouselFlowLayout()
     layout.scrollDirection = .horizontal
