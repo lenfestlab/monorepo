@@ -83,7 +83,7 @@ class MapViewController: UIViewController, LocationManagerDelegate, LocationMana
 
     let coordinate = CLLocationCoordinate2D(latitude: 39.9526, longitude: -75.1652)
     self.lastCoordinate = coordinate
-    centerMap(coordinate)
+    centerMap(coordinate, span: MKCoordinateSpanMake(0.04, 0.04))
     fetchMapData(latitude: coordinate.latitude, longitude: coordinate.longitude)
 
     self.navigationItem.rightBarButtonItem = UIBarButtonItem(image: UIImage(named: "settings-button"), style: .plain, target: self, action: #selector(settings))
@@ -315,10 +315,14 @@ class MapViewController: UIViewController, LocationManagerDelegate, LocationMana
     collectionViewFlowLayout.collectionView!.scrollToItem(at: indexPath, at: .centeredHorizontally, animated: true)
   }
 
-  func centerMap(_ center: CLLocationCoordinate2D) {
-    let span = MKCoordinateSpanMake(0.04, 0.04);
-    let region = MKCoordinateRegion(center: center, span: span)
-    self.mapView.setRegion(region, animated: false)
+  func centerMap(_ center: CLLocationCoordinate2D, span: MKCoordinateSpan? = nil) {
+    let region:MKCoordinateRegion
+    if span == nil {
+      region = MKCoordinateRegion(center: center, span: self.mapView.region.span)
+    } else {
+      region = MKCoordinateRegion(center: center, span: span!)
+    }
+    self.mapView.setRegion(region, animated: true)
   }
 
   func recievedPingMeLater(_ notificationManager: NotificationManager, identifier: String) {
