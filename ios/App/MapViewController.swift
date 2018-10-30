@@ -36,7 +36,6 @@ class MapViewController: UIViewController, LocationManagerDelegate, LocationMana
 
   override func viewWillAppear(_ animated: Bool) {
     super.viewWillAppear(animated)
-    navigationController?.isNavigationBarHidden = true
 
     if MotionManager.isActivityAvailable() {
       MotionManager.shared.track { (activity) in
@@ -60,7 +59,11 @@ class MapViewController: UIViewController, LocationManagerDelegate, LocationMana
 
         print(modes.joined(separator: ", "))
 
-        self.activitylabel.text = modes.joined(separator: ", ")
+        if modes.count == 0 {
+          self.activitylabel.isHidden = true
+        } else {
+          self.activitylabel.text = modes.joined(separator: ", ")
+        }
       }
     } else {
       self.activitylabel.isHidden = true
@@ -228,6 +231,11 @@ class MapViewController: UIViewController, LocationManagerDelegate, LocationMana
   }
 
   func regionEngtered(_ locationManager: LocationManager, region: CLCircularRegion) {
+    if MotionManager.shared.currentActivity?.automotive == true {
+      print("Currently driving")
+      return
+    }
+
     let identifier = region.identifier
     var identifiers = NotificationManager.shared.identifiers
     let sendAgainAt = identifiers[identifier]
