@@ -42,7 +42,8 @@ class NotificationManager: NSObject, UNUserNotificationCenterDelegate {
 
   func setCategories(){
     let laterAction = UNNotificationAction(identifier: "later", title: "Ping Me Later", options: [])
-    let alarmCategory = UNNotificationCategory(identifier: "POST_ENTERED", actions: [laterAction], intentIdentifiers: [], options: [])
+    let shareAction = UNNotificationAction(identifier: "share", title: "Share", options: [.foreground])
+    let alarmCategory = UNNotificationCategory(identifier: "POST_ENTERED", actions: [laterAction, shareAction], intentIdentifiers: [], options: [])
     UNUserNotificationCenter.current().setNotificationCategories([alarmCategory])
   }
 

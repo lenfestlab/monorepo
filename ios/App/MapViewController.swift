@@ -295,16 +295,16 @@ class MapViewController: UIViewController, LocationManagerDelegate, LocationMana
     return cell
   }
 
-  func openInSafari(url: URL) {
+  func openInSafari(url: URL, completion: (() -> Void)? = nil) {
     self.lastViewedURL = url
     if self.presentedViewController != nil {
       self.presentedViewController?.dismiss(animated: false, completion: {
         let svc = SFSafariViewController(url: url)
-        self.present(svc, animated: true)
+        self.present(svc, animated: true, completion: completion)
       })
     } else {
       let svc = SFSafariViewController(url: url)
-      present(svc, animated: true)
+      present(svc, animated: true, completion: completion)
     }
   }
 
@@ -385,10 +385,11 @@ class MapViewController: UIViewController, LocationManagerDelegate, LocationMana
     if response.notification.request.content.categoryIdentifier == "POST_ENTERED" {
       let urlString = response.notification.request.content.userInfo["PLACE_URL"]
       let url = URL(string: urlString as! String)
-      if response.actionIdentifier == "CHECKIN_ACTION" {
-        // Check-in
-      }
-      else if let identifier = response.notification.request.content.userInfo["identifier"] as? String {
+      if response.actionIdentifier == "share" {
+        analytics.log(.tapsShareInNotificationCTA(url: url!, currentLocation: self.lastCoordinate))
+        let activityViewController = UIActivityViewController(activityItems: [url!], applicationActivities: nil)
+        self.present(activityViewController, animated: true)
+      } else if let identifier = response.notification.request.content.userInfo["identifier"] as? String {
         if let place = PlaceManager.shared.placeForIdentifier(identifier) {
           analytics.log(.tapsNotificationDefaultTapToClickThrough(post: place.post, currentLocation: self.lastCoordinate))
         }
