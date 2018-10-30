@@ -14,22 +14,10 @@ class Post < ApplicationRecord
   accepts_nested_attributes_for :places,
     allow_destroy: true
 
-  def location
-    place = places.first
-    { lat: place.lat, lng: place.lng }
-  end
-
   def image_url
     Post.ensure_https(
       Post.ensure_present(
         read_attribute(:image_url)))
-  end
-
-  # NOTE: deprecated
-  def image_urls
-    [
-      image_url
-    ]
   end
 
   def url
@@ -47,8 +35,6 @@ class Post < ApplicationRecord
       methods: [
         :identifier,
         :image_url,
-        :image_urls, # NOTE: deprecated
-        :location # NOTE: deprecafted
       ]
     }.merge(options || {}))
   end
