@@ -6,6 +6,7 @@ github "konkab/AlamofireNetworkActivityLogger" ~> 2.3
 github "omaralbeik/UserDefaultsStore" ~> 1.0
 github "ksmandersen/GoogleReporter" ~> 1.5
 github "ink-spot/UPCarouselFlowLayout"
+github "malcommac/SwiftDate"
 
 # Firebase experimental carthage support: https://git.io/fAxBS
 binary "https://dl.google.com/dl/firebase/ios/carthage/FirebaseAnalyticsBinary.json"
