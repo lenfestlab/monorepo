@@ -6,6 +6,7 @@ targets:
       - carthage: UserDefaultsStore
       - carthage: GoogleReporter
       - carthage: UPCarouselFlowLayout
+      - carthage: SwiftDate
 
       # Alamofire
       - carthage: Alamofire

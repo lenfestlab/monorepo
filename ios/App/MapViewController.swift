@@ -73,39 +73,10 @@ class MapViewController: UIViewController, LocationManagerDelegate, LocationMana
 
     let env = Env()
     if env.isPreProduction && MotionManager.isActivityAvailable() {
-      MotionManager.shared.startActivityUpdates { (activity) in
-
-        var modes: Set<String> = []
-        if activity.stationary {
-          modes.insert("stationary")
-        }
-
-        if activity.walking {
-          modes.insert("walking")
-        }
-
-        if activity.running {
-          modes.insert("running")
-        }
-
-        if activity.cycling {
-          modes.insert("cycling")
-        }
-
-        if activity.automotive {
-          modes.insert("automotive")
-        }
-
-        print(modes.joined(separator: ", "))
-
-        let dateFormatter : DateFormatter = DateFormatter()
-        dateFormatter.dateFormat = "yyyy-MM-dd HH:mm:ss"
-        let date = Date()
-        let dateString = dateFormatter.string(from: date)
-
-        if modes.count > 0 {
-          self.activitylabel.text = "\(dateString) \(modes.joined(separator: ", "))"
-        }
+      MotionManager.shared.startActivityUpdates { activity in
+        print(activity)
+        print(activity.formattedDescription)
+        self.activitylabel.text = activity.formattedDescription
       }
     } else {
       self.activitylabel.isHidden = true
@@ -247,8 +218,8 @@ class MapViewController: UIViewController, LocationManagerDelegate, LocationMana
 
   func regionEngtered(_ locationManager: LocationManager, region: CLCircularRegion) {
     let env = Env()
-    if env.isPreProduction && MotionManager.shared.isDriving {
-      print("Currently driving")
+    if env.isPreProduction && MotionManager.shared.hasBeenDriving {
+      print("skip, been driving")
       return
     }
 
