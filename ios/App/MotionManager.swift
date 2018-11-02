@@ -98,4 +98,16 @@ class MotionManager: NSObject {
     return lastDroveAt > 3.minutes.ago
   }
 
+  var isUnknown: Bool {
+    guard let activity = currentActivity else {
+      return true
+    }
+    return activity.modes.contains(.unknown)
+  }
+
+
+  var shouldSkipNotifications: Bool {
+    return (self.hasBeenDriving || self.isUnknown)
+  }
+
 }
