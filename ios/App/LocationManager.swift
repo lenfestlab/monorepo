@@ -92,8 +92,8 @@ class LocationManager: NSObject, CLLocationManagerDelegate {
       self.delegate?.regionEngtered(self, region: region as! CLCircularRegion)
 
       let env = Env()
-      if env.isPreProduction && MotionManager.shared.hasBeenDriving {
-        print("Skip notification, has been driving")
+      if env.isPreProduction && MotionManager.shared.shouldSkipNotifications {
+        print("skip due to motion state")
         return
       }
 

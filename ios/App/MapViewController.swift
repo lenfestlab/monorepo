@@ -218,8 +218,8 @@ class MapViewController: UIViewController, LocationManagerDelegate, LocationMana
 
   func regionEngtered(_ locationManager: LocationManager, region: CLCircularRegion) {
     let env = Env()
-    if env.isPreProduction && MotionManager.shared.hasBeenDriving {
-      print("skip, been driving")
+    if env.isPreProduction && MotionManager.shared.shouldSkipNotifications {
+      print("skip due to motion state")
       return
     }
 
