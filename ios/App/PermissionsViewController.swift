@@ -47,10 +47,15 @@ class PermissionsViewController: UIViewController, LocationManagerAuthorizationD
   }
   
   func next() {
-    UserDefaults.standard.set(true, forKey: "onboarding-completed")
     let application = UIApplication.shared
     let appDelegate = application.delegate as? AppDelegate
-    appDelegate?.showHomeScreen()
+    let env = Env()
+    if env.isPreProduction && MotionManager.isActivityAvailable() {
+      appDelegate?.showMotionPermissions()
+    } else {
+      UserDefaults.standard.set(true, forKey: "onboarding-completed")
+      appDelegate?.showHomeScreen()
+    }
   }
 
   @IBAction func skip(sender: UIButton) {

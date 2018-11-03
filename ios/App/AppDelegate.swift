@@ -51,6 +51,12 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
     window!.rootViewController = navigationController
   }
 
+  func showMotionPermissions() {
+    let notificationsController = MotionViewController(analytics: self.analytics)
+    let navigationController = UINavigationController(rootViewController: notificationsController)
+    window!.rootViewController = navigationController
+  }
+
   func showHomeScreen() {
     let mapController = MapViewController(analytics: self.analytics)
     let navigationController = UINavigationController(rootViewController: mapController)

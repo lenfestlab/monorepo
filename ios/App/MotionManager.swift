@@ -1,6 +1,7 @@
 import UIKit
 import CoreMotion
 import SwiftDate
+import CoreLocation
 
 extension CMMotionActivityConfidence: CustomStringConvertible {
   public var description: String {
@@ -45,11 +46,35 @@ extension CMMotionActivity {
   }
 }
 
+protocol MotionManagerAuthorizationDelegate: class {
+  func authorized(_ motionManager: MotionManager, status: CMAuthorizationStatus)
+  func notAuthorized(_ motionManager: MotionManager, status: CMAuthorizationStatus)
+}
+
 class MotionManager: NSObject {
   static let shared = MotionManager()
 
+  weak var authorizationDelegate: MotionManagerAuthorizationDelegate?
   let manager = CMMotionActivityManager()
   var currentActivity:CMMotionActivity?
+
+  func enableMotionDetection() {
+    let status = CMMotionActivityManager.authorizationStatus()
+    if status == CMAuthorizationStatus.denied {
+      self.authorizationDelegate?.notAuthorized(self, status: status)
+      return
+    }
+
+    manager.startActivityUpdates(to: .main) { (activity) in
+      self.manager.stopActivityUpdates()
+      let status = CMMotionActivityManager.authorizationStatus()
+      if status == CMAuthorizationStatus.authorized {
+        self.authorizationDelegate?.authorized(self, status: status)
+      } else {
+        self.authorizationDelegate?.notAuthorized(self, status: status)
+      }
+    }
+  }
 
   class func isActivityAvailable() -> Bool {
     return CMMotionActivityManager.isActivityAvailable()
