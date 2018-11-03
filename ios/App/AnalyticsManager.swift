@@ -3,6 +3,7 @@ import UserNotifications
 import CoreLocation
 import Gloss
 import GoogleReporter
+import CoreMotion
 
 typealias Meta = Dictionary<String, String>
 
@@ -48,10 +49,13 @@ struct AnalyticsEvent {
 
   static let tapsGetStartedButton = AnalyticsEvent(name: "get-started", category: .onboarding)
   static let tapsGetNotifiedButton = AnalyticsEvent(name: "enable-notifications", category: .onboarding, label: "Get Notified")
+  static let tapsEnableMotionButton = AnalyticsEvent(name: "enable-motion-tracking", category: .onboarding, label: "enable-motion")
   static let tapsEnableLocationButton = AnalyticsEvent(name: "enable-location-tracking", category: .onboarding, label: "enable-location")
 
   static let tapsSkipLocationButton = AnalyticsEvent(name: "enable-location-tracking", category: .onboarding, label: "skip")
   static let tapsSkipNotifificationsButton = AnalyticsEvent(name: "enable-notifications", category: .onboarding, label: "skip")
+  static let tapsSkipMotionButton = AnalyticsEvent(name: "enable-motion", category: .onboarding, label: "skip")
+
 
   static func selectsLocationTrackingPerfmissions(status: CLAuthorizationStatus) -> AnalyticsEvent {
     var label = "not-determined"
@@ -60,6 +64,19 @@ struct AnalyticsEvent {
     } else if status == CLAuthorizationStatus.authorizedAlways {
       label = "authorized-always"
     } else if status == CLAuthorizationStatus.denied {
+      label = "denied"
+    }
+
+    return AnalyticsEvent(name: "enable-location-tracking", category: .onboarding, label:label)
+  }
+
+  static func selectsMotionTrackingPerfmissions(status: CMAuthorizationStatus) -> AnalyticsEvent {
+    var label = "not-determined"
+    if status == CMAuthorizationStatus.authorized {
+      label = "authorized"
+    } else if status == CMAuthorizationStatus.restricted {
+      label = "restricted"
+    } else if status == CMAuthorizationStatus.denied {
       label = "denied"
     }
 
