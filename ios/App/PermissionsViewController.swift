@@ -61,15 +61,54 @@ class PermissionsViewController: UIViewController, LocationManagerAuthorizationD
   @IBAction func done(sender: UIButton) {
     self.analytics.log(.tapsEnableLocationButton)
 
-    let alertController = UIAlertController(title: "Hi! Please choose \"Always Allow\"", message: "This lets us send you notifications while you walk around town.", preferredStyle: .alert)
+    let alertController = UIAlertController(title: "Allow \"HERE\" to access your location?", message: "We monitor your location to notify you when you are near interesting spots.", preferredStyle: .alert)
 
-    let action1 = UIAlertAction(title: "Got it!", style: .default) { (action:UIAlertAction) in
+    let action1 = UIAlertAction(title: "Only While Using the App", style: .default) { (action:UIAlertAction) in
+      print("Only While Using the App");
+      self.locationManager.enableBasicLocationServices()
+    }
+    alertController.addAction(action1)
+
+    let action2 = UIAlertAction(title: "Always Allow", style: .default) { (action:UIAlertAction) in
       print("You've pressed default");
       self.locationManager.enableBasicLocationServices()
     }
+    alertController.addAction(action2)
 
-    alertController.addAction(action1)
+    let action3 = UIAlertAction(title: "Don't Allow", style: .default) { (action:UIAlertAction) in
+      print("Don't Allow");
+      self.locationManager.enableBasicLocationServices()
+    }
+    alertController.addAction(action3)
+
     self.present(alertController, animated: true, completion: nil)
+
+    let gray = UIView(frame: CGRect.init(x: 0, y: 0, width: 270, height: 252))
+    gray.backgroundColor = UIColor.black.withAlphaComponent(0.1)
+    gray.layer.cornerRadius = 11.0
+    gray.clipsToBounds = true
+    gray.isUserInteractionEnabled = false
+    alertController.view.addSubview(gray)
+    alertController.view.clipsToBounds = true
+
+    let maskRect = CGRect.init(x: 0, y: 163, width: 270, height: 44)
+    let invert = true
+    let viewToMask = gray
+
+    let maskLayer = CAShapeLayer()
+    let path = CGMutablePath()
+    if (invert) {
+      path.addRect(viewToMask.bounds)
+    }
+    path.addRect(maskRect)
+
+    maskLayer.path = path
+    if (invert) {
+      maskLayer.fillRule = kCAFillRuleEvenOdd
+    }
+
+    // Set the mask of the view.
+    viewToMask.layer.mask = maskLayer;
 
   }
 
