@@ -6,6 +6,8 @@
 	<string>$(API_HOST)</string>
 	<key>APP_NAME</key>
 	<string>$(APP_NAME)</string>
+	<key>APP_MARKETING_PATH</key>
+	<string>$(APP_MARKETING_PATH)</string>
 	<key>BUNDLE_ID_PREFIX</key>
 	<string>$(BUNDLE_ID_PREFIX)</string>
 	<key>CFBundleDevelopmentRegion</key>
