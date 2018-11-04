@@ -11,6 +11,7 @@ class Env {
     case apiHost = "API_HOST"
     case googleAnalyticsTrackingId = "GOOGLE_ANALYTICS_TID"
     case appName = "APP_NAME"
+    case appMarketingPath = "APP_MARKETING_PATH"
   }
 
   private var bundle: Bundle
@@ -52,6 +53,14 @@ class Env {
   var appName: String {
     let baseName = self.get(.appName)
     return isPreProduction ? "\(baseName) \(name)" : baseName
+  }
+
+  var appMarketingPath: String {
+    return self.get(.appMarketingPath)
+  }
+
+  var appMarketingUrlString: String {
+    return apiBaseUrlString.appending(appMarketingPath)
   }
 
 }

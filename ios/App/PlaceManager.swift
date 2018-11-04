@@ -67,7 +67,8 @@ class PlaceManager: NSObject {
     content.categoryIdentifier = "POST_ENTERED"
     content.sound = UNNotificationSound.default()
 
-    let shareCopy = "\(title) - via the HERE [linked to app store] app"
+    let env = Env()
+    let shareCopy = title.appending(" - via the \(env.appName) app \(env.appMarketingUrlString)")
     let placeURL = place.post.link.absoluteString
 
     content.userInfo = [

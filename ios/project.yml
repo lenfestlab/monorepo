@@ -25,6 +25,7 @@ configs:
 settings:
   base:
     APP_NAME: HERE
+    APP_MARKETING_PATH: here
     TARGETED_DEVICE_FAMILY: '1' # iPhone only
     # link system frameworks - https://git.io/fAZbC
     # -ObjC required by crashlytics: https://git.io/fAQPW
