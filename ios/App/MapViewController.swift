@@ -371,8 +371,10 @@ class MapViewController: UIViewController, LocationManagerDelegate, LocationMana
       let url = URL(string: urlString as! String)
       if response.actionIdentifier == "share" {
         analytics.log(.tapsShareInNotificationCTA(url: url!, currentLocation: self.lastCoordinate))
-        let activityViewController = UIActivityViewController(activityItems: [url!], applicationActivities: nil)
-        self.present(activityViewController, animated: true)
+        if let copy = response.notification.request.content.userInfo["SHARE_COPY"] as? String {
+          let activityViewController = UIActivityViewController(activityItems: [copy, url!], applicationActivities: nil)
+          self.present(activityViewController, animated: true)
+        }
       } else if let identifier = response.notification.request.content.userInfo["identifier"] as? String {
         if let place = PlaceManager.shared.placeForIdentifier(identifier) {
           analytics.log(.tapsNotificationDefaultTapToClickThrough(post: place.post, currentLocation: self.lastCoordinate))

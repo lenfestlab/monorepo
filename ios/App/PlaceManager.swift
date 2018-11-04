@@ -59,12 +59,22 @@ class PlaceManager: NSObject {
   }
   
   class func contentForPlace(place: Place, image: UIImage?, completionHandler: @escaping (UNMutableNotificationContent) -> Void) {
+    let title = place.title!
+
     let content = UNMutableNotificationContent()
-    content.title = place.title!
+    content.title = title
     content.body = place.blurb!
     content.categoryIdentifier = "POST_ENTERED"
     content.sound = UNNotificationSound.default()
-    content.userInfo = ["PLACE_URL": place.post.link.absoluteString, "identifier": place.identifier ]
+
+    let shareCopy = "\(title) - via the HERE [linked to app store] app"
+    let placeURL = place.post.link.absoluteString
+
+    content.userInfo = [
+      "PLACE_URL": placeURL,
+      "SHARE_COPY": shareCopy,
+      "identifier": place.identifier
+    ]
     if image != nil {
       let attachment = UNNotificationAttachment.create(identifier: "image", image: image!, options: [:])
       if attachment != nil {
@@ -74,6 +84,7 @@ class PlaceManager: NSObject {
     
     completionHandler(content)
   }
+
   
   class func trackPlace(place: Place, radius: CLLocationDistance, center:UNUserNotificationCenter) {
     let region = self.regionForPlace(place: place, radius: radius)
