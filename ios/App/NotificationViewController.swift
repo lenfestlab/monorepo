@@ -4,6 +4,7 @@ import UserNotifications
 class NotificationViewController: UIViewController, UNUserNotificationCenterDelegate {
 
   @IBOutlet weak var doneButton: UIButton!
+  @IBOutlet weak var stepLabel: UILabel!
 
   private let analytics: AnalyticsManager
   let notificationManager = NotificationManager.shared
@@ -19,6 +20,9 @@ class NotificationViewController: UIViewController, UNUserNotificationCenterDele
 
   override func viewDidLoad() {
     super.viewDidLoad()
+
+    let steps = MotionManager.isActivityAvailable() ? 3 : 2
+    stepLabel.text = "Step 1 of \(steps):"
 
     let env = Env()
     self.title = env.appName

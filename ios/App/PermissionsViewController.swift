@@ -6,6 +6,7 @@ class PermissionsViewController: UIViewController, LocationManagerAuthorizationD
   var locationManager = LocationManager.shared
 
   @IBOutlet weak var doneButton: UIButton!
+  @IBOutlet weak var stepLabel: UILabel!
 
   private let analytics: AnalyticsManager
 
@@ -20,6 +21,9 @@ class PermissionsViewController: UIViewController, LocationManagerAuthorizationD
 
   override func viewDidLoad() {
     super.viewDidLoad()
+
+    let steps = MotionManager.isActivityAvailable() ? 3 : 2
+    stepLabel.text = "Step 2 of \(steps):"
 
     let env = Env()
     self.title = env.appName
