@@ -4,7 +4,6 @@
         <adaptation id="fullscreen"/>
     </device>
     <dependencies>
-        <deployment identifier="iOS"/>
         <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="14283.14"/>
         <capability name="Safe area layout guides" minToolsVersion="9.0"/>
         <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
@@ -67,11 +66,8 @@
                         <action selector="doneWithSender:" destination="-1" eventType="touchUpInside" id="yQw-0v-Vqm"/>
                     </connections>
                 </button>
-                <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" textAlignment="center" lineBreakMode="tailTruncation" numberOfLines="6" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="Kau-OB-wCo">
+                <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Receive arts, architecture and real estate news notifications based on where you are." textAlignment="center" lineBreakMode="tailTruncation" numberOfLines="6" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="Kau-OB-wCo">
                     <rect key="frame" x="34" y="368" width="307" height="72"/>
-                    <string key="text">Receive arts and architecture 
-news notifications based on 
-where you are.</string>
                     <fontDescription key="fontDescription" name="Lato-Regular" family="Lato" pointSize="20"/>
                     <nil key="highlightedColor"/>
                 </label>
@@ -120,7 +116,7 @@ where you are.</string>
     </objects>
     <resources>
         <image name="alert-button" width="26" height="30"/>
-        <image name="blue-button" width="17" height="60"/>
+        <image name="blue-button" width="17.333333969116211" height="60"/>
         <image name="notifications-image" width="322" height="116"/>
     </resources>
 </document>
