@@ -60,7 +60,7 @@
 		<string>Lato-Light.ttf</string>
 	</array>
 	<key>NSMotionUsageDescription</key>
-	<string>HERE monitors motion so you don’t get notifications while you’re commuting.</string>
+	<string>$(APP_NAME) monitors motion so you don’t get notifications while you’re commuting.</string>
 	<key>UIBackgroundModes</key>
 	<array>
 		<string>location</string>
