@@ -71,11 +71,17 @@ class PlaceManager: NSObject {
     content.sound = UNNotificationSound.default()
 
     let env = Env()
-    let shareCopy = title.appending(" - via the \(env.appName) app \(env.appMarketingUrlString)")
-    let placeURL = place.post.link.absoluteString
+    let placeURLString = place.post.link.absoluteString
+//    let placeURL: URL = URL(string: placeURLString)!
+    let shareCopy: String = [
+      title,
+      placeURLString,
+      "\n",
+      "via the \(env.appName) app \(env.appMarketingUrlString)"
+      ].joined(separator: "\n")
 
     content.userInfo = [
-      "PLACE_URL": placeURL,
+      "PLACE_URL": placeURLString,
       "SHARE_COPY": shareCopy,
       "identifier": place.identifier
     ]
@@ -84,7 +90,7 @@ class PlaceManager: NSObject {
       if attachment != nil {
         content.attachments = [attachment!]
       } else {
-        print("ERROR: notification attachment nil \(placeURL)")
+        print("ERROR: notification attachment nil \(placeURLString)")
       }
     }
     
@@ -96,6 +102,14 @@ class PlaceManager: NSObject {
     print("placeManager trackPlace: \(place) \n")
     let region = self.regionForPlace(place: place, radius: radius)
     LocationManager.shared.locationManager.startMonitoring(for: region)
+  }
+
+
+  class var randomMonitoredRegion: CLRegion? {
+    guard let place = shared.placesStore.allObjects().randomElement() else {
+      return nil
+    }
+    return regionForPlace(place: place, radius: 50)
   }
 
 }
