@@ -4,6 +4,9 @@ import SafariServices
 import UserNotifications
 import UPCarouselFlowLayout
 import CoreMotion
+import RxSwift
+import RxCocoa
+import NSObject_Rx
 
 private let reuseIdentifier = "PlaceCell"
 fileprivate let sectionInsets = UIEdgeInsets(top: 0, left: 0, bottom: 0, right: 0)
@@ -120,6 +123,26 @@ class MapViewController: UIViewController, LocationManagerDelegate, LocationMana
     fetchMapData(latitude: coordinate.latitude, longitude: coordinate.longitude)
 
     self.navigationItem.rightBarButtonItem = UIBarButtonItem(image: UIImage(named: "settings-button"), style: .plain, target: self, action: #selector(settings))
+
+    // simulate local notification
+    if Env().isPreProduction {
+      let button =
+        UIBarButtonItem(
+          title: "sim",
+          style: .plain,
+          target: nil, action: nil)
+      self.navigationItem.leftBarButtonItem = button
+      button.rx.tap
+        .asDriver()
+        .drive(onNext: { [unowned self] _ in
+          guard let region = PlaceManager.randomMonitoredRegion else {
+            print("MIA: place / region")
+            return
+          }
+          self.locationManager.simulate(enteredRegion: region)
+        })
+        .disposed(by: self.rx.disposeBag)
+    }
 
   }
 
@@ -348,19 +371,35 @@ class MapViewController: UIViewController, LocationManagerDelegate, LocationMana
   func receivedNotification(_ notificationManager: NotificationManager, response: UNNotificationResponse) {
     print("notificationManagerDelegate receivedNotification: \(response)")
     if response.notification.request.content.categoryIdentifier == "POST_ENTERED" {
-      let urlString = response.notification.request.content.userInfo["PLACE_URL"]
-      let url = URL(string: urlString as! String)
+      guard
+        let urlString: String = response.notification.request.content.userInfo["PLACE_URL"] as? String,
+        let url: URL = URL(string: urlString) else {
+          print("MIA: share URL")
+          return
+      }
       if response.actionIdentifier == "share" {
-        analytics.log(.tapsShareInNotificationCTA(url: url!, currentLocation: self.lastCoordinate))
-        if let copy = response.notification.request.content.userInfo["SHARE_COPY"] as? String {
-          let activityViewController = UIActivityViewController(activityItems: [copy, url!], applicationActivities: nil)
-          self.present(activityViewController, animated: true)
+        analytics.log(.tapsShareInNotificationCTA(url: url, currentLocation: self.lastCoordinate))
+        guard let copy = response.notification.request.content.userInfo["SHARE_COPY"] as? String else {
+          print("MIA: share copy")
+          return
         }
+        let activityItems: [Any] = [
+          copy,
+          // NOTE: in practice, we've found few apps handle URL type well.
+          // Prefer standarized copy  instead.
+          // url
+        ]
+        let activityViewController =
+          UIActivityViewController(
+            activityItems: activityItems,
+            applicationActivities: nil)
+        self.present(activityViewController, animated: true)
+
       } else if let identifier = response.notification.request.content.userInfo["identifier"] as? String {
         if let place = PlaceManager.shared.placeForIdentifier(identifier) {
           analytics.log(.tapsNotificationDefaultTapToClickThrough(post: place.post, currentLocation: self.lastCoordinate))
         }
-        openInSafari(url: url!)
+        openInSafari(url: url)
       }
     }
   }

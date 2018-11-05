@@ -62,7 +62,7 @@ class Env {
   }
 
   var appMarketingUrlString: String {
-    return apiBaseUrlString.appending(appMarketingPath)
+    return apiBaseUrlString.appending("/\(appMarketingPath)")
   }
 
   var buildVersion: String {

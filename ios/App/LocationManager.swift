@@ -132,4 +132,9 @@ class LocationManager: NSObject, CLLocationManagerDelegate {
     return manager
   }
 
+
+  func simulate(enteredRegion region: CLRegion) {
+    self.locationManager(self.locationManager, didEnterRegion: region)
+  }
+
 }

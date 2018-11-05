@@ -7,6 +7,9 @@ targets:
       - carthage: GoogleReporter
       - carthage: UPCarouselFlowLayout
       - carthage: SwiftDate
+      - carthage: RxSwift
+      - carthage: RxCocoa
+      - carthage: NSObject_Rx
 
       # Alamofire
       - carthage: Alamofire
