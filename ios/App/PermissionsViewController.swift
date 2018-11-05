@@ -41,12 +41,12 @@ class PermissionsViewController: UIViewController, LocationManagerAuthorizationD
   }
 
   func authorized(_ locationManager: LocationManager, status: CLAuthorizationStatus) {
-    self.analytics.log(.selectsLocationTrackingPerfmissions(status: status))
+    self.analytics.log(.selectsLocationTrackingPermissions(status: status))
     next()
   }
 
   func notAuthorized(_ locationManager: LocationManager, status: CLAuthorizationStatus) {
-    self.analytics.log(.selectsLocationTrackingPerfmissions(status: status))
+    self.analytics.log(.selectsLocationTrackingPermissions(status: status))
     next()
   }
   

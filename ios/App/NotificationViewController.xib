@@ -29,6 +29,7 @@
         <placeholder placeholderIdentifier="IBFilesOwner" id="-1" userLabel="File's Owner" customClass="NotificationViewController" customModule="App" customModuleProvider="target">
             <connections>
                 <outlet property="doneButton" destination="evs-it-d6M" id="gnt-74-TXN"/>
+                <outlet property="stepLabel" destination="w9t-Yb-HD8" id="A6q-4c-grm"/>
                 <outlet property="view" destination="6jR-jh-3Ib" id="b2k-9k-ymg"/>
             </connections>
         </placeholder>

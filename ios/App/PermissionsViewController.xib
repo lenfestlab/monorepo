@@ -29,6 +29,7 @@
         <placeholder placeholderIdentifier="IBFilesOwner" id="-1" userLabel="File's Owner" customClass="PermissionsViewController" customModule="App" customModuleProvider="target">
             <connections>
                 <outlet property="doneButton" destination="hUG-bU-8Yv" id="yuf-jI-fN3"/>
+                <outlet property="stepLabel" destination="ZnV-KD-aIL" id="tbo-si-ddt"/>
                 <outlet property="view" destination="i5M-Pr-FkT" id="sfx-zR-JGt"/>
             </connections>
         </placeholder>

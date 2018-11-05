@@ -57,7 +57,7 @@ struct AnalyticsEvent {
   static let tapsSkipMotionButton = AnalyticsEvent(name: "enable-motion", category: .onboarding, label: "skip")
 
 
-  static func selectsLocationTrackingPerfmissions(status: CLAuthorizationStatus) -> AnalyticsEvent {
+  static func selectsLocationTrackingPermissions(status: CLAuthorizationStatus) -> AnalyticsEvent {
     var label = "not-determined"
     if status == CLAuthorizationStatus.authorizedWhenInUse {
       label = "authorized-when-in-use"
@@ -70,7 +70,7 @@ struct AnalyticsEvent {
     return AnalyticsEvent(name: "enable-location-tracking", category: .onboarding, label:label)
   }
 
-  static func selectsMotionTrackingPerfmissions(status: CMAuthorizationStatus) -> AnalyticsEvent {
+  static func selectsMotionTrackingPermissions(status: CMAuthorizationStatus) -> AnalyticsEvent {
     var label = "not-determined"
     if status == CMAuthorizationStatus.authorized {
       label = "authorized"

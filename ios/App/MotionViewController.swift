@@ -7,12 +7,12 @@ class MotionViewController: UIViewController, MotionManagerAuthorizationDelegate
   // MARK: - Motion manager authorization delegate
 
   func authorized(_ motionManager: MotionManager, status: CMAuthorizationStatus) {
-    self.analytics.log(.selectsMotionTrackingPerfmissions(status: status))
+    self.analytics.log(.selectsMotionTrackingPermissions(status: status))
     next()
   }
 
   func notAuthorized(_ motionManager: MotionManager, status: CMAuthorizationStatus) {
-    self.analytics.log(.selectsMotionTrackingPerfmissions(status: status))
+    self.analytics.log(.selectsMotionTrackingPermissions(status: status))
     next()
   }
 
@@ -70,6 +70,6 @@ class MotionViewController: UIViewController, MotionManagerAuthorizationDelegate
     super.didReceiveMemoryWarning()
     // Dispose of any resources that can be recreated.
   }
-  
+
 }
 
