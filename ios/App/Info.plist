@@ -46,9 +46,9 @@
 		</dict>
 	</dict>
 	<key>NSLocationAlwaysAndWhenInUseUsageDescription</key>
-	<string>We monitor your location to notify you when you are near interesting spots.</string>
+	<string>$(APP_NAME) uses your location to send you news about places you go. Please Always Allow access.</string>
 	<key>NSLocationWhenInUseUsageDescription</key>
-	<string>We monitor your location to notify you when you are near interesting spots.</string>
+	<string>$(APP_NAME) uses your location to send you news about places you go. Please Always Allow access.</string>
 	<key>UIAppFonts</key>
 	<array>
 		<string>Lato-Regular.ttf</string>

@@ -1,5 +1,5 @@
 binary "https://building42.github.io/Specs/Carthage/iOS/Answers.json" "1.4.0"
-binary "https://building42.github.io/Specs/Carthage/iOS/Crashlytics.json" "3.11.0"
+binary "https://building42.github.io/Specs/Carthage/iOS/Crashlytics.json" "3.11.1"
 binary "https://building42.github.io/Specs/Carthage/iOS/Fabric.json" "1.8.0"
 binary "https://dl.google.com/dl/firebase/ios/carthage/FirebaseAnalyticsBinary.json" "5.11.0"
 github "Alamofire/Alamofire" "4.7.3"

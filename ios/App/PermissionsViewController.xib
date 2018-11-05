@@ -4,7 +4,6 @@
         <adaptation id="fullscreen"/>
     </device>
     <dependencies>
-        <deployment identifier="iOS"/>
         <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="14283.14"/>
         <capability name="Safe area layout guides" minToolsVersion="9.0"/>
         <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
@@ -81,8 +80,8 @@
                     <fontDescription key="fontDescription" name="WorkSans-Medium" family="Work Sans" pointSize="18"/>
                     <nil key="highlightedColor"/>
                 </label>
-                <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Arts and architecture news finds you based on where you are.  " textAlignment="center" lineBreakMode="tailTruncation" numberOfLines="6" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="RRk-QL-q0P">
-                    <rect key="frame" x="33" y="483.66666666666669" width="309" height="48.000000000000057"/>
+                <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Arts, architecture and real estate news finds you based on where you are." textAlignment="center" lineBreakMode="tailTruncation" numberOfLines="6" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="RRk-QL-q0P">
+                    <rect key="frame" x="33" y="483.66666666666674" width="309" height="72"/>
                     <fontDescription key="fontDescription" name="Lato-Regular" family="Lato" pointSize="20"/>
                     <nil key="highlightedColor"/>
                 </label>
@@ -114,7 +113,7 @@
         </view>
     </objects>
     <resources>
-        <image name="blue-button" width="17" height="60"/>
+        <image name="blue-button" width="17.333333969116211" height="60"/>
         <image name="location-button" width="30" height="30"/>
         <image name="map" width="322" height="171"/>
     </resources>

@@ -50,7 +50,7 @@
                     <fontDescription key="fontDescription" name="WorkSans-Medium" family="Work Sans" pointSize="36"/>
                     <nil key="highlightedColor"/>
                 </label>
-                <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="HERE sends notifications about local arts and architecture news happening near you." textAlignment="center" lineBreakMode="tailTruncation" numberOfLines="6" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="YHF-1K-Vww">
+                <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="HERE sends notifications about local arts, architecture and real estate news near you." textAlignment="center" lineBreakMode="tailTruncation" numberOfLines="6" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="YHF-1K-Vww">
                     <rect key="frame" x="34" y="339.5" width="307" height="72"/>
                     <fontDescription key="fontDescription" name="Lato-Regular" family="Lato" pointSize="20"/>
                     <nil key="highlightedColor"/>
