@@ -73,10 +73,19 @@ class MapViewController: UIViewController, LocationManagerDelegate, LocationMana
 
     let env = Env()
     if env.isPreProduction && MotionManager.isActivityAvailable() {
-      MotionManager.shared.startActivityUpdates { activity in
-        print(activity)
-        print(activity.formattedDescription)
-        self.activitylabel.text = activity.formattedDescription
+      let mm = MotionManager.shared
+      mm.startActivityUpdates { activity in
+
+        let messages: [String] = [
+          "build: \(env.buildVersion)",
+          activity.formattedDescription,
+          "isDriving: \(mm.isDriving)",
+          "stoppedDrivingAt: \(mm.stoppedDrivingAtFormatted)",
+          "hasBeenDriving [< \(mm.drivingThreshold) min]: \(mm.hasBeenDriving)",
+          "=> skipNotifications: \(mm.skipNotifications)"
+        ]
+
+        self.activitylabel.text = messages.joined(separator: "\n")
       }
     } else {
       self.activitylabel.isHidden = true
@@ -218,7 +227,7 @@ class MapViewController: UIViewController, LocationManagerDelegate, LocationMana
 
   func regionEngtered(_ locationManager: LocationManager, region: CLCircularRegion) {
     let env = Env()
-    if env.isPreProduction && MotionManager.shared.shouldSkipNotifications {
+    if env.isPreProduction && MotionManager.shared.skipNotifications {
       print("skip due to motion state")
       return
     }
