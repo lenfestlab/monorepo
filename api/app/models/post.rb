@@ -11,6 +11,8 @@ class Post < ApplicationRecord
   validates :title, :blurb, :url, :image_url,
     presence: true
 
+  validates :url, uniqueness: true
+
   accepts_nested_attributes_for :places,
     allow_destroy: true
 
