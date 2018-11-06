@@ -12,6 +12,8 @@ class Env {
     case googleAnalyticsTrackingId = "GOOGLE_ANALYTICS_TID"
     case appName = "APP_NAME"
     case appMarketingPath = "APP_MARKETING_PATH"
+    case versionBuild = "CFBundleVersion"
+    case versionMarketing = "CFBundleShortVersionString"
   }
 
   private var bundle: Bundle
@@ -61,6 +63,10 @@ class Env {
 
   var appMarketingUrlString: String {
     return apiBaseUrlString.appending(appMarketingPath)
+  }
+
+  var buildVersion: String {
+    return get(.versionBuild)
   }
 
 }

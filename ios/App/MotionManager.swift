@@ -2,6 +2,7 @@ import UIKit
 import CoreMotion
 import SwiftDate
 import CoreLocation
+import SwiftDate
 
 extension CMMotionActivityConfidence: CustomStringConvertible {
   public var description: String {
@@ -38,9 +39,7 @@ extension CMMotionActivity {
   // Default is:
   // CMMotionActivity @ 106477.106250,<startDate,2018-10-31 19:50:23 +0000,confidence,2,unknown,0,stationary,1,walking,0,running,0,automotive,0,cycling,0>
   var formattedDescription: String {
-    let dateFormatter: DateFormatter = DateFormatter()
-    dateFormatter.dateFormat = "HH:mm:ss"
-    let startedAt = dateFormatter.string(from: self.startDate)
+    let startedAt = self.startDate.toFormat("HH:mm:ss")
     let modeList = self.modes.map({ $0.rawValue }).joined(separator: ",")
     return "[\(startedAt)] [\(modeList)] (\(confidence))"
   }
@@ -114,13 +113,21 @@ class MotionManager: NSObject {
       return UserDefaults.standard.object(forKey: stoppedDrivingAtKey) as? Date
     }
   }
+  var stoppedDrivingAtFormatted: String {
+    guard let date = stoppedDrivingAt else { return "n/a" }
+    return date.toFormat( "HH:mm:ss")
+  }
+
+  var drivingThreshold: Int {
+    return 2
+  }
 
   var hasBeenDriving: Bool {
     if isDriving { return true }
     guard let lastDroveAt = self.stoppedDrivingAt else {
       return false
     }
-    return lastDroveAt > 3.minutes.ago
+    return lastDroveAt > self.drivingThreshold.minutes.ago
   }
 
   var isUnknown: Bool {
@@ -130,9 +137,8 @@ class MotionManager: NSObject {
     return activity.modes.contains(.unknown)
   }
 
-
-  var shouldSkipNotifications: Bool {
-    return (self.hasBeenDriving || self.isUnknown)
+  var skipNotifications: Bool {
+    return self.hasBeenDriving
   }
 
 }
