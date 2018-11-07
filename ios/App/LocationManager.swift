@@ -93,7 +93,7 @@ class LocationManager: NSObject, CLLocationManagerDelegate {
 
     if let region = region as? CLCircularRegion {
 
-      if Env().isPreProduction && MotionManager.shared.skipNotifications {
+      if MotionManager.shared.skipNotifications {
         self.analytics!.log(.notificationSkipped(region.center))
         return
       }
