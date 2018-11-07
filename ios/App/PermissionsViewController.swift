@@ -53,8 +53,7 @@ class PermissionsViewController: UIViewController, LocationManagerAuthorizationD
   func next() {
     let application = UIApplication.shared
     let appDelegate = application.delegate as? AppDelegate
-    let env = Env()
-    if env.isPreProduction && MotionManager.isActivityAvailable() {
+    if MotionManager.isActivityAvailable() {
       appDelegate?.showMotionPermissions()
     } else {
       UserDefaults.standard.set(true, forKey: "onboarding-completed")
