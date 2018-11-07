@@ -117,7 +117,6 @@ class MapViewController: UIViewController, LocationManagerDelegate, LocationMana
     locationManager.authorizationDelegate = self
 
     let coordinate = CLLocationCoordinate2D(latitude: 39.9526, longitude: -75.1652)
-    self.lastCoordinate = coordinate
     centerMap(coordinate, span: MKCoordinateSpanMake(0.04, 0.04))
     fetchMapData(latitude: coordinate.latitude, longitude: coordinate.longitude)
 
@@ -129,6 +128,7 @@ class MapViewController: UIViewController, LocationManagerDelegate, LocationMana
     let coordinate = userLocation.coordinate
     if lastCoordinate == nil {
       mapView.setCenter(coordinate, animated: true)
+      fetchData(latitude: coordinate.latitude, longitude: coordinate.longitude)
     }
     lastCoordinate = coordinate
   }
