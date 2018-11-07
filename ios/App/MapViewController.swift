@@ -77,7 +77,7 @@ class MapViewController: UIViewController, LocationManagerDelegate, LocationMana
     super.viewDidLoad()
 
     let env = Env()
-    if MotionManager.isActivityAvailable() {
+    if env.isPreProduction && MotionManager.isActivityAvailable() {
       let mm = MotionManager.shared
       mm.startActivityUpdates { activity in
 
