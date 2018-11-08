@@ -145,6 +145,11 @@ struct AnalyticsEvent {
     }
   }
 
+  static func changeMotionSettings(enabled: Bool) -> AnalyticsEvent {
+    let prefix = enabled ? "enable" : "disable"
+    return AnalyticsEvent(name:  "\(prefix)-motion", category: .settings)
+  }
+
   static func clearHistory() -> AnalyticsEvent {
     return AnalyticsEvent(name: "clear-history", category: .settings)
   }

@@ -10,9 +10,12 @@ class SettingsViewController: UITableViewController, SettingsToggleCellDelegate,
 
   private let analytics: AnalyticsManager
   private let notificationManager = NotificationManager.shared
+  private let env: Env
+  private let motionManager = MotionManager.shared
 
   init(analytics: AnalyticsManager) {
     self.analytics = analytics
+    self.env = Env()
     super.init(style: .grouped)
   }
 
@@ -66,6 +69,15 @@ class SettingsViewController: UITableViewController, SettingsToggleCellDelegate,
       }
 
     case 2:
+      print("Access Motion")
+      analytics.log(.changeMotionSettings(enabled: sender.isOn))
+      if motionManager.hasStatus(.notDetermined) {
+        motionManager.enableMotionDetection()
+      } else if let url = URL(string: UIApplicationOpenSettingsURLString) {
+        UIApplication.shared.open(url, options: [:], completionHandler: nil)
+      }
+
+    case 3:
       print("Clear History")
       analytics.log(.clearHistory())
       NotificationManager.shared.saveIdentifiers([:])
@@ -80,7 +92,7 @@ class SettingsViewController: UITableViewController, SettingsToggleCellDelegate,
     var rows = [
       [
         "identifier": "default",
-        "title":"About us",
+        "title":"About Us",
         "path":"about",
         ],
       [
@@ -99,42 +111,58 @@ class SettingsViewController: UITableViewController, SettingsToggleCellDelegate,
     if MFMailComposeViewController.canSendMail() {
       rows.append([
         "identifier": "button",
-        "title": "Share your feedback",
+        "title": "Share Your Feedback",
         "action": "feedback"
         ])
     }
 
-    self.settings =
+    var toggleRows: [[String: Any]] = [
       [
-        [
-          "title": "Permissions",
-          "rows": [
-            [
-              "identifier": "setting",
-              "title": "Enable notifications",
-              "description": "This app uses notifications to send related articles based on where you are.",
-              "toggle": notificationManager.authorizationStatus == .authorized
-            ],
-            [
-              "identifier": "setting",
-              "title": "Enable location",
-              "description": "Map and notification features use your location to display and send you articles.",
-              "toggle": CLLocationManager.authorizationStatus() == .authorizedAlways
-            ],
-            [
-              "identifier": "setting",
-              "title": "Recurring notifications",
-              "description": "We remember which notifications you receive and don’t send them again. Turn this off to receive each notification again.",
-              "toggle": true
-            ]
+        "identifier": "setting",
+        "title": "Enable notifications",
+        "description": "This app sends push notifications.",
+        "toggle": notificationManager.authorizationStatus == .authorized
+      ],
+      [
+        "identifier": "setting",
+        "title": "Enable location",
+        "description": "Map and notification features use your location to display and send you articles.",
+        "toggle": CLLocationManager.authorizationStatus() == .authorizedAlways
+      ]
 
-          ]
-        ],
+    ]
+
+    if MotionManager.isActivityAvailable() {
+      toggleRows.append(
         [
-          "title": "General",
-          "rows": rows
+          "identifier": "setting",
+          "title": "Enable Motion Detection",
+          "description": "This app monitors your motion so you don’t get notifications while you are driving.",
+          "toggle": motionManager.isAuthorized
         ]
+      )
+    }
 
+    if env.isPreProduction {
+      toggleRows.append(
+        [
+          "identifier": "setting",
+          "title": "Recurring notifications",
+          "description": "We remember which notifications you receive and don’t send them again. Turn this off to receive each notification again.",
+          "toggle": true
+        ]
+      )
+    }
+
+    self.settings = [
+      [
+        "title": "PERMISSIONS",
+        "rows": toggleRows
+      ],
+      [
+        "title": "GENERAL",
+        "rows": rows
+      ]
     ]
 
   }
@@ -196,7 +224,7 @@ class SettingsViewController: UITableViewController, SettingsToggleCellDelegate,
   }
 
   override func tableView(_ tableView: UITableView, heightForHeaderInSection section: Int) -> CGFloat {
-    return CGFloat(55);
+    return CGFloat(45);
   }
 
   override func tableView(_ tableView: UITableView, viewForHeaderInSection section: Int) -> UIView? {
@@ -248,13 +276,12 @@ class SettingsViewController: UITableViewController, SettingsToggleCellDelegate,
     let rows = section["rows"] as! [Any]
     let row = rows[indexPath.row] as! [String:Any]
     if let path = row["path"] as? String {
-      let env = Env()
       let url = URL(string: "\(env.apiBaseUrlString)/\(path)")
       let svc = SFSafariViewController(url: url!)
       self.present(svc, animated: true)
     } else if let action = row["action"] as? String {
       if action == "feedback" {
-        sendFeedback(to: ["sarah.schmalbach@gmail.com"], subject: "Feedback for Here")
+        sendFeedback(to: ["sarah.schmalbach@gmail.com"], subject: "Feedback for \(env.appName)")
       }
     }
   }

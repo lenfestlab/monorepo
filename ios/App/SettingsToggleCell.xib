@@ -1,11 +1,10 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<document type="com.apple.InterfaceBuilder3.CocoaTouch.XIB" version="3.0" toolsVersion="14313.18" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" useSafeAreas="YES" colorMatched="YES">
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.XIB" version="3.0" toolsVersion="14460.31" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" useSafeAreas="YES" colorMatched="YES">
     <device id="retina4_7" orientation="portrait">
         <adaptation id="fullscreen"/>
     </device>
     <dependencies>
-        <deployment identifier="iOS"/>
-        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="14283.14"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="14460.20"/>
         <capability name="Safe area layout guides" minToolsVersion="9.0"/>
         <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
     </dependencies>
@@ -36,7 +35,7 @@
                         <nil key="highlightedColor"/>
                     </label>
                     <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="This App uses push notifications to send you related articles based on where you are." lineBreakMode="tailTruncation" numberOfLines="4" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="WnU-os-gb5">
-                        <rect key="frame" x="16" y="51" width="268" height="74"/>
+                        <rect key="frame" x="16" y="51" width="268" height="79"/>
                         <fontDescription key="fontDescription" name="Lato-Light" family="Lato" pointSize="16"/>
                         <nil key="highlightedColor"/>
                     </label>
@@ -53,7 +52,7 @@
                     <constraint firstItem="YQp-NA-lyM" firstAttribute="leading" secondItem="H2p-sc-9uM" secondAttribute="leadingMargin" id="9m4-M6-dPQ"/>
                     <constraint firstItem="WnU-os-gb5" firstAttribute="leading" secondItem="H2p-sc-9uM" secondAttribute="leadingMargin" id="ASV-Kr-1FN"/>
                     <constraint firstItem="zOW-oN-uuE" firstAttribute="leading" secondItem="YQp-NA-lyM" secondAttribute="trailing" id="DX4-6J-LoN"/>
-                    <constraint firstAttribute="bottomMargin" secondItem="WnU-os-gb5" secondAttribute="bottom" constant="10" id="Qgx-gP-opI"/>
+                    <constraint firstAttribute="bottomMargin" secondItem="WnU-os-gb5" secondAttribute="bottom" constant="5" id="Qgx-gP-opI"/>
                     <constraint firstAttribute="trailingMargin" secondItem="zOW-oN-uuE" secondAttribute="trailing" id="ZED-f1-ZXo"/>
                     <constraint firstItem="WnU-os-gb5" firstAttribute="trailing" secondItem="H2p-sc-9uM" secondAttribute="trailingMargin" constant="-20" id="cUJ-4g-ghy"/>
                     <constraint firstItem="YQp-NA-lyM" firstAttribute="bottom" secondItem="zOW-oN-uuE" secondAttribute="bottom" id="sP8-XV-aoZ"/>
