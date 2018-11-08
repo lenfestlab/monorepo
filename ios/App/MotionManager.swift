@@ -57,6 +57,18 @@ class MotionManager: NSObject {
   let manager = CMMotionActivityManager()
   var currentActivity:CMMotionActivity?
 
+  class func isActivityAvailable() -> Bool {
+    return CMMotionActivityManager.isActivityAvailable()
+  }
+
+  func hasStatus(_ status: CMAuthorizationStatus) -> Bool {
+    return CMMotionActivityManager.authorizationStatus() == status
+  }
+
+  var isAuthorized: Bool {
+    return hasStatus(.authorized)
+  }
+
   func enableMotionDetection() {
     let status = CMMotionActivityManager.authorizationStatus()
     if status == CMAuthorizationStatus.denied {
@@ -73,10 +85,6 @@ class MotionManager: NSObject {
         self.authorizationDelegate?.notAuthorized(self, status: status)
       }
     }
-  }
-
-  class func isActivityAvailable() -> Bool {
-    return CMMotionActivityManager.isActivityAvailable()
   }
 
   func startActivityUpdates(handler: @escaping (CMMotionActivity) -> Void) {
@@ -138,7 +146,11 @@ class MotionManager: NSObject {
   }
 
   var skipNotifications: Bool {
-    return self.hasBeenDriving
+    if Env().isPreProduction  {
+      return (self.hasBeenDriving || self.isUnknown)
+    } else {
+      return self.hasBeenDriving
+    }
   }
 
 }
