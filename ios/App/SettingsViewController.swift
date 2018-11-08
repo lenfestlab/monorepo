@@ -72,7 +72,7 @@ class SettingsViewController: UITableViewController, SettingsToggleCellDelegate,
       print("Access Motion")
       analytics.log(.changeMotionSettings(enabled: sender.isOn))
       if motionManager.hasStatus(.notDetermined) {
-        motionManager.enableMotionDetection()
+        motionManager.enableMotionDetection(analytics)
       } else if let url = URL(string: UIApplicationOpenSettingsURLString) {
         UIApplication.shared.open(url, options: [:], completionHandler: nil)
       }

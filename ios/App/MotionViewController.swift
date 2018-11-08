@@ -63,7 +63,7 @@ class MotionViewController: UIViewController, MotionManagerAuthorizationDelegate
 
   @IBAction func done(sender: UIButton) {
     self.analytics.log(.tapsEnableMotionButton)
-    self.motionManager.enableMotionDetection()
+    self.motionManager.enableMotionDetection(analytics)
   }
 
   override func didReceiveMemoryWarning() {
