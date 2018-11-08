@@ -54,10 +54,10 @@ struct AnalyticsEvent {
 
   static let tapsGetStartedButton = AnalyticsEvent(name: "get-started", category: .onboarding)
   static let tapsGetNotifiedButton = AnalyticsEvent(name: "enable-notifications", category: .onboarding, label: "Get Notified")
-  static let tapsEnableMotionButton = AnalyticsEvent(name: "enable-motion-tracking", category: .onboarding, label: "enable-motion")
-  static let tapsEnableLocationButton = AnalyticsEvent(name: "enable-location-tracking", category: .onboarding, label: "enable-location")
+  static let tapsEnableMotionButton = AnalyticsEvent(name: "enable-motion", category: .onboarding, label: "enable-motion")
+  static let tapsEnableLocationButton = AnalyticsEvent(name: "enable-location", category: .onboarding, label: "enable-location")
 
-  static let tapsSkipLocationButton = AnalyticsEvent(name: "enable-location-tracking", category: .onboarding, label: "skip")
+  static let tapsSkipLocationButton = AnalyticsEvent(name: "enable-location", category: .onboarding, label: "skip")
   static let tapsSkipNotifificationsButton = AnalyticsEvent(name: "enable-notifications", category: .onboarding, label: "skip")
   static let tapsSkipMotionButton = AnalyticsEvent(name: "enable-motion", category: .onboarding, label: "skip")
 
@@ -72,7 +72,7 @@ struct AnalyticsEvent {
       label = "denied"
     }
 
-    return AnalyticsEvent(name: "enable-location-tracking", category: .onboarding, label:label)
+    return AnalyticsEvent(name: "enable-location", category: .onboarding, label:label)
   }
 
   static func selectsMotionTrackingPermissions(status: CMAuthorizationStatus) -> AnalyticsEvent {
@@ -85,7 +85,7 @@ struct AnalyticsEvent {
       label = "denied"
     }
 
-    return AnalyticsEvent(name: "enable-location-tracking", category: .onboarding, label:label)
+    return AnalyticsEvent(name: "enable-motion", category: .onboarding, label:label)
   }
 
   static func notificationShown(post: Post, currentLocation: CLLocationCoordinate2D?) -> AnalyticsEvent {
@@ -255,6 +255,12 @@ class AnalyticsManager {
       "label": label.prefix(100) as NSObject,
     ]) { (_, new) -> NSObject in new }
     FirebaseAnalytics.logEvent(name, parameters: firebaseParams)
+  }
+
+  func mergeCustomDimensions(cds: Dictionary<String, String>) -> Void {
+    ga.customDimensionArguments?.merge(cds, uniquingKeysWith: { (_, new) -> String in
+      return new
+    })
   }
 
 }

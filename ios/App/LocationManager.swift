@@ -53,10 +53,10 @@ class LocationManager: NSObject, CLLocationManagerDelegate {
       locationManager.requestAlwaysAuthorization()
     case .restricted, .denied:
       authorized = false
-      authorizationDelegate!.notAuthorized(self, status: status)
+      authorizationDelegate?.notAuthorized(self, status: status)
     case .authorizedWhenInUse, .authorizedAlways:
       authorized = true
-      authorizationDelegate!.authorized(self, status: status)
+      authorizationDelegate?.authorized(self, status: status)
       self.startMonitoringSignificantLocationChanges()
     }
   }

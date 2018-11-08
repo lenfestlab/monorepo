@@ -36,11 +36,14 @@ extension CMMotionActivity {
     return modes
   }
 
+  var modeList: String {
+    return self.modes.map({ $0.rawValue }).joined(separator: ",")
+  }
+
   // Default is:
   // CMMotionActivity @ 106477.106250,<startDate,2018-10-31 19:50:23 +0000,confidence,2,unknown,0,stationary,1,walking,0,running,0,automotive,0,cycling,0>
   var formattedDescription: String {
     let startedAt = self.startDate.toFormat("HH:mm:ss")
-    let modeList = self.modes.map({ $0.rawValue }).joined(separator: ",")
     return "\(startedAt) [\(modeList)] (confidence: \(confidence))"
   }
 }
@@ -69,7 +72,7 @@ class MotionManager: NSObject {
     return hasStatus(.authorized)
   }
 
-  func enableMotionDetection() {
+  func enableMotionDetection(_ analytics: AnalyticsManager?) {
     let status = CMMotionActivityManager.authorizationStatus()
     if status == CMAuthorizationStatus.denied {
       self.authorizationDelegate?.notAuthorized(self, status: status)
@@ -84,6 +87,15 @@ class MotionManager: NSObject {
       } else {
         self.authorizationDelegate?.notAuthorized(self, status: status)
       }
+
+      // configure motion custom dimensions
+      guard let activity = activity else { print("MIA: activity"); return }
+      guard let analytics = analytics else { print("MIA: analytics"); return }
+      analytics.mergeCustomDimensions(cds: [
+        "cd3": activity.modeList, // Stationary State
+        "cd4": activity.confidence.description, // Confidence level
+        "cd5": self.skipNotifications.description, // skipNotifications
+        ])
     }
   }
 
@@ -146,11 +158,7 @@ class MotionManager: NSObject {
   }
 
   var skipNotifications: Bool {
-    if Env().isPreProduction  {
-      return (self.hasBeenDriving || self.isUnknown)
-    } else {
-      return self.hasBeenDriving
-    }
+    return (self.hasBeenDriving || self.isUnknown)
   }
 
 }
