@@ -1,10 +1,10 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<document type="com.apple.InterfaceBuilder3.CocoaTouch.XIB" version="3.0" toolsVersion="14313.18" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" useSafeAreas="YES" colorMatched="YES">
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.XIB" version="3.0" toolsVersion="14460.31" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" useSafeAreas="YES" colorMatched="YES">
     <device id="retina5_9" orientation="portrait">
         <adaptation id="fullscreen"/>
     </device>
     <dependencies>
-        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="14283.14"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="14460.20"/>
         <capability name="Safe area layout guides" minToolsVersion="9.0"/>
         <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
     </dependencies>
@@ -69,12 +69,12 @@
                     </connections>
                 </button>
                 <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Locate Me" textAlignment="center" lineBreakMode="tailTruncation" numberOfLines="2" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="amA-yx-rke">
-                    <rect key="frame" x="126.33333333333331" y="223.33333333333334" width="122.66666666666669" height="28.333333333333343"/>
+                    <rect key="frame" x="126.33333333333331" y="220.66666666666666" width="122.66666666666669" height="28.333333333333343"/>
                     <fontDescription key="fontDescription" name="WorkSans-SemiBold" family="Work Sans" pointSize="24"/>
                     <nil key="highlightedColor"/>
                 </label>
                 <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Step 2 of 2:" textAlignment="center" lineBreakMode="tailTruncation" numberOfLines="2" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="ZnV-KD-aIL">
-                    <rect key="frame" x="136.33333333333334" y="183.33333333333334" width="102.66666666666666" height="30"/>
+                    <rect key="frame" x="136.33333333333334" y="180.66666666666666" width="102.66666666666666" height="30"/>
                     <constraints>
                         <constraint firstAttribute="height" constant="30" id="ju0-Ut-g1B"/>
                     </constraints>
@@ -82,12 +82,12 @@
                     <nil key="highlightedColor"/>
                 </label>
                 <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Arts, architecture and real estate news finds you based on where you are." textAlignment="center" lineBreakMode="tailTruncation" numberOfLines="6" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="RRk-QL-q0P">
-                    <rect key="frame" x="33" y="483.66666666666674" width="309" height="72"/>
+                    <rect key="frame" x="33" y="481" width="309" height="72"/>
                     <fontDescription key="fontDescription" name="Lato-Regular" family="Lato" pointSize="20"/>
                     <nil key="highlightedColor"/>
                 </label>
                 <imageView opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" insetsLayoutMarginsFromSafeArea="NO" image="map" translatesAutoresizingMaskIntoConstraints="NO" id="6Pu-Ho-1ri">
-                    <rect key="frame" x="26.666666666666657" y="285.66666666666669" width="322" height="163"/>
+                    <rect key="frame" x="26.666666666666657" y="283" width="322" height="163"/>
                     <constraints>
                         <constraint firstAttribute="height" constant="163" id="cE1-Wc-ERe"/>
                     </constraints>
@@ -95,7 +95,7 @@
             </subviews>
             <color key="backgroundColor" red="1" green="1" blue="1" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
             <constraints>
-                <constraint firstItem="6Pu-Ho-1ri" firstAttribute="centerY" secondItem="fnl-2z-Ty3" secondAttribute="centerY" constant="-44" id="DaW-Vw-zRc"/>
+                <constraint firstItem="6Pu-Ho-1ri" firstAttribute="top" secondItem="fnl-2z-Ty3" secondAttribute="centerY" constant="-128" id="DaW-Vw-zRc"/>
                 <constraint firstItem="RRk-QL-q0P" firstAttribute="leading" secondItem="fnl-2z-Ty3" secondAttribute="leading" constant="33" id="F3I-5k-goS"/>
                 <constraint firstItem="6Pu-Ho-1ri" firstAttribute="top" secondItem="amA-yx-rke" secondAttribute="bottom" constant="34" id="Hdy-py-AjX"/>
                 <constraint firstItem="fnl-2z-Ty3" firstAttribute="bottom" secondItem="hUG-bU-8Yv" secondAttribute="bottom" constant="40" id="Sj5-Ai-7fl"/>
