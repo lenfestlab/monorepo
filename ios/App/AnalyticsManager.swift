@@ -157,9 +157,9 @@ struct AnalyticsEvent {
   static func notificationSkipped(_ location: CLLocationCoordinate2D?) -> AnalyticsEvent {
     return
       AnalyticsEvent(
-        name: "notification-skipped",
-        metadata: ["cause": "motion"],
-        category: .debug,
+        name: "skip",
+        metadata: [:],
+        category: .notification,
         label: "motion",
         location: location)
   }
