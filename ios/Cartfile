@@ -9,6 +9,7 @@ github "ink-spot/UPCarouselFlowLayout"
 github "malcommac/SwiftDate"
 github "ReactiveX/RxSwift" ~> 4.0
 github "RxSwiftCommunity/NSObject-Rx"
+github "SnapKit/SnapKit"
 
 # Firebase experimental carthage support: https://git.io/fAxBS
 binary "https://dl.google.com/dl/firebase/ios/carthage/FirebaseAnalyticsBinary.json"

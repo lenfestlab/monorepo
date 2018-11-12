@@ -2,6 +2,9 @@ import UIKit
 import CoreLocation
 import UserNotifications
 import SafariServices
+import RxSwift
+import RxCocoa
+import SnapKit
 
 class SettingsViewController: UITableViewController, SettingsToggleCellDelegate, LocationManagerAuthorizationDelegate {
 
@@ -89,7 +92,7 @@ class SettingsViewController: UITableViewController, SettingsToggleCellDelegate,
 
   func loadSettings() {
 
-    var rows = [
+    let rows = [
       [
         "identifier": "default",
         "title":"About Us",
@@ -107,14 +110,6 @@ class SettingsViewController: UITableViewController, SettingsToggleCellDelegate,
         "inset":"zero",
         ]
     ]
-
-    if MFMailComposeViewController.canSendMail() {
-      rows.append([
-        "identifier": "button",
-        "title": "Share Your Feedback",
-        "action": "feedback"
-        ])
-    }
 
     var toggleRows: [[String: Any]] = [
       [
@@ -197,19 +192,44 @@ class SettingsViewController: UITableViewController, SettingsToggleCellDelegate,
     let nib = UINib.init(nibName: "SettingsToggleCell", bundle: nil)
     tableView.register(nib, forCellReuseIdentifier: "setting")
 
-    let buttonNib = UINib.init(nibName: "ButtonCell", bundle: nil)
-    tableView.register(buttonNib, forCellReuseIdentifier: "button")
-
     tableView.register(UITableViewCell.self, forCellReuseIdentifier: "default")
-
-    // Uncomment the following line to display an Edit button in the navigation bar for this view controller.
-    // self.navigationItem.rightBarButtonItem = self.editButtonItem
   }
 
-  override func didReceiveMemoryWarning() {
-    super.didReceiveMemoryWarning()
-    // Dispose of any resources that can be recreated.
+  override func tableView(_ tableView: UITableView, viewForFooterInSection section: Int) -> UIView? {
+    guard section == (settings.count - 1) else { return nil }
+
+    let feedbackButton = UIButton(type: .custom)
+    feedbackButton.layer.cornerRadius = 5.0
+    feedbackButton.clipsToBounds = true
+    feedbackButton.backgroundColor = UIColor.ziggurat
+    feedbackButton.setTitleColor(.black, for: .normal)
+    feedbackButton.titleLabel?.font = UIFont(name: "WorkSans-Regular", size: 19)
+    feedbackButton.setTitle("Share Your Feedback", for: .normal)
+    feedbackButton
+      .rx.tap
+      .asDriver()
+      .drive(onNext: { [unowned self] _ in
+        self.sendFeedback(
+          to: ["sarah.schmalbach@gmail.com"],
+          subject: "Feedback for \(self.env.appName)")
+      })
+      .disposed(by: self.rx.disposeBag)
+
+    let footerView = UIView()
+    footerView.addSubview(feedbackButton)
+    feedbackButton.snp.makeConstraints { (make) in
+      make.centerX.equalToSuperview()
+      make.height.equalTo(45)
+      make.width.equalTo(280)
+      make.topMargin.equalToSuperview().inset(24)
+      make.bottomMargin.equalToSuperview().inset(15)
+    }
+
+    footerView.isHidden = !MFMailComposeViewController.canSendMail()
+
+    return footerView
   }
+
 
   // MARK: - Table view data source
 
@@ -252,11 +272,6 @@ class SettingsViewController: UITableViewController, SettingsToggleCellDelegate,
       cell.delegate = self
       cell.selectionStyle = .none
       return cell
-    } else if identifier == "button" {
-      let cell:ButtonCell = tableView.dequeueReusableCell(withIdentifier: identifier, for: indexPath) as! ButtonCell
-      cell.button.titleLabel?.text = row["title"] as? String
-      cell.selectionStyle = .none
-      return cell
     } else {
       let cell = tableView.dequeueReusableCell(withIdentifier: identifier, for: indexPath)
       cell.textLabel?.text = row["title"] as? String
@@ -279,10 +294,6 @@ class SettingsViewController: UITableViewController, SettingsToggleCellDelegate,
       let url = URL(string: "\(env.apiBaseUrlString)/\(path)")
       let svc = SFSafariViewController(url: url!)
       self.present(svc, animated: true)
-    } else if let action = row["action"] as? String {
-      if action == "feedback" {
-        sendFeedback(to: ["sarah.schmalbach@gmail.com"], subject: "Feedback for \(env.appName)")
-      }
     }
   }
 
