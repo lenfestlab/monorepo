@@ -61,7 +61,9 @@ class MotionManager: NSObject {
   var currentActivity:CMMotionActivity?
 
   class func isActivityAvailable() -> Bool {
-    return CMMotionActivityManager.isActivityAvailable()
+    let result = CMMotionActivityManager.isActivityAvailable()
+    print("\t MotionManager.isActivityAvailable \(result)")
+    return result
   }
 
   func hasStatus(_ status: CMAuthorizationStatus) -> Bool {
@@ -102,6 +104,7 @@ class MotionManager: NSObject {
   func startActivityUpdates(handler: @escaping (CMMotionActivity) -> Void) {
     manager.startActivityUpdates(to: .main) { (activity) in
       guard let activity = activity else { return }
+      print("activity: \(activity)")
 
       if let lastActivity = self.currentActivity, // if prior activity
         lastActivity.automotive { // ...and prior activity was driving
@@ -152,6 +155,7 @@ class MotionManager: NSObject {
 
   var isUnknown: Bool {
     guard let activity = currentActivity else {
+      print("\t WARN: MIA: activity")
       return true
     }
     return activity.modes.contains(.unknown)
@@ -162,8 +166,13 @@ class MotionManager: NSObject {
     guard MotionManager.isActivityAvailable() else {
       return false
     }
-
-    return (self.hasBeenDriving || self.isUnknown)
+    let hasBeenDriving = self.hasBeenDriving
+    print("\t hasBeenDriving: \(hasBeenDriving)")
+    let isUnknown = self.isUnknown
+    print("\t isUnknown: \(isUnknown)")
+    let result = (hasBeenDriving || self.isUnknown)
+    print("\t\t skipNotifications \(result)")
+    return result
   }
 
 }

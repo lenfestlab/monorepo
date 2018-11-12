@@ -26,6 +26,8 @@ class MapViewController: UIViewController,
   let padding = CGFloat(45)
   let spacing = CGFloat(0)
 
+  let env: Env
+  let motionManager = MotionManager.shared
   let dataStore = PlaceDataStore()
   let locationManager = LocationManager.shared
   let notificationManager = NotificationManager.shared
@@ -49,6 +51,7 @@ class MapViewController: UIViewController,
   }
 
   init(analytics: AnalyticsManager) {
+    env = Env()
     self.analytics = analytics
     super.init(nibName: nil, bundle: nil)
     notificationManager.delegate = self
@@ -82,13 +85,12 @@ class MapViewController: UIViewController,
   override func viewDidLoad() {
     super.viewDidLoad()
 
-    let env = Env()
-    if env.isPreProduction && MotionManager.isActivityAvailable() {
-      let mm = MotionManager.shared
-      mm.startActivityUpdates { activity in
+    if MotionManager.isActivityAvailable() {
+      let mm = motionManager
+      mm.startActivityUpdates { [unowned self] activity in
 
         let messages: [String] = [
-          "build: \(env.buildVersion)",
+          "build: \(self.env.buildVersion)",
           activity.formattedDescription,
           "isDriving: \(mm.isDriving)",
           "stoppedDrivingAt: \(mm.stoppedDrivingAtFormatted)",
@@ -98,9 +100,8 @@ class MapViewController: UIViewController,
 
         self.activitylabel.text = messages.joined(separator: "\n")
       }
-    } else {
-      self.activitylabel.isHidden = true
     }
+    self.activitylabel.isHidden = !env.isPreProduction
 
     let layout = UPCarouselFlowLayout()
     layout.scrollDirection = .horizontal
