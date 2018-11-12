@@ -10,6 +10,7 @@ targets:
       - carthage: RxSwift
       - carthage: RxCocoa
       - carthage: NSObject_Rx
+      - carthage: SnapKit
 
       # Alamofire
       - carthage: Alamofire
