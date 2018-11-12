@@ -15,7 +15,13 @@ class ABPointAnnotation : MKPointAnnotation {
   var index: Int = 0
 }
 
-class MapViewController: UIViewController, LocationManagerDelegate, LocationManagerAuthorizationDelegate, UICollectionViewDelegate, UICollectionViewDataSource, MKMapViewDelegate, NotificationManagerDelegate {
+class MapViewController: UIViewController,
+  LocationManagerDelegate,
+  LocationManagerAuthorizationDelegate,
+  UICollectionViewDelegate,
+  UICollectionViewDataSource,
+  MKMapViewDelegate,
+  NotificationManagerDelegate {
 
   let padding = CGFloat(45)
   let spacing = CGFloat(0)
@@ -150,7 +156,9 @@ class MapViewController: UIViewController, LocationManagerDelegate, LocationMana
     let coordinate = userLocation.coordinate
     if lastCoordinate == nil {
       mapView.setCenter(coordinate, animated: true)
-      fetchData(latitude: coordinate.latitude, longitude: coordinate.longitude)
+      self.locationManager.fetchData(
+        latitude: coordinate.latitude,
+        longitude: coordinate.longitude)
     }
     lastCoordinate = coordinate
   }
@@ -217,15 +225,6 @@ class MapViewController: UIViewController, LocationManagerDelegate, LocationMana
     self.mapView.addAnnotations(annotations)
   }
 
-  func fetchData(latitude:CLLocationDegrees, longitude:CLLocationDegrees) {
-    print("fetchData: \(latitude) \(longitude)")
-    dataStore.retrievePlaces(latitude: latitude, longitude: longitude, limit: 10) { (success, data, count) in
-      if self.locationManager.authorized {
-        PlaceManager.shared.trackPlaces(places: data)
-      }
-    }
-  }
-
   func fetchMapData(latitude:CLLocationDegrees, longitude:CLLocationDegrees) {
     dataStore.retrievePlaces(latitude: latitude, longitude: longitude, limit: 1000) { (success, data, count) in
       self.places = data
@@ -246,7 +245,6 @@ class MapViewController: UIViewController, LocationManagerDelegate, LocationMana
   func locationUpdated(_ locationManager: LocationManager, coordinate: CLLocationCoordinate2D) {
     print("mapviewcontroller locationManager locationUpdated: \(coordinate)")
     lastCoordinate = coordinate
-    fetchData(latitude: coordinate.latitude, longitude: coordinate.longitude)
   }
 
   func authorized(_ locationManager: LocationManager, status: CLAuthorizationStatus) {
