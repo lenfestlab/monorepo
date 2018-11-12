@@ -4,13 +4,21 @@ import UserNotifications
 import Alamofire
 
 protocol NotificationManagerDelegate: class {
-  func receivedNotification(_ notificationManager: NotificationManager, response: UNNotificationResponse)
-  func receivedPingMeLater(_ notificationManager: NotificationManager, identifier: String)
+  func present(_ vc: UIViewController, animated: Bool)
+  func openInSafari(url: URL)
 }
 
 class NotificationManager: NSObject, UNUserNotificationCenterDelegate {
 
   static let shared = NotificationManager()
+
+  var analytics: AnalyticsManager?
+
+  static func sharedWith(analytics: AnalyticsManager) -> NotificationManager {
+    let manager = NotificationManager.shared
+    manager.analytics = analytics
+    return manager
+  }
 
   var identifiers:[String: Date]
 
@@ -74,10 +82,16 @@ class NotificationManager: NSObject, UNUserNotificationCenterDelegate {
         var identifiers = NotificationManager.shared.identifiers
         identifiers[identifier] = Date(timeIntervalSinceNow: 60 * 60 * 24)
         NotificationManager.shared.saveIdentifiers(identifiers)
-        delegate?.receivedPingMeLater(self, identifier: identifier)
+        guard let place = PlaceManager.shared.placeForIdentifier(identifier) else {
+          print("ERROR: MIA: place for analytics event")
+          return
+        }
+        let post = place.post
+        let coordinate = LocationManager.latestCoordinate
+        self.analytics!.log(.tapsPingMeLaterInNotificationCTA(post: post, currentLocation: coordinate))
       }
     } else {
-      delegate?.receivedNotification(self, response: response)
+      self.receivedNotification(response: response)
     }
 
     completionHandler()
@@ -88,5 +102,48 @@ class NotificationManager: NSObject, UNUserNotificationCenterDelegate {
     self.identifiers = identifiers
   }
 
+  private func receivedNotification(response: UNNotificationResponse) {
+    print("notificationManager receivedNotification: \(response)")
+    if response.notification.request.content.categoryIdentifier == "POST_ENTERED" {
+      guard
+        let urlString: String = response.notification.request.content.userInfo["PLACE_URL"] as? String,
+        let url: URL = URL(string: urlString) else {
+          print("MIA: share URL")
+          return
+      }
+      guard let delegate = self.delegate else {
+        print("ERROR: MIA: NotificationManager.shared.delegate")
+        return
+      }
+      let coordinate = LocationManager.shared.latestCoordinate
+      if response.actionIdentifier == "share" {
+        self.analytics!.log(.tapsShareInNotificationCTA(url: url, currentLocation: coordinate))
+        guard let copy = response.notification.request.content.userInfo["SHARE_COPY"] as? String else {
+          print("MIA: share copy")
+          return
+        }
+        let activityItems: [Any] = [
+          copy,
+          // NOTE: in practice, we've found few apps handle URL type well.
+          // Prefer standarized copy  instead.
+          // url
+        ]
+        let activityViewController =
+          UIActivityViewController(
+            activityItems: activityItems,
+            applicationActivities: nil)
+        delegate.present(activityViewController, animated: true)
+
+      } else if let identifier = response.notification.request.content.userInfo["identifier"] as? String {
+
+        if let place = PlaceManager.shared.placeForIdentifier(identifier) {
+          self.analytics!.log(.tapsNotificationDefaultTapToClickThrough(post: place.post, currentLocation: coordinate))
+        } else {
+          print("WARN: MIA: place for identifier \(identifier); analytics event dropped")
+        }
+        delegate.openInSafari(url: url)
+      }
+    }
+  }
 
 }

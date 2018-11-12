@@ -13,6 +13,8 @@ class PermissionsViewController: UIViewController, LocationManagerAuthorizationD
   init(analytics: AnalyticsManager) {
     self.analytics = analytics
     super.init(nibName: nil, bundle: nil)
+    navigationItem.hidesBackButton = true
+    locationManager.authorizationDelegate = self
   }
 
   required init?(coder aDecoder: NSCoder) {
@@ -33,31 +35,33 @@ class PermissionsViewController: UIViewController, LocationManagerAuthorizationD
     navigationController?.navigationBar.barTintColor =  UIColor.beige()
     navigationController?.navigationBar.isTranslucent =  false
 
-    locationManager.authorizationDelegate = self
-
     doneButton.layer.cornerRadius = 5.0
     doneButton.clipsToBounds = true
-    // Do any additional setup after loading the view.
   }
 
   func authorized(_ locationManager: LocationManager, status: CLAuthorizationStatus) {
+    print("\t PermissionsViewController.authorized status: \(status)")
     self.analytics.log(.selectsLocationTrackingPermissions(status: status))
     next()
   }
 
   func notAuthorized(_ locationManager: LocationManager, status: CLAuthorizationStatus) {
+    print("\t PermissionsViewController.notAuthorized status: \(status)")
     self.analytics.log(.selectsLocationTrackingPermissions(status: status))
     next()
   }
   
   func next() {
     let application = UIApplication.shared
-    let appDelegate = application.delegate as? AppDelegate
+    guard let appDelegate = application.delegate as? AppDelegate else {
+      print("ERROR: MIA: PermissionViewController AppDelegate")
+      return
+    }
     if MotionManager.isActivityAvailable() {
-      appDelegate?.showMotionPermissions()
+      appDelegate.showMotionPermissions()
     } else {
       UserDefaults.standard.set(true, forKey: "onboarding-completed")
-      appDelegate?.showHomeScreen()
+      appDelegate.showHomeScreen()
     }
   }
 

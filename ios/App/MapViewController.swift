@@ -1,6 +1,5 @@
 import UIKit
 import MapKit
-import SafariServices
 import UserNotifications
 import UPCarouselFlowLayout
 import CoreMotion
@@ -16,12 +15,10 @@ class ABPointAnnotation : MKPointAnnotation {
 }
 
 class MapViewController: UIViewController,
-  LocationManagerDelegate,
   LocationManagerAuthorizationDelegate,
   UICollectionViewDelegate,
   UICollectionViewDataSource,
-  MKMapViewDelegate,
-  NotificationManagerDelegate {
+  MKMapViewDelegate {
 
   let padding = CGFloat(45)
   let spacing = CGFloat(0)
@@ -30,12 +27,12 @@ class MapViewController: UIViewController,
   let motionManager = MotionManager.shared
   let dataStore = PlaceDataStore()
   let locationManager = LocationManager.shared
-  let notificationManager = NotificationManager.shared
   var places:[Place] = []
   var currentPlace:Place?
-  var lastViewedURL:URL?
 
-  var lastCoordinate:CLLocationCoordinate2D?
+  var lastCoordinate: CLLocationCoordinate2D? {
+    return locationManager.latestCoordinate
+  }
 
   @IBOutlet weak var collectionView:UICollectionView!
   @IBOutlet weak var mapView:MKMapView!
@@ -54,9 +51,8 @@ class MapViewController: UIViewController,
     env = Env()
     self.analytics = analytics
     super.init(nibName: nil, bundle: nil)
-    notificationManager.delegate = self
-    locationManager.delegate = self
     locationManager.authorizationDelegate = self
+    navigationItem.hidesBackButton = true
   }
 
   required init?(coder aDecoder: NSCoder) {
@@ -65,9 +61,11 @@ class MapViewController: UIViewController,
 
   override func viewDidAppear(_ animated: Bool) {
     super.viewDidAppear(animated)
+    let mainController = self.navigationController as! MainController
+    let url: URL? = mainController.lastViewedURL
     // Currently we send the map viewed data regardless of whether we have the coordinates yet or not
-    self.analytics.log(.mapViewed(currentLocation: self.lastCoordinate, source: self.lastViewedURL))
-    self.lastViewedURL = nil
+    self.analytics.log(.mapViewed(currentLocation: self.lastCoordinate, source: url))
+    mainController.lastViewedURL = nil
   }
 
   @IBAction func settings(sender: UIButton) {
@@ -155,13 +153,11 @@ class MapViewController: UIViewController,
 
   func mapView(_ mapView: MKMapView, didUpdate userLocation: MKUserLocation) {
     let coordinate = userLocation.coordinate
-    if lastCoordinate == nil {
-      mapView.setCenter(coordinate, animated: true)
-      self.locationManager.fetchData(
-        latitude: coordinate.latitude,
-        longitude: coordinate.longitude)
-    }
-    lastCoordinate = coordinate
+    mapView.setCenter(coordinate, animated: true)
+    self.locationManager.fetchData(
+      latitude: coordinate.latitude,
+      longitude: coordinate.longitude,
+      trackResults: false)
   }
 
   @IBAction func centerCurrentLocation() {
@@ -243,11 +239,6 @@ class MapViewController: UIViewController,
 
   // MARK: - Location manager delegate
 
-  func locationUpdated(_ locationManager: LocationManager, coordinate: CLLocationCoordinate2D) {
-    print("mapviewcontroller locationManager locationUpdated: \(coordinate)")
-    lastCoordinate = coordinate
-  }
-
   func authorized(_ locationManager: LocationManager, status: CLAuthorizationStatus) {
     print("locationManagerDelegate authorized")
     centerCurrentLocation()
@@ -277,24 +268,12 @@ class MapViewController: UIViewController,
     return cell
   }
 
-  func openInSafari(url: URL, completion: (() -> Void)? = nil) {
-    self.lastViewedURL = url
-    if self.presentedViewController != nil {
-      self.presentedViewController?.dismiss(animated: false, completion: {
-        let svc = SFSafariViewController(url: url)
-        self.present(svc, animated: true, completion: completion)
-      })
-    } else {
-      let svc = SFSafariViewController(url: url)
-      present(svc, animated: true, completion: completion)
-    }
-  }
-
   func collectionView(_ collectionView: UICollectionView, shouldSelectItemAt indexPath: IndexPath) -> Bool {
     if indexOfMajorCell() == indexPath.row {
       let place:Place = self.places[indexPath.row]
       analytics.log(.tapsOnViewArticle(post: place.post, currentLocation: self.lastCoordinate))
-      openInSafari(url: place.post.link)
+      let mainVC = self.navigationController as! MainController
+      mainVC.openInSafari(url: place.post.link)
     } else {
       scrollToItem(at: indexPath)
       let place:Place = self.places[indexPath.row]
@@ -359,49 +338,4 @@ class MapViewController: UIViewController,
     self.mapView.setRegion(region, animated: true)
   }
 
-  func receivedPingMeLater(_ notificationManager: NotificationManager, identifier: String) {
-    print("notificationManagerDelegate receivedPingMeLater: \(identifier)")
-    if let place = PlaceManager.shared.placeForIdentifier(identifier) {
-      let post = place.post
-      analytics.log(.tapsPingMeLaterInNotificationCTA(post: post, currentLocation: self.lastCoordinate))
-    }
-  }
-
-  func receivedNotification(_ notificationManager: NotificationManager, response: UNNotificationResponse) {
-    print("notificationManagerDelegate receivedNotification: \(response)")
-    if response.notification.request.content.categoryIdentifier == "POST_ENTERED" {
-      guard
-        let urlString: String = response.notification.request.content.userInfo["PLACE_URL"] as? String,
-        let url: URL = URL(string: urlString) else {
-          print("MIA: share URL")
-          return
-      }
-      if response.actionIdentifier == "share" {
-        analytics.log(.tapsShareInNotificationCTA(url: url, currentLocation: self.lastCoordinate))
-        guard let copy = response.notification.request.content.userInfo["SHARE_COPY"] as? String else {
-          print("MIA: share copy")
-          return
-        }
-        let activityItems: [Any] = [
-          copy,
-          // NOTE: in practice, we've found few apps handle URL type well.
-          // Prefer standarized copy  instead.
-          // url
-        ]
-        let activityViewController =
-          UIActivityViewController(
-            activityItems: activityItems,
-            applicationActivities: nil)
-        self.present(activityViewController, animated: true)
-
-      } else if let identifier = response.notification.request.content.userInfo["identifier"] as? String {
-        if let place = PlaceManager.shared.placeForIdentifier(identifier) {
-          analytics.log(.tapsNotificationDefaultTapToClickThrough(post: place.post, currentLocation: self.lastCoordinate))
-        }
-        openInSafari(url: url)
-      }
-    }
-  }
-
 }
-
