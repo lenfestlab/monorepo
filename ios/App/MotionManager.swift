@@ -158,6 +158,11 @@ class MotionManager: NSObject {
   }
 
   var skipNotifications: Bool {
+    // ensure notification when motion unavailable (sim, denied access, etc.)
+    guard MotionManager.isActivityAvailable() else {
+      return false
+    }
+
     return (self.hasBeenDriving || self.isUnknown)
   }
 
