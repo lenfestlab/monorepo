@@ -62,7 +62,7 @@ class MotionManager: NSObject {
 
   class func isActivityAvailable() -> Bool {
     let result = CMMotionActivityManager.isActivityAvailable()
-    print("\t MotionManager.isActivityAvailable \(result)")
+//    print("\t MotionManager.isActivityAvailable \(result)")
     return result
   }
 
@@ -74,6 +74,22 @@ class MotionManager: NSObject {
     return hasStatus(.authorized)
   }
 
+  var analytics: AnalyticsManager?
+  static func sharedWith(analytics: AnalyticsManager) -> MotionManager {
+    let manager = self.shared
+    manager.analytics = analytics
+    guard
+      MotionManager.isActivityAvailable(),
+      manager.hasStatus(.authorized) else {
+        print("WARN: motion not available or authorized; skip motion analytics")
+        return manager
+    }
+    manager.startActivityUpdates { _activity in
+      print("motion authorized, configuring analytics")
+    }
+    return manager
+  }
+
   func enableMotionDetection(_ analytics: AnalyticsManager?) {
     let status = CMMotionActivityManager.authorizationStatus()
     if status == CMAuthorizationStatus.denied {
@@ -81,36 +97,39 @@ class MotionManager: NSObject {
       return
     }
 
-    manager.startActivityUpdates(to: .main) { (activity) in
+    self.startActivityUpdates { [unowned self] activity in
       self.manager.stopActivityUpdates()
-      let status = CMMotionActivityManager.authorizationStatus()
-      if status == CMAuthorizationStatus.authorized {
-        self.authorizationDelegate?.authorized(self, status: status)
-      } else {
-        self.authorizationDelegate?.notAuthorized(self, status: status)
+      guard let authorizationDelegate = self.authorizationDelegate else {
+        print("ERROR: MIA: authorizationDelegate")
+        return
       }
-
-      // configure motion custom dimensions
-      guard let activity = activity else { print("MIA: activity"); return }
-      guard let analytics = analytics else { print("MIA: analytics"); return }
-      analytics.mergeCustomDimensions(cds: [
-        "cd3": activity.modeList, // Stationary State
-        "cd4": activity.confidence.description, // Confidence level
-        "cd5": self.skipNotifications.description, // skipNotifications
-        ])
+      if self.hasStatus(.authorized) {
+        authorizationDelegate.authorized(self, status: status)
+      } else {
+        authorizationDelegate.notAuthorized(self, status: status)
+      }
     }
   }
 
   func startActivityUpdates(handler: @escaping (CMMotionActivity) -> Void) {
     manager.startActivityUpdates(to: .main) { (activity) in
       guard let activity = activity else { return }
-      print("activity: \(activity)")
+//      print("activity: \(activity)")
 
       if let lastActivity = self.currentActivity, // if prior activity
         lastActivity.automotive { // ...and prior activity was driving
         // ...record current timestamp for computing time since driven later
         let now = Date()
         self.stoppedDrivingAt = now
+      }
+
+      // configure motion custom dimensions
+      if let analytics = self.analytics {
+        analytics.mergeCustomDimensions(cds: [
+          "cd3": activity.modeList, // Stationary State
+          "cd4": activity.confidence.description, // Confidence level
+          "cd5": self.skipNotifications.description, // skipNotifications
+          ])
       }
 
       self.currentActivity = activity
@@ -167,11 +186,11 @@ class MotionManager: NSObject {
       return false
     }
     let hasBeenDriving = self.hasBeenDriving
-    print("\t hasBeenDriving: \(hasBeenDriving)")
+//    print("\t hasBeenDriving: \(hasBeenDriving)")
     let isUnknown = self.isUnknown
-    print("\t isUnknown: \(isUnknown)")
+//    print("\t isUnknown: \(isUnknown)")
     let result = (hasBeenDriving || self.isUnknown)
-    print("\t\t skipNotifications \(result)")
+//    print("\t\t skipNotifications \(result)")
     return result
   }
 

@@ -25,6 +25,8 @@ class MotionViewController: UIViewController, MotionManagerAuthorizationDelegate
   init(analytics: AnalyticsManager) {
     self.analytics = analytics
     super.init(nibName: nil, bundle: nil)
+    navigationItem.hidesBackButton = true
+    motionManager.authorizationDelegate = self
   }
 
   required init?(coder aDecoder: NSCoder) {
@@ -41,8 +43,6 @@ class MotionViewController: UIViewController, MotionManagerAuthorizationDelegate
     }
     navigationController?.navigationBar.barTintColor =  UIColor.beige()
     navigationController?.navigationBar.isTranslucent =  false
-
-    motionManager.authorizationDelegate = self
 
     doneButton.layer.cornerRadius = 5.0
     doneButton.clipsToBounds = true

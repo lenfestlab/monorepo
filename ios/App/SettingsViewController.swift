@@ -20,6 +20,7 @@ class SettingsViewController: UITableViewController, SettingsToggleCellDelegate,
     self.analytics = analytics
     self.env = Env()
     super.init(style: .grouped)
+    locationManager.authorizationDelegate = self
   }
 
   required init?(coder aDecoder: NSCoder) {
@@ -168,8 +169,6 @@ class SettingsViewController: UITableViewController, SettingsToggleCellDelegate,
     super.viewDidLoad()
 
     self.tableView.separatorColor = UIColor.init(red: 241/255, green: 221/255, blue: 187/255, alpha: 1)
-
-    locationManager.authorizationDelegate = self
 
     loadSettings()
     notification = NotificationCenter.default.addObserver(forName: .UIApplicationWillEnterForeground, object: nil, queue: .main) {

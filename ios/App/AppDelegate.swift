@@ -13,6 +13,9 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
   var window: UIWindow?
   var analytics: AnalyticsManager!
   var locationManager: LocationManager!
+  var notificationManager: NotificationManager!
+  var motionManager: MotionManager!
+  var mainController: MainController!
 
   func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: LaunchOptions) -> Bool {
     NetworkActivityLogger.shared.startLogging()
@@ -24,47 +27,47 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
 
     self.analytics = AnalyticsManager(env)
     self.locationManager = LocationManager.sharedWith(analytics: analytics)
+    self.motionManager = MotionManager.sharedWith(analytics: analytics)
+    self.notificationManager = NotificationManager.sharedWith(analytics: analytics)
 
     window = UIWindow(frame: UIScreen.main.bounds)
     let onboardingCompleted = UserDefaults.standard.bool(forKey: "onboarding-completed")
+
+    let introController = IntroViewController(analytics: self.analytics)
+    self.mainController = MainController(rootViewController: introController)
+    self.notificationManager.delegate = self.mainController
+
     if onboardingCompleted {
       showHomeScreen()
-    } else {
-      showIntro()
     }
+    window!.rootViewController = self.mainController
     window!.makeKeyAndVisible()
 
     return true
   }
 
-  func showIntro() {
-    let introController = IntroViewController(analytics: self.analytics)
-    let navigationController = UINavigationController(rootViewController: introController)
-    window!.rootViewController = navigationController
-  }
-
   func showPermissions() {
-    let permissionsController = PermissionsViewController(analytics: self.analytics)
-    let navigationController = UINavigationController(rootViewController: permissionsController)
-    window!.rootViewController = navigationController
+    mainController.pushViewController(
+      PermissionsViewController(analytics: self.analytics),
+      animated: false)
   }
 
   func showNotifications() {
-    let notificationsController = NotificationViewController(analytics: self.analytics)
-    let navigationController = UINavigationController(rootViewController: notificationsController)
-    window!.rootViewController = navigationController
+    mainController.pushViewController(
+      NotificationViewController(analytics: self.analytics),
+      animated: false)
   }
 
   func showMotionPermissions() {
-    let notificationsController = MotionViewController(analytics: self.analytics)
-    let navigationController = UINavigationController(rootViewController: notificationsController)
-    window!.rootViewController = navigationController
+    mainController.pushViewController(
+      MotionViewController(analytics: self.analytics),
+      animated: false)
   }
 
   func showHomeScreen() {
-    let mapController = MapViewController(analytics: self.analytics)
-    let navigationController = UINavigationController(rootViewController: mapController)
-    window!.rootViewController = navigationController
+    mainController.pushViewController(
+      MapViewController(analytics: self.analytics),
+      animated: false)
   }
 
 }

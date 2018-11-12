@@ -3,10 +3,6 @@ import CoreLocation
 import UserNotifications
 import SwiftDate
 
-protocol LocationManagerDelegate: class {
-  func locationUpdated(_ locationManager: LocationManager, coordinate: CLLocationCoordinate2D)
-}
-
 protocol LocationManagerAuthorizationDelegate: class {
   func authorized(_ locationManager: LocationManager, status: CLAuthorizationStatus)
   func notAuthorized(_ locationManager: LocationManager, status: CLAuthorizationStatus)
@@ -18,7 +14,6 @@ class LocationManager: NSObject, CLLocationManagerDelegate {
 
   let dataStore = PlaceDataStore()
 
-  weak var delegate: LocationManagerDelegate?
   weak var authorizationDelegate: LocationManagerAuthorizationDelegate?
   var locationManager:CLLocationManager
   var authorized = false
@@ -56,36 +51,47 @@ class LocationManager: NSObject, CLLocationManagerDelegate {
       locationManager.requestAlwaysAuthorization()
     case .restricted, .denied:
       authorized = false
-      authorizationDelegate?.notAuthorized(self, status: status)
+      guard let authDelegate = authorizationDelegate else {
+        print("ERROR: MIA: LocationManaager.authorizationDelegate")
+        return }
+      authDelegate.notAuthorized(self, status: status)
     case .authorizedWhenInUse, .authorizedAlways:
       authorized = true
-      authorizationDelegate?.authorized(self, status: status)
       self.startMonitoringSignificantLocationChanges()
+      guard let authDelegate = authorizationDelegate else {
+        print("ERROR: MIA: LocationManaager.authorizationDelegate")
+        return }
+      authDelegate.authorized(self, status: status)
     }
   }
 
   func locationManager(_ manager: CLLocationManager, didChangeAuthorization status: CLAuthorizationStatus) {
+    print("locationManager didChangeAuthorization: \(status)")
     if status != .notDetermined {
       authorizationStatusUpdated(status: status)
     }
   }
 
+  private var latestLocation: CLLocation?
+  public var latestCoordinate: CLLocationCoordinate2D? {
+    return latestLocation?.coordinate
+  }
+  static var latestCoordinate: CLLocationCoordinate2D? {
+    return shared.latestCoordinate
+  }
+
   func locationManager(_ manager: CLLocationManager,
                        didUpdateLocations locations: [CLLocation]) {
     print("locationManager:didUpdateLocations \(locations)")
-    let latestLocation: CLLocation = locations[locations.count - 1]
-    let latitude = latestLocation.coordinate.latitude
-    let longitude = latestLocation.coordinate.longitude
-    print("\t \(latitude) \(longitude)")
-
-    self.fetchData(latitude: latitude, longitude: longitude)
-
-    // update location in open views
-    guard let delegate = self.delegate else {
-      print("ERROR: MIA: LocationManager.shared.delegate")
+    guard let latestLocation = locations.last else {
+      print("ERROR: MIA: locations.last")
       return
     }
-    delegate.locationUpdated(self, coordinate: latestLocation.coordinate)
+    self.latestLocation = latestLocation
+    let latestCoordinate = latestLocation.coordinate
+    let latitude = latestCoordinate.latitude
+    let longitude = latestCoordinate.longitude
+    self.fetchData(latitude: latitude, longitude: longitude)
   }
 
   func locationManager(_ manager: CLLocationManager, monitoringDidFailFor region: CLRegion?, withError error: Error) {
@@ -154,14 +160,17 @@ class LocationManager: NSObject, CLLocationManagerDelegate {
     self.locationManager(self.locationManager, didEnterRegion: region)
   }
 
-  func fetchData(latitude: CLLocationDegrees, longitude: CLLocationDegrees) {
+  func fetchData(
+    latitude: CLLocationDegrees,
+    longitude: CLLocationDegrees,
+    trackResults: Bool = true) {
     print("fetchData: \(latitude) \(longitude)")
     dataStore.retrievePlaces(
       latitude: latitude,
       longitude: longitude,
       limit: 10
     ) { [unowned self] (success, data, count) in
-      if self.authorized {
+      if self.authorized && trackResults {
         PlaceManager.shared.trackPlaces(places: data)
       }
     }

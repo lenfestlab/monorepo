@@ -12,6 +12,7 @@ class NotificationViewController: UIViewController, UNUserNotificationCenterDele
   init(analytics: AnalyticsManager) {
     self.analytics = analytics
     super.init(nibName: nil, bundle: nil)
+    navigationItem.hidesBackButton = true
   }
 
   required init?(coder aDecoder: NSCoder) {
