@@ -21,12 +21,15 @@ class LocationManager: NSObject, CLLocationManagerDelegate {
   weak var delegate: LocationManagerDelegate?
   weak var authorizationDelegate: LocationManagerAuthorizationDelegate?
   var locationManager:CLLocationManager
-  var authorized = false
+
+  func authorized() -> Bool {
+    let status = CLLocationManager.authorizationStatus()
+    return status == .authorizedWhenInUse || status == .authorizedAlways
+  }
 
   func startMonitoringSignificantLocationChanges() {
     print("locationManager startMonitoringSignificantLocationChanges")
-    let status = CLLocationManager.authorizationStatus()
-    if status == .authorizedWhenInUse || status == .authorizedAlways {
+    if authorized() {
       locationManager.startMonitoringSignificantLocationChanges()
     } else {
       print("ERROR: Unauthorized to startMonitoringSignificantLocationChanges")
@@ -55,10 +58,8 @@ class LocationManager: NSObject, CLLocationManagerDelegate {
       // Request when-in-use authorization initially
       locationManager.requestAlwaysAuthorization()
     case .restricted, .denied:
-      authorized = false
       authorizationDelegate?.notAuthorized(self, status: status)
     case .authorizedWhenInUse, .authorizedAlways:
-      authorized = true
       authorizationDelegate?.authorized(self, status: status)
     }
   }
@@ -160,7 +161,7 @@ class LocationManager: NSObject, CLLocationManagerDelegate {
       longitude: longitude,
       limit: 10
     ) { [unowned self] (success, data, count) in
-      if self.authorized {
+      if self.authorized() {
         PlaceManager.shared.trackPlaces(places: data)
       }
     }

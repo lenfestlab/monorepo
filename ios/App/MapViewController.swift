@@ -165,7 +165,7 @@ class MapViewController: UIViewController,
   }
 
   @IBAction func centerCurrentLocation() {
-    if self.locationManager.authorized {
+    if self.locationManager.authorized() {
       let showsUserLocation = !locationButton.isSelected
       locationButton.isSelected = showsUserLocation
       self.mapView.showsUserLocation = showsUserLocation
