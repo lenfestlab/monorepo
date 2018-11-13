@@ -96,7 +96,7 @@ class PlaceManager: NSObject {
   func trackPlace(place: Place, radius: CLLocationDistance, center:UNUserNotificationCenter) {
     print("placeManager trackPlace: \(place) \n")
     let region = PlaceManager.regionForPlace(place: place, radius: radius)
-    locationManager.locationManager.startMonitoring(for: region)
+    locationManager.startMonitoring(for: region)
   }
 
 

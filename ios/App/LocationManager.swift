@@ -20,7 +20,11 @@ class LocationManager: NSObject, CLLocationManagerDelegate {
 
   weak var delegate: LocationManagerDelegate?
   weak var authorizationDelegate: LocationManagerAuthorizationDelegate?
-  var locationManager:CLLocationManager
+  private var _manager:CLLocationManager
+
+  func startMonitoring(for region: CLRegion) {
+    _manager.startMonitoring(for: region)
+  }
 
   func authorized() -> Bool {
     let status = CLLocationManager.authorizationStatus()
@@ -30,19 +34,19 @@ class LocationManager: NSObject, CLLocationManagerDelegate {
   func startMonitoringSignificantLocationChanges() {
     print("locationManager startMonitoringSignificantLocationChanges")
     if authorized() {
-      locationManager.startMonitoringSignificantLocationChanges()
+      _manager.startMonitoringSignificantLocationChanges()
     } else {
       print("ERROR: Unauthorized to startMonitoringSignificantLocationChanges")
     }
   }
 
   override init() {
-    locationManager = CLLocationManager()
-    locationManager.desiredAccuracy = kCLLocationAccuracyHundredMeters
-    locationManager.pausesLocationUpdatesAutomatically = false
-    locationManager.allowsBackgroundLocationUpdates = true
+    _manager = CLLocationManager()
+    _manager.desiredAccuracy = kCLLocationAccuracyHundredMeters
+    _manager.pausesLocationUpdatesAutomatically = false
+    _manager.allowsBackgroundLocationUpdates = true
     super.init()
-    locationManager.delegate = self
+    _manager.delegate = self
   }
 
   func enableBasicLocationServices() {
@@ -56,12 +60,12 @@ class LocationManager: NSObject, CLLocationManagerDelegate {
     switch status {
     case .notDetermined:
       // Request when-in-use authorization initially
-      locationManager.requestAlwaysAuthorization()
+      _manager.requestAlwaysAuthorization()
     case .restricted, .denied:
       authorizationDelegate?.notAuthorized(self, status: status)
     case .authorizedWhenInUse, .authorizedAlways:
       authorizationDelegate?.authorized(self, status: status)
-      locationManager.startMonitoringSignificantLocationChanges()
+      self.startMonitoringSignificantLocationChanges()
     }
   }
 
@@ -152,7 +156,7 @@ class LocationManager: NSObject, CLLocationManagerDelegate {
 
 
   func simulate(enteredRegion region: CLRegion) {
-    self.locationManager(self.locationManager, didEnterRegion: region)
+    self.locationManager(_manager, didEnterRegion: region)
   }
 
   func fetchData(latitude: CLLocationDegrees, longitude: CLLocationDegrees) {
@@ -169,8 +173,8 @@ class LocationManager: NSObject, CLLocationManagerDelegate {
   }
 
   func removeAllMonitoredRegions() {
-    for region in self.locationManager.monitoredRegions {
-      self.locationManager.stopMonitoring(for: region) // asynchronous
+    for region in _manager.monitoredRegions {
+      _manager.stopMonitoring(for: region) // asynchronous
     }
   }
 
