@@ -72,22 +72,30 @@ class SettingsViewController: UITableViewController, SettingsToggleCellDelegate,
       }
 
     case 2:
-      print("Access Motion")
-      analytics.log(.changeMotionSettings(enabled: sender.isOn))
-      if motionManager.hasStatus(.notDetermined) {
-        motionManager.enableMotionDetection(analytics)
-      } else if let url = URL(string: UIApplicationOpenSettingsURLString) {
-        UIApplication.shared.open(url, options: [:], completionHandler: nil)
+      if MotionManager.isActivityAvailable() {
+        print("Access Motion")
+        analytics.log(.changeMotionSettings(enabled: sender.isOn))
+        if motionManager.hasStatus(.notDetermined) {
+          motionManager.enableMotionDetection(analytics)
+        } else if let url = URL(string: UIApplicationOpenSettingsURLString) {
+          UIApplication.shared.open(url, options: [:], completionHandler: nil)
+        }
+      } else {
+        clearHistory()
       }
 
     case 3:
-      print("Clear History")
-      analytics.log(.clearHistory())
-      NotificationManager.shared.saveIdentifiers([:])
+      clearHistory()
 
     default:
       print("unknown switch")
     }
+  }
+
+  func clearHistory() {
+    print("Clear History")
+    analytics.log(.clearHistory())
+    NotificationManager.shared.saveIdentifiers([:])
   }
 
   func loadSettings() {
