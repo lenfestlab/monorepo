@@ -33,11 +33,6 @@ class LocationManager: NSObject, CLLocationManagerDelegate {
     }
   }
 
-  func startUpdatingLocation() {
-    print("locationManager startUpdatingLocation")
-    locationManager.startUpdatingLocation()
-  }
-
   override init() {
     locationManager = CLLocationManager()
     locationManager.desiredAccuracy = kCLLocationAccuracyHundredMeters
