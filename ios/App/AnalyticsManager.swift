@@ -236,7 +236,25 @@ class AnalyticsManager {
 
     // Google Analytics
     if ![.debug].contains(event.category) { // skip events used for debugging
-      ga.event(category, action: action, label: label, parameters: event.metadata)
+
+      // NOTE: workaround iOS 12 networking bug that drop random GA requests
+      // GH discussion: https://git.io/fpY6S
+      DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
+
+        // > The handler is called synchronously on the main thread, blocking
+        // > the app’s suspension momentarily while the app is notified.
+        // - https://goo.gl/yRgxEG
+        var backgroundTaskID: UIBackgroundTaskIdentifier = 0
+        backgroundTaskID = UIApplication.shared.beginBackgroundTask(withName: "GA") {
+          UIApplication.shared.endBackgroundTask(backgroundTaskID)
+          backgroundTaskID = UIBackgroundTaskInvalid
+        }
+        GoogleReporter.shared.event(category, action: action, label: label, parameters: event.metadata)
+        UIApplication.shared.endBackgroundTask(backgroundTaskID)
+        backgroundTaskID = UIBackgroundTaskInvalid
+
+      }
+
     }
 
     // Firebase
