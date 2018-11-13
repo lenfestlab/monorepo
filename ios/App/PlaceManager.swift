@@ -13,17 +13,11 @@ class PlaceManager: NSObject {
   func placeForIdentifier(_ identifier: String) -> Place? {
     return placesStore.object(withId: identifier)
   }
-  
-  func removeAllMonitoredRegions() {
-    for region in locationManager.locationManager.monitoredRegions {
-      locationManager.locationManager.stopMonitoring(for: region) // asynchronous
-    }
-  }
-  
+
   func trackPlaces(places: [Place]) {
     print("placeManager trackPlaces: \(places)")
 
-    removeAllMonitoredRegions()
+    locationManager.removeAllMonitoredRegions()
     
     try! placesStore.save(places)
     

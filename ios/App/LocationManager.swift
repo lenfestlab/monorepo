@@ -167,4 +167,10 @@ class LocationManager: NSObject, CLLocationManagerDelegate {
     }
   }
 
+  func removeAllMonitoredRegions() {
+    for region in self.locationManager.monitoredRegions {
+      self.locationManager.stopMonitoring(for: region) // asynchronous
+    }
+  }
+
 }
