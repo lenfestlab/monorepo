@@ -25,7 +25,12 @@ class LocationManager: NSObject, CLLocationManagerDelegate {
 
   func startMonitoringSignificantLocationChanges() {
     print("locationManager startMonitoringSignificantLocationChanges")
-    locationManager.startMonitoringSignificantLocationChanges()
+    let status = CLLocationManager.authorizationStatus()
+    if status == .authorizedWhenInUse || status == .authorizedAlways {
+      locationManager.startMonitoringSignificantLocationChanges()
+    } else {
+      print("ERROR: Unauthorized to startMonitoringSignificantLocationChanges")
+    }
   }
 
   func startUpdatingLocation() {
