@@ -60,7 +60,6 @@ class LocationManager: NSObject, CLLocationManagerDelegate {
     case .authorizedWhenInUse, .authorizedAlways:
       authorized = true
       authorizationDelegate?.authorized(self, status: status)
-      self.startMonitoringSignificantLocationChanges()
     }
   }
 

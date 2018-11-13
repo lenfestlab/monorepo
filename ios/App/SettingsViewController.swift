@@ -35,6 +35,7 @@ class SettingsViewController: UITableViewController, SettingsToggleCellDelegate,
   }
 
   func authorized(_ locationManager: LocationManager, status: CLAuthorizationStatus) {
+    locationManager.startMonitoringSignificantLocationChanges()
     self.loadSettings()
     self.tableView.reloadData()
   }
