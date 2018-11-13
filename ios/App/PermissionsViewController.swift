@@ -41,7 +41,6 @@ class PermissionsViewController: UIViewController, LocationManagerAuthorizationD
   }
 
   func authorized(_ locationManager: LocationManager, status: CLAuthorizationStatus) {
-    locationManager.startMonitoringSignificantLocationChanges()
     self.analytics.log(.selectsLocationTrackingPermissions(status: status))
     next()
   }

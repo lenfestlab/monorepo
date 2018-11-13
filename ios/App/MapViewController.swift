@@ -249,7 +249,6 @@ class MapViewController: UIViewController,
   }
 
   func authorized(_ locationManager: LocationManager, status: CLAuthorizationStatus) {
-    locationManager.startMonitoringSignificantLocationChanges()
     print("locationManagerDelegate authorized")
     centerCurrentLocation()
   }
