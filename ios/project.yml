@@ -75,6 +75,7 @@ targets:
       PRODUCT_BUNDLE_IDENTIFIER: $(BUNDLE_ID_PREFIX)$(BUNDLE_ID_SUFFIX)
       INFOPLIST_FILE: App/Info.plist
       TARGETED_DEVICE_FAMILY: "$(inherited)"
+      CODE_SIGN_ENTITLEMENTS: App/App.entitlements
     scheme:
       testTargets:
         - Tests

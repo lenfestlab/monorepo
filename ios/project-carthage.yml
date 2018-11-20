@@ -25,6 +25,8 @@ targets:
 
       # Firebase - https://git.io/fAxBS
       # NOTE: omit base framework, per: https://git.io/fAjxM
+      - carthage: FIRAnalyticsConnector
+        embed: false
       - carthage: FirebaseAnalytics
         embed: false
       - carthage: FirebaseCore
@@ -33,11 +35,15 @@ targets:
         embed: false
       - carthage: FirebaseInstanceID
         embed: false
+      - carthage: FirebaseMessaging
+        embed: false
       - carthage: GoogleAppMeasurement
         embed: false
       - carthage: GoogleUtilities
         embed: false
       - carthage: nanopb
+        embed: false
+      - carthage: Protobuf
         embed: false
 
   Tests:
