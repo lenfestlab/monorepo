@@ -4,8 +4,10 @@ import Firebase
 import Crashlytics
 import Fabric
 import AlamofireNetworkActivityLogger
+import FirebaseMessaging
 
 typealias LaunchOptions = [UIApplicationLaunchOptionsKey: Any]?
+let gcmMessageIDKey = "gcm.message_id"
 
 @UIApplicationMain
 class AppDelegate: UIResponder, UIApplicationDelegate {
@@ -23,13 +25,22 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
     let env = Env()
 
     FirebaseApp.configure()
+    Messaging.messaging().delegate = self
+    application.registerForRemoteNotifications()
+    InstanceID.instanceID().instanceID { (result, error) in
+      if let error = error {
+        print("gcm: Error fetching remote instange ID: \(error)")
+      } else if let result = result {
+        print("gcm: Remote instance ID token: \(result.token)")
+      }
+    }
+
     Fabric.sharedSDK().debug = env.isPreProduction
 
     self.analytics = AnalyticsManager(env)
     self.locationManager = LocationManager.sharedWith(analytics: analytics)
     self.motionManager = MotionManager.sharedWith(analytics: analytics)
     self.notificationManager = NotificationManager.sharedWith(analytics: analytics)
-
     window = UIWindow(frame: UIScreen.main.bounds)
     let onboardingCompleted = UserDefaults.standard.bool(forKey: "onboarding-completed")
 
@@ -68,6 +79,16 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
     mainController.pushViewController(
       MapViewController(analytics: self.analytics),
       animated: false)
+  }
+
+}
+
+
+extension AppDelegate: MessagingDelegate {
+
+  func messaging(_ messaging: Messaging, didReceiveRegistrationToken gcmToken: String) {
+    print("gcm: registration token: \(gcmToken)")
+    // sync w/ api for targeted notifications
   }
 
 }

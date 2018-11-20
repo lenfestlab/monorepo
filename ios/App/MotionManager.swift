@@ -189,7 +189,7 @@ class MotionManager: NSObject {
 //    print("\t hasBeenDriving: \(hasBeenDriving)")
     let isUnknown = self.isUnknown
 //    print("\t isUnknown: \(isUnknown)")
-    let result = (hasBeenDriving || self.isUnknown)
+    let result = (hasBeenDriving || isUnknown)
 //    print("\t\t skipNotifications \(result)")
     return result
   }

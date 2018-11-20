@@ -51,7 +51,11 @@ class NotificationManager: NSObject, UNUserNotificationCenterDelegate {
   func setCategories(){
     let laterAction = UNNotificationAction(identifier: "later", title: "Ping Me Later", options: [])
     let shareAction = UNNotificationAction(identifier: "share", title: "Share", options: [.foreground])
-    let alarmCategory = UNNotificationCategory(identifier: "POST_ENTERED", actions: [laterAction, shareAction], intentIdentifiers: [], options: [])
+    let alarmCategory =
+      UNNotificationCategory(identifier: "POST_ENTERED",
+                             actions: [laterAction, shareAction],
+                             intentIdentifiers: [],
+                             options: [])
     UNUserNotificationCenter.current().setNotificationCategories([alarmCategory])
   }
 
@@ -76,7 +80,9 @@ class NotificationManager: NSObject, UNUserNotificationCenterDelegate {
   func userNotificationCenter(_ center: UNUserNotificationCenter,
                               didReceive response: UNNotificationResponse,
                               withCompletionHandler completionHandler: @escaping () -> Void) {
+    let userInfo = response.notification.request.content.userInfo
     let actionIdentifier = response.actionIdentifier
+
     if actionIdentifier == "later"{
       if let identifier = response.notification.request.content.userInfo["identifier"] as? String {
         var identifiers = NotificationManager.shared.identifiers
@@ -94,6 +100,16 @@ class NotificationManager: NSObject, UNUserNotificationCenterDelegate {
       self.receivedNotification(response: response)
     }
 
+    if let messageID = userInfo[gcmMessageIDKey] {
+      print("gcm: Message ID: \(messageID)")
+      if
+        let urlString = userInfo["url"] as? String,
+        let url = URL(string: urlString),
+        UIApplication.shared.canOpenURL(url) {
+        UIApplication.shared.open(url, options: [:], completionHandler: nil)
+      }
+    }
+
     completionHandler()
   }
 
@@ -104,9 +120,10 @@ class NotificationManager: NSObject, UNUserNotificationCenterDelegate {
 
   private func receivedNotification(response: UNNotificationResponse) {
     print("notificationManager receivedNotification: \(response)")
+    let userInfo = response.notification.request.content.userInfo
     if response.notification.request.content.categoryIdentifier == "POST_ENTERED" {
       guard
-        let urlString: String = response.notification.request.content.userInfo["PLACE_URL"] as? String,
+        let urlString: String = userInfo["PLACE_URL"] as? String,
         let url: URL = URL(string: urlString) else {
           print("MIA: share URL")
           return
