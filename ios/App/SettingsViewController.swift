@@ -207,10 +207,14 @@ class SettingsViewController: UITableViewController, SettingsToggleCellDelegate,
     feedbackButton
       .rx.tap
       .asDriver()
-      .drive(onNext: { [unowned self] _ in
-        self.sendFeedback(
-          to: ["sarah.schmalbach@gmail.com"],
-          subject: "Feedback for \(self.env.appName)")
+      .drive(onNext: { _ in
+        let url = URL(string: "https://goo.gl/forms/rJzeBGvAs5vDxCnP2")!
+        let app = UIApplication.shared
+        guard app.canOpenURL(url) else {
+          print("ERROR: cannot open \(url)")
+          return
+        }
+        app.open(url, options: [:], completionHandler: nil)
       })
       .disposed(by: self.rx.disposeBag)
 
@@ -223,8 +227,6 @@ class SettingsViewController: UITableViewController, SettingsToggleCellDelegate,
       make.topMargin.equalToSuperview().inset(24)
       make.bottomMargin.equalToSuperview().inset(15)
     }
-
-    footerView.isHidden = !MFMailComposeViewController.canSendMail()
 
     return footerView
   }
@@ -294,25 +296,6 @@ class SettingsViewController: UITableViewController, SettingsToggleCellDelegate,
       let svc = SFSafariViewController(url: url!)
       self.present(svc, animated: true)
     }
-  }
-
-}
-
-import MessageUI
-
-extension SettingsViewController: MFMailComposeViewControllerDelegate {
-
-  func sendFeedback(to: [String], subject: String) {
-    let mailComposerVC = MFMailComposeViewController()
-    mailComposerVC.mailComposeDelegate = self
-    mailComposerVC.setToRecipients(to)
-    mailComposerVC.setSubject(subject)
-    mailComposerVC.setMessageBody("", isHTML: false)
-    present(mailComposerVC, animated: true, completion: nil)
-  }
-
-  func mailComposeController(_ controller: MFMailComposeViewController, didFinishWith result: MFMailComposeResult, error: Error?) {
-    controller.dismiss(animated: true, completion: nil)
   }
 
 }
