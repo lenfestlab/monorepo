@@ -141,9 +141,6 @@ class NotificationManager: NSObject, UNUserNotificationCenterDelegate {
         }
         let activityItems: [Any] = [
           ShareItemSource(data: data),
-          // NOTE: in practice, we've found few apps handle URL type well.
-          // Prefer standarized copy  instead.
-          // url
         ]
         let activityViewController =
           UIActivityViewController(

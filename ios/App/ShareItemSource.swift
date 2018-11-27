@@ -33,18 +33,6 @@ class ShareItemSource: NSObject, UIActivityItemSource {
     }
     return ""
   }
-
-  //  func activityViewController(_ activityViewController: UIActivityViewController, thumbnailImageForActivityType activityType: UIActivityType?, suggestedSize size: CGSize) -> UIImage? {
-  //    if activityType == UIActivityType.message {
-  //      return UIImage(named: "thumbnail-for-message")
-  //    } else if activityType == UIActivityType.mail {
-  //      return UIImage(named: "thumbnail-for-mail")
-  //    } else if activityType == UIActivityType.postToTwitter {
-  //      return UIImage(named: "thumbnail-for-twitter")
-  //    } else if activityType == UIActivityType.postToFacebook {
-  //      return UIImage(named: "thumbnail-for-facebook")
-  //    }
-  //    return UIImage(named: "some-default-thumbnail")
-  //  }
+  
 }
 
