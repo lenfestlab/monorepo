@@ -1,10 +1,3 @@
-//
-//  ShareManager.swift
-//  App
-//
-//  Created by Ajay Chainani on 11/27/18.
-//
-
 import UIKit
 
 class ShareManager: NSObject {
