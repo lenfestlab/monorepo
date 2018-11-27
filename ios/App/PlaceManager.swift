@@ -70,18 +70,21 @@ class PlaceManager: NSObject {
     content.categoryIdentifier = "POST_ENTERED"
     content.sound = UNNotificationSound.default()
 
-    let env = Env()
     let placeURLString = place.post.link.absoluteString
-    let shareCopy: String = [
-      title,
-      placeURLString,
-      "\n",
-      "via the \(env.appName) app \(env.appMarketingUrlString)"
-      ].joined(separator: "\n")
 
     content.userInfo = [
       "PLACE_URL": placeURLString,
-      "SHARE_COPY": shareCopy,
+      "SHARE_DATA": [
+        "string":[
+          UIActivityType.message: ShareManager.messageCopyForPlace(place),
+          UIActivityType.mail: ShareManager.mailCopyForPlace(place),
+          UIActivityType.postToTwitter: ShareManager.twitterCopyForPlace(place),
+          UIActivityType.postToFacebook: ShareManager.facebookCopyForPlace(place)
+        ],
+        "subject":[
+          UIActivityType.mail: ShareManager.mailSubjectForPlace(place),
+        ],
+      ],
       "identifier": place.identifier
     ]
     if image != nil {

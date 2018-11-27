@@ -197,6 +197,10 @@ class LocationManager: NSObject, CLLocationManagerDelegate {
     print("\t place \(place)")
     identifiers[identifier] = Date(timeIntervalSinceNow: 60 * 60 * 24 * 10000)
     NotificationManager.shared.saveIdentifiers(identifiers)
+    sendNotificationForPlace(place)
+  }
+
+  func sendNotificationForPlace(_ place: Place) {
     PlaceManager.contentForPlace(place: place) { (content) in
       self.analytics!.log(.notificationShown(post: place.post, currentLocation: place.coordinate()))
       let request = UNNotificationRequest(identifier: UUID().uuidString, content: content, trigger: nil)
