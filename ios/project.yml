@@ -91,12 +91,6 @@ targets:
     postbuildScripts:
       - name: "Bump build number"
         path: scripts/update_build_number.sh
-      # Firebase + Crashlytics - https://goo.gl/R55q6w
-      - name: "Run Crashlytics"
-        inputFiles:
-          - $(BUILT_PRODUCTS_DIR)/$(INFOPLIST_PATH)
-        script: |
-            ${SRCROOT}/Carthage/Build/iOS/Fabric.framework/run
 
   Tests:
     platform: iOS

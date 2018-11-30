@@ -17,12 +17,6 @@ targets:
       - carthage: AlamofireImage
       - carthage: AlamofireNetworkActivityLogger
 
-      # Crashlytics
-      - carthage: Fabric
-        embed: false
-      - carthage: Crashlytics
-        embed: false
-
       # Firebase - https://git.io/fAxBS
       # NOTE: omit base framework, per: https://git.io/fAjxM
       - carthage: FIRAnalyticsConnector
