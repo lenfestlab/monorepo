@@ -1,8 +1,6 @@
 import Reachability
 import UIKit
 import Firebase
-import Crashlytics
-import Fabric
 import AlamofireNetworkActivityLogger
 import FirebaseMessaging
 
@@ -34,8 +32,6 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         print("gcm: Remote instance ID token: \(result.token)")
       }
     }
-
-    Fabric.sharedSDK().debug = env.isPreProduction
 
     self.analytics = AnalyticsManager(env)
     self.locationManager = LocationManager.sharedWith(analytics: analytics)
