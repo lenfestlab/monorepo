@@ -28,7 +28,6 @@ class PlaceDataStore: NSObject {
         return
       }
       guard let places = [Place].from(jsonArray: placesJSON!) else {
-        print("Error")
         DispatchQueue.main.async {
           completion(false, [], 0)
         }

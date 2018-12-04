@@ -125,7 +125,9 @@ class MapViewController: UIViewController,
 
     let coordinate = CLLocationCoordinate2D(latitude: 39.9526, longitude: -75.1652)
     centerMap(coordinate, span: MKCoordinateSpanMake(0.04, 0.04))
-    fetchMapData(latitude: coordinate.latitude, longitude: coordinate.longitude)
+    fetchMapData(
+      latitude: coordinate.latitude,
+      longitude: coordinate.longitude)
 
     self.navigationItem.rightBarButtonItem = UIBarButtonItem(image: UIImage(named: "settings-button"), style: .plain, target: self, action: #selector(settings))
 
@@ -154,10 +156,10 @@ class MapViewController: UIViewController,
   func mapView(_ mapView: MKMapView, didUpdate userLocation: MKUserLocation) {
     let coordinate = userLocation.coordinate
     mapView.setCenter(coordinate, animated: true)
-    self.locationManager.fetchData(
+    fetchMapData(
       latitude: coordinate.latitude,
       longitude: coordinate.longitude,
-      trackResults: false)
+      overrideCurrentPlace: false)
   }
 
   @IBAction func centerCurrentLocation() {
@@ -222,11 +224,15 @@ class MapViewController: UIViewController,
     self.mapView.addAnnotations(annotations)
   }
 
-  func fetchMapData(latitude:CLLocationDegrees, longitude:CLLocationDegrees) {
+  func fetchMapData(
+    latitude:CLLocationDegrees,
+    longitude:CLLocationDegrees,
+    overrideCurrentPlace: Bool = true) {
+
     dataStore.retrievePlaces(latitude: latitude, longitude: longitude, limit: 1000) { (success, data, count) in
       self.places = data
 
-      if self.places.count > 0 {
+      if overrideCurrentPlace && (self.places.count > 0) {
         self.currentPlace = self.places.first
         self.centerMap((self.currentPlace?.coordinate())!)
       }
