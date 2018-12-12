@@ -156,10 +156,6 @@ class MapViewController: UIViewController,
   func mapView(_ mapView: MKMapView, didUpdate userLocation: MKUserLocation) {
     let coordinate = userLocation.coordinate
     mapView.setCenter(coordinate, animated: true)
-    fetchMapData(
-      latitude: coordinate.latitude,
-      longitude: coordinate.longitude,
-      overrideCurrentPlace: false)
   }
 
   @IBAction func centerCurrentLocation() {
@@ -342,6 +338,13 @@ class MapViewController: UIViewController,
       region = MKCoordinateRegion(center: center, span: span!)
     }
     self.mapView.setRegion(region, animated: true)
+  }
+
+  func mapView(_ mapView: MKMapView, regionDidChangeAnimated animated: Bool) {
+    guard !mapView.isUserLocationVisible else { return }
+    let center = mapView.region.center
+    let (lat, lng) = (center.latitude, center.longitude)
+    fetchMapData(latitude: lat, longitude: lng, overrideCurrentPlace: false)
   }
 
 }
