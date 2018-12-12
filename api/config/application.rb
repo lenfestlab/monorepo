@@ -32,6 +32,7 @@ module Lenfest
     # Skip views, helpers and assets when generating a new resource.
     config.api_only = true
 
+    config.middleware.use Rack::Deflater
     # NOTE: in response to:
     # > Required middlewares for RailsAdmin are not added. To fix tihs, add...
     config.middleware.use ActionDispatch::Cookies
