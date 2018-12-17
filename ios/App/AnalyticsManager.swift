@@ -12,7 +12,7 @@ typealias Meta = Dictionary<String, String>
 
 enum Category: String {
   case debug // for pre-production use only
-  case onboarding, notification, settings
+  case onboarding, notification, settings, background
   case app = "in-app"
 }
 
@@ -171,6 +171,10 @@ struct AnalyticsEvent {
         metadata: ["source": source],
         category: .debug,
         label: source)
+  }
+
+  static func locationChanged(_ location: CLLocationCoordinate2D?) -> AnalyticsEvent {
+    return AnalyticsEvent(name: "location-changed", category: .background)
   }
 
 }
