@@ -92,6 +92,34 @@ class LocationManager: NSObject, CLLocationManagerDelegate {
     let latitude = latestCoordinate.latitude
     let longitude = latestCoordinate.longitude
     self.fetchData(latitude: latitude, longitude: longitude)
+    self.logLocationChange(latestLocation)
+  }
+
+  // analyze location in hours beginning: 8am, 4pm and midnight
+  func logLocationChange(_ newLocation: CLLocation) {
+    print("logLocationChange newLocation: \(newLocation)")
+    guard Env().isPreProduction else { return } // stag only
+    guard let analytics = self.analytics else { return }
+    let region =
+      Region(calendar: Calendars.gregorian,
+             zone: Zones.autoUpdating, // default is GMT: https://git.io/fpAIZ
+             locale: Locale.autoupdatingCurrent)
+    let now = Date().in(region: region)
+    let timestamp = newLocation.timestamp.in(region: region)
+    guard timestamp.isInside(date: now, granularity: .minute) else {
+      print("\t skip stale location")
+      return
+    }
+    let windowHours = [0, 8, 16].map { now.dateBySet(hour: $0, min: 0, secs: 0)! }
+    let isInWindow: Bool = windowHours.contains { beginsAt -> Bool in
+      let endsAt = 1.hours.from(beginsAt)!.in(region: region)
+      return now.isInRange(date: beginsAt, and: endsAt)
+    }
+    guard isInWindow else {
+      print("location changed outside window")
+      return
+    }
+    analytics.log(.locationChanged(newLocation.coordinate))
   }
 
   func locationManager(_ manager: CLLocationManager, monitoringDidFailFor region: CLRegion?, withError error: Error) {
