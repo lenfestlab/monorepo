@@ -11,6 +11,7 @@ gem 'rails_admin'
 gem 'sentry-raven'
 gem 'geocoder'
 gem 'awesome_print'
+gem 'fcm'
 
 group :development, :test do
   gem 'byebug', platforms: [:mri, :mingw, :x64_mingw]

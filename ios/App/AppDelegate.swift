@@ -77,6 +77,31 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
       animated: false)
   }
 
+
+  func application(
+    _ application: UIApplication,
+    didReceiveRemoteNotification
+    userInfo: [AnyHashable : Any],
+    fetchCompletionHandler completionHandler: @escaping (UIBackgroundFetchResult
+    ) -> Void) {
+    print("didReceiveRemoteNotification userInfo: \(userInfo)")
+
+    var result: UIBackgroundFetchResult = .noData
+
+    if let notificationType: String = userInfo["type"] as? String,
+      notificationType == "location" {
+      let locationManager = LocationManager.shared
+      guard let latestLocation = locationManager.latestLocation else {
+        print("ERROR: MIA latestLocation")
+        return
+      }
+      locationManager.logLocationChange(latestLocation)
+      result = .newData
+    }
+
+    completionHandler(result)
+  }
+
 }
 
 
@@ -84,7 +109,15 @@ extension AppDelegate: MessagingDelegate {
 
   func messaging(_ messaging: Messaging, didReceiveRegistrationToken gcmToken: String) {
     print("gcm: registration token: \(gcmToken)")
-    // sync w/ api for targeted notifications
+    // NOTE: shared topic for all notification types; fork behavior on payload
+    let topic = "all"
+    Messaging.messaging().subscribe(toTopic: topic) { error in
+      if let errorDesc: String = error?.localizedDescription {
+        print("ERROR: gcm: failed to subscribe to topic \(topic) - \(errorDesc)")
+      } else {
+        print("gcm: subscribed to topic: \(topic)")
+      }
+    }
   }
 
 }
