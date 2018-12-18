@@ -87,9 +87,11 @@ class LocationManager: NSObject, CLLocationManagerDelegate {
     }
   }
 
-  private var latestLocation: CLLocation?
+  public var latestLocation: CLLocation? {
+    return self.locationManager.location
+  }
   public var latestCoordinate: CLLocationCoordinate2D? {
-    return latestLocation?.coordinate
+    return self.locationManager.location?.coordinate
   }
   static var latestCoordinate: CLLocationCoordinate2D? {
     return shared.latestCoordinate
@@ -98,22 +100,19 @@ class LocationManager: NSObject, CLLocationManagerDelegate {
   func locationManager(_ manager: CLLocationManager,
                        didUpdateLocations locations: [CLLocation]) {
     print("locationManager:didUpdateLocations \(locations)")
-    guard let latestLocation = locations.last else {
+    guard let location = locations.last else {
       print("ERROR: MIA: locations.last")
       return
     }
-    self.latestLocation = latestLocation
-    let latestCoordinate = latestLocation.coordinate
-    let latitude = latestCoordinate.latitude
-    let longitude = latestCoordinate.longitude
+    let coordinate = location.coordinate
+    let (latitude, longitude) = (coordinate.latitude, coordinate.longitude)
     self.fetchData(latitude: latitude, longitude: longitude)
-    self.logLocationChange(latestLocation)
+    self.logLocationChange(location)
   }
 
   // analyze location in hours beginning: 8am, 4pm and midnight
   func logLocationChange(_ newLocation: CLLocation) {
     print("logLocationChange newLocation: \(newLocation)")
-    guard Env().isPreProduction else { return } // stag only
     guard let analytics = self.analytics else { return }
     let region =
       Region(calendar: Calendars.gregorian,

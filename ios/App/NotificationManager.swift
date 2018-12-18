@@ -83,7 +83,7 @@ class NotificationManager: NSObject, UNUserNotificationCenterDelegate {
     let userInfo = response.notification.request.content.userInfo
     let actionIdentifier = response.actionIdentifier
 
-    if actionIdentifier == "later"{
+    if actionIdentifier == "later" {
       if let identifier = response.notification.request.content.userInfo["identifier"] as? String {
         var identifiers = NotificationManager.shared.identifiers
         identifiers[identifier] = Date(timeIntervalSinceNow: 60 * 60 * 24)
