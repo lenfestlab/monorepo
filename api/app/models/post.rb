@@ -16,6 +16,18 @@ class Post < ApplicationRecord
   accepts_nested_attributes_for :places,
     allow_destroy: true
 
+  after_save :attempt_shorten_url!
+
+  def attempt_shorten_url!
+    shorten_url! if saved_change_to_url? # https://goo.gl/ekakZS
+  end
+
+  def shorten_url!
+    result = Bitly.client.shorten(self.url)
+    self.url_short = result.short_url
+    self.save!
+  end
+
   def image_url
     Post.ensure_https(
       Post.ensure_present(
@@ -33,6 +45,7 @@ class Post < ApplicationRecord
         :title,
         :blurb,
         :url,
+        :url_short
       ],
       methods: [
         :identifier,
@@ -58,6 +71,7 @@ class Post < ApplicationRecord
 
   def self.append_analytics_params url_string
     return nil unless url_string
+    return url_string unless url_string.include?("philly.com") # PMN only
     params = {
       utm_source: ENV["UTM_SOURCE"],
       utm_medium: ENV["UTM_MEDIUM"],
@@ -73,6 +87,11 @@ class Post < ApplicationRecord
   end
 
   rails_admin do
+
+    configure :url_short do
+      read_only true
+      help "Updates with URL"
+    end
 
     configure :identifier do
       hide
