@@ -4,7 +4,21 @@ import SwiftDate
 import CoreLocation
 import SwiftDate
 
-extension CMMotionActivityConfidence: CustomStringConvertible {
+extension CMAuthorizationStatus: CustomStringConvertible, CustomDebugStringConvertible {
+  public var description: String {
+    switch self {
+    case .notDetermined: return "not-determined"
+    case .restricted: return "restricted"
+    case .denied: return "denied"
+    case .authorized: return "authorized"
+    }
+  }
+  public var debugDescription: String {
+    return description
+  }
+}
+
+extension CMMotionActivityConfidence: CustomStringConvertible, CustomDebugStringConvertible {
   public var description: String {
     switch self {
     case .low: return "low"
@@ -12,7 +26,7 @@ extension CMMotionActivityConfidence: CustomStringConvertible {
     case .high: return "high"
     }
   }
-  var debugDescription: String {
+  public var debugDescription: String {
     return description
   }
 }
@@ -62,7 +76,6 @@ class MotionManager: NSObject {
 
   class func isActivityAvailable() -> Bool {
     let result = CMMotionActivityManager.isActivityAvailable()
-//    print("\t MotionManager.isActivityAvailable \(result)")
     return result
   }
 
@@ -91,9 +104,9 @@ class MotionManager: NSObject {
   }
 
   func enableMotionDetection(_ analytics: AnalyticsManager?) {
-    let status = CMMotionActivityManager.authorizationStatus()
-    if status == CMAuthorizationStatus.denied {
-      self.authorizationDelegate?.notAuthorized(self, status: status)
+    let initialStatus = CMMotionActivityManager.authorizationStatus()
+    if initialStatus == .denied {
+      self.authorizationDelegate?.notAuthorized(self, status: initialStatus)
       return
     }
 
@@ -103,7 +116,8 @@ class MotionManager: NSObject {
         print("ERROR: MIA: authorizationDelegate")
         return
       }
-      if self.hasStatus(.authorized) {
+      let status = CMMotionActivityManager.authorizationStatus()
+      if status == .authorized {
         authorizationDelegate.authorized(self, status: status)
       } else {
         authorizationDelegate.notAuthorized(self, status: status)

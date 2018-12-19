@@ -76,16 +76,7 @@ struct AnalyticsEvent {
   }
 
   static func selectsMotionTrackingPermissions(status: CMAuthorizationStatus) -> AnalyticsEvent {
-    var label = "not-determined"
-    if status == CMAuthorizationStatus.authorized {
-      label = "authorized"
-    } else if status == CMAuthorizationStatus.restricted {
-      label = "restricted"
-    } else if status == CMAuthorizationStatus.denied {
-      label = "denied"
-    }
-
-    return AnalyticsEvent(name: "enable-motion", category: .onboarding, label:label)
+    return AnalyticsEvent(name: "enable-motion", category: .onboarding, label: status.description)
   }
 
   static func notificationShown(post: Post, currentLocation: CLLocationCoordinate2D?) -> AnalyticsEvent {
