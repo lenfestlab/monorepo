@@ -3,6 +3,21 @@ import CoreLocation
 import UserNotifications
 import SwiftDate
 
+extension CLAuthorizationStatus: CustomStringConvertible, CustomDebugStringConvertible {
+  public var description: String {
+    switch self {
+    case .notDetermined: return "not-determined"
+    case .restricted: return "restricted"
+    case .denied: return "denied"
+    case .authorizedAlways: return "authorized-always"
+    case .authorizedWhenInUse: return "authorized-when-in-use"
+    }
+  }
+  public var debugDescription: String {
+    return description
+  }
+}
+
 protocol LocationManagerAuthorizationDelegate: class {
   func authorized(_ locationManager: LocationManager, status: CLAuthorizationStatus)
   func notAuthorized(_ locationManager: LocationManager, status: CLAuthorizationStatus)

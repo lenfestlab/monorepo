@@ -7,11 +7,13 @@ class MotionViewController: UIViewController, MotionManagerAuthorizationDelegate
   // MARK: - Motion manager authorization delegate
 
   func authorized(_ motionManager: MotionManager, status: CMAuthorizationStatus) {
+    print("MotionViewController authorized status: \(status.description)")
     self.analytics.log(.selectsMotionTrackingPermissions(status: status))
     next()
   }
 
   func notAuthorized(_ motionManager: MotionManager, status: CMAuthorizationStatus) {
+    print("MotionViewController notAuthorized status: \(status.description)")
     self.analytics.log(.selectsMotionTrackingPermissions(status: status))
     next()
   }
@@ -64,11 +66,6 @@ class MotionViewController: UIViewController, MotionManagerAuthorizationDelegate
   @IBAction func done(sender: UIButton) {
     self.analytics.log(.tapsEnableMotionButton)
     self.motionManager.enableMotionDetection(analytics)
-  }
-
-  override func didReceiveMemoryWarning() {
-    super.didReceiveMemoryWarning()
-    // Dispose of any resources that can be recreated.
   }
 
 }
