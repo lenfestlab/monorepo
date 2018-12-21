@@ -14,6 +14,7 @@ class MapViewController: UIViewController,
   LocationManagerAuthorizationDelegate,
   UICollectionViewDelegate,
   UICollectionViewDataSource,
+  UIGestureRecognizerDelegate,
   MKMapViewDelegate {
 
   let padding = CGFloat(45)
@@ -73,6 +74,10 @@ class MapViewController: UIViewController,
 
   override func viewDidLoad() {
     super.viewDidLoad()
+
+    let panRec = UIPanGestureRecognizer(target: self, action: #selector(didDragMap(gestureRecognizer:)))
+    panRec.delegate = self
+    self.mapView.addGestureRecognizer(panRec)
 
     if MotionManager.isActivityAvailable() {
       let mm = motionManager
@@ -326,10 +331,17 @@ class MapViewController: UIViewController,
     self.mapView.setRegion(region, animated: true)
   }
 
-  func mapView(_ mapView: MKMapView, regionDidChangeAnimated animated: Bool) {
-    guard !mapView.isUserLocationVisible else { return }
-    let center = mapView.region.center
-    fetchMapData(coordinate: center, overrideCurrentPlace: false)
+  func gestureRecognizer(_ gestureRecognizer: UIGestureRecognizer, shouldRecognizeSimultaneouslyWith otherGestureRecognizer: UIGestureRecognizer) -> Bool {
+    return true
   }
+
+  @objc func didDragMap(gestureRecognizer: UIGestureRecognizer) {
+    guard !mapView.isUserLocationVisible else { return }
+    if (gestureRecognizer.state == .ended){
+      let center = mapView.region.center
+      fetchMapData(coordinate: center, overrideCurrentPlace: false)
+    }
+  }
+
 
 }
