@@ -28,6 +28,8 @@ class LocationManager: NSObject, CLLocationManagerDelegate {
   static let shared = LocationManager()
 
   let dataStore = PlaceDataStore()
+  let env: Env
+
 
   weak var authorizationDelegate: LocationManagerAuthorizationDelegate?
   var locationManager:CLLocationManager
@@ -44,6 +46,7 @@ class LocationManager: NSObject, CLLocationManagerDelegate {
   }
 
   override init() {
+    env = Env()
     locationManager = CLLocationManager()
     locationManager.desiredAccuracy = kCLLocationAccuracyHundredMeters
     locationManager.pausesLocationUpdatesAutomatically = false
@@ -124,7 +127,8 @@ class LocationManager: NSObject, CLLocationManagerDelegate {
       print("\t skip stale location")
       return
     }
-    let windowHours = [0, 8, 16].map { now.dateBySet(hour: $0, min: 0, secs: 0)! }
+    let windowHourStarts = env.isPreProduction ? Array(0..<23) : [0, 8, 16]
+    let windowHours = windowHourStarts.map { now.dateBySet(hour: $0, min: 0, secs: 0)! }
     let isInWindow: Bool = windowHours.contains { beginsAt -> Bool in
       let endsAt = 1.hours.from(beginsAt)!.in(region: region)
       return now.isInRange(date: beginsAt, and: endsAt)

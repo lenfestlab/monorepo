@@ -165,7 +165,7 @@ struct AnalyticsEvent {
   }
 
   static func locationChanged(_ location: CLLocationCoordinate2D?) -> AnalyticsEvent {
-    return AnalyticsEvent(name: "location-changed", category: .background)
+    return AnalyticsEvent(name: "location-changed", category: .background, location: location)
   }
 
 }
