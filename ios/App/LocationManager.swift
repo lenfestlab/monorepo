@@ -90,14 +90,12 @@ class LocationManager: NSObject, CLLocationManagerDelegate {
     }
   }
 
-  public var latestLocation: CLLocation? {
-    return self.locationManager.location
-  }
+  public var latestLocation: CLLocation?
   public var latestCoordinate: CLLocationCoordinate2D? {
-    return self.locationManager.location?.coordinate
+    return self.latestLocation?.coordinate
   }
   static var latestCoordinate: CLLocationCoordinate2D? {
-    return shared.latestCoordinate
+    return self.shared.latestCoordinate
   }
 
   func locationManager(_ manager: CLLocationManager,
@@ -107,6 +105,7 @@ class LocationManager: NSObject, CLLocationManagerDelegate {
       print("ERROR: MIA: locations.last")
       return
     }
+    self.latestLocation = location
     let coordinate = location.coordinate
     let (latitude, longitude) = (coordinate.latitude, coordinate.longitude)
     self.fetchData(latitude: latitude, longitude: longitude)
