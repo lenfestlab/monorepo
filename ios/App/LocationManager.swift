@@ -18,7 +18,8 @@ extension CLAuthorizationStatus: CustomStringConvertible, CustomDebugStringConve
   }
 }
 
-protocol LocationManagerAuthorizationDelegate: class {
+@objc protocol LocationManagerAuthorizationDelegate: class {
+  @objc optional func locationUpdated(_ locationManager: LocationManager, location: CLLocation)
   func authorized(_ locationManager: LocationManager, status: CLAuthorizationStatus)
   func notAuthorized(_ locationManager: LocationManager, status: CLAuthorizationStatus)
 }
@@ -90,7 +91,13 @@ class LocationManager: NSObject, CLLocationManagerDelegate {
     }
   }
 
-  public var latestLocation: CLLocation?
+  public var latestLocation: CLLocation? {
+    didSet {
+      if let location = latestLocation {
+        authorizationDelegate?.locationUpdated?(self, location: location)
+      }
+    }
+  }
   public var latestCoordinate: CLLocationCoordinate2D? {
     return self.latestLocation?.coordinate
   }
@@ -105,6 +112,17 @@ class LocationManager: NSObject, CLLocationManagerDelegate {
       print("ERROR: MIA: locations.last")
       return
     }
+    let region =
+      Region(calendar: Calendars.gregorian,
+             zone: Zones.autoUpdating, // default is GMT: https://git.io/fpAIZ
+        locale: Locale.autoupdatingCurrent)
+    let now = Date().in(region: region)
+    let timestamp = location.timestamp.in(region: region)
+    guard timestamp.isInside(date: now, granularity: .minute) else {
+      print("\t skip stale location")
+      return
+    }
+
     self.latestLocation = location
     let coordinate = location.coordinate
     let (latitude, longitude) = (coordinate.latitude, coordinate.longitude)
