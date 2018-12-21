@@ -25,6 +25,8 @@ class MapViewController: UIViewController,
   let locationManager = LocationManager.shared
   var places:[Place] = []
   var currentPlace:Place?
+  var initalDataFetched = false
+
 
   var lastCoordinate: CLLocationCoordinate2D? {
     return locationManager.latestCoordinate
@@ -71,11 +73,11 @@ class MapViewController: UIViewController,
         action: nil)
   }
 
-  func initialMapDataFetch() {
-    var coordinate = CLLocationCoordinate2D(latitude: 39.9526, longitude: -75.1652)
-    if lastCoordinate != nil {
-      coordinate = lastCoordinate!
+  func initialMapDataFetch(coordinate: CLLocationCoordinate2D) {
+    if initalDataFetched {
+      return
     }
+    initalDataFetched = true
     centerMap(coordinate, span: MKCoordinateSpanMake(0.04, 0.04))
     fetchMapData(coordinate: coordinate)
   }
@@ -127,8 +129,6 @@ class MapViewController: UIViewController,
     navigationController?.navigationBar.tintColor =  UIColor.offRed()
     navigationController?.navigationBar.isTranslucent = false
 
-    initialMapDataFetch()
-
     self.navigationItem.rightBarButtonItem = UIBarButtonItem(image: UIImage(named: "settings-button"), style: .plain, target: self, action: #selector(settings))
 
     // simulate local notification
@@ -156,6 +156,7 @@ class MapViewController: UIViewController,
   func mapView(_ mapView: MKMapView, didUpdate userLocation: MKUserLocation) {
     let coordinate = userLocation.coordinate
     mapView.setCenter(coordinate, animated: true)
+    self.locationManager.latestLocation = CLLocation(latitude: coordinate.latitude, longitude: coordinate.longitude)
   }
 
   @IBAction func centerCurrentLocation() {
@@ -237,6 +238,10 @@ class MapViewController: UIViewController,
 
 
   // MARK: - Location manager delegate
+
+  func locationUpdated(_ locationManager: LocationManager, location: CLLocation) {
+    initialMapDataFetch(coordinate: location.coordinate)
+  }
 
   func authorized(_ locationManager: LocationManager, status: CLAuthorizationStatus) {
     print("locationManagerDelegate authorized")
