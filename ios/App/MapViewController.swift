@@ -18,7 +18,6 @@ class MapViewController: UIViewController,
 
   let padding = CGFloat(45)
   let spacing = CGFloat(0)
-
   let env: Env
   let motionManager = MotionManager.shared
   let dataStore = PlaceDataStore()
@@ -71,6 +70,15 @@ class MapViewController: UIViewController,
         action: nil)
   }
 
+  func initialMapDataFetch() {
+    var coordinate = CLLocationCoordinate2D(latitude: 39.9526, longitude: -75.1652)
+    if lastCoordinate != nil {
+      coordinate = lastCoordinate!
+    }
+    centerMap(coordinate, span: MKCoordinateSpanMake(0.04, 0.04))
+    fetchMapData(coordinate: coordinate)
+  }
+
   override func viewDidLoad() {
     super.viewDidLoad()
 
@@ -114,9 +122,7 @@ class MapViewController: UIViewController,
     navigationController?.navigationBar.tintColor =  UIColor.offRed()
     navigationController?.navigationBar.isTranslucent = false
 
-    let coordinate = CLLocationCoordinate2D(latitude: 39.9526, longitude: -75.1652)
-    centerMap(coordinate, span: MKCoordinateSpanMake(0.04, 0.04))
-    fetchMapData(coordinate: coordinate)
+    initialMapDataFetch()
 
     self.navigationItem.rightBarButtonItem = UIBarButtonItem(image: UIImage(named: "settings-button"), style: .plain, target: self, action: #selector(settings))
 
