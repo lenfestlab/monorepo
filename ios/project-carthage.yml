@@ -11,6 +11,7 @@ targets:
       - carthage: RxCocoa
       - carthage: NSObject_Rx
       - carthage: SnapKit
+      - carthage: Schedule
 
       # Alamofire
       - carthage: Alamofire

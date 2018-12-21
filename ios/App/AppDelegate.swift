@@ -3,6 +3,7 @@ import UIKit
 import Firebase
 import AlamofireNetworkActivityLogger
 import FirebaseMessaging
+import Schedule
 
 typealias LaunchOptions = [UIApplicationLaunchOptionsKey: Any]?
 let gcmMessageIDKey = "gcm.message_id"
@@ -86,20 +87,24 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
     ) -> Void) {
     print("didReceiveRemoteNotification userInfo: \(userInfo)")
 
-    var result: UIBackgroundFetchResult = .noData
-
     if let notificationType: String = userInfo["type"] as? String,
       notificationType == "location" {
       let locationManager = LocationManager.shared
-      guard let latestLocation = locationManager.latestLocation else {
-        print("ERROR: MIA latestLocation")
-        return
+      let plan = Plan.after(3.seconds) // wait for location update
+      plan.do {
+        if let latestLocation = locationManager.latestLocation {
+          locationManager.logLocationChange(latestLocation)
+          Plan.after(3.seconds).do { // wait for GA to fire
+            completionHandler(.newData)
+          }
+        } else {
+          print("ERROR: MIA latestLocation")
+          completionHandler(.noData)
+        }
       }
-      locationManager.logLocationChange(latestLocation)
-      result = .newData
+    } else {
+      completionHandler(.noData)
     }
-
-    completionHandler(result)
   }
 
 }
