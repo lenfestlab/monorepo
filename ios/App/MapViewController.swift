@@ -10,10 +10,6 @@ import NSObject_Rx
 private let reuseIdentifier = "PlaceCell"
 fileprivate let sectionInsets = UIEdgeInsets(top: 0, left: 0, bottom: 0, right: 0)
 
-class ABPointAnnotation : MKPointAnnotation {
-  var index: Int = 0
-}
-
 class MapViewController: UIViewController,
   LocationManagerAuthorizationDelegate,
   UICollectionViewDelegate,
@@ -41,11 +37,6 @@ class MapViewController: UIViewController,
   private let analytics: AnalyticsManager
   @IBOutlet weak var settingsButton:UIButton!
   @IBOutlet weak var activitylabel:UILabel!
-
-  override func viewWillAppear(_ animated: Bool) {
-    super.viewWillAppear(animated)
-
-  }
 
   init(analytics: AnalyticsManager) {
     env = Env()
@@ -125,9 +116,7 @@ class MapViewController: UIViewController,
 
     let coordinate = CLLocationCoordinate2D(latitude: 39.9526, longitude: -75.1652)
     centerMap(coordinate, span: MKCoordinateSpanMake(0.04, 0.04))
-    fetchMapData(
-      latitude: coordinate.latitude,
-      longitude: coordinate.longitude)
+    fetchMapData(coordinate: coordinate)
 
     self.navigationItem.rightBarButtonItem = UIBarButtonItem(image: UIImage(named: "settings-button"), style: .plain, target: self, action: #selector(settings))
 
@@ -210,9 +199,7 @@ class MapViewController: UIViewController,
   func reloadMap() {
     var annotations:[MKAnnotation] = []
     for (index, place) in self.places.enumerated() {
-      let annotation = ABPointAnnotation()
-      annotation.coordinate = place.coordinate()
-      annotation.title = place.title
+      let annotation = ABPointAnnotation(place: place)
       annotation.index = index
       annotations.append(annotation)
     }
@@ -220,10 +207,9 @@ class MapViewController: UIViewController,
     self.mapView.addAnnotations(annotations)
   }
 
-  func fetchMapData(
-    latitude:CLLocationDegrees,
-    longitude:CLLocationDegrees,
-    overrideCurrentPlace: Bool = true) {
+  func fetchMapData(coordinate:CLLocationCoordinate2D, overrideCurrentPlace: Bool = true) {
+    let latitude = coordinate.latitude
+    let longitude = coordinate.longitude
 
     dataStore.retrievePlaces(latitude: latitude, longitude: longitude, limit: 1000) { (success, data, count) in
       self.places = data
@@ -343,8 +329,7 @@ class MapViewController: UIViewController,
   func mapView(_ mapView: MKMapView, regionDidChangeAnimated animated: Bool) {
     guard !mapView.isUserLocationVisible else { return }
     let center = mapView.region.center
-    let (lat, lng) = (center.latitude, center.longitude)
-    fetchMapData(latitude: lat, longitude: lng, overrideCurrentPlace: false)
+    fetchMapData(coordinate: center, overrideCurrentPlace: false)
   }
 
 }
