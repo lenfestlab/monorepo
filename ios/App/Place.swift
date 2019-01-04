@@ -22,14 +22,20 @@ struct Post: JSONDecodable, Codable, Identifiable {
   let title: String?
   let blurb: String?
   let link: URL
+  let linkShort: URL
   let imageURL: URL?
-  
+  let publicationName: String?
+  let publicationTwitter: String?
+
   init?(json: JSON) {
     self.identifier = ("identifier" <~~ json)!
     self.title = "title" <~~ json
     self.blurb = "blurb" <~~ json
     self.link = ("url" <~~ json)!
+    self.linkShort = ("url_short" <~~ json)!
     self.imageURL = "image_url" <~~ json
+    self.publicationName = "publication_name" <~~ json
+    self.publicationTwitter = "publication_twitter" <~~ json
   }
   
 }

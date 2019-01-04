@@ -71,6 +71,7 @@ class PlaceManager: NSObject {
     content.sound = UNNotificationSound.default()
 
     let placeURLString = place.post.link.absoluteString
+    let placeUrlShortString = place.post.linkShort.absoluteString
 
     content.userInfo = [
       "PLACE_URL": placeURLString,
@@ -83,7 +84,7 @@ class PlaceManager: NSObject {
         ],
         "subject":[
           UIActivityType.mail: ShareManager.mailSubjectForPlace(place),
-        ],
+        ]
       ],
       "identifier": place.identifier
     ]
@@ -104,14 +105,6 @@ class PlaceManager: NSObject {
 //    print("placeManager trackPlace: \(place) \n")
     let region = self.regionForPlace(place: place, radius: radius)
     LocationManager.shared.locationManager.startMonitoring(for: region)
-  }
-
-
-  class var randomMonitoredRegion: CLRegion? {
-    guard let place = shared.placesStore.allObjects().randomElement() else {
-      return nil
-    }
-    return regionForPlace(place: place, radius: 50)
   }
 
 }

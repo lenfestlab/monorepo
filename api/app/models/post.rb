@@ -39,6 +39,22 @@ class Post < ApplicationRecord
     Post.append_analytics_params secure_url
   end
 
+  def self.default_publication_name
+    ENV["DEFAULT_PUBLICATION_NAME"]
+  end
+
+  def publication_name
+    read_attribute(:publication_name) || Post.default_publication_name
+  end
+
+  def self.default_publication_twitter
+    ENV["DEFAULT_PUBLICATION_TWITTER"]
+  end
+
+  def publication_twitter
+    read_attribute(:publication_twitter) || Post.default_publication_twitter
+  end
+
   def as_json(options = nil)
     super({
       only: [
@@ -50,6 +66,8 @@ class Post < ApplicationRecord
       methods: [
         :identifier,
         :image_url,
+        :publication_name,
+        :publication_twitter
       ]
     }.merge(options || {}))
   end
@@ -99,6 +117,14 @@ class Post < ApplicationRecord
 
     configure :radius do
       help "Meters. Optional, if blank defaults to #{Post.default_trigger_radius}"
+    end
+
+    configure :publication_name do
+      help %(Optional, if blank defaults to "#{Post.default_publication_name}")
+    end
+
+    configure :publication_twitter do
+      help %(Optional, if blank defaults to "#{Post.default_publication_twitter}")
     end
 
   end

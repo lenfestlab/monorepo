@@ -16,12 +16,10 @@ class ShareItemSource: NSObject, UIActivityItemSource {
   }
 
   func activityViewController(_ activityViewController: UIActivityViewController, itemForActivityType activityType: UIActivityType?) -> Any? {
-    var string:String? = nil
-    if (activityType != nil) {
-      string = self.stringData[activityType!]
-    }
-    if (string == nil) {
-      string = self.stringData[UIActivityType.message]
+    guard
+      let activityType = activityType,
+      let string = self.stringData[activityType] else {
+        return self.stringData[UIActivityType.message]
     }
     return string
   }
@@ -33,6 +31,6 @@ class ShareItemSource: NSObject, UIActivityItemSource {
     }
     return ""
   }
-  
+
 }
 
