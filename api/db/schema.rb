@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2018_12_19_161543) do
+ActiveRecord::Schema.define(version: 2019_01_04_192627) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -42,6 +42,8 @@ ActiveRecord::Schema.define(version: 2018_12_19_161543) do
     t.integer "radius"
     t.uuid "identifier", default: -> { "uuid_generate_v4()" }
     t.string "url_short"
+    t.string "publication_name"
+    t.string "publication_twitter"
   end
 
 end

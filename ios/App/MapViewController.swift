@@ -146,20 +146,11 @@ class MapViewController: UIViewController,
       button.rx.tap
         .asDriver()
         .drive(onNext: { [unowned self] _ in
-
           guard let place = self.places.randomElement() else {
             print("MIA: place / region")
             return
           }
-
           self.locationManager.sendNotificationForPlace(place)
-          return
-
-          guard let region = PlaceManager.randomMonitoredRegion else {
-            print("MIA: place / region")
-            return
-          }
-          self.locationManager.simulate(enteredRegion: region)
         })
         .disposed(by: self.rx.disposeBag)
     }
