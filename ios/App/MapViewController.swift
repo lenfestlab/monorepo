@@ -85,10 +85,6 @@ class MapViewController: UIViewController,
   override func viewDidLoad() {
     super.viewDidLoad()
 
-    let panRec = UIPanGestureRecognizer(target: self, action: #selector(didDragMap(gestureRecognizer:)))
-    panRec.delegate = self
-    self.mapView.addGestureRecognizer(panRec)
-
     if MotionManager.isActivityAvailable() {
       let mm = motionManager
       mm.startActivityUpdates { [unowned self] activity in
@@ -350,7 +346,7 @@ class MapViewController: UIViewController,
     return true
   }
 
-  @objc func didDragMap(gestureRecognizer: UIGestureRecognizer) {
+  @IBAction func didDragMap(gestureRecognizer: UIGestureRecognizer) {
     guard !mapView.isUserLocationVisible else { return }
     if (gestureRecognizer.state == .ended){
       let center = mapView.region.center

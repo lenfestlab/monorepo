@@ -1,10 +1,10 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<document type="com.apple.InterfaceBuilder3.CocoaTouch.XIB" version="3.0" toolsVersion="14313.18" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" useSafeAreas="YES" colorMatched="YES">
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.XIB" version="3.0" toolsVersion="14460.31" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" useSafeAreas="YES" colorMatched="YES">
     <device id="retina5_9" orientation="portrait">
         <adaptation id="fullscreen"/>
     </device>
     <dependencies>
-        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="14283.14"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="14460.20"/>
         <capability name="Safe area layout guides" minToolsVersion="9.0"/>
         <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
     </dependencies>
@@ -27,6 +27,7 @@
                     <rect key="frame" x="0.0" y="-250" width="375" height="974"/>
                     <connections>
                         <outlet property="delegate" destination="-1" id="zmO-ui-Tvd"/>
+                        <outletCollection property="gestureRecognizers" destination="36V-8b-SJw" appends="YES" id="CHf-fE-QQS"/>
                     </connections>
                 </mapView>
                 <collectionView clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="scaleToFill" showsHorizontalScrollIndicator="NO" showsVerticalScrollIndicator="NO" dataMode="none" translatesAutoresizingMaskIntoConstraints="NO" id="xfc-ON-2uS">
@@ -100,9 +101,15 @@
             <viewLayoutGuide key="safeArea" id="fq1-Xw-T1U"/>
             <point key="canvasLocation" x="34.5" y="53"/>
         </view>
+        <panGestureRecognizer minimumNumberOfTouches="1" id="36V-8b-SJw">
+            <connections>
+                <action selector="didDragMapWithGestureRecognizer:" destination="-1" id="Eki-nV-BF1"/>
+                <outlet property="delegate" destination="-1" id="kiD-Y4-XY5"/>
+            </connections>
+        </panGestureRecognizer>
     </objects>
     <resources>
-        <image name="location" width="129" height="129"/>
+        <image name="location" width="43" height="43"/>
         <image name="location-enabled" width="43" height="43"/>
     </resources>
 </document>
