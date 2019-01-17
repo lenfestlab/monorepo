@@ -57,7 +57,12 @@ class MapViewController: UIViewController,
     let mainController = self.navigationController as! MainController
     let url: URL? = mainController.lastViewedURL
     // Currently we send the map viewed data regardless of whether we have the coordinates yet or not
-    self.analytics.log(.mapViewed(currentLocation: self.lastCoordinate, source: url))
+
+    let state = UIApplication.shared.applicationState
+    if state != .background {
+      self.analytics.log(.mapViewed(currentLocation: self.lastCoordinate, source: url))
+    }
+
     mainController.lastViewedURL = nil
   }
 
