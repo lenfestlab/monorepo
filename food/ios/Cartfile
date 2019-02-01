@@ -1,0 +1,16 @@
+github "Alamofire/Alamofire"
+github "hkellaway/Gloss"
+github "Alamofire/AlamofireImage"
+github "konkab/AlamofireNetworkActivityLogger"
+github "omaralbeik/UserDefaultsStore"
+github "ksmandersen/GoogleReporter"
+github "ink-spot/UPCarouselFlowLayout"
+github "malcommac/SwiftDate"
+github "ReactiveX/RxSwift"
+github "RxSwiftCommunity/NSObject-Rx"
+github "SnapKit/SnapKit"
+github "jianstm/Schedule"
+
+# Firebase experimental carthage support: https://git.io/fAxBS
+binary "https://dl.google.com/dl/firebase/ios/carthage/FirebaseAnalyticsBinary.json"
+binary "https://dl.google.com/dl/firebase/ios/carthage/FirebaseMessagingBinary.json"

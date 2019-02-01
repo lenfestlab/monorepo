@@ -1,0 +1,5 @@
+app_identifier ENV["FASTLANE_APP_ID"] # The bundle identifier of your app
+apple_id ENV["FASTLANE_APPLE_ID"]  # Your Apple email address
+
+itc_team_id ENV["FASTLANE_ITC_TEAM_ID"]  # App Store Connect Team ID
+team_id ENV["FASTLANE_TEAM_ID"]  # Developer Portal Team ID

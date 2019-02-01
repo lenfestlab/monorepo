@@ -1,0 +1,85 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.XIB" version="3.0" toolsVersion="14313.18" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" useSafeAreas="YES" colorMatched="YES">
+    <device id="retina4_7" orientation="portrait">
+        <adaptation id="fullscreen"/>
+    </device>
+    <dependencies>
+        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="14283.14"/>
+        <capability name="Safe area layout guides" minToolsVersion="9.0"/>
+        <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
+    </dependencies>
+    <customFonts key="customFonts">
+        <array key="Lato-Regular.ttf">
+            <string>Lato-Regular</string>
+        </array>
+        <array key="WorkSans-Medium.ttf">
+            <string>WorkSans-Medium</string>
+        </array>
+        <array key="WorkSans-Regular.ttf">
+            <string>WorkSans-Regular</string>
+        </array>
+    </customFonts>
+    <objects>
+        <placeholder placeholderIdentifier="IBFilesOwner" id="-1" userLabel="File's Owner" customClass="IntroViewController" customModule="App" customModuleProvider="target">
+            <connections>
+                <outlet property="doneButton" destination="hUG-bU-8Yv" id="yuf-jI-fN3"/>
+                <outlet property="view" destination="i5M-Pr-FkT" id="sfx-zR-JGt"/>
+            </connections>
+        </placeholder>
+        <placeholder placeholderIdentifier="IBFirstResponder" id="-2" customClass="UIResponder"/>
+        <view clearsContextBeforeDrawing="NO" contentMode="scaleToFill" id="i5M-Pr-FkT">
+            <rect key="frame" x="0.0" y="0.0" width="375" height="603"/>
+            <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+            <subviews>
+                <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="hUG-bU-8Yv">
+                    <rect key="frame" x="47.5" y="503" width="280" height="60"/>
+                    <constraints>
+                        <constraint firstAttribute="height" constant="60" id="BZd-Ff-bLm"/>
+                        <constraint firstAttribute="width" constant="280" id="g8k-82-ruR"/>
+                    </constraints>
+                    <fontDescription key="fontDescription" name="WorkSans-Regular" family="Work Sans" pointSize="20"/>
+                    <state key="normal" title="Get Started" backgroundImage="intro-button">
+                        <color key="titleColor" white="0.0" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                    </state>
+                    <connections>
+                        <action selector="doneWithSender:" destination="-1" eventType="touchUpInside" id="Uwu-HJ-cCw"/>
+                    </connections>
+                </button>
+                <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="We're happy you're here!" textAlignment="center" lineBreakMode="tailTruncation" numberOfLines="2" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="1No-Eb-hoY">
+                    <rect key="frame" x="20" y="70" width="335" height="84.5"/>
+                    <fontDescription key="fontDescription" name="WorkSans-Medium" family="Work Sans" pointSize="36"/>
+                    <nil key="highlightedColor"/>
+                </label>
+                <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="HERE sends notifications about local arts, architecture and real estate news near you." textAlignment="center" lineBreakMode="tailTruncation" numberOfLines="6" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="YHF-1K-Vww">
+                    <rect key="frame" x="34" y="339.5" width="307" height="72"/>
+                    <fontDescription key="fontDescription" name="Lato-Regular" family="Lato" pointSize="20"/>
+                    <nil key="highlightedColor"/>
+                </label>
+                <imageView opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" insetsLayoutMarginsFromSafeArea="NO" image="intro-image" translatesAutoresizingMaskIntoConstraints="NO" id="LoI-jC-Rhf">
+                    <rect key="frame" x="116" y="196.5" width="143" height="100"/>
+                </imageView>
+            </subviews>
+            <color key="backgroundColor" red="1" green="1" blue="1" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+            <constraints>
+                <constraint firstItem="1No-Eb-hoY" firstAttribute="centerX" secondItem="fnl-2z-Ty3" secondAttribute="centerX" id="B4R-2w-ZpB"/>
+                <constraint firstItem="LoI-jC-Rhf" firstAttribute="centerY" secondItem="fnl-2z-Ty3" secondAttribute="centerY" constant="-55" id="E8l-TF-OWF"/>
+                <constraint firstItem="fnl-2z-Ty3" firstAttribute="trailing" secondItem="YHF-1K-Vww" secondAttribute="trailing" constant="34" id="K1M-iK-oh2"/>
+                <constraint firstItem="LoI-jC-Rhf" firstAttribute="top" secondItem="1No-Eb-hoY" secondAttribute="bottom" constant="42" id="MRW-Qa-vdu"/>
+                <constraint firstItem="YHF-1K-Vww" firstAttribute="leading" secondItem="fnl-2z-Ty3" secondAttribute="leading" constant="34" id="SR9-FH-bN3"/>
+                <constraint firstItem="fnl-2z-Ty3" firstAttribute="bottom" secondItem="hUG-bU-8Yv" secondAttribute="bottom" constant="40" id="Sj5-Ai-7fl"/>
+                <constraint firstItem="YHF-1K-Vww" firstAttribute="top" secondItem="LoI-jC-Rhf" secondAttribute="bottom" constant="43" id="Zck-ZO-6dn"/>
+                <constraint firstItem="hUG-bU-8Yv" firstAttribute="centerX" secondItem="fnl-2z-Ty3" secondAttribute="centerX" id="gbO-8B-Kzt"/>
+                <constraint firstItem="LoI-jC-Rhf" firstAttribute="centerX" secondItem="1No-Eb-hoY" secondAttribute="centerX" id="iSl-za-ifn"/>
+                <constraint firstItem="YHF-1K-Vww" firstAttribute="centerX" secondItem="fnl-2z-Ty3" secondAttribute="centerX" id="pNO-TZ-FP7"/>
+                <constraint firstItem="1No-Eb-hoY" firstAttribute="leading" secondItem="fnl-2z-Ty3" secondAttribute="leading" constant="20" id="yWn-bB-HDN"/>
+            </constraints>
+            <simulatedNavigationBarMetrics key="simulatedTopBarMetrics" translucent="NO" prompted="NO"/>
+            <viewLayoutGuide key="safeArea" id="fnl-2z-Ty3"/>
+            <point key="canvasLocation" x="-151.5" y="-223"/>
+        </view>
+    </objects>
+    <resources>
+        <image name="intro-button" width="16.5" height="60"/>
+        <image name="intro-image" width="143" height="100"/>
+    </resources>
+</document>
