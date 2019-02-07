@@ -1,0 +1,83 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<key>API_HOST</key>
+	<string>$(API_HOST)</string>
+	<key>APP_MARKETING_PATH</key>
+	<string>$(APP_MARKETING_PATH)</string>
+	<key>APP_NAME</key>
+	<string>$(APP_NAME)</string>
+	<key>BUNDLE_ID_PREFIX</key>
+	<string>$(BUNDLE_ID_PREFIX)</string>
+	<key>CFBundleDevelopmentRegion</key>
+	<string>$(DEVELOPMENT_LANGUAGE)</string>
+	<key>CFBundleExecutable</key>
+	<string>$(EXECUTABLE_NAME)</string>
+	<key>CFBundleIdentifier</key>
+	<string>$(PRODUCT_BUNDLE_IDENTIFIER)</string>
+	<key>CFBundleInfoDictionaryVersion</key>
+	<string>6.0</string>
+	<key>CFBundleName</key>
+	<string>$(PRODUCT_NAME)</string>
+	<key>CFBundlePackageType</key>
+	<string>APPL</string>
+	<key>CFBundleShortVersionString</key>
+	<string>1.0.3</string>
+	<key>CFBundleVersion</key>
+	<string>(Set automatically in custom Build Phases script)</string>
+	<key>ENV_NAME</key>
+	<string>$(ENV_NAME)</string>
+	<key>GOOGLE_ANALYTICS_TID</key>
+	<string>$(GOOGLE_ANALYTICS_TID)</string>
+	<key>LSRequiresIPhoneOS</key>
+	<true/>
+	<key>NSAppTransportSecurity</key>
+	<dict>
+		<key>NSAllowsLocalNetworking</key>
+		<true/>
+		<key>NSExceptionDomains</key>
+		<dict>
+			<key>lenfest-benji-production.herokuapp.com</key>
+			<dict>
+				<key>NSIncludesSubdomains</key>
+				<true/>
+			</dict>
+		</dict>
+	</dict>
+	<key>NSLocationAlwaysAndWhenInUseUsageDescription</key>
+	<string>$(APP_NAME) uses your location to send you news about places you go. Please Always Allow access.</string>
+	<key>NSLocationWhenInUseUsageDescription</key>
+	<string>$(APP_NAME) uses your location to send you news about places you go. Please Always Allow access.</string>
+	<key>NSMotionUsageDescription</key>
+	<string>$(APP_NAME) monitors motion so you don’t get notifications while you’re commuting.</string>
+	<key>UIAppFonts</key>
+	<array>
+		<string>Lato-Regular.ttf</string>
+		<string>WorkSans-Medium.ttf</string>
+		<string>WorkSans-Regular.ttf</string>
+		<string>WorkSans-SemiBold.ttf</string>
+		<string>WorkSans-Bold.ttf</string>
+		<string>Lato-Italic.ttf</string>
+		<string>Lato-Light.ttf</string>
+	</array>
+	<key>UIBackgroundModes</key>
+	<array>
+		<string>fetch</string>
+		<string>location</string>
+		<string>remote-notification</string>
+	</array>
+	<key>UILaunchStoryboardName</key>
+	<string>LaunchScreen</string>
+	<key>UIRequiredDeviceCapabilities</key>
+	<array>
+		<string>armv7</string>
+	</array>
+	<key>UIRequiresFullScreen</key>
+	<true/>
+	<key>UISupportedInterfaceOrientations</key>
+	<array>
+		<string>UIInterfaceOrientationPortrait</string>
+	</array>
+</dict>
+</plist>

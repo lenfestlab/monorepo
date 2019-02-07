@@ -1,0 +1,45 @@
+targets:
+  App:
+    dependencies:
+      - carthage: Gloss
+      - carthage: UserDefaultsStore
+      - carthage: GoogleReporter
+      - carthage: UPCarouselFlowLayout
+      - carthage: SwiftDate
+      - carthage: RxSwift
+      - carthage: RxCocoa
+      - carthage: NSObject_Rx
+      - carthage: SnapKit
+      - carthage: Schedule
+
+      # Alamofire
+      - carthage: Alamofire
+      - carthage: AlamofireImage
+      - carthage: AlamofireNetworkActivityLogger
+
+      # Firebase - https://git.io/fAxBS
+      # NOTE: omit base framework, per: https://git.io/fAjxM
+      - carthage: FIRAnalyticsConnector
+        embed: false
+      - carthage: FirebaseAnalytics
+        embed: false
+      - carthage: FirebaseCore
+        embed: false
+      - carthage: FirebaseCoreDiagnostics
+        embed: false
+      - carthage: FirebaseInstanceID
+        embed: false
+      - carthage: FirebaseMessaging
+        embed: false
+      - carthage: GoogleAppMeasurement
+        embed: false
+      - carthage: GoogleUtilities
+        embed: false
+      - carthage: nanopb
+        embed: false
+      - carthage: Protobuf
+        embed: false
+
+  Tests:
+    dependencies:
+      - target: App

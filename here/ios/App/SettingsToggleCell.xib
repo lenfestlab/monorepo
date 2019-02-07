@@ -1,0 +1,71 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.XIB" version="3.0" toolsVersion="14460.31" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" useSafeAreas="YES" colorMatched="YES">
+    <device id="retina4_7" orientation="portrait">
+        <adaptation id="fullscreen"/>
+    </device>
+    <dependencies>
+        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="14460.20"/>
+        <capability name="Safe area layout guides" minToolsVersion="9.0"/>
+        <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
+    </dependencies>
+    <customFonts key="customFonts">
+        <array key="Lato-Light.ttf">
+            <string>Lato-Light</string>
+        </array>
+        <array key="WorkSans-Medium.ttf">
+            <string>WorkSans-Medium</string>
+        </array>
+    </customFonts>
+    <objects>
+        <placeholder placeholderIdentifier="IBFilesOwner" id="-1" userLabel="File's Owner"/>
+        <placeholder placeholderIdentifier="IBFirstResponder" id="-2" customClass="UIResponder"/>
+        <tableViewCell contentMode="scaleToFill" selectionStyle="default" indentationWidth="10" rowHeight="146" id="KGk-i7-Jjw" customClass="SettingsToggleCell" customModule="App" customModuleProvider="target">
+            <rect key="frame" x="0.0" y="0.0" width="320" height="146"/>
+            <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+            <tableViewCellContentView key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" tableViewCell="KGk-i7-Jjw" id="H2p-sc-9uM">
+                <rect key="frame" x="0.0" y="0.0" width="320" height="145.5"/>
+                <autoresizingMask key="autoresizingMask"/>
+                <subviews>
+                    <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Enable Notifications" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="YQp-NA-lyM">
+                        <rect key="frame" x="16" y="20" width="239" height="21"/>
+                        <constraints>
+                            <constraint firstAttribute="height" constant="21" id="4o4-Zr-g02"/>
+                        </constraints>
+                        <fontDescription key="fontDescription" name="WorkSans-Medium" family="Work Sans" pointSize="16"/>
+                        <nil key="highlightedColor"/>
+                    </label>
+                    <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="This App uses push notifications to send you related articles based on where you are." lineBreakMode="tailTruncation" numberOfLines="4" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="WnU-os-gb5">
+                        <rect key="frame" x="16" y="51" width="268" height="79"/>
+                        <fontDescription key="fontDescription" name="Lato-Light" family="Lato" pointSize="16"/>
+                        <nil key="highlightedColor"/>
+                    </label>
+                    <switch opaque="NO" contentMode="scaleToFill" horizontalHuggingPriority="750" verticalHuggingPriority="750" contentHorizontalAlignment="center" contentVerticalAlignment="center" translatesAutoresizingMaskIntoConstraints="NO" id="zOW-oN-uuE">
+                        <rect key="frame" x="255" y="10" width="51" height="31"/>
+                        <color key="onTintColor" red="0.70588235294117652" green="0.31764705882352939" blue="0.12549019607843137" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+                        <connections>
+                            <action selector="switchTriggeredWithSender:" destination="KGk-i7-Jjw" eventType="valueChanged" id="y8b-CR-2sM"/>
+                        </connections>
+                    </switch>
+                </subviews>
+                <constraints>
+                    <constraint firstItem="WnU-os-gb5" firstAttribute="top" secondItem="YQp-NA-lyM" secondAttribute="bottom" constant="10" id="1TO-bu-FuJ"/>
+                    <constraint firstItem="YQp-NA-lyM" firstAttribute="leading" secondItem="H2p-sc-9uM" secondAttribute="leadingMargin" id="9m4-M6-dPQ"/>
+                    <constraint firstItem="WnU-os-gb5" firstAttribute="leading" secondItem="H2p-sc-9uM" secondAttribute="leadingMargin" id="ASV-Kr-1FN"/>
+                    <constraint firstItem="zOW-oN-uuE" firstAttribute="leading" secondItem="YQp-NA-lyM" secondAttribute="trailing" id="DX4-6J-LoN"/>
+                    <constraint firstAttribute="bottomMargin" secondItem="WnU-os-gb5" secondAttribute="bottom" constant="5" id="Qgx-gP-opI"/>
+                    <constraint firstAttribute="trailingMargin" secondItem="zOW-oN-uuE" secondAttribute="trailing" id="ZED-f1-ZXo"/>
+                    <constraint firstItem="WnU-os-gb5" firstAttribute="trailing" secondItem="H2p-sc-9uM" secondAttribute="trailingMargin" constant="-20" id="cUJ-4g-ghy"/>
+                    <constraint firstItem="YQp-NA-lyM" firstAttribute="bottom" secondItem="zOW-oN-uuE" secondAttribute="bottom" id="sP8-XV-aoZ"/>
+                    <constraint firstItem="zOW-oN-uuE" firstAttribute="top" secondItem="H2p-sc-9uM" secondAttribute="top" constant="10" id="zvj-7n-YtM"/>
+                </constraints>
+            </tableViewCellContentView>
+            <viewLayoutGuide key="safeArea" id="njF-e1-oar"/>
+            <connections>
+                <outlet property="descriptionLabel" destination="WnU-os-gb5" id="82G-QH-dcj"/>
+                <outlet property="permissionSwitch" destination="zOW-oN-uuE" id="rHN-Xl-TaY"/>
+                <outlet property="titleLabel" destination="YQp-NA-lyM" id="ZJK-Lh-ApQ"/>
+            </connections>
+            <point key="canvasLocation" x="14" y="126"/>
+        </tableViewCell>
+    </objects>
+</document>

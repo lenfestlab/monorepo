@@ -1,0 +1,2 @@
+*.xib binary
+*.png filter=lfs diff=lfs merge=lfs -text

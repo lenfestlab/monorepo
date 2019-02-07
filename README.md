@@ -1,13 +1,10 @@
 ## Lenfest Institute for Journalism
 
+This repo contains all code produced by the [Lenfest Local Lab](https://medium.com/the-lenfest-local-lab).
+
 ### HERE for Local Journalism
 
 Download from the [App Store](https://lenfestlab.org/here)
 
-### Quickstart
+All the code that HERE runs on lives inside ['here'](here)
 
-*(NOTE: assumes development on a mac with homebrew installed)*
-
-Follow the README instructions in the `./ios` and `./api` subdirectories.
-
-Pull requests encouraged!
