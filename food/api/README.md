@@ -25,6 +25,6 @@ heroku git:remote -r prod -a lenfestlab-food-prod
 
 ```
 DISABLE_DATABASE_ENVIRONMENT_CHECK=1 heroku local:run -e .env.dev bundle exec rails db:drop
-heroku pg:pull DATABASE_URL lenfest_development -r prod
+heroku pg:pull DATABASE_URL lenfest_food_development -r stag
 ```
 

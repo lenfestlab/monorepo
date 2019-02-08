@@ -65,6 +65,8 @@ class Place < ApplicationRecord
     super({
       only: [
         :identifier,
+        :name,
+        :address
       ],
       methods: [
         :location,
