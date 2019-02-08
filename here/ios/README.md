@@ -12,7 +12,7 @@ See `../README.md`, then:
 # First, edit secrets variables with your private/local values
 cp project-secrets.example.yml project-secrets.yml
 # and copy/symlink firebase environment files
-ln -s /keybase/team/lenfest.lab/developer/ios/firebase
+ln -s /keybase/team/lenfest.lab/here/developer/ios/firebase
 
 mint run xcodegen
 
