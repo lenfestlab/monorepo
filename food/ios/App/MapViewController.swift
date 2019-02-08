@@ -144,7 +144,7 @@ class MapViewController: UIViewController,
     if Env().isPreProduction {
       let button =
         UIBarButtonItem(
-          title: "sim",
+          title: "Filter",
           style: .plain,
           target: nil, action: nil)
       self.navigationItem.leftBarButtonItem = button
@@ -193,7 +193,7 @@ class MapViewController: UIViewController,
     let  pinView = MKAnnotationView(annotation: annotation, reuseIdentifier: reuseId)
     pinView.tag = (annotation as! ABPointAnnotation).index
 
-    if annotation.title == currentPlace?.title {
+    if annotation.title == currentPlace?.name {
       pinView.image = UIImage(named: "selected-pin")
     } else {
       pinView.image = UIImage(named: "pin")
