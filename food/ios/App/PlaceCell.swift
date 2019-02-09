@@ -51,8 +51,6 @@ class PlaceCell: UICollectionViewCell {
 
     var content = [String]()
 
-    content.append("Italian")
-
     let rating = post.rating ?? 0
     if rating > 0 {
       var bell = ""
