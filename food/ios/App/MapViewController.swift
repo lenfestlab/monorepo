@@ -144,7 +144,7 @@ class MapViewController: UIViewController,
     if Env().isPreProduction {
       let button =
         UIBarButtonItem(
-          title: "Filter",
+          title: "sim",
           style: .plain,
           target: nil, action: nil)
       self.navigationItem.leftBarButtonItem = button

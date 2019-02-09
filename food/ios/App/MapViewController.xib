@@ -73,62 +73,13 @@
                     <nil key="textColor"/>
                     <nil key="highlightedColor"/>
                 </label>
-                <searchBar contentMode="redraw" placeholder="Search All Restaurants" translatesAutoresizingMaskIntoConstraints="NO" id="Tok-dE-Z6O">
-                    <rect key="frame" x="0.0" y="0.0" width="375" height="56"/>
-                    <color key="barTintColor" red="0.96078431372549022" green="0.94509803921568625" blue="0.91764705882352937" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
-                    <textInputTraits key="textInputTraits"/>
-                </searchBar>
-                <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="Vz0-d6-gyR">
-                    <rect key="frame" x="0.0" y="56" width="375" height="48"/>
-                    <subviews>
-                        <segmentedControl opaque="NO" userInteractionEnabled="NO" contentMode="scaleToFill" contentHorizontalAlignment="left" contentVerticalAlignment="top" segmentControlStyle="plain" translatesAutoresizingMaskIntoConstraints="NO" id="j5m-bp-oiL">
-                            <rect key="frame" x="10" y="10" width="355" height="29"/>
-                            <color key="backgroundColor" red="0.9002403846" green="0.87552761530000001" blue="0.83534300699999997" alpha="1" colorSpace="custom" customColorSpace="displayP3"/>
-                            <segments>
-                                <segment title="Italian"/>
-                                <segment title="$$$"/>
-                                <segment title="Ritterhouse"/>
-                            </segments>
-                            <color key="tintColor" red="0.25745899321266963" green="0.15760241609695999" blue="0.04953293533191485" alpha="1" colorSpace="custom" customColorSpace="displayP3"/>
-                        </segmentedControl>
-                    </subviews>
-                    <color key="backgroundColor" red="0.95294117647058818" green="0.94117647058823528" blue="0.92549019607843142" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
-                    <constraints>
-                        <constraint firstItem="j5m-bp-oiL" firstAttribute="top" secondItem="Vz0-d6-gyR" secondAttribute="top" constant="10" id="7xH-t5-VdZ"/>
-                        <constraint firstAttribute="trailing" secondItem="j5m-bp-oiL" secondAttribute="trailing" constant="10" id="G47-oS-eeW"/>
-                        <constraint firstAttribute="bottom" secondItem="j5m-bp-oiL" secondAttribute="bottom" constant="10" id="RjL-JG-eao"/>
-                        <constraint firstItem="j5m-bp-oiL" firstAttribute="leading" secondItem="Vz0-d6-gyR" secondAttribute="leading" constant="10" id="YeZ-yh-27K"/>
-                    </constraints>
-                </view>
-                <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="P7c-8o-doX">
-                    <rect key="frame" x="0.0" y="104" width="375" height="1"/>
-                    <color key="backgroundColor" red="0.25745899319999999" green="0.1576024161" blue="0.04953293533" alpha="1" colorSpace="custom" customColorSpace="displayP3"/>
-                    <constraints>
-                        <constraint firstAttribute="height" constant="1" id="SIe-iT-TGS"/>
-                    </constraints>
-                </view>
-                <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="EKh-SD-u3O">
-                    <rect key="frame" x="0.0" y="55" width="375" height="1"/>
-                    <color key="backgroundColor" red="0.25745899319999999" green="0.1576024161" blue="0.04953293533" alpha="1" colorSpace="custom" customColorSpace="displayP3"/>
-                    <constraints>
-                        <constraint firstAttribute="height" constant="1" id="tVv-Qc-jW5"/>
-                    </constraints>
-                </view>
             </subviews>
             <color key="backgroundColor" red="1" green="1" blue="1" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
             <constraints>
-                <constraint firstItem="EKh-SD-u3O" firstAttribute="leading" secondItem="Vz0-d6-gyR" secondAttribute="leading" id="0ka-a5-Y08"/>
                 <constraint firstItem="Dzc-xs-8qs" firstAttribute="top" secondItem="i5M-Pr-FkT" secondAttribute="top" constant="-250" id="1bc-Pc-XrY"/>
-                <constraint firstItem="Vz0-d6-gyR" firstAttribute="leading" secondItem="fq1-Xw-T1U" secondAttribute="leading" id="2kr-Yd-Ef8"/>
                 <constraint firstItem="Dzc-xs-8qs" firstAttribute="leading" secondItem="i5M-Pr-FkT" secondAttribute="leading" id="4wz-hH-HSb"/>
                 <constraint firstItem="7i9-py-jn9" firstAttribute="top" secondItem="fq1-Xw-T1U" secondAttribute="top" id="6JJ-ZN-3On"/>
-                <constraint firstItem="Vz0-d6-gyR" firstAttribute="top" secondItem="Tok-dE-Z6O" secondAttribute="bottom" id="7tn-3t-Qvh"/>
-                <constraint firstItem="P7c-8o-doX" firstAttribute="top" secondItem="Vz0-d6-gyR" secondAttribute="bottom" id="AGe-uG-aeo"/>
-                <constraint firstItem="Tok-dE-Z6O" firstAttribute="top" secondItem="fq1-Xw-T1U" secondAttribute="top" id="AXF-mN-fhR"/>
-                <constraint firstItem="Vz0-d6-gyR" firstAttribute="top" secondItem="EKh-SD-u3O" secondAttribute="bottom" id="BaJ-7k-Sxo"/>
-                <constraint firstItem="Tok-dE-Z6O" firstAttribute="trailing" secondItem="fq1-Xw-T1U" secondAttribute="trailing" id="Did-MS-OAz"/>
                 <constraint firstItem="su0-RL-PEx" firstAttribute="leading" secondItem="fq1-Xw-T1U" secondAttribute="leading" id="EGZ-TI-VSO"/>
-                <constraint firstItem="fq1-Xw-T1U" firstAttribute="trailing" secondItem="Vz0-d6-gyR" secondAttribute="trailing" id="Fc1-0B-Mh7"/>
                 <constraint firstItem="xfc-ON-2uS" firstAttribute="trailing" secondItem="i5M-Pr-FkT" secondAttribute="trailing" id="PaD-KR-psm"/>
                 <constraint firstItem="fq1-Xw-T1U" firstAttribute="bottom" secondItem="xfc-ON-2uS" secondAttribute="bottom" constant="40" id="ToX-J0-ser"/>
                 <constraint firstAttribute="trailing" secondItem="7i9-py-jn9" secondAttribute="trailing" id="Udq-5w-cMf"/>
@@ -138,16 +89,12 @@
                 <constraint firstAttribute="bottom" secondItem="Dzc-xs-8qs" secondAttribute="bottom" id="aCd-38-guG"/>
                 <constraint firstItem="fq1-Xw-T1U" firstAttribute="trailing" secondItem="su0-RL-PEx" secondAttribute="trailing" id="aYS-T1-7nD"/>
                 <constraint firstAttribute="trailing" secondItem="Dzc-xs-8qs" secondAttribute="trailing" id="as8-4p-fve"/>
-                <constraint firstAttribute="trailing" secondItem="P7c-8o-doX" secondAttribute="trailing" id="j9F-VP-Uxf"/>
                 <constraint firstItem="7i9-py-jn9" firstAttribute="leading" secondItem="i5M-Pr-FkT" secondAttribute="leading" id="kjc-1R-T7G"/>
                 <constraint firstItem="xfc-ON-2uS" firstAttribute="leading" secondItem="i5M-Pr-FkT" secondAttribute="leading" id="nk2-DI-C0L"/>
-                <constraint firstItem="P7c-8o-doX" firstAttribute="leading" secondItem="i5M-Pr-FkT" secondAttribute="leading" id="pgO-Gt-H6d"/>
                 <constraint firstItem="su0-RL-PEx" firstAttribute="top" secondItem="fq1-Xw-T1U" secondAttribute="top" id="u4C-4Z-Q6i"/>
-                <constraint firstItem="EKh-SD-u3O" firstAttribute="trailing" secondItem="Vz0-d6-gyR" secondAttribute="trailing" id="wh5-en-fkd"/>
                 <constraint firstItem="Dzc-xs-8qs" firstAttribute="leading" secondItem="i5M-Pr-FkT" secondAttribute="leading" id="x0o-WW-VSY"/>
                 <constraint firstItem="Dzc-xs-8qs" firstAttribute="trailing" secondItem="i5M-Pr-FkT" secondAttribute="trailing" id="xGi-Mq-2q8"/>
                 <constraint firstItem="7i9-py-jn9" firstAttribute="top" secondItem="fq1-Xw-T1U" secondAttribute="top" id="yqD-RG-BLL"/>
-                <constraint firstItem="Tok-dE-Z6O" firstAttribute="leading" secondItem="fq1-Xw-T1U" secondAttribute="leading" id="zQN-Yf-AtX"/>
             </constraints>
             <simulatedNavigationBarMetrics key="simulatedTopBarMetrics" translucent="NO" prompted="NO"/>
             <viewLayoutGuide key="safeArea" id="fq1-Xw-T1U"/>
