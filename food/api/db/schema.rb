@@ -10,10 +10,11 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2019_02_04_111024) do
+ActiveRecord::Schema.define(version: 2019_02_11_175637) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
+  enable_extension "postgis"
   enable_extension "uuid-ossp"
 
   create_table "categories", force: :cascade do |t|
@@ -47,7 +48,11 @@ ActiveRecord::Schema.define(version: 2019_02_04_111024) do
     t.string "address", null: false
     t.string "phone"
     t.string "website"
+    t.geography "lonlat", limit: {:srid=>4326, :type=>"st_point", :geographic=>true}
+    t.string "category_identifiers", default: [], array: true
+    t.index ["category_identifiers"], name: "index_places_on_category_identifiers", using: :gin
     t.index ["identifier"], name: "index_places_on_identifier"
+    t.index ["lonlat"], name: "index_places_on_lonlat", using: :gist
     t.index ["name"], name: "index_places_on_name"
   end
 
@@ -65,6 +70,8 @@ ActiveRecord::Schema.define(version: 2019_02_04_111024) do
     t.string "source_key", null: false
     t.index ["identifier"], name: "index_posts_on_identifier"
     t.index ["place_id"], name: "index_posts_on_place_id"
+    t.index ["price"], name: "index_posts_on_price", using: :gin
+    t.index ["rating"], name: "index_posts_on_rating"
   end
 
 end

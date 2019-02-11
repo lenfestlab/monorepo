@@ -13,6 +13,7 @@ gem 'geocoder'
 gem 'awesome_print'
 gem 'fcm'
 gem 'bitly'
+gem 'activerecord-postgis-adapter'
 
 group :development, :test do
   gem 'byebug', platforms: [:mri, :mingw, :x64_mingw]

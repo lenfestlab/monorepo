@@ -1,7 +1,7 @@
 class Categorization < ApplicationRecord
 
-  belongs_to :place, dependent: :destroy
-  belongs_to :category, dependent: :destroy
+  belongs_to :place, touch: true
+  belongs_to :category, touch: true
 
   validates :place, :category, presence: true
   validates :place, uniqueness: { scope: :category }

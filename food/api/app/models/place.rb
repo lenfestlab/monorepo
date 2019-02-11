@@ -1,7 +1,7 @@
 class Place < ApplicationRecord
 
   has_many :posts
-  has_many :categorizations
+  has_many :categorizations, dependent: :destroy
   has_many :categories, through: :categorizations
 
   validates :name, :address, :lat, :lng,
@@ -9,22 +9,60 @@ class Place < ApplicationRecord
 
   validates :name, uniqueness: true
 
-
-  ## Geo
+  ## PostGIS
+  #
   #
 
-  reverse_geocoded_by :lat, :lng
+  before_save do
+    if lat && lng && lonlat.nil?
+      self.lonlat = "POINT(#{lng} #{lat})"
+    end
+  end
 
   def self.default_search_radius # km
     ENV["DEFAULT_SEARCH_RADIUS"].to_i || 200
   end
 
-  # NOTE: AR.includes incompat w/ geocoder:
-  # https://git.io/fxZrb
-  scope :preloaded_near, -> (coordinates) {
-    near(coordinates, Place.default_search_radius, units: :km)
-      .joins(:posts)
-      .preload(:posts)
+  scope :nearest, -> (lat, lng, kilometers = Place.default_search_radius) {
+    distance_calc = "ST_Distance(lonlat, 'POINT(#{lng} #{lat})')"
+    select("places.*, #{distance_calc}")
+      .where("#{distance_calc} < #{kilometers * 1000.0}")
+      .order("#{distance_calc} ASC")
+  }
+
+
+  ## Filters
+  #
+
+  scope :rated, -> (ratings) {
+    ratings = [ratings].flatten.compact
+    if ratings.present?
+      includes(:posts).references(:posts)
+        .where 'posts.rating IN (?)', ratings
+    end
+  }
+
+
+  scope :priced, -> (prices) {
+    prices = [prices].flatten.compact
+    if prices.present?
+      includes(:posts).references(:posts)
+        .where 'posts.price && ARRAY[?]', prices
+    end
+  }
+
+
+  def update_category_identifiers
+    self.category_identifiers = categories.map(&:identifier)
+  end
+  before_save :update_category_identifiers
+  after_touch :save
+
+
+  scope :categorized_in, -> (uuids) {
+    if uuids.present?
+      where("places.category_identifiers && ARRAY[?]::varchar[]", uuids)
+    end
   }
 
 
@@ -66,11 +104,12 @@ class Place < ApplicationRecord
       only: [
         :identifier,
         :name,
-        :address
+        :address,
       ],
       methods: [
         :location,
         :post,
+        :categories,
       ]
     }.merge(options || {}))
   end
