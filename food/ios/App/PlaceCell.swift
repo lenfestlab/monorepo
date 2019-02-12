@@ -51,7 +51,7 @@ class PlaceCell: UICollectionViewCell {
 
     var content = [String]()
 
-    let rating = post.rating ?? 0
+    let rating = post?.rating ?? 0
     if rating > 0 {
       var bell = ""
       for _ in 1 ... rating {
@@ -60,7 +60,7 @@ class PlaceCell: UICollectionViewCell {
       content.append(bell)
     }
 
-    for value in post.price ?? [] {
+    for value in post?.price ?? [] {
       var dollars = [String]()
       if value > 0 {
         var dollar = ""
@@ -82,7 +82,7 @@ class PlaceCell: UICollectionViewCell {
     self.textLabel.attributedText = text
     self.textLabel.lineBreakMode = .byTruncatingTail
     
-    if let url = post.imageURL {
+    if let url = post?.imageURL {
       self.imageView.af_setImage(withURL: url)
     }
   }

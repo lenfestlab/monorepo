@@ -79,12 +79,12 @@ struct AnalyticsEvent {
     return AnalyticsEvent(name: "enable-motion", category: .onboarding, label: status.description)
   }
 
-  static func notificationShown(post: Post, currentLocation: CLLocationCoordinate2D?) -> AnalyticsEvent {
-    return AnalyticsEvent(name: "shows", category: .notification, label:post.link.absoluteString, location:currentLocation)
+  static func notificationShown(post: Post?, currentLocation: CLLocationCoordinate2D?) -> AnalyticsEvent {
+    return AnalyticsEvent(name: "shows", category: .notification, label:post?.link.absoluteString, location:currentLocation)
   }
 
-  static func tapsNotificationDefaultTapToClickThrough(post: Post, currentLocation: CLLocationCoordinate2D?) -> AnalyticsEvent {
-    return AnalyticsEvent(name:  "taps", category: .notification, label:post.link.absoluteString, location:currentLocation)
+  static func tapsNotificationDefaultTapToClickThrough(post: Post?, currentLocation: CLLocationCoordinate2D?) -> AnalyticsEvent {
+    return AnalyticsEvent(name:  "taps", category: .notification, label:post?.link.absoluteString, location:currentLocation)
   }
 
   static func tapsOpenInNotificationCTA(post: Post, currentLocation: CLLocationCoordinate2D?) -> AnalyticsEvent {
@@ -108,16 +108,16 @@ struct AnalyticsEvent {
     return AnalyticsEvent(name:  "open-map", category: .app, label:label, location:currentLocation)
   }
 
-  static func tapsOnPin(post: Post, currentLocation: CLLocationCoordinate2D?) -> AnalyticsEvent {
-    return AnalyticsEvent(name:  "click-pin", category: .app, label:post.link.absoluteString, location:currentLocation)
+  static func tapsOnPin(post: Post?, currentLocation: CLLocationCoordinate2D?) -> AnalyticsEvent {
+    return AnalyticsEvent(name:  "click-pin", category: .app, label:post?.link.absoluteString, location:currentLocation)
   }
 
-  static func tapsOnViewArticle(post: Post, currentLocation: CLLocationCoordinate2D?) -> AnalyticsEvent {
-    return AnalyticsEvent(name:  "view-article", category: .app, label:post.link.absoluteString, location:currentLocation)
+  static func tapsOnViewArticle(post: Post?, currentLocation: CLLocationCoordinate2D?) -> AnalyticsEvent {
+    return AnalyticsEvent(name:  "view-article", category: .app, label:post?.link.absoluteString, location:currentLocation)
   }
 
-  static func swipesCarousel(post: Post, currentLocation: CLLocationCoordinate2D?) -> AnalyticsEvent {
-    return AnalyticsEvent(name:  "swipe-carousel", category: .app, label:post.link.absoluteString, location:currentLocation)
+  static func swipesCarousel(post: Post?, currentLocation: CLLocationCoordinate2D?) -> AnalyticsEvent {
+    return AnalyticsEvent(name:  "swipe-carousel", category: .app, label:post?.link.absoluteString, location:currentLocation)
   }
 
   static func changeNotificationSettings(enabled: Bool) -> AnalyticsEvent {

@@ -50,7 +50,7 @@ class PlaceManager: NSObject {
     return region
   }
 
-  class func contentForPlace(place: Place, completionHandler: @escaping (UNMutableNotificationContent) -> Void) {
+  class func contentForPlace(place: Place, completionHandler: @escaping (UNMutableNotificationContent?) -> Void) {
     print("placeManager contentForPlace \(place)")
     if let url = place.imageURL {
       getImage(url.absoluteString) { (image) in
@@ -61,7 +61,7 @@ class PlaceManager: NSObject {
     }
   }
 
-  class func contentForPlace(place: Place, image: UIImage?, completionHandler: @escaping (UNMutableNotificationContent) -> Void) {
+  class func contentForPlace(place: Place, image: UIImage?, completionHandler: @escaping (UNMutableNotificationContent?) -> Void) {
     let title = place.title!
 
     let content = UNMutableNotificationContent()
@@ -70,8 +70,12 @@ class PlaceManager: NSObject {
     content.categoryIdentifier = "POST_ENTERED"
     content.sound = UNNotificationSound.default()
 
-    let placeURLString = place.post.link.absoluteString
-    let placeUrlShortString = place.post.linkShort.absoluteString
+    guard let post = place.post else {
+      completionHandler(nil)
+      return
+    }
+
+    let placeURLString = post.link.absoluteString
 
     content.userInfo = [
       "PLACE_URL": placeURLString,
