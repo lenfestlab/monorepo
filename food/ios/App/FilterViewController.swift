@@ -1,10 +1,3 @@
-//
-//  FilterViewController.swift
-//  App
-//
-//  Created by Ajay Chainani on 2/11/19.
-//
-
 import UIKit
 
 protocol FilterViewControllerDelegate: class {
