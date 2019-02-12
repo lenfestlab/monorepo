@@ -4,7 +4,7 @@ class Category < ApplicationRecord
     presence: true,
     uniqueness: true
 
-  has_many :categorizations
+  has_many :categorizations, dependent: :destroy
   has_many :places, through: :categorizations
 
   rails_admin do
@@ -18,6 +18,15 @@ class Category < ApplicationRecord
 
   def admin_name
     name
+  end
+
+  def as_json(options = nil)
+    super({
+      only: [
+        :identifier,
+        :name,
+      ],
+    }.merge(options || {}))
   end
 
 end

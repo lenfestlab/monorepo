@@ -3,11 +3,16 @@ class PlacesController < ApplicationController
   before_action :force_compression
 
   def index
-    lat, lng  = query_params[:lat], query_params[:lng]
-    limit = query_params[:limit].to_i || 20
-    coordinates = [lat, lng]
-    # NOTE: AR.count/limit() incompat w/ geocoder: https://git.io/fxZrb
-    data = Place.preloaded_near(coordinates).first(limit)
+    categories, ratings, prices =
+      %i{ categories ratings prices }.map {|key| [q[key]].flatten.compact }
+    data =
+      Place
+      .includes(:posts, :categories)
+      .limit(q[:limit].to_i || 20)
+      .rated(ratings.map(&:to_i))
+      .priced(prices.map(&:to_i))
+      .categorized_in(categories)
+      .nearest(q[:lat], q[:lng])
     render json: {
       meta: {
         count: data.size
@@ -18,12 +23,16 @@ class PlacesController < ApplicationController
 
   private
 
-  def query_params
-    params.permit(:lat, :lng, :limit, :format)
-  end
-
-  def force_compression
-    request.env['HTTP_ACCEPT_ENCODING'] = 'gzip'
+  def q
+    params.permit(
+      :format,
+      :limit,
+      :lat,
+      :lng,
+      :ratings,
+      :prices,
+      :categories
+    )
   end
 
 end

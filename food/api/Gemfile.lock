@@ -33,6 +33,9 @@ GEM
       activemodel (= 5.2.1)
       activesupport (= 5.2.1)
       arel (>= 9.0)
+    activerecord-postgis-adapter (5.2.2)
+      activerecord (~> 5.1)
+      rgeo-activerecord (~> 6.0)
     activestorage (5.2.1)
       actionpack (= 5.2.1)
       activerecord (= 5.2.1)
@@ -183,6 +186,10 @@ GEM
     rb-inotify (0.9.10)
       ffi (>= 0.5.0, < 2)
     remotipart (1.4.2)
+    rgeo (2.0.0)
+    rgeo-activerecord (6.1.0)
+      activerecord (~> 5.0)
+      rgeo (>= 1.0.0)
     ruby_dep (1.5.0)
     sass (3.7.2)
       sass-listen (~> 4.0.0)
@@ -223,6 +230,7 @@ PLATFORMS
   ruby
 
 DEPENDENCIES
+  activerecord-postgis-adapter
   awesome_print
   bitly
   bootsnap (>= 1.1.0)
