@@ -71,7 +71,7 @@ class Place < ApplicationRecord
 
   rails_admin do
 
-    [:identifier, :created_at, :updated_at].each do |hidden_attr|
+    [:identifier, :created_at, :updated_at, :lonlat].each do |hidden_attr|
       configure hidden_attr do
         hide
       end

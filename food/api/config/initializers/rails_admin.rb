@@ -48,3 +48,28 @@ RailsAdmin.config do |config|
   config.excluded_models << "Categorization"
 
 end
+
+# https://github.com/sferik/rails_admin/issues/2225
+class RailsAdmin::Config::Fields::Types::Geography < RailsAdmin::Config::Fields::Base
+  RailsAdmin::Config::Fields::Types.register(self)
+
+  register_instance_option :read_only? do
+    true
+  end
+
+  register_instance_option :sortable do
+    false
+  end
+
+  register_instance_option :searchable do
+    false
+  end
+
+  register_instance_option :queryable? do
+    false
+  end
+
+  register_instance_option :filterable? do
+    false
+  end
+end
