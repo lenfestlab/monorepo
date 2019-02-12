@@ -47,27 +47,27 @@ struct Place: JSONDecodable, Codable, Identifiable {
   var name: String?
   var identifier: String
   let location: Location?
-  let post: Post
+  let post: Post?
   let radius: Double?
 
   init?(json: JSON) {
     self.identifier = ("identifier" <~~ json)!
     self.location = "location" <~~ json
-    self.post = ("post" <~~ json)!
+    self.post = "post" <~~ json
     self.radius = "radius" <~~ json
     self.name = "name" <~~ json
   }
 
   var title: String? {
-    return post.title
+    return post?.title
   }
 
   var blurb: String? {
-    return post.blurb
+    return post?.blurb
   }
 
   var imageURL: URL? {
-    return post.imageURL
+    return post?.imageURL
   }
 
   func coordinate() -> CLLocationCoordinate2D {

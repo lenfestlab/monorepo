@@ -5,13 +5,30 @@ import CoreLocation
 
 class PlaceDataStore: NSObject {
 
-  func retrievePlaces(latitude: CLLocationDegrees, longitude: CLLocationDegrees, limit: Int, completion: @escaping (Bool, [Place], Int) -> Void) {
+  func retrievePlaces(coordinate: CLLocationCoordinate2D,
+                      prices: [Int]? = nil,
+                      ratings: [Int]? = nil,
+                      limit: Int,
+                      completion: @escaping (Bool, [Place], Int) -> Void) {
+
+    let (latitude, longitude) = (coordinate.latitude, coordinate.longitude)
+    print("fetchData: \(latitude) \(longitude)")
 
     let env = Env()
-    let url = "\(env.apiBaseUrlString)/places.json"
+    var url = "\(env.apiBaseUrlString)/places.json"
 
-    let params = ["lat": latitude, "lng": longitude, "limit": limit] as [String : Any]
-    Alamofire.request(url, parameters: params).responseJSON { response in
+    url = String(format: "%@?lat=%f", url, latitude)
+    url = String(format: "%@&lng=%f", url, longitude)
+    url = String(format: "%@&limit=%i", url, limit)
+
+    if let prices = prices, prices.count > 0 {
+      url = String(format: "%@&prices=%@", url, prices.map({ String($0) }).joined(separator: ","))
+    }
+    if let ratings = ratings, ratings.count > 0 {
+      url = String(format: "%@&ratings=%@", url, ratings.map({ String($0) }).joined(separator: ","))
+    }
+
+    Alamofire.request(url, method: .get, parameters: nil, encoding: URLEncoding.default, headers: nil).responseJSON { response in
       let json = response.result.value as? JSON
       if (json == nil) {
         DispatchQueue.main.async { completion(false, [], 0) }

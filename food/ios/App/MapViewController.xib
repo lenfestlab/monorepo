@@ -12,9 +12,11 @@
         <placeholder placeholderIdentifier="IBFilesOwner" id="-1" userLabel="File's Owner" customClass="MapViewController" customModule="App" customModuleProvider="target">
             <connections>
                 <outlet property="activitylabel" destination="su0-RL-PEx" id="2VM-kw-LfN"/>
+                <outlet property="bottomLayoutConstraint" destination="ToX-J0-ser" id="ANb-Zj-oAC"/>
                 <outlet property="collectionView" destination="xfc-ON-2uS" id="wiN-FJ-1lN"/>
                 <outlet property="locationButton" destination="N35-07-4di" id="VuC-Ij-yda"/>
                 <outlet property="mapView" destination="Dzc-xs-8qs" id="jcm-5S-C5D"/>
+                <outlet property="searchBar" destination="4ME-9d-bvc" id="09W-1S-fGG"/>
                 <outlet property="view" destination="i5M-Pr-FkT" id="sfx-zR-JGt"/>
             </connections>
         </placeholder>
@@ -30,8 +32,8 @@
                     </connections>
                 </mapView>
                 <collectionView clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="scaleToFill" showsHorizontalScrollIndicator="NO" showsVerticalScrollIndicator="NO" dataMode="none" translatesAutoresizingMaskIntoConstraints="NO" id="xfc-ON-2uS">
-                    <rect key="frame" x="0.0" y="400" width="375" height="250"/>
-                    <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="calibratedWhite"/>
+                    <rect key="frame" x="0.0" y="440" width="375" height="250"/>
+                    <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                     <constraints>
                         <constraint firstAttribute="height" constant="250" id="gmZ-Xm-eVz"/>
                     </constraints>
@@ -47,7 +49,7 @@
                     </connections>
                 </collectionView>
                 <button opaque="NO" contentMode="scaleAspectFit" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="N35-07-4di">
-                    <rect key="frame" x="317" y="337" width="43" height="43"/>
+                    <rect key="frame" x="317" y="387" width="43" height="43"/>
                     <constraints>
                         <constraint firstAttribute="width" constant="43" id="MMV-uy-irk"/>
                         <constraint firstAttribute="height" constant="43" id="twR-ev-MoJ"/>
@@ -73,6 +75,17 @@
                     <nil key="textColor"/>
                     <nil key="highlightedColor"/>
                 </label>
+                <searchBar contentMode="redraw" placeholder="Search All Restaurants" translatesAutoresizingMaskIntoConstraints="NO" id="4ME-9d-bvc">
+                    <rect key="frame" x="0.0" y="0.0" width="375" height="56"/>
+                    <textInputTraits key="textInputTraits"/>
+                    <scopeButtonTitles>
+                        <string>Title</string>
+                        <string>Title</string>
+                    </scopeButtonTitles>
+                    <connections>
+                        <outlet property="delegate" destination="-1" id="KfM-RN-dK5"/>
+                    </connections>
+                </searchBar>
             </subviews>
             <color key="backgroundColor" red="1" green="1" blue="1" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
             <constraints>
@@ -80,11 +93,13 @@
                 <constraint firstItem="Dzc-xs-8qs" firstAttribute="leading" secondItem="i5M-Pr-FkT" secondAttribute="leading" id="4wz-hH-HSb"/>
                 <constraint firstItem="7i9-py-jn9" firstAttribute="top" secondItem="fq1-Xw-T1U" secondAttribute="top" id="6JJ-ZN-3On"/>
                 <constraint firstItem="su0-RL-PEx" firstAttribute="leading" secondItem="fq1-Xw-T1U" secondAttribute="leading" id="EGZ-TI-VSO"/>
+                <constraint firstItem="4ME-9d-bvc" firstAttribute="trailing" secondItem="fq1-Xw-T1U" secondAttribute="trailing" id="HU7-Oc-PZM"/>
                 <constraint firstItem="xfc-ON-2uS" firstAttribute="trailing" secondItem="i5M-Pr-FkT" secondAttribute="trailing" id="PaD-KR-psm"/>
-                <constraint firstItem="fq1-Xw-T1U" firstAttribute="bottom" secondItem="xfc-ON-2uS" secondAttribute="bottom" constant="40" id="ToX-J0-ser"/>
+                <constraint firstItem="fq1-Xw-T1U" firstAttribute="bottom" secondItem="xfc-ON-2uS" secondAttribute="bottom" id="ToX-J0-ser"/>
                 <constraint firstAttribute="trailing" secondItem="7i9-py-jn9" secondAttribute="trailing" id="Udq-5w-cMf"/>
                 <constraint firstItem="fq1-Xw-T1U" firstAttribute="trailing" secondItem="N35-07-4di" secondAttribute="trailing" constant="15" id="WnZ-g7-HkX"/>
-                <constraint firstItem="xfc-ON-2uS" firstAttribute="top" secondItem="N35-07-4di" secondAttribute="bottom" constant="20" id="YzJ-91-ZMD"/>
+                <constraint firstItem="4ME-9d-bvc" firstAttribute="leading" secondItem="fq1-Xw-T1U" secondAttribute="leading" id="YxJ-9I-JZt"/>
+                <constraint firstItem="xfc-ON-2uS" firstAttribute="top" secondItem="N35-07-4di" secondAttribute="bottom" constant="10" id="YzJ-91-ZMD"/>
                 <constraint firstAttribute="bottom" secondItem="7i9-py-jn9" secondAttribute="bottom" constant="714" id="ZWv-hW-iVX"/>
                 <constraint firstAttribute="bottom" secondItem="Dzc-xs-8qs" secondAttribute="bottom" id="aCd-38-guG"/>
                 <constraint firstItem="fq1-Xw-T1U" firstAttribute="trailing" secondItem="su0-RL-PEx" secondAttribute="trailing" id="aYS-T1-7nD"/>
@@ -92,6 +107,7 @@
                 <constraint firstItem="7i9-py-jn9" firstAttribute="leading" secondItem="i5M-Pr-FkT" secondAttribute="leading" id="kjc-1R-T7G"/>
                 <constraint firstItem="xfc-ON-2uS" firstAttribute="leading" secondItem="i5M-Pr-FkT" secondAttribute="leading" id="nk2-DI-C0L"/>
                 <constraint firstItem="su0-RL-PEx" firstAttribute="top" secondItem="fq1-Xw-T1U" secondAttribute="top" id="u4C-4Z-Q6i"/>
+                <constraint firstItem="4ME-9d-bvc" firstAttribute="top" secondItem="fq1-Xw-T1U" secondAttribute="top" id="vYO-BB-zAE"/>
                 <constraint firstItem="Dzc-xs-8qs" firstAttribute="leading" secondItem="i5M-Pr-FkT" secondAttribute="leading" id="x0o-WW-VSY"/>
                 <constraint firstItem="Dzc-xs-8qs" firstAttribute="trailing" secondItem="i5M-Pr-FkT" secondAttribute="trailing" id="xGi-Mq-2q8"/>
                 <constraint firstItem="7i9-py-jn9" firstAttribute="top" secondItem="fq1-Xw-T1U" secondAttribute="top" id="yqD-RG-BLL"/>

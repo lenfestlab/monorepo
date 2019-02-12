@@ -92,9 +92,12 @@ class NotificationManager: NSObject, UNUserNotificationCenterDelegate {
           print("ERROR: MIA: place for analytics event")
           return
         }
-        let post = place.post
         let coordinate = LocationManager.latestCoordinate
-        self.analytics!.log(.tapsPingMeLaterInNotificationCTA(post: post, currentLocation: coordinate))
+        if let post = place.post {
+          self.analytics!.log(.tapsPingMeLaterInNotificationCTA(post: post, currentLocation: coordinate))
+        } else {
+          print("WARN: MIA: place for identifier \(identifier); analytics event dropped")
+        }
       }
     } else {
       self.receivedNotification(response: response)

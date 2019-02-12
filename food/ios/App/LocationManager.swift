@@ -125,8 +125,7 @@ class LocationManager: NSObject, CLLocationManagerDelegate {
 
     self.latestLocation = location
     let coordinate = location.coordinate
-    let (latitude, longitude) = (coordinate.latitude, coordinate.longitude)
-    self.fetchData(latitude: latitude, longitude: longitude)
+    self.fetchData(coordinate: coordinate)
     self.logLocationChange(location)
   }
 
@@ -202,16 +201,18 @@ class LocationManager: NSObject, CLLocationManagerDelegate {
 
   func sendNotificationForPlace(_ place: Place) {
     PlaceManager.contentForPlace(place: place) { (content) in
-      self.analytics!.log(.notificationShown(post: place.post, currentLocation: place.coordinate()))
-      let request = UNNotificationRequest(identifier: UUID().uuidString, content: content, trigger: nil)
-      let center = UNUserNotificationCenter.current()
-      center.add(request, withCompletionHandler: { (error) in
-        if let error = error {
-          print("\n\t ERROR: \(error)")
-        } else {
-          print("\n\t request fulfilled \(request)")
-        }
-      })
+      if let content = content {
+        self.analytics!.log(.notificationShown(post: place.post, currentLocation: place.coordinate()))
+        let request = UNNotificationRequest(identifier: UUID().uuidString, content: content, trigger: nil)
+        let center = UNUserNotificationCenter.current()
+        center.add(request, withCompletionHandler: { (error) in
+          if let error = error {
+            print("\n\t ERROR: \(error)")
+          } else {
+            print("\n\t request fulfilled \(request)")
+          }
+        })
+      }
     }
   }
 
@@ -227,16 +228,8 @@ class LocationManager: NSObject, CLLocationManagerDelegate {
     self.locationManager(self.locationManager, didEnterRegion: region)
   }
 
-  func fetchData(
-    latitude: CLLocationDegrees,
-    longitude: CLLocationDegrees,
-    trackResults: Bool = true) {
-    print("fetchData: \(latitude) \(longitude)")
-    dataStore.retrievePlaces(
-      latitude: latitude,
-      longitude: longitude,
-      limit: 10
-    ) { [unowned self] (success, data, count) in
+  func fetchData(coordinate: CLLocationCoordinate2D, trackResults: Bool = true) {
+    dataStore.retrievePlaces(coordinate: coordinate, limit: 10) { [unowned self] (success, data, count) in
       if self.authorized && trackResults {
         PlaceManager.shared.trackPlaces(places: data)
       }

@@ -8,14 +8,179 @@ import RxCocoa
 import NSObject_Rx
 
 private let reuseIdentifier = "PlaceCell"
+private let mapPinIdentifier = "pin"
+
 fileprivate let sectionInsets = UIEdgeInsets(top: 0, left: 0, bottom: 0, right: 0)
 
-class MapViewController: UIViewController,
-  LocationManagerAuthorizationDelegate,
-  UICollectionViewDelegate,
-  UICollectionViewDataSource,
-  UIGestureRecognizerDelegate,
-  MKMapViewDelegate {
+extension UIViewController {
+  func style() {
+    navigationController?.navigationBar.barTintColor =  UIColor.beige()
+    navigationController?.navigationBar.tintColor =  UIColor.offRed()
+    navigationController?.navigationBar.isTranslucent = false
+  }
+}
+
+extension MapViewController: UICollectionViewDataSource {
+
+  func numberOfSections(in collectionView: UICollectionView) -> Int {
+    return 1
+  }
+
+  func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
+    return placesFiltered.count
+  }
+
+  func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
+    let cell = collectionView.dequeueReusableCell(withReuseIdentifier: reuseIdentifier, for: indexPath) as! PlaceCell
+
+    // Configure the cell
+    let mapPlace:MapPlace = self.placesFiltered[indexPath.row]
+    let place = mapPlace.place
+    cell.setPlace(place: place)
+    return cell
+  }
+}
+
+extension MapViewController: UICollectionViewDelegate {
+
+  func collectionView(_ collectionView: UICollectionView, shouldSelectItemAt indexPath: IndexPath) -> Bool {
+    if indexOfMajorCell() == indexPath.row {
+      let mapPlace:MapPlace = self.placesFiltered[indexPath.row]
+      let place:Place = mapPlace.place
+      analytics.log(.tapsOnViewArticle(post: place.post, currentLocation: self.lastCoordinate))
+      let mainVC = self.navigationController as! MainController
+      if let link = place.post?.link {
+        mainVC.openInSafari(url: link)
+      }
+    } else {
+      scrollToItem(at: indexPath)
+      let mapPlace:MapPlace = self.placesFiltered[indexPath.row]
+      self.currentPlace = mapPlace
+    }
+    return true
+  }
+}
+
+extension MapViewController: LocationManagerAuthorizationDelegate {
+
+  func locationUpdated(_ locationManager: LocationManager, location: CLLocation) {
+    initialMapDataFetch(coordinate: location.coordinate)
+  }
+
+  func authorized(_ locationManager: LocationManager, status: CLAuthorizationStatus) {
+    print("locationManagerDelegate authorized")
+  }
+
+  func notAuthorized(_ locationManager: LocationManager, status: CLAuthorizationStatus) {
+    print("locationManagerDelegate notAuthorized")
+  }
+
+}
+
+extension MapViewController : MKMapViewDelegate {
+
+  func mapView(_ mapView: MKMapView, didUpdate userLocation: MKUserLocation) {
+    let coordinate = userLocation.coordinate
+    self.locationManager.latestLocation = CLLocation(latitude: coordinate.latitude, longitude: coordinate.longitude)
+  }
+
+  func mapView(_ mapView: MKMapView, viewFor annotation: MKAnnotation) -> MKAnnotationView? {
+    if annotation is MKUserLocation {
+      //return nil so map view draws "blue dot" for standard user location
+      return nil
+    }
+
+    let  pinView = ABAnnotationView(annotation: annotation, reuseIdentifier: mapPinIdentifier)
+    pinView.tag = (annotation as! ABPointAnnotation).index
+
+    pinView.isSelected = (annotation.title == currentPlace?.place.name)
+
+    pinView.accessibilityLabel = "hello"
+    let btn = UIButton(type: .detailDisclosure)
+    pinView.rightCalloutAccessoryView = btn
+    return pinView
+  }
+
+  func mapView(_ mapView: MKMapView, didSelect view: MKAnnotationView) {
+    let indexPath = IndexPath(row: view.tag, section: 0)
+    let mapPlace:MapPlace = self.places[indexPath.row]
+    let place = mapPlace.place
+    analytics.log(.tapsOnPin(post: place.post, currentLocation: self.lastCoordinate))
+    scrollToItem(at: indexPath)
+
+    self.currentPlace = mapPlace
+  }
+
+}
+
+extension MapViewController: UIGestureRecognizerDelegate {
+
+  func gestureRecognizer(_ gestureRecognizer: UIGestureRecognizer, shouldRecognizeSimultaneouslyWith otherGestureRecognizer: UIGestureRecognizer) -> Bool {
+    return true
+  }
+
+}
+
+extension MapViewController: UISearchBarDelegate {
+
+  func searchBarTextDidChange(searchText: String) {
+    self.updateFilter(searchText: searchText)
+    self.reloadMap()
+
+    if (self.placesFiltered.count > 0) {
+      let mapPlace = self.placesFiltered.first
+      self.currentPlace = mapPlace
+    }
+
+    self.collectionView.contentOffset = CGPoint.zero
+    self.collectionView.reloadData()
+  }
+
+  func searchBarSearchButtonClicked(_ searchBar: UISearchBar) {
+    searchBar.resignFirstResponder()
+  }
+
+}
+
+class MapViewController: UIViewController, FilterViewControllerDelegate {
+
+  var placesFiltered = [MapPlace]()
+  {
+    didSet
+    {
+      var annotations:[MKAnnotation] = []
+      for (index, place) in placesFiltered.enumerated() {
+        if let annotation = place.annotation {
+          annotation.index = index
+          annotations.append(annotation)
+        }
+      }
+      self.annotations = annotations
+    }
+  }
+
+  var places:[MapPlace] = [MapPlace]()
+  {
+    didSet
+    {
+      self.updateFilter(searchText: self.searchBar.text)
+    }
+  }
+
+  func updateFilter(searchText: String?) {
+    if let searchText = searchText, searchText.count > 0{
+      placesFiltered = self.places.filter {
+        if let title = $0.place.name?.lowercased() {
+          if title.contains(searchText.lowercased()) {
+            return true
+          }
+        }
+        return false
+      }
+    } else {
+      placesFiltered = self.places
+    }
+  }
 
   let padding = CGFloat(45)
   let spacing = CGFloat(0)
@@ -23,10 +188,45 @@ class MapViewController: UIViewController,
   let motionManager = MotionManager.shared
   let dataStore = PlaceDataStore()
   let locationManager = LocationManager.shared
-  var places:[Place] = []
-  var currentPlace:Place?
+  var filter : FilterViewController!
+  var ratings = [Int]()
+  var prices = [Int]()
+
+  private var _currentPlace:MapPlace? {
+    didSet {
+      if let coordinate = currentPlace?.place.coordinate() {
+        self.centerMap(coordinate)
+      }
+    }
+  }
+
+  var currentPlace:MapPlace? {
+    set {
+      if let annotation = currentPlace?.annotation, let view = mapView.view(for: annotation) as? ABAnnotationView {
+        view.isSelected = false
+      }
+      if let annotation = newValue?.annotation, let view = mapView.view(for: annotation) as? ABAnnotationView {
+        view.isSelected = true
+      }
+      _currentPlace = newValue
+    }
+    get {
+     return _currentPlace
+    }
+  }
+
   var initalDataFetched = false
 
+  class MapPlace : NSObject {
+    var place: Place
+    var annotation : ABPointAnnotation?
+
+    init(place: Place) {
+      self.place = place
+      self.annotation = ABPointAnnotation(place: place)
+    }
+
+  }
 
   var lastCoordinate: CLLocationCoordinate2D? {
     return locationManager.latestCoordinate
@@ -35,6 +235,7 @@ class MapViewController: UIViewController,
   @IBOutlet weak var collectionView:UICollectionView!
   @IBOutlet weak var mapView:MKMapView!
   @IBOutlet weak var locationButton:UIButton!
+  @IBOutlet weak var searchBar: UISearchBar!
 
   private let analytics: AnalyticsManager
   @IBOutlet weak var settingsButton:UIButton!
@@ -90,6 +291,13 @@ class MapViewController: UIViewController,
   override func viewDidLoad() {
     super.viewDidLoad()
 
+    self.searchBar.rx.text.subscribe(onNext: { text in
+      self.searchBarTextDidChange(searchText: text ?? "")
+    }).disposed(by: self.rx.disposeBag)
+
+    self.filter = FilterViewController()
+    self.filter?.filterDelegate = self
+
     let panRec = UIPanGestureRecognizer(target: self, action: #selector(didDragMap(gestureRecognizer:)))
     panRec.delegate = self
     self.mapView.addGestureRecognizer(panRec)
@@ -110,7 +318,8 @@ class MapViewController: UIViewController,
         self.activitylabel.text = messages.joined(separator: "\n")
       }
     }
-    self.activitylabel.isHidden = !env.isPreProduction
+//    self.activitylabel.isHidden = !env.isPreProduction
+    self.activitylabel.isHidden = true
 
     let layout = UPCarouselFlowLayout()
     layout.scrollDirection = .horizontal
@@ -130,10 +339,7 @@ class MapViewController: UIViewController,
     if let fontStyle = UIFont(name: "WorkSans-Medium", size: 18) {
       navigationController?.navigationBar.titleTextAttributes = [NSAttributedStringKey.font: fontStyle]
     }
-    navigationController?.navigationBar.barTintColor =  UIColor.beige()
-    navigationController?.navigationBar.tintColor =  UIColor.offRed()
-    navigationController?.navigationBar.isTranslucent = false
-
+    self.style()
     let coordinate = CLLocationCoordinate2D(latitude: 39.9526, longitude: -75.1652)
     centerMap(coordinate, span: MKCoordinateSpanMake(0.04, 0.04))
     fetchMapData(coordinate: coordinate)
@@ -151,21 +357,34 @@ class MapViewController: UIViewController,
       button.rx.tap
         .asDriver()
         .drive(onNext: { [unowned self] _ in
-          guard let place = self.places.randomElement() else {
+          guard let mapPlace = self.places.randomElement() else {
             print("MIA: place / region")
             return
           }
-          self.locationManager.sendNotificationForPlace(place)
+          self.locationManager.sendNotificationForPlace(mapPlace.place)
         })
         .disposed(by: self.rx.disposeBag)
     }
 
+    self.navigationItem.leftBarButtonItem = UIBarButtonItem(title: "Filter", style: .plain, target: self, action: #selector(showFilter))
+
   }
 
-  func mapView(_ mapView: MKMapView, didUpdate userLocation: MKUserLocation) {
-    let coordinate = userLocation.coordinate
-    mapView.setCenter(coordinate, animated: true)
-    self.locationManager.latestLocation = CLLocation(latitude: coordinate.latitude, longitude: coordinate.longitude)
+  @objc func showFilter() {
+    let navigationController = UINavigationController(rootViewController: self.filter)
+    self.navigationController?.present(navigationController, animated: true, completion: nil)
+  }
+
+  func filterUpdated(_ viewController: FilterViewController, ratings: [Int], prices: [Int]) {
+    viewController.dismissFilter()
+    print(ratings)
+    print(prices)
+
+    self.ratings = ratings
+    self.prices = prices
+
+    let center = mapView.region.center
+    fetchMapData(coordinate: center)
   }
 
   @IBAction func centerCurrentLocation() {
@@ -182,118 +401,37 @@ class MapViewController: UIViewController,
     }
   }
 
-  func mapView(_ mapView: MKMapView, viewFor annotation: MKAnnotation) -> MKAnnotationView? {
-    if annotation is MKUserLocation {
-      //return nil so map view draws "blue dot" for standard user location
-      return nil
+  var annotations:[MKAnnotation] = [MKAnnotation]()
+  {
+    didSet
+    {
+      self.reloadMap()
     }
-
-    let reuseId = "pin"
-
-    let  pinView = MKAnnotationView(annotation: annotation, reuseIdentifier: reuseId)
-    pinView.tag = (annotation as! ABPointAnnotation).index
-
-    if annotation.title == currentPlace?.name {
-      pinView.image = UIImage(named: "selected-pin")
-    } else {
-      pinView.image = UIImage(named: "pin")
-    }
-
-    pinView.accessibilityLabel = "hello"
-    let btn = UIButton(type: .detailDisclosure)
-    pinView.rightCalloutAccessoryView = btn
-    return pinView
-  }
-
-  func mapView(_ mapView: MKMapView, didSelect view: MKAnnotationView) {
-    let indexPath = IndexPath(row: view.tag, section: 0)
-    let place:Place = self.places[indexPath.row]
-    analytics.log(.tapsOnPin(post: place.post, currentLocation: self.lastCoordinate))
-    scrollToItem(at: indexPath)
-    updateCurrentPlace(place: place)
-  }
-
-  func mapView(_ mapView: MKMapView, annotationView view: MKAnnotationView, calloutAccessoryControlTapped control: UIControl) {
-
   }
 
   func reloadMap() {
-    var annotations:[MKAnnotation] = []
-    for (index, place) in self.places.enumerated() {
-      let annotation = ABPointAnnotation(place: place)
-      annotation.index = index
-      annotations.append(annotation)
-    }
     self.mapView.removeAnnotations(self.mapView.annotations)
-    self.mapView.addAnnotations(annotations)
+    self.mapView.addAnnotations(self.annotations)
   }
 
-  func fetchMapData(coordinate:CLLocationCoordinate2D, overrideCurrentPlace: Bool = true) {
-    let latitude = coordinate.latitude
-    let longitude = coordinate.longitude
+  func fetchMapData(coordinate:CLLocationCoordinate2D) {
+    dataStore.retrievePlaces(coordinate: coordinate, prices: self.prices, ratings: self.ratings, limit: 1000) { (success, data, count) in
+      var places = [MapPlace]()
+      for place in data {
+        places.append(MapPlace(place: place))
+      }
+      self.places = places
 
-    dataStore.retrievePlaces(latitude: latitude, longitude: longitude, limit: 1000) { (success, data, count) in
-      self.places = data
-
-      if overrideCurrentPlace && (self.places.count > 0) {
-        self.currentPlace = self.places.first
-        self.centerMap((self.currentPlace?.coordinate())!)
+      if (self.placesFiltered.count > 0) {
+        let mapPlace = self.placesFiltered.first
+        self.currentPlace = mapPlace
       }
 
-      self.reloadMap()
+      self.collectionView.contentOffset = CGPoint.zero
       self.collectionView.reloadData()
     }
   }
 
-
-  // MARK: - Location manager delegate
-
-  func locationUpdated(_ locationManager: LocationManager, location: CLLocation) {
-    initialMapDataFetch(coordinate: location.coordinate)
-  }
-
-  func authorized(_ locationManager: LocationManager, status: CLAuthorizationStatus) {
-    print("locationManagerDelegate authorized")
-    centerCurrentLocation()
-  }
-
-  func notAuthorized(_ locationManager: LocationManager, status: CLAuthorizationStatus) {
-    print("locationManagerDelegate notAuthorized")
-  }
-
-
-  // MARK: UICollectionViewDataSource
-
-  func numberOfSections(in collectionView: UICollectionView) -> Int {
-    return 1
-  }
-
-  func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
-    return places.count
-  }
-
-  func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
-    let cell = collectionView.dequeueReusableCell(withReuseIdentifier: reuseIdentifier, for: indexPath) as! PlaceCell
-
-    // Configure the cell
-    let place:Place = self.places[indexPath.row]
-    cell.setPlace(place: place)
-    return cell
-  }
-
-  func collectionView(_ collectionView: UICollectionView, shouldSelectItemAt indexPath: IndexPath) -> Bool {
-    if indexOfMajorCell() == indexPath.row {
-      let place:Place = self.places[indexPath.row]
-      analytics.log(.tapsOnViewArticle(post: place.post, currentLocation: self.lastCoordinate))
-      let mainVC = self.navigationController as! MainController
-      mainVC.openInSafari(url: place.post.link)
-    } else {
-      scrollToItem(at: indexPath)
-      let place:Place = self.places[indexPath.row]
-      updateCurrentPlace(place: place)
-    }
-    return true
-  }
 
   private var collectionViewFlowLayout: UICollectionViewFlowLayout {
     return self.collectionView.collectionViewLayout as! UICollectionViewFlowLayout
@@ -301,7 +439,6 @@ class MapViewController: UIViewController,
 
   override func viewDidLayoutSubviews() {
     super.viewDidLayoutSubviews()
-
     configureCollectionViewLayoutItemSize()
   }
 
@@ -321,20 +458,14 @@ class MapViewController: UIViewController,
     return safeIndex
   }
 
-
   func scrollViewDidEndDecelerating(_ scrollView: UIScrollView) {
-    var place:Place
+    var mapPlace:MapPlace
     let snapToIndex = indexOfMajorCell()
-    place = self.places[snapToIndex]
-    analytics.log(.swipesCarousel(post: place.post, currentLocation: self.lastCoordinate))
-    updateCurrentPlace(place: place)
-  }
+    mapPlace = self.placesFiltered[snapToIndex]
+    let place = mapPlace.place
 
-  func updateCurrentPlace(place: Place) {
-    let coordinate = place.coordinate()
-    self.currentPlace = place
-    self.reloadMap()
-    self.centerMap(coordinate)
+    analytics.log(.swipesCarousel(post: place.post, currentLocation: self.lastCoordinate))
+    self.currentPlace = mapPlace
   }
 
   func scrollToItem(at indexPath:IndexPath) {
@@ -343,25 +474,56 @@ class MapViewController: UIViewController,
 
   func centerMap(_ center: CLLocationCoordinate2D, span: MKCoordinateSpan? = nil) {
     let region:MKCoordinateRegion
-    if span == nil {
-      region = MKCoordinateRegion(center: center, span: self.mapView.region.span)
+    if let span = span {
+      region = MKCoordinateRegion(center: center, span: span)
     } else {
-      region = MKCoordinateRegion(center: center, span: span!)
+      region = MKCoordinateRegion(center: center, span: self.mapView.region.span)
     }
     self.mapView.setRegion(region, animated: true)
-  }
-
-  func gestureRecognizer(_ gestureRecognizer: UIGestureRecognizer, shouldRecognizeSimultaneouslyWith otherGestureRecognizer: UIGestureRecognizer) -> Bool {
-    return true
   }
 
   @objc func didDragMap(gestureRecognizer: UIGestureRecognizer) {
     guard !mapView.isUserLocationVisible else { return }
     if (gestureRecognizer.state == .ended){
       let center = mapView.region.center
-      fetchMapData(coordinate: center, overrideCurrentPlace: false)
+      fetchMapData(coordinate: center)
     }
   }
 
+  override func viewWillAppear(_ animated: Bool) {
+    super.viewWillAppear(animated)
+    NotificationCenter.default.addObserver(self, selector: #selector(self.keyboardWillShowNotification(notification:)), name: NSNotification.Name.UIKeyboardWillShow, object: nil)
+    NotificationCenter.default.addObserver(self, selector: #selector(self.keyboardWillHideNotification(notification:)), name: NSNotification.Name.UIKeyboardWillHide, object: nil)
+  }
+
+  override func viewWillDisappear(_ animated: Bool) {
+    super.viewWillDisappear(animated)
+    NotificationCenter.default.removeObserver(self, name: NSNotification.Name.UIKeyboardWillShow, object: nil)
+    NotificationCenter.default.removeObserver(self, name: NSNotification.Name.UIKeyboardWillHide, object: nil)
+  }
+
+  // MARK: - Notifications
+
+  @objc func keyboardWillShowNotification(notification: NSNotification) {
+    updateBottomLayoutConstraintWithNotification(notification: notification)
+  }
+
+  @objc func keyboardWillHideNotification(notification: NSNotification) {
+    updateBottomLayoutConstraintWithNotification(notification: notification)
+  }
+
+
+  // MARK: - Private
+  @IBOutlet weak var bottomLayoutConstraint: NSLayoutConstraint!
+
+  func updateBottomLayoutConstraintWithNotification(notification: NSNotification) {
+    let userInfo = notification.userInfo!
+
+    let keyboardEndFrame = (userInfo[UIKeyboardFrameEndUserInfoKey] as! NSValue).cgRectValue
+    let convertedKeyboardEndFrame = view.convert(keyboardEndFrame, from: self.view.window)
+    bottomLayoutConstraint.constant = view.bounds.maxY - convertedKeyboardEndFrame.minY - view.safeAreaInsets.bottom
+
+    self.view.layoutIfNeeded()
+  }
 
 }
