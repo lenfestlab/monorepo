@@ -6,33 +6,29 @@ import CoreLocation
 class PlaceDataStore: NSObject {
 
   func retrievePlaces(coordinate: CLLocationCoordinate2D,
-                      prices: [Int]? = nil,
-                      ratings: [Int]? = nil,
-                      categories: [Category]? = nil,
+                      prices: [Int] = [],
+                      ratings: [Int] = [],
+                      categories: [Category] = [],
                       limit: Int,
                       completion: @escaping (Bool, [Place], Int) -> Void) {
 
     let (latitude, longitude) = (coordinate.latitude, coordinate.longitude)
     print("fetchData: \(latitude) \(longitude)")
 
+    let category_ids = categories.map { $0.identifier }
+
+    let params: [String: Any] = [
+      "lat": latitude,
+      "lng": longitude,
+      "limit": limit,
+      "prices": prices,
+      "ratings": ratings,
+      "categories": category_ids,
+    ]
+
     let env = Env()
-    var url = "\(env.apiBaseUrlString)/places.json"
-
-    url = String(format: "%@?lat=%f", url, latitude)
-    url = String(format: "%@&lng=%f", url, longitude)
-    url = String(format: "%@&limit=%i", url, limit)
-
-    if let prices = prices, prices.count > 0 {
-      url = String(format: "%@&prices=%@", url, prices.map({ String($0) }).joined(separator: ","))
-    }
-    if let ratings = ratings, ratings.count > 0 {
-      url = String(format: "%@&ratings=%@", url, ratings.map({ String($0) }).joined(separator: ","))
-    }
-    if let categories = categories, categories.count > 0 {
-      url = String(format: "%@&categories=%@", url, categories.map({ $0.identifier }).joined(separator: ","))
-    }
-
-    Alamofire.request(url, method: .get, parameters: nil, encoding: URLEncoding.default, headers: nil).responseJSON { response in
+    let url = "\(env.apiBaseUrlString)/places.json"
+    Alamofire.request(url, method: .get, parameters: params, encoding: URLEncoding.default, headers: nil).responseJSON { response in
       let json = response.result.value as? JSON
       if (json == nil) {
         DispatchQueue.main.async { completion(false, [], 0) }
