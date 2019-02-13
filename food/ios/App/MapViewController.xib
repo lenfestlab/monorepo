@@ -75,7 +75,7 @@
                     <nil key="textColor"/>
                     <nil key="highlightedColor"/>
                 </label>
-                <searchBar contentMode="redraw" placeholder="Search All Restaurants" translatesAutoresizingMaskIntoConstraints="NO" id="4ME-9d-bvc">
+                <searchBar contentMode="redraw" placeholder="Search All Restaurants" showsCancelButton="YES" translatesAutoresizingMaskIntoConstraints="NO" id="4ME-9d-bvc">
                     <rect key="frame" x="0.0" y="0.0" width="375" height="56"/>
                     <textInputTraits key="textInputTraits"/>
                     <scopeButtonTitles>

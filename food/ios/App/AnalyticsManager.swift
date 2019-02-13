@@ -10,7 +10,7 @@ typealias FirebaseAnalytics = Analytics
 
 typealias Meta = Dictionary<String, String>
 
-enum Category: String {
+enum AnalyticsCategory: String {
   case debug // for pre-production use only
   case onboarding, notification, settings, background
   case app = "in-app"
@@ -18,14 +18,14 @@ enum Category: String {
 
 struct AnalyticsEvent {
   var name: String // NOTE: GA "action": https://goo.gl/opYrNg
-  var category: Category
+  var category: AnalyticsCategory
   var label: String? = ""
   var metadata: Meta = [:]
 
   init(
     name: String,
     metadata meta: Meta = [:],
-    category: Category,
+    category: AnalyticsCategory,
     label: String? = "",
     location: CLLocationCoordinate2D? = nil
     ) {

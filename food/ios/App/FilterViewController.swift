@@ -62,7 +62,6 @@ class FilterViewController: UIViewController {
     if self.fourDollars.isSelected {
       prices.append(4)
     }
-    self.dismiss(animated: true, completion: nil)
     self.filterDelegate?.filterUpdated(self, ratings: ratings, prices: prices)
   }
 

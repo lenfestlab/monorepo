@@ -136,13 +136,59 @@ extension MapViewController: UISearchBarDelegate {
     self.collectionView.reloadData()
   }
 
+  func clearSearch() {
+    searchBar.text = ""
+    searchBarTextDidChange(searchText: "")
+    searchBar.resignFirstResponder()
+  }
+
+  func searchBarCancelButtonClicked(_ searchBar: UISearchBar) {
+    clearSearch()
+  }
+
   func searchBarSearchButtonClicked(_ searchBar: UISearchBar) {
+    searchBarTextDidChange(searchText: searchBar.text ?? "")
     searchBar.resignFirstResponder()
   }
 
 }
 
-class MapViewController: UIViewController, FilterViewControllerDelegate {
+class MapViewController: UIViewController, FilterViewControllerDelegate, CategoryViewControllerDelegate {
+  func categoriesUpdated(_ viewController: CategoryViewController, categories: [Category]) {
+    viewController.dismiss(animated: true, completion: nil)
+
+    print(categories)
+
+    self.categories = categories
+
+    let center = mapView.region.center
+    fetchMapData(coordinate: center)
+
+    var title = "▼ All Restaurants"
+    let count = self.categories.count
+    if count > 1 {
+      title = String(format: "▼ %i Categories", count)
+    } else if let category = self.categories.first {
+      title = String(format: "▼ %@", category.name)
+    }
+    titleButton?.setTitle(title, for: .normal)
+
+  }
+
+  func filterUpdated(_ viewController: FilterViewController, ratings: [Int], prices: [Int]) {
+    viewController.dismiss(animated: true, completion: nil)
+
+    print(ratings)
+    print(prices)
+
+    self.ratings = ratings
+    self.prices = prices
+
+    let center = mapView.region.center
+    fetchMapData(coordinate: center)
+  }
+
+
 
   var placesFiltered = [MapPlace]()
   {
@@ -188,9 +234,11 @@ class MapViewController: UIViewController, FilterViewControllerDelegate {
   let motionManager = MotionManager.shared
   let dataStore = PlaceDataStore()
   let locationManager = LocationManager.shared
+  var categoryFilter : CategoryViewController!
   var filter : FilterViewController!
   var ratings = [Int]()
   var prices = [Int]()
+  var categories = [Category]()
 
   private var _currentPlace:MapPlace? {
     didSet {
@@ -288,12 +336,27 @@ class MapViewController: UIViewController, FilterViewControllerDelegate {
     fetchMapData(coordinate: coordinate)
   }
 
+  @objc func showCategories() {
+    clearSearch()
+    let navigationController = UINavigationController(rootViewController: self.categoryFilter)
+    self.navigationController?.present(navigationController, animated: true, completion: nil)
+  }
+
+  var titleButton : UIButton?
+
   override func viewDidLoad() {
     super.viewDidLoad()
 
-    self.searchBar.rx.text.subscribe(onNext: { text in
-      self.searchBarTextDidChange(searchText: text ?? "")
-    }).disposed(by: self.rx.disposeBag)
+    titleButton = UIButton(frame: CGRect(x: 0, y: 0, width: 600, height: 60))
+    titleButton?.setTitle("▼ All Restaurants", for: .normal)
+    titleButton?.titleLabel?.font = UIFont.boldSystemFont(ofSize: 18)
+    titleButton?.setTitleColor(UIColor.offRed(), for: .normal)
+    titleButton?.addTarget(self, action: #selector(showCategories), for: .touchUpInside)
+    self.navigationItem.titleView = titleButton
+
+    self.categoryFilter = CategoryViewController()
+    self.categoryFilter?.categoryFilterDelegate = self
+
 
     self.filter = FilterViewController()
     self.filter?.filterDelegate = self
@@ -371,20 +434,9 @@ class MapViewController: UIViewController, FilterViewControllerDelegate {
   }
 
   @objc func showFilter() {
+    clearSearch()
     let navigationController = UINavigationController(rootViewController: self.filter)
     self.navigationController?.present(navigationController, animated: true, completion: nil)
-  }
-
-  func filterUpdated(_ viewController: FilterViewController, ratings: [Int], prices: [Int]) {
-    viewController.dismissFilter()
-    print(ratings)
-    print(prices)
-
-    self.ratings = ratings
-    self.prices = prices
-
-    let center = mapView.region.center
-    fetchMapData(coordinate: center)
   }
 
   @IBAction func centerCurrentLocation() {
@@ -415,7 +467,7 @@ class MapViewController: UIViewController, FilterViewControllerDelegate {
   }
 
   func fetchMapData(coordinate:CLLocationCoordinate2D) {
-    dataStore.retrievePlaces(coordinate: coordinate, prices: self.prices, ratings: self.ratings, limit: 1000) { (success, data, count) in
+    dataStore.retrievePlaces(coordinate: coordinate, prices: self.prices, ratings: self.ratings, categories: self.categories, limit: 1000) { (success, data, count) in
       var places = [MapPlace]()
       for place in data {
         places.append(MapPlace(place: place))
@@ -521,8 +573,7 @@ class MapViewController: UIViewController, FilterViewControllerDelegate {
 
     let keyboardEndFrame = (userInfo[UIKeyboardFrameEndUserInfoKey] as! NSValue).cgRectValue
     let convertedKeyboardEndFrame = view.convert(keyboardEndFrame, from: self.view.window)
-    bottomLayoutConstraint.constant = view.bounds.maxY - convertedKeyboardEndFrame.minY - view.safeAreaInsets.bottom
-
+    bottomLayoutConstraint.constant = view.bounds.maxY - convertedKeyboardEndFrame.minY
     self.view.layoutIfNeeded()
   }
 

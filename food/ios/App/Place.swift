@@ -3,6 +3,18 @@ import Gloss
 import CoreLocation
 import UserDefaultsStore
 
+struct Category: JSONDecodable, Codable {
+  let identifier: String
+  let name: String
+
+  init?(json: JSON) {
+    self.identifier = ("identifier" <~~ json)!
+    self.name = ("name" <~~ json)!
+  }
+
+}
+
+
 struct Location: JSONDecodable, Codable {
   let latitude: CLLocationDegrees
   let longitude: CLLocationDegrees
