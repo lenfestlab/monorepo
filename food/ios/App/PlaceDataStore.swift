@@ -8,6 +8,7 @@ class PlaceDataStore: NSObject {
   func retrievePlaces(coordinate: CLLocationCoordinate2D,
                       prices: [Int]? = nil,
                       ratings: [Int]? = nil,
+                      categories: [Category]? = nil,
                       limit: Int,
                       completion: @escaping (Bool, [Place], Int) -> Void) {
 
@@ -26,6 +27,9 @@ class PlaceDataStore: NSObject {
     }
     if let ratings = ratings, ratings.count > 0 {
       url = String(format: "%@&ratings=%@", url, ratings.map({ String($0) }).joined(separator: ","))
+    }
+    if let categories = categories, categories.count > 0 {
+      url = String(format: "%@&categories=%@", url, categories.map({ $0.identifier }).joined(separator: ","))
     }
 
     Alamofire.request(url, method: .get, parameters: nil, encoding: URLEncoding.default, headers: nil).responseJSON { response in
