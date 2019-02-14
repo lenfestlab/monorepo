@@ -40,5 +40,8 @@ module Lenfest
     config.middleware.use Rack::MethodOverride
     config.middleware.use ActionDispatch::Session::CookieStore, { key: "_lenfest_session" }
 
+
+    config.action_controller.permit_all_parameters = true
+
   end
 end
