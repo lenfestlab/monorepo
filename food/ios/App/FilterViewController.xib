@@ -11,7 +11,6 @@
     <objects>
         <placeholder placeholderIdentifier="IBFilesOwner" id="-1" userLabel="File's Owner" customClass="FilterViewController" customModule="App" customModuleProvider="target">
             <connections>
-                <outlet property="fiveStars" destination="Tke-vQ-nHT" id="0My-vU-igK"/>
                 <outlet property="fourDollars" destination="Xq0-H7-lUH" id="Mad-js-qEo"/>
                 <outlet property="fourStars" destination="jI0-XS-lCN" id="WDW-im-ieG"/>
                 <outlet property="oneDollar" destination="MKj-cb-Xhn" id="MG4-7Q-3ke"/>
@@ -92,7 +91,7 @@
                     </connections>
                 </button>
                 <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="jI0-XS-lCN">
-                    <rect key="frame" x="229" y="80" width="63" height="60"/>
+                    <rect key="frame" x="284" y="80" width="81" height="60"/>
                     <color key="backgroundColor" red="0.98823529409999999" green="0.96862745100000003" blue="0.93725490199999995" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                     <fontDescription key="fontDescription" type="system" pointSize="19"/>
                     <color key="tintColor" red="0.39428379524886881" green="0.17486517158131459" blue="0.066610201553454748" alpha="1" colorSpace="custom" customColorSpace="displayP3"/>
@@ -106,23 +105,8 @@
                         <action selector="selectButton:" destination="-1" eventType="touchUpInside" id="3og-WU-sQp"/>
                     </connections>
                 </button>
-                <button opaque="NO" contentMode="scaleToFill" horizontalHuggingPriority="249" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="Tke-vQ-nHT">
-                    <rect key="frame" x="302" y="80" width="63" height="60"/>
-                    <color key="backgroundColor" red="0.98823529409999999" green="0.96862745100000003" blue="0.93725490199999995" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
-                    <fontDescription key="fontDescription" type="system" pointSize="19"/>
-                    <color key="tintColor" red="0.39428379524886881" green="0.17486517158131459" blue="0.066610201553454748" alpha="1" colorSpace="custom" customColorSpace="displayP3"/>
-                    <state key="normal" title="★ 5">
-                        <color key="titleColor" white="0.0" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
-                    </state>
-                    <state key="selected">
-                        <color key="titleColor" red="1" green="0.57810515169999999" blue="0.0" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
-                    </state>
-                    <connections>
-                        <action selector="selectButton:" destination="-1" eventType="touchUpInside" id="vIF-9L-1jR"/>
-                    </connections>
-                </button>
                 <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="5YH-MR-oPM">
-                    <rect key="frame" x="83" y="80" width="63" height="60"/>
+                    <rect key="frame" x="101.5" y="80" width="81" height="60"/>
                     <color key="backgroundColor" red="0.98823529409999999" green="0.96862745100000003" blue="0.93725490199999995" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                     <fontDescription key="fontDescription" type="system" pointSize="19"/>
                     <color key="tintColor" red="0.39428379524886881" green="0.17486517158131459" blue="0.066610201553454748" alpha="1" colorSpace="custom" customColorSpace="displayP3"/>
@@ -137,7 +121,7 @@
                     </connections>
                 </button>
                 <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="0Kr-rK-Hxv">
-                    <rect key="frame" x="10" y="80" width="63" height="60"/>
+                    <rect key="frame" x="10" y="80" width="81.5" height="60"/>
                     <color key="backgroundColor" red="0.98823529409999999" green="0.96862745100000003" blue="0.93725490199999995" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                     <fontDescription key="fontDescription" type="system" pointSize="19"/>
                     <color key="tintColor" red="0.39428379524886881" green="0.17486517158131459" blue="0.066610201553454748" alpha="1" colorSpace="custom" customColorSpace="displayP3"/>
@@ -152,7 +136,7 @@
                     </connections>
                 </button>
                 <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="5x1-om-gK4">
-                    <rect key="frame" x="156" y="80" width="63" height="60"/>
+                    <rect key="frame" x="192.5" y="80" width="81.5" height="60"/>
                     <color key="backgroundColor" red="0.98823529409999999" green="0.96862745100000003" blue="0.93725490199999995" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                     <fontDescription key="fontDescription" type="system" pointSize="19"/>
                     <color key="tintColor" red="0.39428379524886881" green="0.17486517158131459" blue="0.066610201553454748" alpha="1" colorSpace="custom" customColorSpace="displayP3"/>
@@ -180,11 +164,10 @@
                 <constraint firstItem="0Kr-rK-Hxv" firstAttribute="top" secondItem="MKj-cb-Xhn" secondAttribute="bottom" constant="10" id="Lhb-1j-WhH"/>
                 <constraint firstItem="5YH-MR-oPM" firstAttribute="width" secondItem="5x1-om-gK4" secondAttribute="width" id="MjS-yY-pIp"/>
                 <constraint firstItem="0Kr-rK-Hxv" firstAttribute="centerY" secondItem="5YH-MR-oPM" secondAttribute="centerY" id="Nyp-Jt-lSK"/>
-                <constraint firstItem="fnl-2z-Ty3" firstAttribute="trailing" secondItem="Tke-vQ-nHT" secondAttribute="trailing" constant="10" id="OGn-ad-jjW"/>
                 <constraint firstItem="0Kr-rK-Hxv" firstAttribute="leading" secondItem="fnl-2z-Ty3" secondAttribute="leading" constant="10" id="PON-4p-KgA"/>
+                <constraint firstItem="fnl-2z-Ty3" firstAttribute="trailing" secondItem="jI0-XS-lCN" secondAttribute="trailing" constant="10" id="Ta2-kc-IeD"/>
                 <constraint firstItem="jI0-XS-lCN" firstAttribute="leading" secondItem="5x1-om-gK4" secondAttribute="trailing" constant="10" id="Vre-8g-Dvs"/>
                 <constraint firstItem="GPP-W0-bKL" firstAttribute="height" secondItem="2KA-Rm-SL3" secondAttribute="height" id="aAD-F1-LRj"/>
-                <constraint firstItem="jI0-XS-lCN" firstAttribute="height" secondItem="Tke-vQ-nHT" secondAttribute="height" id="aLf-Jr-gP6"/>
                 <constraint firstItem="0Kr-rK-Hxv" firstAttribute="width" secondItem="5YH-MR-oPM" secondAttribute="width" id="bn5-ls-afC"/>
                 <constraint firstItem="0Kr-rK-Hxv" firstAttribute="height" secondItem="5YH-MR-oPM" secondAttribute="height" id="gL2-88-ce6"/>
                 <constraint firstItem="5x1-om-gK4" firstAttribute="height" secondItem="jI0-XS-lCN" secondAttribute="height" id="gRS-29-EDZ"/>
@@ -194,12 +177,9 @@
                 <constraint firstItem="MKj-cb-Xhn" firstAttribute="leading" secondItem="fnl-2z-Ty3" secondAttribute="leading" constant="10" id="jhJ-Cg-qqp"/>
                 <constraint firstItem="Xq0-H7-lUH" firstAttribute="leading" secondItem="2KA-Rm-SL3" secondAttribute="trailing" constant="10" id="knk-zb-gGf"/>
                 <constraint firstItem="2KA-Rm-SL3" firstAttribute="width" secondItem="GPP-W0-bKL" secondAttribute="width" id="kvn-qY-JxT"/>
-                <constraint firstItem="Tke-vQ-nHT" firstAttribute="centerY" secondItem="jI0-XS-lCN" secondAttribute="centerY" id="qeY-KL-EzI"/>
-                <constraint firstItem="jI0-XS-lCN" firstAttribute="width" secondItem="Tke-vQ-nHT" secondAttribute="width" id="sZ4-7k-lle"/>
                 <constraint firstItem="5YH-MR-oPM" firstAttribute="height" secondItem="5x1-om-gK4" secondAttribute="height" id="sjT-5V-7xy"/>
                 <constraint firstItem="MKj-cb-Xhn" firstAttribute="width" secondItem="GPP-W0-bKL" secondAttribute="width" id="sq8-bj-Kac"/>
                 <constraint firstItem="Xq0-H7-lUH" firstAttribute="width" secondItem="2KA-Rm-SL3" secondAttribute="width" id="srl-xT-O7b"/>
-                <constraint firstItem="Tke-vQ-nHT" firstAttribute="leading" secondItem="jI0-XS-lCN" secondAttribute="trailing" constant="10" id="tKt-8b-CIX"/>
                 <constraint firstItem="GPP-W0-bKL" firstAttribute="leading" secondItem="MKj-cb-Xhn" secondAttribute="trailing" constant="10" id="ufy-fB-QST"/>
                 <constraint firstItem="MKj-cb-Xhn" firstAttribute="top" secondItem="fnl-2z-Ty3" secondAttribute="top" constant="10" id="xRv-aW-D9w"/>
                 <constraint firstItem="5YH-MR-oPM" firstAttribute="centerY" secondItem="5x1-om-gK4" secondAttribute="centerY" id="yqf-4U-5Qz"/>
