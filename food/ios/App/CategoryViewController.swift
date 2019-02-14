@@ -1,10 +1,3 @@
-//
-//  CategoryViewController.swift
-//  App
-//
-//  Created by Ajay Chainani on 2/13/19.
-//
-
 import UIKit
 
 protocol CategoryViewControllerDelegate: class {
@@ -33,6 +26,7 @@ class CategoryViewController: UITableViewController {
       if let categories = categories {
         self.categories = categories
       }
+      self.tableView.reloadData()
     }
   }
 

@@ -12,7 +12,6 @@ class FilterViewController: UIViewController {
   @IBOutlet weak var twoStars : UIButton!
   @IBOutlet weak var threeStars : UIButton!
   @IBOutlet weak var fourStars : UIButton!
-  @IBOutlet weak var fiveStars : UIButton!
 
   @IBOutlet weak var oneDollar : UIButton!
   @IBOutlet weak var twoDollars : UIButton!
@@ -46,9 +45,6 @@ class FilterViewController: UIViewController {
     }
     if self.fourStars.isSelected {
       ratings.append(4)
-    }
-    if self.fiveStars.isSelected {
-      ratings.append(5)
     }
     if self.oneDollar.isSelected {
       prices.append(1)
