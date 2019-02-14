@@ -242,9 +242,8 @@ class MapViewController: UIViewController, FilterViewControllerDelegate, Categor
 
   private var _currentPlace:MapPlace? {
     didSet {
-      if let coordinate = currentPlace?.place.coordinate() {
-        self.centerMap(coordinate)
-      }
+      NSObject.cancelPreviousPerformRequests(withTarget: self, selector: #selector(centerToCurrentPlace), object: nil)
+      self.perform(#selector(centerToCurrentPlace), with: nil, afterDelay: 0.5)
     }
   }
 
@@ -332,7 +331,7 @@ class MapViewController: UIViewController, FilterViewControllerDelegate, Categor
       return
     }
     initalDataFetched = true
-    centerMap(coordinate, span: MKCoordinateSpanMake(0.04, 0.04))
+    centerMap(coordinate)
     fetchMapData(coordinate: coordinate)
   }
 
@@ -404,7 +403,7 @@ class MapViewController: UIViewController, FilterViewControllerDelegate, Categor
     }
     self.style()
     let coordinate = CLLocationCoordinate2D(latitude: 39.9526, longitude: -75.1652)
-    centerMap(coordinate, span: MKCoordinateSpanMake(0.04, 0.04))
+    centerMap(coordinate)
     fetchMapData(coordinate: coordinate)
 
     self.navigationItem.rightBarButtonItem = UIBarButtonItem(image: UIImage(named: "settings-button"), style: .plain, target: self, action: #selector(settings))
@@ -525,7 +524,13 @@ class MapViewController: UIViewController, FilterViewControllerDelegate, Categor
     collectionViewFlowLayout.collectionView!.scrollToItem(at: indexPath, at: .centeredHorizontally, animated: true)
   }
 
-  func centerMap(_ center: CLLocationCoordinate2D, span: MKCoordinateSpan? = nil) {
+  @objc func centerToCurrentPlace() {
+    if let coordinate = currentPlace?.place.coordinate() {
+      self.centerMap(coordinate)
+    }
+  }
+
+  func centerMap(_ center: CLLocationCoordinate2D, span: MKCoordinateSpan? = MKCoordinateSpanMake(0.04, 0.04)) {
     let region:MKCoordinateRegion
     if let span = span {
       region = MKCoordinateRegion(center: center, span: span)
