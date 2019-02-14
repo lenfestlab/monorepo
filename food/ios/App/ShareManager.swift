@@ -11,7 +11,7 @@ class ShareManager: NSObject {
       return nil
     }
 
-    let url = post.linkShort.absoluteString
+    let url = post.linkShort?.absoluteString ?? ""
     let publicationName = post.publicationName!
     return """
     \(title) \(url) via the \(publicationName) and Lenfest Local Lab app, \(env.appName) \(env.appMarketingUrlString)
@@ -23,7 +23,7 @@ class ShareManager: NSObject {
     guard let post = place.post else {
       return nil
     }
-    let url = post.linkShort.absoluteString
+    let url = post.linkShort?.absoluteString ?? ""
     let appCreatorTwitter = "@lenfestlab"
     let publicationTwitter = post.publicationTwitter!
     return "\(title) \(url) via \(publicationTwitter) \(appCreatorTwitter)"
@@ -35,28 +35,12 @@ class ShareManager: NSObject {
       return nil
     }
 
-    let placeURLString = post.linkShort.absoluteString
+    let placeURLString = post.linkShort?.absoluteString ?? ""
     return [title, placeURLString].joined(separator: " ")
   }
 
   class func mailCopyForPlace(_ place: Place) -> String? {
-    guard let post = place.post else {
-      return nil
-    }
-
-    let placeURLString = post.linkShort.absoluteString
-    let publicationName = post.publicationName!
-    return """
-      <html><body>
-      Here’s a local story from \(publicationName) sent to you from the \(env.appName) app built by the Lenfest Local Lab.
-      <br>
-      <br>
-      <a href=\"\(placeURLString)">Read the article here.</a>
-      <br>
-      <br>
-      Get the <a href=\"\(env.appMarketingUrlString)">\(env.appName) app</a> today.
-      </body></html>
-      """
+    return nil
   }
 
   class func mailSubjectForPlace(_ place: Place) -> String? {

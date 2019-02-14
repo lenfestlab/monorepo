@@ -75,10 +75,9 @@ class PlaceManager: NSObject {
       return
     }
 
-    let placeURLString = post.link.absoluteString
+    let placeURLString = post.link?.absoluteString
 
-    content.userInfo = [
-      "PLACE_URL": placeURLString,
+    var userInfo = [
       "SHARE_DATA": [
         "string":[
           UIActivityType.message: ShareManager.messageCopyForPlace(place),
@@ -91,13 +90,17 @@ class PlaceManager: NSObject {
         ]
       ],
       "identifier": place.identifier
-    ]
+      ] as [String : Any]
+
+    userInfo["PLACE_URL"] = placeURLString
+
+    content.userInfo = userInfo
     if image != nil {
       let attachment = UNNotificationAttachment.create(identifier: "image", image: image!, options: [:])
       if attachment != nil {
         content.attachments = [attachment!]
       } else {
-        print("ERROR: notification attachment nil \(placeURLString)")
+        print("ERROR: notification attachment nil \(placeURLString ?? "no url")")
       }
     }
 
