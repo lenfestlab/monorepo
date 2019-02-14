@@ -466,7 +466,7 @@ class MapViewController: UIViewController, FilterViewControllerDelegate, Categor
     self.mapView.addAnnotations(self.annotations)
   }
 
-  func fetchMapData(coordinate:CLLocationCoordinate2D) {
+  func fetchMapData(coordinate:CLLocationCoordinate2D, completionBlock: (() -> (Void))? = nil) {
     dataStore.retrievePlaces(coordinate: coordinate, prices: self.prices, ratings: self.ratings, categories: self.categories, limit: 1000) { (success, data, count) in
       var places = [MapPlace]()
       for place in data {
@@ -481,6 +481,7 @@ class MapViewController: UIViewController, FilterViewControllerDelegate, Categor
 
       self.collectionView.contentOffset = CGPoint.zero
       self.collectionView.reloadData()
+      completionBlock?()
     }
   }
 

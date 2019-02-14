@@ -36,6 +36,8 @@ struct Post: JSONDecodable, Codable, Identifiable {
   let imageURL: URL?
   let price: Array<Int>?
   let rating: Int?
+  var link: URL? { return URL(string: "https://google.com") }
+  var linkShort: URL? { return URL(string: "https://google.com") }
 
   init?(json: JSON) {
     self.identifier = ("identifier" <~~ json)!
@@ -46,8 +48,6 @@ struct Post: JSONDecodable, Codable, Identifiable {
     self.rating = "rating" <~~ json
   }
 
-  var link: URL! { return URL(string: "https://google.com") }
-  var linkShort: URL! { return URL(string: "https://google.com") }
   var publicationName: String? { return "" }
   var publicationTwitter: String? { return "" }
 }

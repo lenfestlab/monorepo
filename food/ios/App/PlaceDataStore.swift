@@ -34,17 +34,15 @@ class PlaceDataStore: NSObject {
         DispatchQueue.main.async { completion(false, [], 0) }
         return
       }
-      let meta = json!["meta"] as? JSON
       var count = 0
-      if (meta != nil) {
-        count = meta!["count"] as! Int
+      if let meta = json!["meta"] as? JSON {
+        count = meta["count"] as? Int ?? 0
       }
-      let placesJSON = json!["data"] as? [JSON]
-      if (placesJSON == nil) {
+      guard let placesJSON = json!["data"] as? [JSON] else {
         DispatchQueue.main.async { completion(false, [], 0) }
         return
       }
-      guard let places = [Place].from(jsonArray: placesJSON!) else {
+      guard let places = [Place].from(jsonArray: placesJSON) else {
         DispatchQueue.main.async {
           completion(false, [], 0)
         }
