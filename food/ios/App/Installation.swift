@@ -24,7 +24,7 @@ class Installation: NSObject {
   }
 
   class func update(cloudId: String, emailAddress: String, completion: @escaping (Bool, JSON?) -> Void) {
-    let params = ["email_address" : emailAddress]
+    let params = ["email" : emailAddress]
     patch(cloudId: cloudId, params: params, completion: completion)
   }
 

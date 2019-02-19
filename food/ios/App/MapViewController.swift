@@ -64,7 +64,9 @@ extension MapViewController: UICollectionViewDelegate {
 extension MapViewController: LocationManagerAuthorizationDelegate {
 
   func locationUpdated(_ locationManager: LocationManager, location: CLLocation) {
-    initialMapDataFetch(coordinate: location.coordinate)
+    DispatchQueue.main.async {
+      self.initialMapDataFetch(coordinate: location.coordinate)
+    }
   }
 
   func authorized(_ locationManager: LocationManager, status: CLAuthorizationStatus) {

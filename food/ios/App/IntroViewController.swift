@@ -18,14 +18,8 @@ class IntroViewController: UIViewController {
 
   override func viewDidLoad() {
     super.viewDidLoad()
-    let env = Env()
 
-    self.title = env.appName
-    if let fontStyle = UIFont(name: "WorkSans-Medium", size: 18) {
-      navigationController?.navigationBar.titleTextAttributes = [NSAttributedStringKey.font: fontStyle]
-    }
-    navigationController?.navigationBar.barTintColor =  UIColor.beige()
-    navigationController?.navigationBar.isTranslucent =  false
+    self.styleViewController()
 
     doneButton.layer.cornerRadius = 5.0
     doneButton.clipsToBounds = true

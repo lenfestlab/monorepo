@@ -44,9 +44,13 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
     self.mainController = MainController(rootViewController: introController)
     self.notificationManager.delegate = self.mainController
 
-    if onboardingCompleted {
-      showHomeScreen()
+    if !onboardingCompleted {
+      window!.rootViewController = self.mainController
+      window!.makeKeyAndVisible()
+      return true
     }
+
+    showHomeScreen()
 
     let cloudViewController = CloudViewController()
     window!.rootViewController = cloudViewController
@@ -94,6 +98,12 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
   func showHomeScreen() {
     mainController.pushViewController(
       MapViewController(analytics: self.analytics),
+      animated: false)
+  }
+
+  func showEmailRegistration(cloudId: String) {
+    mainController.pushViewController(
+      EmailViewController(analytics: self.analytics, cloudId: cloudId),
       animated: false)
   }
 
