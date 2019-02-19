@@ -525,8 +525,10 @@ class MapViewController: UIViewController, FilterViewControllerDelegate, Categor
   }
 
   @objc func centerToCurrentPlace() {
-    if let coordinate = currentPlace?.place.coordinate() {
-      self.centerMap(coordinate)
+    DispatchQueue.main.async {
+      if let coordinate = self.currentPlace?.place.coordinate() {
+        self.centerMap(coordinate)
+      }
     }
   }
 

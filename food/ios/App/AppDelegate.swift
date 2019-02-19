@@ -47,8 +47,28 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
     if onboardingCompleted {
       showHomeScreen()
     }
-    window!.rootViewController = self.mainController
+
+    let cloudViewController = CloudViewController()
+    window!.rootViewController = cloudViewController
     window!.makeKeyAndVisible()
+
+    iCloudUserIDAsync() { cloudId, error in
+      if let cloudId = cloudId {
+        print("received iCloudID \(cloudId)")
+
+        Installation.register(cloudId: cloudId, completion: { (success, result) in
+          DispatchQueue.main.async { [unowned self] in
+            self.window!.rootViewController = self.mainController
+          }
+        })
+
+      } else {
+        print("Fetched iCloudID was nil")
+        DispatchQueue.main.async { [unowned self] in
+          self.window!.rootViewController = self.mainController
+        }
+      }
+    }
 
     return true
   }
