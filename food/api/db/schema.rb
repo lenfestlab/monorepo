@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2019_02_11_175637) do
+ActiveRecord::Schema.define(version: 2019_02_19_164029) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -36,6 +36,19 @@ ActiveRecord::Schema.define(version: 2019_02_11_175637) do
     t.index ["category_id"], name: "index_categorizations_on_category_id"
     t.index ["identifier"], name: "index_categorizations_on_identifier"
     t.index ["place_id"], name: "index_categorizations_on_place_id"
+  end
+
+  create_table "installations", force: :cascade do |t|
+    t.uuid "identifier", default: -> { "uuid_generate_v4()" }
+    t.string "icloud_id"
+    t.string "email"
+    t.uuid "auth_token", default: -> { "uuid_generate_v4()" }
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["auth_token"], name: "index_installations_on_auth_token"
+    t.index ["email"], name: "index_installations_on_email"
+    t.index ["icloud_id"], name: "index_installations_on_icloud_id"
+    t.index ["identifier"], name: "index_installations_on_identifier"
   end
 
   create_table "places", force: :cascade do |t|
