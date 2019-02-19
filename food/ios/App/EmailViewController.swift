@@ -1,10 +1,3 @@
-//
-//  EmailViewController.swift
-//  App
-//
-//  Created by Ajay Chainani on 2/19/19.
-//
-
 import UIKit
 
 class EmailViewController: UIViewController {
