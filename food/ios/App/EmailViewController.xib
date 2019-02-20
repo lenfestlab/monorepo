@@ -1,0 +1,141 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.XIB" version="3.0" toolsVersion="14460.31" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" useSafeAreas="YES" colorMatched="YES">
+    <device id="retina4_7" orientation="portrait">
+        <adaptation id="fullscreen"/>
+    </device>
+    <dependencies>
+        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="14460.20"/>
+        <capability name="Safe area layout guides" minToolsVersion="9.0"/>
+        <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
+    </dependencies>
+    <customFonts key="customFonts">
+        <array key="Lato-Italic.ttf">
+            <string>Lato-Italic</string>
+        </array>
+        <array key="WorkSans-Medium.ttf">
+            <string>WorkSans-Medium</string>
+        </array>
+        <array key="WorkSans-Regular.ttf">
+            <string>WorkSans-Regular</string>
+        </array>
+        <array key="WorkSans-SemiBold.ttf">
+            <string>WorkSans-SemiBold</string>
+        </array>
+    </customFonts>
+    <objects>
+        <placeholder placeholderIdentifier="IBFilesOwner" id="-1" userLabel="File's Owner" customClass="EmailViewController" customModule="App" customModuleProvider="target">
+            <connections>
+                <outlet property="errorLabel" destination="2pk-rw-j1T" id="DMF-Nn-A4i"/>
+                <outlet property="submitButton" destination="j2X-tp-8vc" id="tCB-Pv-9zV"/>
+                <outlet property="textField" destination="fpt-it-8bC" id="gfs-jl-bqx"/>
+                <outlet property="textView" destination="9wl-zn-HCh" id="cyp-kG-H7P"/>
+                <outlet property="view" destination="06K-u2-AZg" id="Jm7-UD-ukk"/>
+            </connections>
+        </placeholder>
+        <placeholder placeholderIdentifier="IBFirstResponder" id="-2" customClass="UIResponder"/>
+        <view clearsContextBeforeDrawing="NO" contentMode="scaleToFill" id="06K-u2-AZg">
+            <rect key="frame" x="0.0" y="0.0" width="375" height="667"/>
+            <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+            <subviews>
+                <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="Ma9-sx-4V0">
+                    <rect key="frame" x="306" y="42" width="35" height="40"/>
+                    <constraints>
+                        <constraint firstAttribute="height" constant="40" id="34N-Y7-92O"/>
+                        <constraint firstAttribute="width" constant="35" id="7TB-9l-Qrw"/>
+                    </constraints>
+                    <fontDescription key="fontDescription" name="Lato-Italic" family="Lato" pointSize="20"/>
+                    <state key="normal" title="Skip">
+                        <color key="titleColor" red="0.71372549019999998" green="0.31764705879999999" blue="0.12549019610000001" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+                    </state>
+                    <connections>
+                        <action selector="skipWithSender:" destination="-1" eventType="touchUpInside" id="7fr-in-eYk"/>
+                    </connections>
+                </button>
+                <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Provide Your Email" textAlignment="center" lineBreakMode="tailTruncation" numberOfLines="2" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="oYV-06-hPW">
+                    <rect key="frame" x="77.5" y="156" width="220.5" height="29"/>
+                    <constraints>
+                        <constraint firstAttribute="height" constant="29" id="gkc-Vb-ZV8"/>
+                    </constraints>
+                    <fontDescription key="fontDescription" name="WorkSans-SemiBold" family="Work Sans" pointSize="24"/>
+                    <nil key="highlightedColor"/>
+                </label>
+                <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Step 4 of 4:" textAlignment="center" lineBreakMode="tailTruncation" numberOfLines="2" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="tyl-ib-w1W">
+                    <rect key="frame" x="135.5" y="116" width="104" height="30"/>
+                    <constraints>
+                        <constraint firstAttribute="height" constant="30" id="XV9-lc-d9S"/>
+                    </constraints>
+                    <fontDescription key="fontDescription" name="WorkSans-Medium" family="Work Sans" pointSize="18"/>
+                    <nil key="highlightedColor"/>
+                </label>
+                <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="9wl-zn-HCh">
+                    <rect key="frame" x="48" y="205" width="279" height="60"/>
+                    <subviews>
+                        <textField opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="left" contentVerticalAlignment="center" textAlignment="center" minimumFontSize="17" translatesAutoresizingMaskIntoConstraints="NO" id="fpt-it-8bC">
+                            <rect key="frame" x="10" y="10" width="259" height="40"/>
+                            <constraints>
+                                <constraint firstAttribute="height" constant="40" id="U5G-BS-a2f"/>
+                            </constraints>
+                            <nil key="textColor"/>
+                            <fontDescription key="fontDescription" type="system" pointSize="17"/>
+                            <textInputTraits key="textInputTraits" autocorrectionType="no" spellCheckingType="no" keyboardType="emailAddress" returnKeyType="done" smartDashesType="no" smartInsertDeleteType="no" smartQuotesType="no" textContentType="email"/>
+                        </textField>
+                    </subviews>
+                    <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                    <constraints>
+                        <constraint firstAttribute="bottom" secondItem="fpt-it-8bC" secondAttribute="bottom" constant="10" id="86G-BU-7Bn"/>
+                        <constraint firstItem="fpt-it-8bC" firstAttribute="leading" secondItem="9wl-zn-HCh" secondAttribute="leading" constant="10" id="A1d-zv-KJq"/>
+                        <constraint firstItem="fpt-it-8bC" firstAttribute="top" secondItem="9wl-zn-HCh" secondAttribute="top" constant="10" id="Ezu-RU-5sE"/>
+                        <constraint firstAttribute="trailing" secondItem="fpt-it-8bC" secondAttribute="trailing" constant="10" id="upx-DX-XAQ"/>
+                    </constraints>
+                </view>
+                <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="j2X-tp-8vc">
+                    <rect key="frame" x="48" y="315" width="279" height="60"/>
+                    <constraints>
+                        <constraint firstAttribute="height" constant="60" id="7Px-cb-92R"/>
+                        <constraint firstAttribute="width" constant="279" id="vMl-vU-Hzo"/>
+                    </constraints>
+                    <fontDescription key="fontDescription" name="WorkSans-Regular" family="Work Sans" pointSize="20"/>
+                    <inset key="contentEdgeInsets" minX="0.0" minY="0.0" maxX="-9" maxY="0.0"/>
+                    <inset key="imageEdgeInsets" minX="0.0" minY="0.0" maxX="30" maxY="0.0"/>
+                    <state key="normal" title="Submit" backgroundImage="blue-button">
+                        <color key="titleColor" white="0.0" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                    </state>
+                    <state key="disabled" title="Submitting..."/>
+                    <connections>
+                        <action selector="submit:" destination="-1" eventType="touchUpInside" id="bZz-FW-6iB"/>
+                    </connections>
+                </button>
+                <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="" textAlignment="center" lineBreakMode="tailTruncation" numberOfLines="2" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="2pk-rw-j1T">
+                    <rect key="frame" x="187.5" y="280" width="0.0" height="20"/>
+                    <constraints>
+                        <constraint firstAttribute="height" constant="20" id="ZqE-cb-3Hj"/>
+                    </constraints>
+                    <fontDescription key="fontDescription" name="WorkSans-Medium" family="Work Sans" pointSize="16"/>
+                    <color key="textColor" red="0.58072251080000004" green="0.066734083" blue="0.0" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+                    <nil key="highlightedColor"/>
+                </label>
+            </subviews>
+            <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+            <constraints>
+                <constraint firstItem="9wl-zn-HCh" firstAttribute="centerX" secondItem="Nri-mV-b4V" secondAttribute="centerX" id="8cg-Iq-dth"/>
+                <constraint firstItem="tyl-ib-w1W" firstAttribute="centerX" secondItem="Nri-mV-b4V" secondAttribute="centerX" id="AaB-FD-IZH"/>
+                <constraint firstItem="j2X-tp-8vc" firstAttribute="centerX" secondItem="Nri-mV-b4V" secondAttribute="centerX" id="CkD-Kj-sMR"/>
+                <constraint firstItem="2pk-rw-j1T" firstAttribute="top" secondItem="9wl-zn-HCh" secondAttribute="bottom" constant="15" id="OYe-Bg-pHH"/>
+                <constraint firstItem="9wl-zn-HCh" firstAttribute="top" secondItem="oYV-06-hPW" secondAttribute="bottom" constant="20" id="OgS-mh-kTJ"/>
+                <constraint firstItem="9wl-zn-HCh" firstAttribute="width" secondItem="j2X-tp-8vc" secondAttribute="width" id="QgB-Mh-sUn"/>
+                <constraint firstItem="tyl-ib-w1W" firstAttribute="top" secondItem="Nri-mV-b4V" secondAttribute="top" constant="96" id="Rib-Mt-Vqr"/>
+                <constraint firstItem="oYV-06-hPW" firstAttribute="centerX" secondItem="Nri-mV-b4V" secondAttribute="centerX" id="fdM-zM-MI6"/>
+                <constraint firstItem="Nri-mV-b4V" firstAttribute="trailing" secondItem="Ma9-sx-4V0" secondAttribute="trailing" constant="34" id="gjs-4m-Rmq"/>
+                <constraint firstItem="oYV-06-hPW" firstAttribute="top" secondItem="tyl-ib-w1W" secondAttribute="bottom" constant="10" id="kCy-ZD-KkM"/>
+                <constraint firstItem="2pk-rw-j1T" firstAttribute="centerX" secondItem="Nri-mV-b4V" secondAttribute="centerX" id="mxd-VF-8oB"/>
+                <constraint firstItem="Ma9-sx-4V0" firstAttribute="top" secondItem="Nri-mV-b4V" secondAttribute="top" constant="22" id="pUZ-d7-3Lc"/>
+                <constraint firstItem="j2X-tp-8vc" firstAttribute="top" secondItem="2pk-rw-j1T" secondAttribute="bottom" constant="15" id="uyx-lO-gbk"/>
+            </constraints>
+            <viewLayoutGuide key="safeArea" id="Nri-mV-b4V"/>
+            <point key="canvasLocation" x="37.600000000000001" y="-78.710644677661179"/>
+        </view>
+    </objects>
+    <resources>
+        <image name="blue-button" width="17" height="60"/>
+    </resources>
+</document>

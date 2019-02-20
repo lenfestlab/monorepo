@@ -41,7 +41,7 @@ class MotionViewController: UIViewController, MotionManagerAuthorizationDelegate
     let env = Env()
     self.title = env.appName
     if let fontStyle = UIFont(name: "WorkSans-Medium", size: 18) {
-      navigationController?.navigationBar.titleTextAttributes = [NSAttributedStringKey.font: fontStyle]
+      navigationController?.navigationBar.titleTextAttributes = [NSAttributedString.Key.font: fontStyle]
     }
     navigationController?.navigationBar.barTintColor =  UIColor.beige()
     navigationController?.navigationBar.isTranslucent =  false
@@ -52,10 +52,22 @@ class MotionViewController: UIViewController, MotionManagerAuthorizationDelegate
   }
 
   func next() {
-    UserDefaults.standard.set(true, forKey: "onboarding-completed")
     let application = UIApplication.shared
     let appDelegate = application.delegate as? AppDelegate
-    appDelegate?.showHomeScreen()
+
+    iCloudUserIDAsync() { cloudId, error in
+      DispatchQueue.main.async {
+        if let cloudId = cloudId {
+          print("received iCloudID \(cloudId)")
+          appDelegate?.showEmailRegistration(cloudId: cloudId)
+        } else {
+          print("Fetched iCloudID was nil")
+          UserDefaults.standard.set(true, forKey: "onboarding-completed")
+          let appDelegate = application.delegate as? AppDelegate
+          appDelegate?.showHomeScreen()
+        }
+      }
+    }
   }
 
   @IBAction func skip(sender: UIButton) {

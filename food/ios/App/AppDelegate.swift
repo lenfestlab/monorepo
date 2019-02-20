@@ -4,7 +4,7 @@ import AlamofireNetworkActivityLogger
 import FirebaseMessaging
 import Schedule
 
-typealias LaunchOptions = [UIApplicationLaunchOptionsKey: Any]?
+typealias LaunchOptions = [UIApplication.LaunchOptionsKey: Any]?
 let gcmMessageIDKey = "gcm.message_id"
 
 @UIApplicationMain
@@ -44,11 +44,35 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
     self.mainController = MainController(rootViewController: introController)
     self.notificationManager.delegate = self.mainController
 
-    if onboardingCompleted {
-      showHomeScreen()
+    if !onboardingCompleted {
+      window!.rootViewController = self.mainController
+      window!.makeKeyAndVisible()
+      return true
     }
-    window!.rootViewController = self.mainController
+
+    showHomeScreen()
+
+    let cloudViewController = CloudViewController()
+    window!.rootViewController = cloudViewController
     window!.makeKeyAndVisible()
+
+    iCloudUserIDAsync() { cloudId, error in
+      if let cloudId = cloudId {
+        print("received iCloudID \(cloudId)")
+
+        Installation.register(cloudId: cloudId, completion: { (success, result) in
+          DispatchQueue.main.async { [unowned self] in
+            self.window!.rootViewController = self.mainController
+          }
+        })
+
+      } else {
+        print("Fetched iCloudID was nil")
+        DispatchQueue.main.async { [unowned self] in
+          self.window!.rootViewController = self.mainController
+        }
+      }
+    }
 
     return true
   }
@@ -74,6 +98,12 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
   func showHomeScreen() {
     mainController.pushViewController(
       MapViewController(analytics: self.analytics),
+      animated: false)
+  }
+
+  func showEmailRegistration(cloudId: String) {
+    mainController.pushViewController(
+      EmailViewController(analytics: self.analytics, cloudId: cloudId),
       animated: false)
   }
 

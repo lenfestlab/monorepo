@@ -1,6 +1,7 @@
 targets:
   App:
     dependencies:
+      - sdk: CloudKit.framework
       - carthage: Gloss
       - carthage: UserDefaultsStore
       - carthage: GoogleReporter

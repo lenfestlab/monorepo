@@ -70,6 +70,18 @@ protocol MotionManagerAuthorizationDelegate: class {
 class MotionManager: NSObject {
   static let shared = MotionManager()
 
+  var authorizationStatus : CMAuthorizationStatus = .notDetermined {
+    didSet {
+      if authorizationStatus != oldValue {
+        if authorizationStatus == .authorized {
+          authorizationDelegate?.authorized(self, status: authorizationStatus)
+        } else {
+          authorizationDelegate?.notAuthorized(self, status: authorizationStatus)
+        }
+      }
+    }
+  }
+
   weak var authorizationDelegate: MotionManagerAuthorizationDelegate?
   let manager = CMMotionActivityManager()
   var currentActivity:CMMotionActivity?
@@ -112,16 +124,12 @@ class MotionManager: NSObject {
 
     self.startActivityUpdates { [unowned self] activity in
       self.manager.stopActivityUpdates()
-      guard let authorizationDelegate = self.authorizationDelegate else {
+      guard let _ = self.authorizationDelegate else {
         print("ERROR: MIA: authorizationDelegate")
         return
       }
       let status = CMMotionActivityManager.authorizationStatus()
-      if status == .authorized {
-        authorizationDelegate.authorized(self, status: status)
-      } else {
-        authorizationDelegate.notAuthorized(self, status: status)
-      }
+      self.authorizationStatus = status
     }
   }
 

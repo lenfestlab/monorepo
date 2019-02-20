@@ -24,13 +24,13 @@ class PermissionsViewController: UIViewController, LocationManagerAuthorizationD
   override func viewDidLoad() {
     super.viewDidLoad()
 
-    let steps = MotionManager.isActivityAvailable() ? 3 : 2
+    let steps = MotionManager.isActivityAvailable() ? 4 : 3
     stepLabel.text = "Step 2 of \(steps):"
 
     let env = Env()
     self.title = env.appName
     if let fontStyle = UIFont(name: "WorkSans-Medium", size: 18) {
-      navigationController?.navigationBar.titleTextAttributes = [NSAttributedStringKey.font: fontStyle]
+      navigationController?.navigationBar.titleTextAttributes = [NSAttributedString.Key.font: fontStyle]
     }
     navigationController?.navigationBar.barTintColor =  UIColor.beige()
     navigationController?.navigationBar.isTranslucent =  false
@@ -122,7 +122,7 @@ class PermissionsViewController: UIViewController, LocationManagerAuthorizationD
 
     maskLayer.path = path
     if (invert) {
-      maskLayer.fillRule = kCAFillRuleEvenOdd
+      maskLayer.fillRule = CAShapeLayerFillRule.evenOdd
     }
 
     // Set the mask of the view.

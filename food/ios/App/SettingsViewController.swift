@@ -57,7 +57,7 @@ class SettingsViewController: UITableViewController, SettingsToggleCellDelegate,
             self.tableView.reloadData()
           }
         }
-      } else if let url = URL(string: UIApplicationOpenSettingsURLString) {
+      } else if let url = URL(string: UIApplication.openSettingsURLString) {
         // If general location settings are enabled then open location settings for the app
         UIApplication.shared.open(url, options: [:], completionHandler: nil)
       }
@@ -67,7 +67,7 @@ class SettingsViewController: UITableViewController, SettingsToggleCellDelegate,
       analytics.log(.changeLocationSettings(enabled: sender.isOn))
       if CLLocationManager.authorizationStatus() == .notDetermined {
         locationManager.enableBasicLocationServices()
-      } else if let url = URL(string: UIApplicationOpenSettingsURLString) {
+      } else if let url = URL(string: UIApplication.openSettingsURLString) {
         // If general location settings are enabled then open location settings for the app
         UIApplication.shared.open(url, options: [:], completionHandler: nil)
       }
@@ -77,7 +77,7 @@ class SettingsViewController: UITableViewController, SettingsToggleCellDelegate,
       analytics.log(.changeMotionSettings(enabled: sender.isOn))
       if motionManager.hasStatus(.notDetermined) {
         motionManager.enableMotionDetection(analytics)
-      } else if let url = URL(string: UIApplicationOpenSettingsURLString) {
+      } else if let url = URL(string: UIApplication.openSettingsURLString) {
         UIApplication.shared.open(url, options: [:], completionHandler: nil)
       }
 
@@ -171,7 +171,11 @@ class SettingsViewController: UITableViewController, SettingsToggleCellDelegate,
     self.tableView.separatorColor = UIColor.init(red: 241/255, green: 221/255, blue: 187/255, alpha: 1)
 
     loadSettings()
-    notification = NotificationCenter.default.addObserver(forName: .UIApplicationWillEnterForeground, object: nil, queue: .main) {
+    notification =
+      NotificationCenter.default.addObserver(
+        forName: UIApplication.willEnterForegroundNotification,
+        object: nil,
+        queue: .main) {
       [unowned self] notification in
       self.notificationManager.refreshAuthorizationStatus(completionHandler: { (status) in
         self.loadSettings()
@@ -185,7 +189,7 @@ class SettingsViewController: UITableViewController, SettingsToggleCellDelegate,
 
     self.tableView.backgroundColor = UIColor.white
 
-    tableView.rowHeight = UITableViewAutomaticDimension
+    tableView.rowHeight = UITableView.automaticDimension
     tableView.estimatedRowHeight = 125
 
     let nib = UINib.init(nibName: "SettingsToggleCell", bundle: nil)

@@ -30,8 +30,8 @@ class PlaceCell: UICollectionViewCell {
     paragraphStyle.lineSpacing = 5 // Whatever line spacing you want in points
     
     // *** Apply attribute to string ***
-    attributedString.addAttribute(NSAttributedStringKey.paragraphStyle, value:paragraphStyle, range:NSMakeRange(0, attributedString.length))
-    attributedString.addAttribute(NSAttributedStringKey.font, value:font, range:NSMakeRange(0, attributedString.length))
+    attributedString.addAttribute(NSAttributedString.Key.paragraphStyle, value:paragraphStyle, range:NSMakeRange(0, attributedString.length))
+    attributedString.addAttribute(NSAttributedString.Key.font, value:font, range:NSMakeRange(0, attributedString.length))
     
     return attributedString
   }
@@ -76,7 +76,7 @@ class PlaceCell: UICollectionViewCell {
 
     let blurb = try! NSMutableAttributedString(data: (html.data(using: String.Encoding.utf8))!, options: [NSAttributedString.DocumentReadingOptionKey.documentType : NSAttributedString.DocumentType.html], documentAttributes: nil)
 
-    blurb.setAttributes([NSAttributedStringKey.font : regularFont!], range: NSMakeRange(0, blurb.length))
+    blurb.setAttributes([NSAttributedString.Key.font : regularFont!], range: NSMakeRange(0, blurb.length))
     text.append(blurb)
 
     self.textLabel.attributedText = text

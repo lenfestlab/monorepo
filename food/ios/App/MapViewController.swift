@@ -64,7 +64,9 @@ extension MapViewController: UICollectionViewDelegate {
 extension MapViewController: LocationManagerAuthorizationDelegate {
 
   func locationUpdated(_ locationManager: LocationManager, location: CLLocation) {
-    initialMapDataFetch(coordinate: location.coordinate)
+    DispatchQueue.main.async {
+      self.initialMapDataFetch(coordinate: location.coordinate)
+    }
   }
 
   func authorized(_ locationManager: LocationManager, status: CLAuthorizationStatus) {
@@ -360,10 +362,6 @@ class MapViewController: UIViewController, FilterViewControllerDelegate, Categor
     self.filter = FilterViewController()
     self.filter?.filterDelegate = self
 
-    let panRec = UIPanGestureRecognizer(target: self, action: #selector(didDragMap(gestureRecognizer:)))
-    panRec.delegate = self
-    self.mapView.addGestureRecognizer(panRec)
-
     if MotionManager.isActivityAvailable() {
       let mm = motionManager
       mm.startActivityUpdates { [unowned self] activity in
@@ -399,7 +397,7 @@ class MapViewController: UIViewController, FilterViewControllerDelegate, Categor
 
     self.title = env.appName
     if let fontStyle = UIFont(name: "WorkSans-Medium", size: 18) {
-      navigationController?.navigationBar.titleTextAttributes = [NSAttributedStringKey.font: fontStyle]
+      navigationController?.navigationBar.titleTextAttributes = [NSAttributedString.Key.font: fontStyle]
     }
     self.style()
     let coordinate = CLLocationCoordinate2D(latitude: 39.9526, longitude: -75.1652)
@@ -525,12 +523,14 @@ class MapViewController: UIViewController, FilterViewControllerDelegate, Categor
   }
 
   @objc func centerToCurrentPlace() {
-    if let coordinate = currentPlace?.place.coordinate() {
-      self.centerMap(coordinate)
+    DispatchQueue.main.async {
+      if let coordinate = self.currentPlace?.place.coordinate() {
+        self.centerMap(coordinate)
+      }
     }
   }
 
-  func centerMap(_ center: CLLocationCoordinate2D, span: MKCoordinateSpan? = MKCoordinateSpanMake(0.04, 0.04)) {
+  func centerMap(_ center: CLLocationCoordinate2D, span: MKCoordinateSpan? = MKCoordinateSpan(latitudeDelta: 0.04, longitudeDelta: 0.04)) {
     let region:MKCoordinateRegion
     if let span = span {
       region = MKCoordinateRegion(center: center, span: span)
@@ -540,24 +540,22 @@ class MapViewController: UIViewController, FilterViewControllerDelegate, Categor
     self.mapView.setRegion(region, animated: true)
   }
 
-  @objc func didDragMap(gestureRecognizer: UIGestureRecognizer) {
-    guard !mapView.isUserLocationVisible else { return }
-    if (gestureRecognizer.state == .ended){
-      let center = mapView.region.center
-      fetchMapData(coordinate: center)
-    }
-  }
-
   override func viewWillAppear(_ animated: Bool) {
     super.viewWillAppear(animated)
-    NotificationCenter.default.addObserver(self, selector: #selector(self.keyboardWillShowNotification(notification:)), name: NSNotification.Name.UIKeyboardWillShow, object: nil)
-    NotificationCenter.default.addObserver(self, selector: #selector(self.keyboardWillHideNotification(notification:)), name: NSNotification.Name.UIKeyboardWillHide, object: nil)
+    NotificationCenter.default.addObserver(
+      self,
+      selector: #selector(keyboardWillShowNotification(notification:)),
+      name: UIResponder.keyboardWillShowNotification, object: nil)
+    NotificationCenter.default.addObserver(
+      self,
+      selector: #selector(self.keyboardWillHideNotification(notification:)),
+      name: UIResponder.keyboardWillHideNotification, object: nil)
   }
 
   override func viewWillDisappear(_ animated: Bool) {
     super.viewWillDisappear(animated)
-    NotificationCenter.default.removeObserver(self, name: NSNotification.Name.UIKeyboardWillShow, object: nil)
-    NotificationCenter.default.removeObserver(self, name: NSNotification.Name.UIKeyboardWillHide, object: nil)
+    NotificationCenter.default.removeObserver(self, name: UIResponder.keyboardWillShowNotification, object: nil)
+    NotificationCenter.default.removeObserver(self, name: UIResponder.keyboardWillHideNotification, object: nil)
   }
 
   // MARK: - Notifications
@@ -577,7 +575,7 @@ class MapViewController: UIViewController, FilterViewControllerDelegate, Categor
   func updateBottomLayoutConstraintWithNotification(notification: NSNotification) {
     let userInfo = notification.userInfo!
 
-    let keyboardEndFrame = (userInfo[UIKeyboardFrameEndUserInfoKey] as! NSValue).cgRectValue
+    let keyboardEndFrame = (userInfo[UIResponder.keyboardFrameEndUserInfoKey] as! NSValue).cgRectValue
     let convertedKeyboardEndFrame = view.convert(keyboardEndFrame, from: self.view.window)
     bottomLayoutConstraint.constant = view.bounds.maxY - convertedKeyboardEndFrame.minY
     self.view.layoutIfNeeded()

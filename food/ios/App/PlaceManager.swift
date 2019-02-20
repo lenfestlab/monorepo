@@ -68,7 +68,7 @@ class PlaceManager: NSObject {
     content.title = title
     content.body = place.blurb!
     content.categoryIdentifier = "POST_ENTERED"
-    content.sound = UNNotificationSound.default()
+    content.sound = UNNotificationSound.default
 
     guard let post = place.post else {
       completionHandler(nil)
@@ -80,13 +80,13 @@ class PlaceManager: NSObject {
     var userInfo = [
       "SHARE_DATA": [
         "string":[
-          UIActivityType.message: ShareManager.messageCopyForPlace(place),
-          UIActivityType.mail: ShareManager.mailCopyForPlace(place),
-          UIActivityType.postToTwitter: ShareManager.twitterCopyForPlace(place),
-          UIActivityType.postToFacebook: ShareManager.facebookCopyForPlace(place)
+          UIActivity.ActivityType.message: ShareManager.messageCopyForPlace(place),
+          UIActivity.ActivityType.mail: ShareManager.mailCopyForPlace(place),
+          UIActivity.ActivityType.postToTwitter: ShareManager.twitterCopyForPlace(place),
+          UIActivity.ActivityType.postToFacebook: ShareManager.facebookCopyForPlace(place)
         ],
         "subject":[
-          UIActivityType.mail: ShareManager.mailSubjectForPlace(place),
+          UIActivity.ActivityType.mail: ShareManager.mailSubjectForPlace(place),
         ]
       ],
       "identifier": place.identifier

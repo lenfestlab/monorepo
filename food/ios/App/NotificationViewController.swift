@@ -22,13 +22,13 @@ class NotificationViewController: UIViewController, UNUserNotificationCenterDele
   override func viewDidLoad() {
     super.viewDidLoad()
 
-    let steps = MotionManager.isActivityAvailable() ? 3 : 2
+    let steps = MotionManager.isActivityAvailable() ? 4 : 3
     stepLabel.text = "Step 1 of \(steps):"
 
     let env = Env()
     self.title = env.appName
     if let fontStyle = UIFont(name: "WorkSans-Medium", size: 18) {
-      navigationController?.navigationBar.titleTextAttributes = [NSAttributedStringKey.font: fontStyle]
+      navigationController?.navigationBar.titleTextAttributes = [NSAttributedString.Key.font: fontStyle]
     }
     navigationController?.navigationBar.barTintColor =  UIColor.beige()
     navigationController?.navigationBar.isTranslucent =  false
