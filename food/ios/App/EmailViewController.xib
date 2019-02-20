@@ -25,6 +25,8 @@
     <objects>
         <placeholder placeholderIdentifier="IBFilesOwner" id="-1" userLabel="File's Owner" customClass="EmailViewController" customModule="App" customModuleProvider="target">
             <connections>
+                <outlet property="errorLabel" destination="2pk-rw-j1T" id="DMF-Nn-A4i"/>
+                <outlet property="submitButton" destination="j2X-tp-8vc" id="tCB-Pv-9zV"/>
                 <outlet property="textField" destination="fpt-it-8bC" id="gfs-jl-bqx"/>
                 <outlet property="textView" destination="9wl-zn-HCh" id="cyp-kG-H7P"/>
                 <outlet property="view" destination="06K-u2-AZg" id="Jm7-UD-ukk"/>
@@ -66,7 +68,7 @@
                     <nil key="highlightedColor"/>
                 </label>
                 <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="9wl-zn-HCh">
-                    <rect key="frame" x="48" y="215" width="279" height="60"/>
+                    <rect key="frame" x="48" y="205" width="279" height="60"/>
                     <subviews>
                         <textField opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="left" contentVerticalAlignment="center" textAlignment="center" minimumFontSize="17" translatesAutoresizingMaskIntoConstraints="NO" id="fpt-it-8bC">
                             <rect key="frame" x="10" y="10" width="259" height="40"/>
@@ -75,7 +77,7 @@
                             </constraints>
                             <nil key="textColor"/>
                             <fontDescription key="fontDescription" type="system" pointSize="17"/>
-                            <textInputTraits key="textInputTraits" autocorrectionType="no" spellCheckingType="no" keyboardType="emailAddress" smartDashesType="no" smartInsertDeleteType="no" smartQuotesType="no"/>
+                            <textInputTraits key="textInputTraits" autocorrectionType="no" spellCheckingType="no" keyboardType="emailAddress" returnKeyType="done" smartDashesType="no" smartInsertDeleteType="no" smartQuotesType="no" textContentType="email"/>
                         </textField>
                     </subviews>
                     <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
@@ -87,7 +89,7 @@
                     </constraints>
                 </view>
                 <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="j2X-tp-8vc">
-                    <rect key="frame" x="48" y="310" width="279" height="60"/>
+                    <rect key="frame" x="48" y="315" width="279" height="60"/>
                     <constraints>
                         <constraint firstAttribute="height" constant="60" id="7Px-cb-92R"/>
                         <constraint firstAttribute="width" constant="279" id="vMl-vU-Hzo"/>
@@ -98,24 +100,36 @@
                     <state key="normal" title="Submit" backgroundImage="blue-button">
                         <color key="titleColor" white="0.0" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                     </state>
+                    <state key="disabled" title="Submitting..."/>
                     <connections>
                         <action selector="submit:" destination="-1" eventType="touchUpInside" id="bZz-FW-6iB"/>
                     </connections>
                 </button>
+                <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="" textAlignment="center" lineBreakMode="tailTruncation" numberOfLines="2" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="2pk-rw-j1T">
+                    <rect key="frame" x="187.5" y="280" width="0.0" height="20"/>
+                    <constraints>
+                        <constraint firstAttribute="height" constant="20" id="ZqE-cb-3Hj"/>
+                    </constraints>
+                    <fontDescription key="fontDescription" name="WorkSans-Medium" family="Work Sans" pointSize="16"/>
+                    <color key="textColor" red="0.58072251080000004" green="0.066734083" blue="0.0" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+                    <nil key="highlightedColor"/>
+                </label>
             </subviews>
             <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
             <constraints>
                 <constraint firstItem="9wl-zn-HCh" firstAttribute="centerX" secondItem="Nri-mV-b4V" secondAttribute="centerX" id="8cg-Iq-dth"/>
                 <constraint firstItem="tyl-ib-w1W" firstAttribute="centerX" secondItem="Nri-mV-b4V" secondAttribute="centerX" id="AaB-FD-IZH"/>
                 <constraint firstItem="j2X-tp-8vc" firstAttribute="centerX" secondItem="Nri-mV-b4V" secondAttribute="centerX" id="CkD-Kj-sMR"/>
-                <constraint firstItem="j2X-tp-8vc" firstAttribute="top" secondItem="9wl-zn-HCh" secondAttribute="bottom" constant="35" id="DSB-yF-VBZ"/>
-                <constraint firstItem="9wl-zn-HCh" firstAttribute="top" secondItem="oYV-06-hPW" secondAttribute="bottom" constant="30" id="OgS-mh-kTJ"/>
+                <constraint firstItem="2pk-rw-j1T" firstAttribute="top" secondItem="9wl-zn-HCh" secondAttribute="bottom" constant="15" id="OYe-Bg-pHH"/>
+                <constraint firstItem="9wl-zn-HCh" firstAttribute="top" secondItem="oYV-06-hPW" secondAttribute="bottom" constant="20" id="OgS-mh-kTJ"/>
                 <constraint firstItem="9wl-zn-HCh" firstAttribute="width" secondItem="j2X-tp-8vc" secondAttribute="width" id="QgB-Mh-sUn"/>
                 <constraint firstItem="tyl-ib-w1W" firstAttribute="top" secondItem="Nri-mV-b4V" secondAttribute="top" constant="96" id="Rib-Mt-Vqr"/>
                 <constraint firstItem="oYV-06-hPW" firstAttribute="centerX" secondItem="Nri-mV-b4V" secondAttribute="centerX" id="fdM-zM-MI6"/>
                 <constraint firstItem="Nri-mV-b4V" firstAttribute="trailing" secondItem="Ma9-sx-4V0" secondAttribute="trailing" constant="34" id="gjs-4m-Rmq"/>
                 <constraint firstItem="oYV-06-hPW" firstAttribute="top" secondItem="tyl-ib-w1W" secondAttribute="bottom" constant="10" id="kCy-ZD-KkM"/>
+                <constraint firstItem="2pk-rw-j1T" firstAttribute="centerX" secondItem="Nri-mV-b4V" secondAttribute="centerX" id="mxd-VF-8oB"/>
                 <constraint firstItem="Ma9-sx-4V0" firstAttribute="top" secondItem="Nri-mV-b4V" secondAttribute="top" constant="22" id="pUZ-d7-3Lc"/>
+                <constraint firstItem="j2X-tp-8vc" firstAttribute="top" secondItem="2pk-rw-j1T" secondAttribute="bottom" constant="15" id="uyx-lO-gbk"/>
             </constraints>
             <viewLayoutGuide key="safeArea" id="Nri-mV-b4V"/>
             <point key="canvasLocation" x="37.600000000000001" y="-78.710644677661179"/>

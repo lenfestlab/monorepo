@@ -362,10 +362,6 @@ class MapViewController: UIViewController, FilterViewControllerDelegate, Categor
     self.filter = FilterViewController()
     self.filter?.filterDelegate = self
 
-    let panRec = UIPanGestureRecognizer(target: self, action: #selector(didDragMap(gestureRecognizer:)))
-    panRec.delegate = self
-    self.mapView.addGestureRecognizer(panRec)
-
     if MotionManager.isActivityAvailable() {
       let mm = motionManager
       mm.startActivityUpdates { [unowned self] activity in
@@ -542,14 +538,6 @@ class MapViewController: UIViewController, FilterViewControllerDelegate, Categor
       region = MKCoordinateRegion(center: center, span: self.mapView.region.span)
     }
     self.mapView.setRegion(region, animated: true)
-  }
-
-  @objc func didDragMap(gestureRecognizer: UIGestureRecognizer) {
-    guard !mapView.isUserLocationVisible else { return }
-    if (gestureRecognizer.state == .ended){
-      let center = mapView.region.center
-      fetchMapData(coordinate: center)
-    }
   }
 
   override func viewWillAppear(_ animated: Bool) {

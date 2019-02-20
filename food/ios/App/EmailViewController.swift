@@ -7,12 +7,20 @@
 
 import UIKit
 
-class EmailViewController: UIViewController {
+class EmailViewController: UIViewController, UITextFieldDelegate {
+
+  func textFieldShouldReturn(_ textField: UITextField) -> Bool {
+    textField.resignFirstResponder()
+    submit(nil)
+    return true
+  }
 
   private let analytics: AnalyticsManager
 
+  @IBOutlet weak var submitButton : UIButton!
   @IBOutlet weak var textField : UITextField!
   @IBOutlet weak var textView : UIView!
+  @IBOutlet weak var errorLabel : UILabel!
   var cloudId : String
 
   init(analytics: AnalyticsManager, cloudId: String) {
@@ -28,6 +36,8 @@ class EmailViewController: UIViewController {
 
   override func viewDidLoad() {
     super.viewDidLoad()
+
+    self.textField.delegate = self
 
     self.styleViewController()
 
@@ -48,14 +58,35 @@ class EmailViewController: UIViewController {
     appDelegate?.showHomeScreen()
   }
 
+  func isValidEmail(string: String) -> Bool {
+    let emailRegEx = "[A-Z0-9a-z._%+-]+@[A-Za-z0-9.-]+\\.[A-Za-z]{2,64}"
+
+    let emailTest = NSPredicate(format:"SELF MATCHES %@", emailRegEx)
+    return emailTest.evaluate(with: string)
+  }
+
+
   @IBAction func submit(_ sender: Any?) {
-    guard let button = sender as? UIButton else {
+    guard let button = self.submitButton else {
       return
     }
 
     guard let emailAddress = self.textField.text else {
+      errorLabel.text = "Missing email address"
       return
     }
+
+    if emailAddress.count == 0 {
+      errorLabel.text = "Missing email address"
+      return
+    }
+
+    if !isValidEmail(string: emailAddress) {
+      errorLabel.text = "Invalid email address"
+      return
+    }
+
+    errorLabel.text = ""
 
     button.isEnabled = false
 
