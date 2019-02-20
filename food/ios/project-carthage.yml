@@ -1,6 +1,7 @@
 targets:
   App:
     dependencies:
+      - sdk: CloudKit.framework
       - carthage: Gloss
       - carthage: UserDefaultsStore
       - carthage: GoogleReporter
@@ -11,7 +12,6 @@ targets:
       - carthage: NSObject_Rx
       - carthage: SnapKit
       - carthage: Schedule
-      - sdk: CloudKit.framework
 
       # Alamofire
       - carthage: Alamofire
