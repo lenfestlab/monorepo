@@ -61,10 +61,6 @@
                         <action selector="centerCurrentLocation" destination="-1" eventType="touchUpInside" id="K2c-SL-8CK"/>
                     </connections>
                 </button>
-                <view hidden="YES" contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="7i9-py-jn9">
-                    <rect key="frame" x="0.0" y="0.0" width="375" height="10"/>
-                    <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
-                </view>
                 <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="" lineBreakMode="wordWrap" numberOfLines="0" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="su0-RL-PEx">
                     <rect key="frame" x="0.0" y="0.0" width="375" height="50"/>
                     <color key="backgroundColor" red="1" green="1" blue="1" alpha="0.53654751712328763" colorSpace="custom" customColorSpace="displayP3"/>
@@ -91,30 +87,25 @@
             <constraints>
                 <constraint firstItem="Dzc-xs-8qs" firstAttribute="top" secondItem="i5M-Pr-FkT" secondAttribute="top" constant="-250" id="1bc-Pc-XrY"/>
                 <constraint firstItem="Dzc-xs-8qs" firstAttribute="leading" secondItem="i5M-Pr-FkT" secondAttribute="leading" id="4wz-hH-HSb"/>
-                <constraint firstItem="7i9-py-jn9" firstAttribute="top" secondItem="fq1-Xw-T1U" secondAttribute="top" id="6JJ-ZN-3On"/>
                 <constraint firstItem="su0-RL-PEx" firstAttribute="leading" secondItem="fq1-Xw-T1U" secondAttribute="leading" id="EGZ-TI-VSO"/>
                 <constraint firstItem="4ME-9d-bvc" firstAttribute="trailing" secondItem="fq1-Xw-T1U" secondAttribute="trailing" id="HU7-Oc-PZM"/>
                 <constraint firstItem="xfc-ON-2uS" firstAttribute="trailing" secondItem="i5M-Pr-FkT" secondAttribute="trailing" id="PaD-KR-psm"/>
                 <constraint firstItem="fq1-Xw-T1U" firstAttribute="bottom" secondItem="xfc-ON-2uS" secondAttribute="bottom" id="ToX-J0-ser"/>
-                <constraint firstAttribute="trailing" secondItem="7i9-py-jn9" secondAttribute="trailing" id="Udq-5w-cMf"/>
                 <constraint firstItem="fq1-Xw-T1U" firstAttribute="trailing" secondItem="N35-07-4di" secondAttribute="trailing" constant="15" id="WnZ-g7-HkX"/>
                 <constraint firstItem="4ME-9d-bvc" firstAttribute="leading" secondItem="fq1-Xw-T1U" secondAttribute="leading" id="YxJ-9I-JZt"/>
                 <constraint firstItem="xfc-ON-2uS" firstAttribute="top" secondItem="N35-07-4di" secondAttribute="bottom" constant="10" id="YzJ-91-ZMD"/>
-                <constraint firstAttribute="bottom" secondItem="7i9-py-jn9" secondAttribute="bottom" constant="714" id="ZWv-hW-iVX"/>
                 <constraint firstAttribute="bottom" secondItem="Dzc-xs-8qs" secondAttribute="bottom" id="aCd-38-guG"/>
                 <constraint firstItem="fq1-Xw-T1U" firstAttribute="trailing" secondItem="su0-RL-PEx" secondAttribute="trailing" id="aYS-T1-7nD"/>
                 <constraint firstAttribute="trailing" secondItem="Dzc-xs-8qs" secondAttribute="trailing" id="as8-4p-fve"/>
-                <constraint firstItem="7i9-py-jn9" firstAttribute="leading" secondItem="i5M-Pr-FkT" secondAttribute="leading" id="kjc-1R-T7G"/>
                 <constraint firstItem="xfc-ON-2uS" firstAttribute="leading" secondItem="i5M-Pr-FkT" secondAttribute="leading" id="nk2-DI-C0L"/>
                 <constraint firstItem="su0-RL-PEx" firstAttribute="top" secondItem="fq1-Xw-T1U" secondAttribute="top" id="u4C-4Z-Q6i"/>
                 <constraint firstItem="4ME-9d-bvc" firstAttribute="top" secondItem="fq1-Xw-T1U" secondAttribute="top" id="vYO-BB-zAE"/>
                 <constraint firstItem="Dzc-xs-8qs" firstAttribute="leading" secondItem="i5M-Pr-FkT" secondAttribute="leading" id="x0o-WW-VSY"/>
                 <constraint firstItem="Dzc-xs-8qs" firstAttribute="trailing" secondItem="i5M-Pr-FkT" secondAttribute="trailing" id="xGi-Mq-2q8"/>
-                <constraint firstItem="7i9-py-jn9" firstAttribute="top" secondItem="fq1-Xw-T1U" secondAttribute="top" id="yqD-RG-BLL"/>
             </constraints>
             <simulatedNavigationBarMetrics key="simulatedTopBarMetrics" translucent="NO" prompted="NO"/>
             <viewLayoutGuide key="safeArea" id="fq1-Xw-T1U"/>
-            <point key="canvasLocation" x="34.399999999999999" y="52.463054187192121"/>
+            <point key="canvasLocation" x="-401" y="165"/>
         </view>
     </objects>
     <resources>
