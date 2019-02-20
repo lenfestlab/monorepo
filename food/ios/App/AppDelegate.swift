@@ -4,7 +4,7 @@ import AlamofireNetworkActivityLogger
 import FirebaseMessaging
 import Schedule
 
-typealias LaunchOptions = [UIApplicationLaunchOptionsKey: Any]?
+typealias LaunchOptions = [UIApplication.LaunchOptionsKey: Any]?
 let gcmMessageIDKey = "gcm.message_id"
 
 @UIApplicationMain

@@ -124,7 +124,7 @@ class MotionManager: NSObject {
 
     self.startActivityUpdates { [unowned self] activity in
       self.manager.stopActivityUpdates()
-      guard let authorizationDelegate = self.authorizationDelegate else {
+      guard let _ = self.authorizationDelegate else {
         print("ERROR: MIA: authorizationDelegate")
         return
       }

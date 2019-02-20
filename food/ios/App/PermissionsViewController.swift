@@ -30,7 +30,7 @@ class PermissionsViewController: UIViewController, LocationManagerAuthorizationD
     let env = Env()
     self.title = env.appName
     if let fontStyle = UIFont(name: "WorkSans-Medium", size: 18) {
-      navigationController?.navigationBar.titleTextAttributes = [NSAttributedStringKey.font: fontStyle]
+      navigationController?.navigationBar.titleTextAttributes = [NSAttributedString.Key.font: fontStyle]
     }
     navigationController?.navigationBar.barTintColor =  UIColor.beige()
     navigationController?.navigationBar.isTranslucent =  false
@@ -122,7 +122,7 @@ class PermissionsViewController: UIViewController, LocationManagerAuthorizationD
 
     maskLayer.path = path
     if (invert) {
-      maskLayer.fillRule = kCAFillRuleEvenOdd
+      maskLayer.fillRule = CAShapeLayerFillRule.evenOdd
     }
 
     // Set the mask of the view.

@@ -239,14 +239,14 @@ class AnalyticsManager {
         // > The handler is called synchronously on the main thread, blocking
         // > the app’s suspension momentarily while the app is notified.
         // - https://goo.gl/yRgxEG
-        var backgroundTaskID: UIBackgroundTaskIdentifier = 0
+        var backgroundTaskID: UIBackgroundTaskIdentifier = UIBackgroundTaskIdentifier(rawValue: 0)
         backgroundTaskID = UIApplication.shared.beginBackgroundTask(withName: "GA") {
           UIApplication.shared.endBackgroundTask(backgroundTaskID)
-          backgroundTaskID = UIBackgroundTaskInvalid
+          backgroundTaskID = UIBackgroundTaskIdentifier.invalid
         }
         GoogleReporter.shared.event(category, action: action, label: label, parameters: event.metadata)
         UIApplication.shared.endBackgroundTask(backgroundTaskID)
-        backgroundTaskID = UIBackgroundTaskInvalid
+        backgroundTaskID = UIBackgroundTaskIdentifier.invalid
 
       }
 

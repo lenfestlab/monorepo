@@ -138,7 +138,7 @@ class NotificationManager: NSObject, UNUserNotificationCenterDelegate {
       let coordinate = LocationManager.shared.latestCoordinate
       if response.actionIdentifier == "share" {
         self.analytics!.log(.tapsShareInNotificationCTA(url: url, currentLocation: coordinate))
-        guard let data = response.notification.request.content.userInfo["SHARE_DATA"] as? [String:[UIActivityType:String]] else {
+        guard let data = response.notification.request.content.userInfo["SHARE_DATA"] as? [String:[UIActivity.ActivityType:String]] else {
           print("MIA: share copy")
           return
         }
