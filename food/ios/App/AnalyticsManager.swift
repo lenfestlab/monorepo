@@ -75,10 +75,6 @@ struct AnalyticsEvent {
     return AnalyticsEvent(name: "enable-location", category: .onboarding, label:label)
   }
 
-  static func selectsMotionTrackingPermissions(status: CMAuthorizationStatus) -> AnalyticsEvent {
-    return AnalyticsEvent(name: "enable-motion", category: .onboarding, label: status.description)
-  }
-
   static func notificationShown(post: Post?, currentLocation: CLLocationCoordinate2D?) -> AnalyticsEvent {
     return AnalyticsEvent(name: "shows", category: .notification, label:post?.link?.absoluteString, location:currentLocation)
   }
