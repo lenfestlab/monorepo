@@ -14,7 +14,6 @@ class SettingsViewController: UITableViewController, SettingsToggleCellDelegate,
   private let analytics: AnalyticsManager
   private let notificationManager = NotificationManager.shared
   private let env: Env
-  private let motionManager = MotionManager.shared
 
   init(analytics: AnalyticsManager) {
     self.analytics = analytics
@@ -72,15 +71,6 @@ class SettingsViewController: UITableViewController, SettingsToggleCellDelegate,
         UIApplication.shared.open(url, options: [:], completionHandler: nil)
       }
 
-    case 2:
-      print("Access Motion")
-      analytics.log(.changeMotionSettings(enabled: sender.isOn))
-      if motionManager.hasStatus(.notDetermined) {
-        motionManager.enableMotionDetection(analytics)
-      } else if let url = URL(string: UIApplication.openSettingsURLString) {
-        UIApplication.shared.open(url, options: [:], completionHandler: nil)
-      }
-
     case 3:
       print("Clear History")
       analytics.log(.clearHistory())
@@ -127,17 +117,6 @@ class SettingsViewController: UITableViewController, SettingsToggleCellDelegate,
       ]
 
     ]
-
-    if MotionManager.isActivityAvailable() {
-      toggleRows.append(
-        [
-          "identifier": "setting",
-          "title": "Enable Motion Detection",
-          "description": "This app monitors your motion so you don’t get notifications while you are driving.",
-          "toggle": motionManager.isAuthorized
-        ]
-      )
-    }
 
     if env.isPreProduction {
       toggleRows.append(

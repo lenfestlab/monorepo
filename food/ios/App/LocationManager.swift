@@ -187,12 +187,6 @@ class LocationManager: NSObject, CLLocationManagerDelegate {
       return
     }
 
-    if MotionManager.shared.skipNotifications {
-      self.analytics!.log(.notificationSkipped(region.center))
-      print("\n WARN: MotionManager.shared.skipNotifications is true")
-      return
-    }
-
     print("\t place \(place)")
     identifiers[identifier] = Date(timeIntervalSinceNow: 60 * 60 * 24 * 10000)
     NotificationManager.shared.saveIdentifiers(identifiers)

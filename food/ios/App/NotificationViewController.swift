@@ -22,8 +22,7 @@ class NotificationViewController: UIViewController, UNUserNotificationCenterDele
   override func viewDidLoad() {
     super.viewDidLoad()
 
-    let steps = MotionManager.isActivityAvailable() ? 4 : 3
-    stepLabel.text = "Step 1 of \(steps):"
+    stepLabel.text = "Step 1 of 3:"
 
     let env = Env()
     self.title = env.appName

@@ -233,7 +233,6 @@ class MapViewController: UIViewController, FilterViewControllerDelegate, Categor
   let padding = CGFloat(45)
   let spacing = CGFloat(0)
   let env: Env
-  let motionManager = MotionManager.shared
   let dataStore = PlaceDataStore()
   let locationManager = LocationManager.shared
   var categoryFilter : CategoryViewController!
@@ -362,22 +361,6 @@ class MapViewController: UIViewController, FilterViewControllerDelegate, Categor
     self.filter = FilterViewController()
     self.filter?.filterDelegate = self
 
-    if MotionManager.isActivityAvailable() {
-      let mm = motionManager
-      mm.startActivityUpdates { [unowned self] activity in
-
-        let messages: [String] = [
-          "build: \(self.env.buildVersion)",
-          activity.formattedDescription,
-          "isDriving: \(mm.isDriving)",
-          "stoppedDrivingAt: \(mm.stoppedDrivingAtFormatted)",
-          "hasBeenDriving [< \(mm.drivingThreshold) min ago]: \(mm.hasBeenDriving)",
-          "=> skipNotifications: \(mm.skipNotifications)"
-        ]
-
-        self.activitylabel.text = messages.joined(separator: "\n")
-      }
-    }
 //    self.activitylabel.isHidden = !env.isPreProduction
     self.activitylabel.isHidden = true
 

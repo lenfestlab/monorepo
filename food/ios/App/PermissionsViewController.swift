@@ -24,8 +24,7 @@ class PermissionsViewController: UIViewController, LocationManagerAuthorizationD
   override func viewDidLoad() {
     super.viewDidLoad()
 
-    let steps = MotionManager.isActivityAvailable() ? 4 : 3
-    stepLabel.text = "Step 2 of \(steps):"
+    stepLabel.text = "Step 2 of 3:"
 
     let env = Env()
     self.title = env.appName
@@ -50,20 +49,29 @@ class PermissionsViewController: UIViewController, LocationManagerAuthorizationD
     self.analytics.log(.selectsLocationTrackingPermissions(status: status))
     next()
   }
-  
+
   func next() {
     let application = UIApplication.shared
     guard let appDelegate = application.delegate as? AppDelegate else {
       print("ERROR: MIA: PermissionViewController AppDelegate")
       return
     }
-    if MotionManager.isActivityAvailable() {
-      appDelegate.showMotionPermissions()
-    } else {
-      UserDefaults.standard.set(true, forKey: "onboarding-completed")
-      appDelegate.showHomeScreen()
+
+    iCloudUserIDAsync() { cloudId, error in
+      DispatchQueue.main.async {
+        if let cloudId = cloudId {
+          print("received iCloudID \(cloudId)")
+          appDelegate.showEmailRegistration(cloudId: cloudId)
+        } else {
+          print("Fetched iCloudID was nil")
+          UserDefaults.standard.set(true, forKey: "onboarding-completed")
+          let appDelegate = application.delegate as? AppDelegate
+          appDelegate?.showHomeScreen()
+        }
+      }
     }
   }
+
 
   @IBAction func skip(sender: UIButton) {
     self.analytics.log(.tapsSkipLocationButton)

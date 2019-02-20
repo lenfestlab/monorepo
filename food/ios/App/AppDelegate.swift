@@ -14,7 +14,6 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
   var analytics: AnalyticsManager!
   var locationManager: LocationManager!
   var notificationManager: NotificationManager!
-  var motionManager: MotionManager!
   var mainController: MainController!
 
   func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: LaunchOptions) -> Bool {
@@ -35,7 +34,6 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
 
     self.analytics = AnalyticsManager(env)
     self.locationManager = LocationManager.sharedWith(analytics: analytics)
-    self.motionManager = MotionManager.sharedWith(analytics: analytics)
     self.notificationManager = NotificationManager.sharedWith(analytics: analytics)
     window = UIWindow(frame: UIScreen.main.bounds)
     let onboardingCompleted = UserDefaults.standard.bool(forKey: "onboarding-completed")
@@ -86,12 +84,6 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
   func showNotifications() {
     mainController.pushViewController(
       NotificationViewController(analytics: self.analytics),
-      animated: false)
-  }
-
-  func showMotionPermissions() {
-    mainController.pushViewController(
-      MotionViewController(analytics: self.analytics),
       animated: false)
   }
 
