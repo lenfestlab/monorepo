@@ -27,8 +27,6 @@ class CategoryViewController: UITableViewController {
     self.tableView.register(UITableViewCell.self, forCellReuseIdentifier: "reuseIdentifier")
     self.style()
     self.title = "Guides"
-//    self.navigationItem.leftBarButtonItem = UIBarButtonItem(title: "Cancel", style: .plain, target: self, action: #selector(dismissFilter))
-//    self.navigationItem.rightBarButtonItem = UIBarButtonItem(title: "Apply", style: .plain, target: self, action: #selector(applyFilter))
     self.view.backgroundColor = UIColor.beige()
 
     let store = CategoryDataStore()

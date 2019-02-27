@@ -1,10 +1,3 @@
-//
-//  TabBarViewController.swift
-//  App
-//
-//  Created by Ajay Chainani on 2/27/19.
-//
-
 import UIKit
 
 class TabBarViewController: UITabBarController {
@@ -60,18 +53,6 @@ class TabBarViewController: UITabBarController {
     self.mapViewController.navigationItem.leftBarButtonItem = UIBarButtonItem(image: UIImage(named: "settings-button"), style: .plain, target: self, action: #selector(settings))
     self.mapViewController.navigationItem.titleView =  self.mapViewController.searchBar
 
-    // Do any additional setup after loading the view.
   }
-
-
-  /*
-   // MARK: - Navigation
-
-   // In a storyboard-based application, you will often want to do a little preparation before navigation
-   override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
-   // Get the new view controller using segue.destination.
-   // Pass the selected object to the new view controller.
-   }
-   */
 
 }

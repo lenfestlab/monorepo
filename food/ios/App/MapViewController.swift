@@ -118,11 +118,11 @@ extension MapViewController: UIGestureRecognizerDelegate {
 extension MapViewController: UISearchBarDelegate {
 
   func searchBarTextDidBeginEditing(_ searchBar: UISearchBar) {
-    self.navigationItem.rightBarButtonItem = UIBarButtonItem(title: "Cancel", style: .plain, target: self, action: #selector(dismissSearch))
+    searchBar.showsCancelButton = true
   }
 
   func searchBarShouldEndEditing(_ searchBar: UISearchBar) -> Bool {
-    self.navigationItem.rightBarButtonItem = UIBarButtonItem(image: UIImage(named: "settings-button"), style: .plain, target: self, action: #selector(settings))
+    searchBar.showsCancelButton = false
     return true
   }
 
