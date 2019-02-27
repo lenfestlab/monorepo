@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2019_02_19_164029) do
+ActiveRecord::Schema.define(version: 2019_02_27_223749) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -81,6 +81,7 @@ ActiveRecord::Schema.define(version: 2019_02_19_164029) do
     t.integer "rating"
     t.text "image_urls", default: [], array: true
     t.string "source_key", null: false
+    t.text "url"
     t.index ["identifier"], name: "index_posts_on_identifier"
     t.index ["place_id"], name: "index_posts_on_place_id"
     t.index ["price"], name: "index_posts_on_price", using: :gin

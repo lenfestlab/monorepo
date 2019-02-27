@@ -11,6 +11,14 @@ class Post < ApplicationRecord
 
   validates :published_at, uniqueness: { scope: :place_id }
 
+  def image_url
+    read_attribute(:image_urls).first
+  end
+
+  def url
+    Post.ensure_https read_attribute(:url)
+  end
+
 
   ## Admin
   #
@@ -61,10 +69,6 @@ class Post < ApplicationRecord
     string.present? ? string : nil
   end
 
-  def image_url
-    read_attribute(:image_urls).first
-  end
-
   def as_json(options = nil)
     super({
       only: [
@@ -72,10 +76,11 @@ class Post < ApplicationRecord
         :title,
         :blurb,
         :price,
-        :rating
+        :rating,
       ],
       methods: [
-        :image_url
+        :image_url,
+        :url
       ]
     }.merge(options || {}))
   end
