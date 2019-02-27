@@ -10,11 +10,17 @@ let gcmMessageIDKey = "gcm.message_id"
 @UIApplicationMain
 class AppDelegate: UIResponder, UIApplicationDelegate {
 
+  var lastViewedURL: URL?
   var window: UIWindow?
   var analytics: AnalyticsManager!
   var locationManager: LocationManager!
   var notificationManager: NotificationManager!
   var mainController: MainController!
+  var tabController: TabBarViewController!
+
+  class func shared() -> AppDelegate {
+    return UIApplication.shared.delegate as! AppDelegate
+  }
 
   func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: LaunchOptions) -> Bool {
     NetworkActivityLogger.shared.startLogging()
@@ -60,14 +66,16 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
 
         Installation.register(cloudId: cloudId, completion: { (success, result) in
           DispatchQueue.main.async { [unowned self] in
-            self.window!.rootViewController = self.mainController
+//            self.window!.rootViewController = self.mainController
+            self.window!.rootViewController = self.tabController
           }
         })
 
       } else {
         print("Fetched iCloudID was nil")
         DispatchQueue.main.async { [unowned self] in
-          self.window!.rootViewController = self.mainController
+//            self.window!.rootViewController = self.mainController
+          self.window!.rootViewController = self.tabController
         }
       }
     }
@@ -88,9 +96,13 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
   }
 
   func showHomeScreen() {
-    mainController.pushViewController(
-      MapViewController(analytics: self.analytics),
-      animated: false)
+    self.tabController = TabBarViewController(analytics: self.analytics)
+
+//    mainController.navigationController?.isNavigationBarHidden = true
+//    mainController.pushViewController(self.tabController, animated: false)
+
+    window!.rootViewController = self.tabController
+
   }
 
   func showEmailRegistration(cloudId: String) {

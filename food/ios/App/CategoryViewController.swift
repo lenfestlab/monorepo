@@ -9,16 +9,26 @@ class CategoryViewController: UITableViewController {
   weak var categoryFilterDelegate: CategoryViewControllerDelegate?
 
   var categories = [Category]()
+  private let analytics: AnalyticsManager
 
+  init(analytics: AnalyticsManager) {
+    self.analytics = analytics
+    super.init(nibName: nil, bundle: nil)
+    navigationItem.hidesBackButton = true
+  }
+
+  required init?(coder aDecoder: NSCoder) {
+    fatalError("init(coder:) has not been implemented")
+  }
+  
   override func viewDidLoad() {
     super.viewDidLoad()
 
     self.tableView.register(UITableViewCell.self, forCellReuseIdentifier: "reuseIdentifier")
-    self.tableView.allowsMultipleSelection = true
     self.style()
-    self.title = "Filter"
-    self.navigationItem.leftBarButtonItem = UIBarButtonItem(title: "Cancel", style: .plain, target: self, action: #selector(dismissFilter))
-    self.navigationItem.rightBarButtonItem = UIBarButtonItem(title: "Apply", style: .plain, target: self, action: #selector(applyFilter))
+    self.title = "Guides"
+//    self.navigationItem.leftBarButtonItem = UIBarButtonItem(title: "Cancel", style: .plain, target: self, action: #selector(dismissFilter))
+//    self.navigationItem.rightBarButtonItem = UIBarButtonItem(title: "Apply", style: .plain, target: self, action: #selector(applyFilter))
     self.view.backgroundColor = UIColor.beige()
 
     let store = CategoryDataStore()
@@ -69,13 +79,10 @@ class CategoryViewController: UITableViewController {
    }
 
   override func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
-    let cell = tableView.cellForRow(at: indexPath)
-    cell?.accessoryType  = .checkmark
-  }
-
-  override func tableView(_ tableView: UITableView, didDeselectRowAt indexPath: IndexPath) {
-    let cell = tableView.cellForRow(at: indexPath)
-    cell?.accessoryType  = .none
+    let category = self.categories[indexPath.row]
+    let mapViewController = MapViewController(analytics: self.analytics)
+    mapViewController.title = category.name
+    self.navigationController?.pushViewController(mapViewController, animated: true)
   }
 
 }

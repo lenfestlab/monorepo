@@ -12,14 +12,6 @@ private let mapPinIdentifier = "pin"
 
 fileprivate let sectionInsets = UIEdgeInsets(top: 0, left: 0, bottom: 0, right: 0)
 
-extension UIViewController {
-  func style() {
-    navigationController?.navigationBar.barTintColor =  UIColor.beige()
-    navigationController?.navigationBar.tintColor =  UIColor.offRed()
-    navigationController?.navigationBar.isTranslucent = false
-  }
-}
-
 extension MapViewController: UICollectionViewDataSource {
 
   func numberOfSections(in collectionView: UICollectionView) -> Int {
@@ -124,6 +116,15 @@ extension MapViewController: UIGestureRecognizerDelegate {
 }
 
 extension MapViewController: UISearchBarDelegate {
+
+  func searchBarTextDidBeginEditing(_ searchBar: UISearchBar) {
+    self.navigationItem.rightBarButtonItem = UIBarButtonItem(title: "Cancel", style: .plain, target: self, action: #selector(dismissSearch))
+  }
+
+  func searchBarShouldEndEditing(_ searchBar: UISearchBar) -> Bool {
+    self.navigationItem.rightBarButtonItem = UIBarButtonItem(image: UIImage(named: "settings-button"), style: .plain, target: self, action: #selector(settings))
+    return true
+  }
 
   func searchBarTextDidChange(searchText: String) {
     self.updateFilter(searchText: searchText)
@@ -283,18 +284,23 @@ class MapViewController: UIViewController, FilterViewControllerDelegate, Categor
   @IBOutlet weak var collectionView:UICollectionView!
   @IBOutlet weak var mapView:MKMapView!
   @IBOutlet weak var locationButton:UIButton!
-  @IBOutlet weak var searchBar: UISearchBar!
+  @IBOutlet weak var topBar: UIToolbar!
+
+  lazy var searchBar: UISearchBar! = {
+    let searchBar = UISearchBar(frame: CGRect(x: 0, y: 0, width: 600, height: 60))
+    searchBar.placeholder = "Search All Restaurants"
+    searchBar.delegate = self
+    return searchBar
+  }()
 
   private let analytics: AnalyticsManager
   @IBOutlet weak var settingsButton:UIButton!
-  @IBOutlet weak var activitylabel:UILabel!
 
   init(analytics: AnalyticsManager) {
     env = Env()
     self.analytics = analytics
     super.init(nibName: nil, bundle: nil)
     locationManager.authorizationDelegate = self
-    navigationItem.hidesBackButton = true
   }
 
   required init?(coder aDecoder: NSCoder) {
@@ -303,8 +309,7 @@ class MapViewController: UIViewController, FilterViewControllerDelegate, Categor
 
   override func viewDidAppear(_ animated: Bool) {
     super.viewDidAppear(animated)
-    let mainController = self.navigationController as! MainController
-    let url: URL? = mainController.lastViewedURL
+    let url: URL? = AppDelegate.shared().lastViewedURL
     // Currently we send the map viewed data regardless of whether we have the coordinates yet or not
 
     let state = UIApplication.shared.applicationState
@@ -312,7 +317,7 @@ class MapViewController: UIViewController, FilterViewControllerDelegate, Categor
       self.analytics.log(.mapViewed(currentLocation: self.lastCoordinate, source: url))
     }
 
-    mainController.lastViewedURL = nil
+    AppDelegate.shared().lastViewedURL = nil
   }
 
   @IBAction func settings(sender: UIButton) {
@@ -327,6 +332,11 @@ class MapViewController: UIViewController, FilterViewControllerDelegate, Categor
         action: nil)
   }
 
+  @IBAction func dismissSearch(sender: UIButton) {
+    self.searchBar.resignFirstResponder()
+  }
+
+
   func initialMapDataFetch(coordinate: CLLocationCoordinate2D) {
     if initalDataFetched {
       return
@@ -336,7 +346,7 @@ class MapViewController: UIViewController, FilterViewControllerDelegate, Categor
     fetchMapData(coordinate: coordinate)
   }
 
-  @objc func showCategories() {
+  @IBAction func showCategories() {
     clearSearch()
     let navigationController = UINavigationController(rootViewController: self.categoryFilter)
     self.navigationController?.present(navigationController, animated: true, completion: nil)
@@ -347,22 +357,14 @@ class MapViewController: UIViewController, FilterViewControllerDelegate, Categor
   override func viewDidLoad() {
     super.viewDidLoad()
 
-    titleButton = UIButton(frame: CGRect(x: 0, y: 0, width: 600, height: 60))
-    titleButton?.setTitle("▼ All Restaurants", for: .normal)
-    titleButton?.titleLabel?.font = UIFont.boldSystemFont(ofSize: 18)
-    titleButton?.setTitleColor(UIColor.offRed(), for: .normal)
-    titleButton?.addTarget(self, action: #selector(showCategories), for: .touchUpInside)
-    self.navigationItem.titleView = titleButton
+    topBar.barTintColor =  UIColor.beige()
+    topBar.tintColor =  UIColor.offRed()
 
-    self.categoryFilter = CategoryViewController()
+    self.categoryFilter = CategoryViewController(analytics: self.analytics)
     self.categoryFilter?.categoryFilterDelegate = self
-
 
     self.filter = FilterViewController()
     self.filter?.filterDelegate = self
-
-//    self.activitylabel.isHidden = !env.isPreProduction
-    self.activitylabel.isHidden = true
 
     let layout = UPCarouselFlowLayout()
     layout.scrollDirection = .horizontal
@@ -378,7 +380,7 @@ class MapViewController: UIViewController, FilterViewControllerDelegate, Categor
     let nib = UINib(nibName: "PlaceCell", bundle:nil)
     self.collectionView.register(nib, forCellWithReuseIdentifier: reuseIdentifier)
 
-    self.title = env.appName
+//    self.title = env.appName
     if let fontStyle = UIFont(name: "WorkSans-Medium", size: 18) {
       navigationController?.navigationBar.titleTextAttributes = [NSAttributedString.Key.font: fontStyle]
     }
@@ -387,33 +389,11 @@ class MapViewController: UIViewController, FilterViewControllerDelegate, Categor
     centerMap(coordinate)
     fetchMapData(coordinate: coordinate)
 
-    self.navigationItem.rightBarButtonItem = UIBarButtonItem(image: UIImage(named: "settings-button"), style: .plain, target: self, action: #selector(settings))
-
-    // simulate local notification
-    if Env().isPreProduction {
-      let button =
-        UIBarButtonItem(
-          title: "sim",
-          style: .plain,
-          target: nil, action: nil)
-      self.navigationItem.leftBarButtonItem = button
-      button.rx.tap
-        .asDriver()
-        .drive(onNext: { [unowned self] _ in
-          guard let mapPlace = self.places.randomElement() else {
-            print("MIA: place / region")
-            return
-          }
-          self.locationManager.sendNotificationForPlace(mapPlace.place)
-        })
-        .disposed(by: self.rx.disposeBag)
-    }
-
-    self.navigationItem.leftBarButtonItem = UIBarButtonItem(title: "Filter", style: .plain, target: self, action: #selector(showFilter))
+//    self.navigationItem.rightBarButtonItem = UIBarButtonItem(title: "Filter", style: .plain, target: self, action: #selector(showFilter))
 
   }
 
-  @objc func showFilter() {
+  @IBAction func showFilter() {
     clearSearch()
     let navigationController = UINavigationController(rootViewController: self.filter)
     self.navigationController?.present(navigationController, animated: true, completion: nil)

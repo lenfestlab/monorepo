@@ -3,8 +3,6 @@ import SafariServices
 
 class MainController: UINavigationController {
 
-  var lastViewedURL: URL?
-
   override init(rootViewController: UIViewController) {
     super.init(rootViewController: rootViewController)
   }
@@ -24,7 +22,7 @@ extension MainController: NotificationManagerDelegate {
   }
 
   func openInSafari(url: URL) {
-    self.lastViewedURL = url
+    AppDelegate.shared().lastViewedURL = url
     if let presented = self.presentedViewController {
       presented.dismiss(animated: false, completion: { [unowned self] in
         let svc = SFSafariViewController(url: url)
