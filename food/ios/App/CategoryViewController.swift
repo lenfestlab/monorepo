@@ -1,17 +1,65 @@
 import UIKit
 
-protocol CategoryViewControllerDelegate: class {
+protocol CuisinesViewControllerDelegate: class {
   func categoriesUpdated(_ viewController: CategoryViewController, categories: [Category])
+}
+
+class CuisinesViewController: CategoryViewController {
+
+  weak var delegate: CuisinesViewControllerDelegate?
+
+  init(analytics: AnalyticsManager) {
+    super.init(analytics: analytics, isCuisine: true)
+  }
+  
+  required init?(coder aDecoder: NSCoder) {
+    fatalError("init(coder:) has not been implemented")
+  }
+
+  override func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
+    let cell = tableView.cellForRow(at: indexPath)
+    cell?.accessoryType  = .checkmark
+  }
+
+  override func tableView(_ tableView: UITableView, didDeselectRowAt indexPath: IndexPath) {
+    let cell = tableView.cellForRow(at: indexPath)
+    cell?.accessoryType  = .none
+  }
+
+  override func viewDidLoad() {
+    super.viewDidLoad()
+
+    self.tableView.allowsMultipleSelection = true
+
+    self.title = "Cuisines"
+    self.navigationItem.leftBarButtonItem = UIBarButtonItem(title: "Cancel", style: .plain, target: self, action: #selector(dismissFilter))
+    self.navigationItem.rightBarButtonItem = UIBarButtonItem(title: "Apply", style: .plain, target: self, action: #selector(applyFilter))
+  }
+
+  @objc func applyFilter() {
+    var selectedCategories = [Category]()
+
+    for indexPath in self.tableView?.indexPathsForSelectedRows ?? [] {
+      let category = self.categories[indexPath.row]
+      selectedCategories.append(category)
+    }
+
+    self.delegate?.categoriesUpdated(self, categories: selectedCategories)
+  }
+
+  @objc func dismissFilter() {
+    self.dismiss(animated: true, completion: nil)
+  }
 }
 
 class CategoryViewController: UITableViewController {
 
-  weak var categoryFilterDelegate: CategoryViewControllerDelegate?
-
   var categories = [Category]()
   private let analytics: AnalyticsManager
+  var isCuisine = false
 
-  init(analytics: AnalyticsManager) {
+  init(analytics: AnalyticsManager, isCuisine: Bool) {
+    self.isCuisine = isCuisine
     self.analytics = analytics
     super.init(nibName: nil, bundle: nil)
     navigationItem.hidesBackButton = true
@@ -30,7 +78,7 @@ class CategoryViewController: UITableViewController {
     self.view.backgroundColor = UIColor.beige()
 
     let store = CategoryDataStore()
-    store.retrieveCategories { (success, categories, count) in
+    store.retrieveCategories(isCuisine: self.isCuisine) { (success, categories, count) in
       if let categories = categories {
         self.categories = categories
       }
@@ -38,20 +86,6 @@ class CategoryViewController: UITableViewController {
     }
   }
 
-  @objc func dismissFilter() {
-    self.dismiss(animated: true, completion: nil)
-  }
-
-  @objc func applyFilter() {
-    var selectedCategories = [Category]()
-
-    for indexPath in self.tableView?.indexPathsForSelectedRows ?? [] {
-      let category = self.categories[indexPath.row]
-      selectedCategories.append(category)
-    }
-
-    self.categoryFilterDelegate?.categoriesUpdated(self, categories: selectedCategories)
-  }
   // MARK: - Table view data source
 
   override func numberOfSections(in tableView: UITableView) -> Int {
@@ -78,8 +112,9 @@ class CategoryViewController: UITableViewController {
 
   override func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
     let category = self.categories[indexPath.row]
-    let mapViewController = MapViewController(analytics: self.analytics)
+    let mapViewController = MapViewController(analytics: self.analytics, categories: [category])
     mapViewController.title = category.name
+    mapViewController.topBarIsHidden = true
     self.navigationController?.pushViewController(mapViewController, animated: true)
   }
 

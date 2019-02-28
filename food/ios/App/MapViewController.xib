@@ -70,7 +70,13 @@
                             </connections>
                         </barButtonItem>
                         <barButtonItem systemItem="flexibleSpace" id="crh-fG-yOX"/>
-                        <barButtonItem title="Sort" id="e2j-QV-99P"/>
+                        <barButtonItem title="Cusines" id="e2j-QV-99P">
+                            <connections>
+                                <action selector="showCategories" destination="-1" id="153-fT-1xK"/>
+                            </connections>
+                        </barButtonItem>
+                        <barButtonItem systemItem="flexibleSpace" id="94h-YG-CuX"/>
+                        <barButtonItem title="Sort" id="pnA-hQ-6GN"/>
                         <barButtonItem systemItem="flexibleSpace" id="jlB-4K-JlE"/>
                     </items>
                 </toolbar>

@@ -156,7 +156,25 @@ extension MapViewController: UISearchBarDelegate {
 
 }
 
-class MapViewController: UIViewController, FilterViewControllerDelegate, CategoryViewControllerDelegate {
+class MapViewController: UIViewController, FilterViewControllerDelegate, CuisinesViewControllerDelegate {
+
+  let padding = CGFloat(45)
+  let spacing = CGFloat(0)
+  let env: Env
+  let dataStore = PlaceDataStore()
+  let locationManager = LocationManager.shared
+  var cuisineFilter : CuisinesViewController!
+  var filter : FilterViewController!
+  var ratings = [Int]()
+  var prices = [Int]()
+  var categories = [Category]()
+
+  var topBarIsHidden = false {
+    didSet {
+      self.topBar?.isHidden = topBarIsHidden
+    }
+  }
+
   func categoriesUpdated(_ viewController: CategoryViewController, categories: [Category]) {
     viewController.dismiss(animated: true, completion: nil)
 
@@ -166,16 +184,6 @@ class MapViewController: UIViewController, FilterViewControllerDelegate, Categor
 
     let center = mapView.region.center
     fetchMapData(coordinate: center)
-
-    var title = "▼ All Restaurants"
-    let count = self.categories.count
-    if count > 1 {
-      title = String(format: "▼ %i Categories", count)
-    } else if let category = self.categories.first {
-      title = String(format: "▼ %@", category.name)
-    }
-    titleButton?.setTitle(title, for: .normal)
-
   }
 
   func filterUpdated(_ viewController: FilterViewController, ratings: [Int], prices: [Int]) {
@@ -231,17 +239,6 @@ class MapViewController: UIViewController, FilterViewControllerDelegate, Categor
     }
   }
 
-  let padding = CGFloat(45)
-  let spacing = CGFloat(0)
-  let env: Env
-  let dataStore = PlaceDataStore()
-  let locationManager = LocationManager.shared
-  var categoryFilter : CategoryViewController!
-  var filter : FilterViewController!
-  var ratings = [Int]()
-  var prices = [Int]()
-  var categories = [Category]()
-
   private var _currentPlace:MapPlace? {
     didSet {
       NSObject.cancelPreviousPerformRequests(withTarget: self, selector: #selector(centerToCurrentPlace), object: nil)
@@ -284,7 +281,7 @@ class MapViewController: UIViewController, FilterViewControllerDelegate, Categor
   @IBOutlet weak var collectionView:UICollectionView!
   @IBOutlet weak var mapView:MKMapView!
   @IBOutlet weak var locationButton:UIButton!
-  @IBOutlet weak var topBar: UIToolbar!
+  @IBOutlet weak var topBar: UIToolbar?
 
   lazy var searchBar: UISearchBar! = {
     let searchBar = UISearchBar(frame: CGRect(x: 0, y: 0, width: 600, height: 60))
@@ -296,8 +293,9 @@ class MapViewController: UIViewController, FilterViewControllerDelegate, Categor
   private let analytics: AnalyticsManager
   @IBOutlet weak var settingsButton:UIButton!
 
-  init(analytics: AnalyticsManager) {
+  init(analytics: AnalyticsManager, categories: [Category] = []) {
     env = Env()
+    self.categories = categories
     self.analytics = analytics
     super.init(nibName: nil, bundle: nil)
     locationManager.authorizationDelegate = self
@@ -348,20 +346,19 @@ class MapViewController: UIViewController, FilterViewControllerDelegate, Categor
 
   @IBAction func showCategories() {
     clearSearch()
-    let navigationController = UINavigationController(rootViewController: self.categoryFilter)
+    let navigationController = UINavigationController(rootViewController: self.cuisineFilter)
     self.navigationController?.present(navigationController, animated: true, completion: nil)
   }
-
-  var titleButton : UIButton?
 
   override func viewDidLoad() {
     super.viewDidLoad()
 
-    topBar.barTintColor =  UIColor.beige()
-    topBar.tintColor =  UIColor.offRed()
+    self.topBar?.isHidden = self.topBarIsHidden
+    self.topBar?.barTintColor =  UIColor.beige()
+    self.topBar?.tintColor =  UIColor.offRed()
 
-    self.categoryFilter = CategoryViewController(analytics: self.analytics)
-    self.categoryFilter?.categoryFilterDelegate = self
+    self.cuisineFilter = CuisinesViewController(analytics: self.analytics)
+    self.cuisineFilter?.delegate = self
 
     self.filter = FilterViewController()
     self.filter?.filterDelegate = self
