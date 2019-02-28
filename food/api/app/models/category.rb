@@ -26,6 +26,9 @@ class Category < ApplicationRecord
         hide
       end
     end
+    configure :image_urls do
+      read_only true
+    end
   end
 
   def admin_name
