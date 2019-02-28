@@ -66,6 +66,8 @@ _reviews.each do |review|
     Categorization.create(place: place, category: category_classic)
   end
 
+#Leadimg
+
 end
 
 _categories = _data["sections"]
@@ -75,7 +77,16 @@ _categories.each do |key, obj|
   places_node = obj.find { |node| node["type"] == "restaurants"}
   place_names = places_node["value"] if places_node
   next unless name && place_names.present?
-  category = Category.create(key: key, name: name)
+  category =
+    Category.find_by_key(key) ||
+    Category.create(key: key, name: name)
+
+  image_urls_node = obj.find { |node| node["type"] == "Leadimg"}
+  image_url = image_urls_node["value"] if image_urls_node
+  category.update_attributes!({
+    image_urls: [image_url]
+  })
+
   places = Place.where(name: place_names)
   places.each { |place| Categorization.create(place: place, category: category) }
 end
@@ -96,3 +107,102 @@ _photos.reduce({}) { |map, o|
     post.save
   end
 end
+
+## Bars
+# src data: https://goo.gl/svbxoM
+def csv filedir, filename
+  CSV.read("#{filedir}/#{filename}.csv", {
+    headers: true,
+    header_converters: :symbol,
+  })
+end
+
+_bar_data = csv(dir, "bars")
+_bar_data.each do |row|
+  name = row[:name]
+  place =
+    Place.find_by_name(name) ||
+    Place.create({
+      name: name,
+      address: row[:address],
+      lat: row[:lat],
+      lng: row[:long],
+    })
+
+  name = row[:type]
+  key = name.downcase.gsub(/[[:space:]]/, '')
+  category =
+    Category.find_by_key(key) ||
+    Category.create(key: key, name: name)
+  Categorization.create(place: place, category: category)
+
+  category.update_attributes!({
+    image_urls: [row[:image]]
+  })
+
+  url = row[:link]
+  attrs = {
+    place: place,
+    published_at: guide_date,
+    blurb: row[:description],
+    url: url,
+    source_key: url,
+    image_urls: [row[:image]]
+  }
+
+  Post.create(attrs)
+end
+
+
+## Cuisine
+#
+_cuisine_keys = %w{
+seafood
+italian
+middleeastern
+french
+mexican
+japanese
+vegetables
+modernamerican
+chinese
+southeastasian
+dinersdelis
+sandwiches
+gastropubs
+chops
+pizza
+soulfood
+polish
+korean
+borschtbelt
+latino
+}
+=begin
+Key
+top25
+classic
+chinatown
+readingmarket
+=end
+
+_backfilled_category_images = {
+  classic: "http://media.philly.com/storage/inquirer/projects/dining-guide-2018/photos/dg-classics-landingpage.jpg",
+  top25: "http://media.philly.com/storage/inquirer/projects/dining-guide-2018/photos/RS1241068_AECRAIG12-A-1.JPG",
+  pizza: "http://media.philly.com/storage/inquirer/projects/dining-guide-2018/photos/pizzaphoto-1.jpg",
+  sandwiches: "http://media.philly.com/storage/inquirer/projects/dining-guide-2018/photos/RS1249817_DGCLASSICS18-m.jpg"
+}
+
+Category.all.each do |category|
+  key = category.key
+  attrs = {
+    is_cuisine: _cuisine_keys.include?(key)
+  }
+  if image_url = _backfilled_category_images[key.to_sym]
+    attrs.merge!({
+      image_urls: [image_url]
+    })
+  end
+  category.update_attributes!(attrs)
+end
+

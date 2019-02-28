@@ -12,7 +12,7 @@ class Post < ApplicationRecord
   validates :published_at, uniqueness: { scope: :place_id }
 
   def image_url
-    read_attribute(:image_urls).first
+    Post.ensure_https read_attribute(:image_urls).first
   end
 
   def url

@@ -25,7 +25,7 @@ class Place < ApplicationRecord
 
   scope :nearest, -> (lat, lng, kilometers = Place.default_search_radius) {
     distance_calc = "ST_Distance(lonlat, 'POINT(#{lng} #{lat})')"
-    select("places.*, #{distance_calc}")
+    select("places.*, #{distance_calc} as distance")
       .where("#{distance_calc} < #{kilometers * 1000.0}")
       .order("#{distance_calc} ASC")
   }
@@ -105,6 +105,7 @@ class Place < ApplicationRecord
         :identifier,
         :name,
         :address,
+        :distance,
       ],
       methods: [
         :location,
