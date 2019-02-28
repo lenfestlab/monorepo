@@ -3,6 +3,7 @@ import Firebase
 import AlamofireNetworkActivityLogger
 import FirebaseMessaging
 import Schedule
+import SafariServices
 
 typealias LaunchOptions = [UIApplication.LaunchOptionsKey: Any]?
 let gcmMessageIDKey = "gcm.message_id"
@@ -46,7 +47,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
 
     let introController = IntroViewController(analytics: self.analytics)
     self.mainController = MainController(rootViewController: introController)
-    self.notificationManager.delegate = self.mainController
+    self.notificationManager.delegate = self
 
     if !onboardingCompleted {
       window!.rootViewController = self.mainController
@@ -155,6 +156,26 @@ extension AppDelegate: MessagingDelegate {
       } else {
         print("gcm: subscribed to topic: \(topic)")
       }
+    }
+  }
+
+}
+
+extension AppDelegate: NotificationManagerDelegate {
+  func present(_ vc: UIViewController, animated: Bool) {
+    self.mainController.present(vc, animated: true, completion: nil)
+  }
+
+  func openInSafari(url: URL) {
+    self.lastViewedURL = url
+    if let presented = self.mainController.presentedViewController {
+      presented.dismiss(animated: false, completion: { [unowned self] in
+        let svc = SFSafariViewController(url: url)
+        self.mainController.present(svc, animated: true, completion: nil)
+      })
+    } else {
+      let svc = SFSafariViewController(url: url)
+      self.tabController.present(svc, animated: true, completion: nil)
     }
   }
 

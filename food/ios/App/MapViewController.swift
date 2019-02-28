@@ -40,9 +40,9 @@ extension MapViewController: UICollectionViewDelegate {
       let mapPlace:MapPlace = self.placesFiltered[indexPath.row]
       let place:Place = mapPlace.place
       analytics.log(.tapsOnViewArticle(post: place.post, currentLocation: self.lastCoordinate))
-      let mainVC = self.navigationController as! MainController
+      let app = AppDelegate.shared()
       if let link = place.post?.link {
-        mainVC.openInSafari(url: link)
+        app.openInSafari(url: link)
       }
     } else {
       scrollToItem(at: indexPath)
