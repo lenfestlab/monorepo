@@ -7,6 +7,10 @@ class Category < ApplicationRecord
   has_many :categorizations, dependent: :destroy
   has_many :places, through: :categorizations
 
+  def image_url
+    Post.ensure_https read_attribute(:image_urls).first
+  end
+
   rails_admin do
     object_label_method :admin_name
     %i{
@@ -32,6 +36,9 @@ class Category < ApplicationRecord
         :is_cuisine,
         :name,
       ],
+      methods: [
+        :image_url,
+      ]
     }.merge(options || {}))
   end
 

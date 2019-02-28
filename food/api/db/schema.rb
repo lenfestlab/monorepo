@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2019_02_28_120833) do
+ActiveRecord::Schema.define(version: 2019_02_28_161828) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -24,6 +24,7 @@ ActiveRecord::Schema.define(version: 2019_02_28_120833) do
     t.string "name", null: false
     t.string "key", null: false
     t.boolean "is_cuisine", default: false
+    t.text "image_urls", default: [], array: true
     t.index ["identifier"], name: "index_categories_on_identifier"
     t.index ["key"], name: "index_categories_on_key", unique: true
   end
