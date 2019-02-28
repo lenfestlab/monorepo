@@ -11,6 +11,9 @@ class Category < ApplicationRecord
     Post.ensure_https read_attribute(:image_urls).first
   end
 
+  ## Admin
+  #
+
   rails_admin do
     object_label_method :admin_name
     %i{
@@ -28,6 +31,15 @@ class Category < ApplicationRecord
   def admin_name
     name
   end
+
+  ## Filters
+  #
+
+  scope :cuisine, -> (value) {
+    if value.present?
+      where(is_cuisine: value)
+    end
+  }
 
   def as_json(options = nil)
     super({
