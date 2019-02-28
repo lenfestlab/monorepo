@@ -96,3 +96,82 @@ _photos.reduce({}) { |map, o|
     post.save
   end
 end
+
+## Bars
+# src data: https://goo.gl/svbxoM
+def csv filedir, filename
+  CSV.read("#{filedir}/#{filename}.csv", {
+    headers: true,
+    header_converters: :symbol,
+  })
+end
+
+_bar_data = csv(dir, "bars")
+_bar_data.each do |row|
+  name = row[:name]
+  place =
+    Place.find_by_name(name) ||
+    Place.create({
+      name: name,
+      address: row[:address],
+      lat: row[:lat],
+      lng: row[:long],
+    })
+
+  name = row[:type]
+  key = name.downcase.gsub(/[[:space:]]/, '')
+  category =
+    Category.find_by_key(key) ||
+    Category.create(key: key, name: name)
+  Categorization.create(place: place, category: category)
+
+  url = row[:link]
+  attrs = {
+    place: place,
+    published_at: guide_date,
+    blurb: row[:description],
+    url: url,
+    source_key: url,
+    image_urls: [row[:image]]
+  }
+
+  Post.create(attrs)
+end
+
+
+## Cuisine
+#
+_cuisine_keys = %w{
+seafood
+italian
+middleeastern
+french
+mexican
+japanese
+vegetables
+modernamerican
+chinese
+southeastasian
+dinersdelis
+sandwiches
+gastropubs
+chops
+pizza
+soulfood
+polish
+korean
+borschtbelt
+latino
+}
+=begin
+Key
+top25
+classic
+chinatown
+readingmarket
+=end
+Category.all.each do |category|
+  category.update_attributes!({
+    is_cuisine: _cuisine_keys.include?(category.key)
+  })
+end

@@ -9,7 +9,12 @@ class Category < ApplicationRecord
 
   rails_admin do
     object_label_method :admin_name
-    [:identifier, :created_at, :updated_at, :key, :categorizations].each do |hidden_attr|
+    %i{
+      identifier
+      created_at
+      updated_at
+      categorizations
+    }.each do |hidden_attr|
       configure hidden_attr do
         hide
       end
@@ -24,6 +29,7 @@ class Category < ApplicationRecord
     super({
       only: [
         :identifier,
+        :is_cuisine,
         :name,
       ],
     }.merge(options || {}))
