@@ -3,6 +3,7 @@ import Firebase
 import AlamofireNetworkActivityLogger
 import FirebaseMessaging
 import Schedule
+import SafariServices
 
 typealias LaunchOptions = [UIApplication.LaunchOptionsKey: Any]?
 let gcmMessageIDKey = "gcm.message_id"
@@ -10,11 +11,17 @@ let gcmMessageIDKey = "gcm.message_id"
 @UIApplicationMain
 class AppDelegate: UIResponder, UIApplicationDelegate {
 
+  var lastViewedURL: URL?
   var window: UIWindow?
   var analytics: AnalyticsManager!
   var locationManager: LocationManager!
   var notificationManager: NotificationManager!
   var mainController: MainController!
+  var tabController: TabBarViewController!
+
+  class func shared() -> AppDelegate {
+    return UIApplication.shared.delegate as! AppDelegate
+  }
 
   func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: LaunchOptions) -> Bool {
     NetworkActivityLogger.shared.startLogging()
@@ -40,7 +47,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
 
     let introController = IntroViewController(analytics: self.analytics)
     self.mainController = MainController(rootViewController: introController)
-    self.notificationManager.delegate = self.mainController
+    self.notificationManager.delegate = self
 
     if !onboardingCompleted {
       window!.rootViewController = self.mainController
@@ -60,14 +67,16 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
 
         Installation.register(cloudId: cloudId, completion: { (success, result) in
           DispatchQueue.main.async { [unowned self] in
-            self.window!.rootViewController = self.mainController
+//            self.window!.rootViewController = self.mainController
+            self.window!.rootViewController = self.tabController
           }
         })
 
       } else {
         print("Fetched iCloudID was nil")
         DispatchQueue.main.async { [unowned self] in
-          self.window!.rootViewController = self.mainController
+//            self.window!.rootViewController = self.mainController
+          self.window!.rootViewController = self.tabController
         }
       }
     }
@@ -88,9 +97,13 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
   }
 
   func showHomeScreen() {
-    mainController.pushViewController(
-      MapViewController(analytics: self.analytics),
-      animated: false)
+    self.tabController = TabBarViewController(analytics: self.analytics)
+
+//    mainController.navigationController?.isNavigationBarHidden = true
+//    mainController.pushViewController(self.tabController, animated: false)
+
+    window!.rootViewController = self.tabController
+
   }
 
   func showEmailRegistration(cloudId: String) {
@@ -143,6 +156,26 @@ extension AppDelegate: MessagingDelegate {
       } else {
         print("gcm: subscribed to topic: \(topic)")
       }
+    }
+  }
+
+}
+
+extension AppDelegate: NotificationManagerDelegate {
+  func present(_ vc: UIViewController, animated: Bool) {
+    self.mainController.present(vc, animated: true, completion: nil)
+  }
+
+  func openInSafari(url: URL) {
+    self.lastViewedURL = url
+    if let presented = self.mainController.presentedViewController {
+      presented.dismiss(animated: false, completion: { [unowned self] in
+        let svc = SFSafariViewController(url: url)
+        self.mainController.present(svc, animated: true, completion: nil)
+      })
+    } else {
+      let svc = SFSafariViewController(url: url)
+      self.tabController.present(svc, animated: true, completion: nil)
     }
   }
 

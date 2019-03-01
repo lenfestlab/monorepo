@@ -5,12 +5,13 @@ import CoreLocation
 
 class CategoryDataStore: NSObject {
 
-  func retrieveCategories(completion: @escaping (Bool, [Category]?, Int) -> Void) {
+  func retrieveCategories(isCuisine: Bool, completion: @escaping (Bool, [Category]?, Int) -> Void) {
 
     let env = Env()
     let url = "\(env.apiBaseUrlString)/categories.json"
 
-    Alamofire.request(url, method: .get, parameters: nil, encoding: URLEncoding.default, headers: nil).responseJSON { response in
+    let params = ["is_cuisine" : isCuisine]
+    Alamofire.request(url, method: .get, parameters: params, encoding: URLEncoding.default, headers: nil).responseJSON { response in
       guard let json = response.result.value as? JSON else {
         DispatchQueue.main.async { completion(false, [], 0) }
         return

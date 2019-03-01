@@ -3,8 +3,6 @@ import SafariServices
 
 class MainController: UINavigationController {
 
-  var lastViewedURL: URL?
-
   override init(rootViewController: UIViewController) {
     super.init(rootViewController: rootViewController)
   }
@@ -15,25 +13,4 @@ class MainController: UINavigationController {
   required init?(coder aDecoder: NSCoder) {
     fatalError("storyboards are incompatible with truth and beauty")
   }
-}
-
-extension MainController: NotificationManagerDelegate {
-
-  func present(_ vc: UIViewController, animated: Bool) {
-    present(vc, animated: animated, completion: nil)
-  }
-
-  func openInSafari(url: URL) {
-    self.lastViewedURL = url
-    if let presented = self.presentedViewController {
-      presented.dismiss(animated: false, completion: { [unowned self] in
-        let svc = SFSafariViewController(url: url)
-        self.present(svc, animated: true, completion: nil)
-      })
-    } else {
-      let svc = SFSafariViewController(url: url)
-      self.present(svc, animated: true, completion: nil)
-    }
-  }
-
 }

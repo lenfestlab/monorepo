@@ -72,6 +72,11 @@ class PlaceCell: UICollectionViewCell {
       content.append(dollars.joined(separator: ","))
     }
 
+    if let distance = place.distance {
+      let milesAway = String(format: "%0.2f miles away", (distance/1609.344))
+      content.append(milesAway)
+    }
+
     html = content.joined(separator: "   &#8729   ")
 
     let blurb = try! NSMutableAttributedString(data: (html.data(using: String.Encoding.utf8))!, options: [NSAttributedString.DocumentReadingOptionKey.documentType : NSAttributedString.DocumentType.html], documentAttributes: nil)

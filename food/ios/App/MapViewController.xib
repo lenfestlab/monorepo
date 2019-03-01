@@ -11,28 +11,27 @@
     <objects>
         <placeholder placeholderIdentifier="IBFilesOwner" id="-1" userLabel="File's Owner" customClass="MapViewController" customModule="App" customModuleProvider="target">
             <connections>
-                <outlet property="activitylabel" destination="su0-RL-PEx" id="2VM-kw-LfN"/>
                 <outlet property="bottomLayoutConstraint" destination="ToX-J0-ser" id="ANb-Zj-oAC"/>
                 <outlet property="collectionView" destination="xfc-ON-2uS" id="wiN-FJ-1lN"/>
                 <outlet property="locationButton" destination="N35-07-4di" id="VuC-Ij-yda"/>
                 <outlet property="mapView" destination="Dzc-xs-8qs" id="jcm-5S-C5D"/>
-                <outlet property="searchBar" destination="4ME-9d-bvc" id="09W-1S-fGG"/>
+                <outlet property="topBar" destination="KgG-Di-nmV" id="Ujh-Mr-5ua"/>
                 <outlet property="view" destination="i5M-Pr-FkT" id="sfx-zR-JGt"/>
             </connections>
         </placeholder>
         <placeholder placeholderIdentifier="IBFirstResponder" id="-2" customClass="UIResponder"/>
         <view clearsContextBeforeDrawing="NO" contentMode="scaleToFill" id="i5M-Pr-FkT">
-            <rect key="frame" x="0.0" y="0.0" width="375" height="724"/>
+            <rect key="frame" x="0.0" y="0.0" width="375" height="812"/>
             <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
             <subviews>
                 <mapView clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="scaleToFill" mapType="standard" translatesAutoresizingMaskIntoConstraints="NO" id="Dzc-xs-8qs">
-                    <rect key="frame" x="0.0" y="-250" width="375" height="974"/>
+                    <rect key="frame" x="0.0" y="-250" width="375" height="1062"/>
                     <connections>
                         <outlet property="delegate" destination="-1" id="zmO-ui-Tvd"/>
                     </connections>
                 </mapView>
                 <collectionView clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="scaleToFill" showsHorizontalScrollIndicator="NO" showsVerticalScrollIndicator="NO" dataMode="none" translatesAutoresizingMaskIntoConstraints="NO" id="xfc-ON-2uS">
-                    <rect key="frame" x="0.0" y="440" width="375" height="250"/>
+                    <rect key="frame" x="0.0" y="528" width="375" height="250"/>
                     <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                     <constraints>
                         <constraint firstAttribute="height" constant="250" id="gmZ-Xm-eVz"/>
@@ -49,7 +48,7 @@
                     </connections>
                 </collectionView>
                 <button opaque="NO" contentMode="scaleAspectFit" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="N35-07-4di">
-                    <rect key="frame" x="317" y="387" width="43" height="43"/>
+                    <rect key="frame" x="317" y="475" width="43" height="43"/>
                     <constraints>
                         <constraint firstAttribute="width" constant="43" id="MMV-uy-irk"/>
                         <constraint firstAttribute="height" constant="43" id="twR-ev-MoJ"/>
@@ -61,51 +60,47 @@
                         <action selector="centerCurrentLocation" destination="-1" eventType="touchUpInside" id="K2c-SL-8CK"/>
                     </connections>
                 </button>
-                <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="" lineBreakMode="wordWrap" numberOfLines="0" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="su0-RL-PEx">
-                    <rect key="frame" x="0.0" y="0.0" width="375" height="50"/>
-                    <color key="backgroundColor" red="1" green="1" blue="1" alpha="0.53654751712328763" colorSpace="custom" customColorSpace="displayP3"/>
-                    <constraints>
-                        <constraint firstAttribute="height" relation="greaterThanOrEqual" constant="50" id="vnz-gj-Pth"/>
-                    </constraints>
-                    <fontDescription key="fontDescription" type="boldSystem" pointSize="16"/>
-                    <nil key="textColor"/>
-                    <nil key="highlightedColor"/>
-                </label>
-                <searchBar contentMode="redraw" placeholder="Search All Restaurants" showsCancelButton="YES" translatesAutoresizingMaskIntoConstraints="NO" id="4ME-9d-bvc">
-                    <rect key="frame" x="0.0" y="0.0" width="375" height="56"/>
-                    <textInputTraits key="textInputTraits"/>
-                    <scopeButtonTitles>
-                        <string>Title</string>
-                        <string>Title</string>
-                    </scopeButtonTitles>
-                    <connections>
-                        <outlet property="delegate" destination="-1" id="KfM-RN-dK5"/>
-                    </connections>
-                </searchBar>
+                <toolbar opaque="NO" clearsContextBeforeDrawing="NO" contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="KgG-Di-nmV">
+                    <rect key="frame" x="0.0" y="88" width="375" height="44"/>
+                    <items>
+                        <barButtonItem systemItem="flexibleSpace" id="hZt-Fb-fHj"/>
+                        <barButtonItem title="Filter" id="UqB-pd-FD8">
+                            <connections>
+                                <action selector="showFilter" destination="-1" id="ihA-kN-BgJ"/>
+                            </connections>
+                        </barButtonItem>
+                        <barButtonItem systemItem="flexibleSpace" id="crh-fG-yOX"/>
+                        <barButtonItem title="Cusines" id="e2j-QV-99P">
+                            <connections>
+                                <action selector="showCategories" destination="-1" id="153-fT-1xK"/>
+                            </connections>
+                        </barButtonItem>
+                        <barButtonItem systemItem="flexibleSpace" id="94h-YG-CuX"/>
+                        <barButtonItem title="Sort" id="pnA-hQ-6GN"/>
+                        <barButtonItem systemItem="flexibleSpace" id="jlB-4K-JlE"/>
+                    </items>
+                </toolbar>
             </subviews>
             <color key="backgroundColor" red="1" green="1" blue="1" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
             <constraints>
                 <constraint firstItem="Dzc-xs-8qs" firstAttribute="top" secondItem="i5M-Pr-FkT" secondAttribute="top" constant="-250" id="1bc-Pc-XrY"/>
                 <constraint firstItem="Dzc-xs-8qs" firstAttribute="leading" secondItem="i5M-Pr-FkT" secondAttribute="leading" id="4wz-hH-HSb"/>
-                <constraint firstItem="su0-RL-PEx" firstAttribute="leading" secondItem="fq1-Xw-T1U" secondAttribute="leading" id="EGZ-TI-VSO"/>
-                <constraint firstItem="4ME-9d-bvc" firstAttribute="trailing" secondItem="fq1-Xw-T1U" secondAttribute="trailing" id="HU7-Oc-PZM"/>
+                <constraint firstItem="KgG-Di-nmV" firstAttribute="trailing" secondItem="fq1-Xw-T1U" secondAttribute="trailing" id="CPX-sZ-A8V"/>
+                <constraint firstItem="KgG-Di-nmV" firstAttribute="top" secondItem="fq1-Xw-T1U" secondAttribute="top" id="Kla-Ge-nmd"/>
                 <constraint firstItem="xfc-ON-2uS" firstAttribute="trailing" secondItem="i5M-Pr-FkT" secondAttribute="trailing" id="PaD-KR-psm"/>
                 <constraint firstItem="fq1-Xw-T1U" firstAttribute="bottom" secondItem="xfc-ON-2uS" secondAttribute="bottom" id="ToX-J0-ser"/>
                 <constraint firstItem="fq1-Xw-T1U" firstAttribute="trailing" secondItem="N35-07-4di" secondAttribute="trailing" constant="15" id="WnZ-g7-HkX"/>
-                <constraint firstItem="4ME-9d-bvc" firstAttribute="leading" secondItem="fq1-Xw-T1U" secondAttribute="leading" id="YxJ-9I-JZt"/>
                 <constraint firstItem="xfc-ON-2uS" firstAttribute="top" secondItem="N35-07-4di" secondAttribute="bottom" constant="10" id="YzJ-91-ZMD"/>
                 <constraint firstAttribute="bottom" secondItem="Dzc-xs-8qs" secondAttribute="bottom" id="aCd-38-guG"/>
-                <constraint firstItem="fq1-Xw-T1U" firstAttribute="trailing" secondItem="su0-RL-PEx" secondAttribute="trailing" id="aYS-T1-7nD"/>
                 <constraint firstAttribute="trailing" secondItem="Dzc-xs-8qs" secondAttribute="trailing" id="as8-4p-fve"/>
                 <constraint firstItem="xfc-ON-2uS" firstAttribute="leading" secondItem="i5M-Pr-FkT" secondAttribute="leading" id="nk2-DI-C0L"/>
-                <constraint firstItem="su0-RL-PEx" firstAttribute="top" secondItem="fq1-Xw-T1U" secondAttribute="top" id="u4C-4Z-Q6i"/>
-                <constraint firstItem="4ME-9d-bvc" firstAttribute="top" secondItem="fq1-Xw-T1U" secondAttribute="top" id="vYO-BB-zAE"/>
+                <constraint firstItem="KgG-Di-nmV" firstAttribute="leading" secondItem="fq1-Xw-T1U" secondAttribute="leading" id="uHL-p8-hsa"/>
                 <constraint firstItem="Dzc-xs-8qs" firstAttribute="leading" secondItem="i5M-Pr-FkT" secondAttribute="leading" id="x0o-WW-VSY"/>
                 <constraint firstItem="Dzc-xs-8qs" firstAttribute="trailing" secondItem="i5M-Pr-FkT" secondAttribute="trailing" id="xGi-Mq-2q8"/>
             </constraints>
-            <simulatedNavigationBarMetrics key="simulatedTopBarMetrics" translucent="NO" prompted="NO"/>
+            <simulatedNavigationBarMetrics key="simulatedTopBarMetrics" prompted="NO"/>
             <viewLayoutGuide key="safeArea" id="fq1-Xw-T1U"/>
-            <point key="canvasLocation" x="-401" y="165"/>
+            <point key="canvasLocation" x="-58.399999999999999" y="8.8669950738916263"/>
         </view>
     </objects>
     <resources>
