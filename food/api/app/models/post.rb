@@ -62,7 +62,7 @@ class Post < ApplicationRecord
     return nil unless url_string
     uri = URI(url_string)
     uri.scheme = 'https'
-    uri.to_s
+    uri.to_s.gsub("www2", "www")
   end
 
   def self.ensure_present string
