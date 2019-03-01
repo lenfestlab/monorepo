@@ -318,18 +318,6 @@ class MapViewController: UIViewController, FilterViewControllerDelegate, Cuisine
     AppDelegate.shared().lastViewedURL = nil
   }
 
-  @IBAction func settings(sender: UIButton) {
-    let settingsController = SettingsViewController(analytics: self.analytics)
-    navigationController?.pushViewController(settingsController, animated: true)
-    // https://stackoverflow.com/a/23133995
-    navigationItem.backBarButtonItem =
-      UIBarButtonItem(
-        title: "Back",
-        style: .plain,
-        target: nil,
-        action: nil)
-  }
-
   @IBAction func dismissSearch(sender: UIButton) {
     self.searchBar.resignFirstResponder()
   }
@@ -485,18 +473,14 @@ class MapViewController: UIViewController, FilterViewControllerDelegate, Cuisine
   @objc func centerToCurrentPlace() {
     DispatchQueue.main.async {
       if let coordinate = self.currentPlace?.place.coordinate() {
-        self.centerMap(coordinate)
+        self.centerMap(coordinate, span: self.mapView.region.span)
       }
     }
   }
 
-  func centerMap(_ center: CLLocationCoordinate2D, span: MKCoordinateSpan? = MKCoordinateSpan(latitudeDelta: 0.04, longitudeDelta: 0.04)) {
-    let region:MKCoordinateRegion
-    if let span = span {
-      region = MKCoordinateRegion(center: center, span: span)
-    } else {
-      region = MKCoordinateRegion(center: center, span: self.mapView.region.span)
-    }
+  func centerMap(_ center: CLLocationCoordinate2D,
+                 span: MKCoordinateSpan = MKCoordinateSpan(latitudeDelta: 0.04, longitudeDelta: 0.04)) {
+    let region:MKCoordinateRegion = MKCoordinateRegion(center: center, span: span)
     self.mapView.setRegion(region, animated: true)
   }
 

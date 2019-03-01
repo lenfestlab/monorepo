@@ -63,12 +63,14 @@ struct Place: JSONDecodable, Codable, Identifiable {
   let location: Location?
   let post: Post?
   let radius: Double?
+  let distance: Double?
 
   init?(json: JSON) {
     self.identifier = ("identifier" <~~ json)!
     self.location = "location" <~~ json
     self.post = "post" <~~ json
     self.radius = "radius" <~~ json
+    self.distance = "distance" <~~ json
     self.name = "name" <~~ json
   }
 

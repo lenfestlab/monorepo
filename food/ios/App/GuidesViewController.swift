@@ -23,7 +23,7 @@ class GuidesViewController: UITableViewController {
     let nib = UINib.init(nibName: "GuideCell", bundle: nil)
     self.tableView.register(nib, forCellReuseIdentifier: "reuseIdentifier")
     self.style()
-    self.title = "Guides"
+    self.navigationItem.title = "Guides"
     self.view.backgroundColor = UIColor.beige()
 
     let store = CategoryDataStore()
@@ -60,6 +60,7 @@ class GuidesViewController: UITableViewController {
     let mapViewController = MapViewController(analytics: self.analytics, categories: [category])
     mapViewController.title = category.name
     mapViewController.topBarIsHidden = true
+    mapViewController.hidesBottomBarWhenPushed = true
     self.navigationController?.pushViewController(mapViewController, animated: true)
   }
 

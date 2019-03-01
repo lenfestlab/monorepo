@@ -35,7 +35,8 @@ class TabBarViewController: UITabBarController {
 
   @IBAction func settings(sender: UIButton) {
     let settingsController = SettingsViewController(analytics: self.analytics)
-    navigationController?.pushViewController(settingsController, animated: true)
+    settingsController.hidesBottomBarWhenPushed = true
+    self.mapViewController.navigationController?.pushViewController(settingsController, animated: true)
     // https://stackoverflow.com/a/23133995
     navigationItem.backBarButtonItem =
       UIBarButtonItem(
