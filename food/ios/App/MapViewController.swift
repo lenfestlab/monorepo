@@ -360,7 +360,7 @@ class MapViewController: UIViewController, FilterViewControllerDelegate, Cuisine
     if let fontStyle = UIFont(name: "WorkSans-Medium", size: 18) {
       navigationController?.navigationBar.titleTextAttributes = [NSAttributedString.Key.font: fontStyle]
     }
-    self.style()
+    self.styleViewController()
 
     if let location = self.locationManager.latestLocation {
       initialMapDataFetch(coordinate: location.coordinate)
