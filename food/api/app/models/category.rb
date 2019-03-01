@@ -7,6 +7,12 @@ class Category < ApplicationRecord
   has_many :categorizations, dependent: :destroy
   has_many :places, through: :categorizations
 
+  # save associated places to update their cached category_ids
+  after_save :update_places
+  def update_places
+    self.places.map &:save!
+  end
+
   def image_url
     Post.ensure_https read_attribute(:image_urls).first
   end
