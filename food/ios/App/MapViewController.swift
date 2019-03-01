@@ -53,24 +53,6 @@ extension MapViewController: UICollectionViewDelegate {
   }
 }
 
-extension MapViewController: LocationManagerAuthorizationDelegate {
-
-  func locationUpdated(_ locationManager: LocationManager, location: CLLocation) {
-    DispatchQueue.main.async {
-      self.initialMapDataFetch(coordinate: location.coordinate)
-    }
-  }
-
-  func authorized(_ locationManager: LocationManager, status: CLAuthorizationStatus) {
-    print("locationManagerDelegate authorized")
-  }
-
-  func notAuthorized(_ locationManager: LocationManager, status: CLAuthorizationStatus) {
-    print("locationManagerDelegate notAuthorized")
-  }
-
-}
-
 extension MapViewController : MKMapViewDelegate {
 
   func mapView(_ mapView: MKMapView, didUpdate userLocation: MKUserLocation) {
@@ -298,7 +280,6 @@ class MapViewController: UIViewController, FilterViewControllerDelegate, Cuisine
     self.categories = categories
     self.analytics = analytics
     super.init(nibName: nil, bundle: nil)
-    locationManager.authorizationDelegate = self
   }
 
   required init?(coder aDecoder: NSCoder) {
@@ -338,8 +319,18 @@ class MapViewController: UIViewController, FilterViewControllerDelegate, Cuisine
     self.navigationController?.present(navigationController, animated: true, completion: nil)
   }
 
+  @objc func onLocationUpdated(_ notification: Notification) {
+    if let location = notification.object as? CLLocation {
+      DispatchQueue.main.async {
+        self.initialMapDataFetch(coordinate: location.coordinate)
+      }
+    }
+  }
+
   override func viewDidLoad() {
     super.viewDidLoad()
+
+    NotificationCenter.default.addObserver(self, selector: #selector(onLocationUpdated(_:)), name: .locationUpdated, object: nil)
 
     self.topBar?.isHidden = self.topBarIsHidden
     self.topBar?.barTintColor =  UIColor.beige()
@@ -370,9 +361,14 @@ class MapViewController: UIViewController, FilterViewControllerDelegate, Cuisine
       navigationController?.navigationBar.titleTextAttributes = [NSAttributedString.Key.font: fontStyle]
     }
     self.style()
-    let coordinate = CLLocationCoordinate2D(latitude: 39.9526, longitude: -75.1652)
-    centerMap(coordinate)
-    fetchMapData(coordinate: coordinate)
+
+    if let location = self.locationManager.latestLocation {
+      initialMapDataFetch(coordinate: location.coordinate)
+    } else {
+      let coordinate = CLLocationCoordinate2D(latitude: 39.9526, longitude: -75.1652)
+      centerMap(coordinate)
+      fetchMapData(coordinate: coordinate)
+    }
 
 //    self.navigationItem.rightBarButtonItem = UIBarButtonItem(title: "Filter", style: .plain, target: self, action: #selector(showFilter))
 
