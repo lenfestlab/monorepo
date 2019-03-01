@@ -3,6 +3,10 @@ import CoreLocation
 import UserNotifications
 import SwiftDate
 
+extension Notification.Name {
+  static let locationUpdated = Notification.Name("locationUpdated")
+}
+
 extension CLAuthorizationStatus: CustomStringConvertible, CustomDebugStringConvertible {
   public var description: String {
     switch self {
@@ -19,7 +23,6 @@ extension CLAuthorizationStatus: CustomStringConvertible, CustomDebugStringConve
 }
 
 @objc protocol LocationManagerAuthorizationDelegate: class {
-  @objc optional func locationUpdated(_ locationManager: LocationManager, location: CLLocation)
   func authorized(_ locationManager: LocationManager, status: CLAuthorizationStatus)
   func notAuthorized(_ locationManager: LocationManager, status: CLAuthorizationStatus)
 }
@@ -94,7 +97,7 @@ class LocationManager: NSObject, CLLocationManagerDelegate {
   public var latestLocation: CLLocation? {
     didSet {
       if let location = latestLocation {
-        authorizationDelegate?.locationUpdated?(self, location: location)
+        NotificationCenter.default.post(name: .locationUpdated, object: location)
       }
     }
   }
