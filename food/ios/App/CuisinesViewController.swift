@@ -1,40 +1,12 @@
 import UIKit
 
 protocol CuisinesViewControllerDelegate: class {
-  func categoriesUpdated(_ viewController: CategoryViewController, categories: [Category])
+  func categoriesUpdated(_ viewController: CuisinesViewController, categories: [Category])
 }
 
-class CuisinesViewController: CategoryViewController {
+class CuisinesViewController: UITableViewController {
 
   weak var delegate: CuisinesViewControllerDelegate?
-
-  init(analytics: AnalyticsManager) {
-    super.init(analytics: analytics, isCuisine: true)
-  }
-  
-  required init?(coder aDecoder: NSCoder) {
-    fatalError("init(coder:) has not been implemented")
-  }
-
-  override func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
-    let cell = tableView.cellForRow(at: indexPath)
-    cell?.accessoryType  = .checkmark
-  }
-
-  override func tableView(_ tableView: UITableView, didDeselectRowAt indexPath: IndexPath) {
-    let cell = tableView.cellForRow(at: indexPath)
-    cell?.accessoryType  = .none
-  }
-
-  override func viewDidLoad() {
-    super.viewDidLoad()
-
-    self.tableView.allowsMultipleSelection = true
-
-    self.title = "Cuisines"
-    self.navigationItem.leftBarButtonItem = UIBarButtonItem(title: "Cancel", style: .plain, target: self, action: #selector(dismissFilter))
-    self.navigationItem.rightBarButtonItem = UIBarButtonItem(title: "Apply", style: .plain, target: self, action: #selector(applyFilter))
-  }
 
   @objc func applyFilter() {
     var selectedCategories = [Category]()
@@ -50,16 +22,13 @@ class CuisinesViewController: CategoryViewController {
   @objc func dismissFilter() {
     self.dismiss(animated: true, completion: nil)
   }
-}
-
-class CategoryViewController: UITableViewController {
 
   var categories = [Category]()
   private let analytics: AnalyticsManager
   var isCuisine = false
 
-  init(analytics: AnalyticsManager, isCuisine: Bool) {
-    self.isCuisine = isCuisine
+  init(analytics: AnalyticsManager) {
+    self.isCuisine = true
     self.analytics = analytics
     super.init(nibName: nil, bundle: nil)
     navigationItem.hidesBackButton = true
@@ -68,13 +37,18 @@ class CategoryViewController: UITableViewController {
   required init?(coder aDecoder: NSCoder) {
     fatalError("init(coder:) has not been implemented")
   }
-  
+
   override func viewDidLoad() {
     super.viewDidLoad()
 
+    self.tableView.allowsMultipleSelection = true
+
+    self.title = "Cuisines"
+    self.navigationItem.leftBarButtonItem = UIBarButtonItem(title: "Cancel", style: .plain, target: self, action: #selector(dismissFilter))
+    self.navigationItem.rightBarButtonItem = UIBarButtonItem(title: "Apply", style: .plain, target: self, action: #selector(applyFilter))
+
     self.tableView.register(UITableViewCell.self, forCellReuseIdentifier: "reuseIdentifier")
     self.style()
-    self.title = "Guides"
     self.view.backgroundColor = UIColor.beige()
 
     let store = CategoryDataStore()
@@ -111,11 +85,13 @@ class CategoryViewController: UITableViewController {
    }
 
   override func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
-    let category = self.categories[indexPath.row]
-    let mapViewController = MapViewController(analytics: self.analytics, categories: [category])
-    mapViewController.title = category.name
-    mapViewController.topBarIsHidden = true
-    self.navigationController?.pushViewController(mapViewController, animated: true)
+    let cell = tableView.cellForRow(at: indexPath)
+    cell?.accessoryType  = .checkmark
+  }
+
+  override func tableView(_ tableView: UITableView, didDeselectRowAt indexPath: IndexPath) {
+    let cell = tableView.cellForRow(at: indexPath)
+    cell?.accessoryType  = .none
   }
 
 }

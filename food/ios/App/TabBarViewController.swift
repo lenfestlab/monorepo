@@ -3,7 +3,7 @@ import UIKit
 class TabBarViewController: UITabBarController {
 
   var mapViewController: MapViewController!
-  var guideViewController: CategoryViewController!
+  var guideViewController: GuidesViewController!
 
   private let analytics: AnalyticsManager
 
@@ -14,7 +14,7 @@ class TabBarViewController: UITabBarController {
     let mapNavigationController = UINavigationController(rootViewController: self.mapViewController)
     mapNavigationController.tabBarItem.title = "All Restaurants"
 
-    self.guideViewController = CategoryViewController(analytics: self.analytics, isCuisine: false)
+    self.guideViewController = GuidesViewController(analytics: self.analytics, isCuisine: false)
     let guideNavigationController = UINavigationController(rootViewController: self.guideViewController)
     guideNavigationController.tabBarItem.title = "Guides"
 

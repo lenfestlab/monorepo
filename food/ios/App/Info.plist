@@ -38,11 +38,6 @@
 		<true/>
 		<key>NSExceptionDomains</key>
 		<dict>
-			<key>philly.com</key>
-			<dict>
-				<key>NSIncludesSubdomains</key>
-				<true/>
-			</dict>
 			<key>lenfest-benji-production.herokuapp.com</key>
 			<dict>
 				<key>NSIncludesSubdomains</key>

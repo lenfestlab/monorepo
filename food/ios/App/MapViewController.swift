@@ -175,7 +175,7 @@ class MapViewController: UIViewController, FilterViewControllerDelegate, Cuisine
     }
   }
 
-  func categoriesUpdated(_ viewController: CategoryViewController, categories: [Category]) {
+  func categoriesUpdated(_ viewController: CuisinesViewController, categories: [Category]) {
     viewController.dismiss(animated: true, completion: nil)
 
     print(categories)
