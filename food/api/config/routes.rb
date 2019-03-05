@@ -3,6 +3,7 @@ Rails.application.routes.draw do
   resources :places, only: :index
   resources :categories, only: :index
   resources :installations, only: :update
+  resources :nabes, only: :index
 
   # static pages
   get "/privacy", to: redirect("privacy.html")
