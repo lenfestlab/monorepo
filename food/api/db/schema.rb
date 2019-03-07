@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2019_02_28_161828) do
+ActiveRecord::Schema.define(version: 2019_03_05_181940) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -51,6 +51,18 @@ ActiveRecord::Schema.define(version: 2019_02_28_161828) do
     t.index ["email"], name: "index_installations_on_email"
     t.index ["icloud_id"], name: "index_installations_on_icloud_id"
     t.index ["identifier"], name: "index_installations_on_identifier"
+  end
+
+  create_table "nabes", force: :cascade do |t|
+    t.uuid "identifier", default: -> { "uuid_generate_v4()" }
+    t.string "key"
+    t.string "name"
+    t.geography "geog", limit: {:srid=>4326, :type=>"geometry", :geographic=>true}
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["geog"], name: "index_nabes_on_geog", using: :gist
+    t.index ["identifier"], name: "index_nabes_on_identifier"
+    t.index ["key"], name: "index_nabes_on_key"
   end
 
   create_table "places", force: :cascade do |t|

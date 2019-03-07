@@ -30,6 +30,14 @@ class Place < ApplicationRecord
       .order("#{distance_calc} ASC")
   }
 
+  scope :located_in, -> (nabe_uuids) {
+    return unless nabe_uuids.present?
+    # https://postgis.net/docs/ST_Union.html
+    # https://gis.stackexchange.com/a/704
+    subquery = Nabe.union_geog_of(nabe_uuids).to_sql
+    where("ST_Covers((#{subquery}), lonlat)", nabe_uuids)
+  }
+
 
   ## Filters
   #
