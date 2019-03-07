@@ -19,14 +19,14 @@ extension MapViewController: UICollectionViewDataSource {
   }
 
   func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
-    return placesFiltered.count
+    return self.placeStore.placesFiltered.count
   }
 
   func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
     let cell = collectionView.dequeueReusableCell(withReuseIdentifier: reuseIdentifier, for: indexPath) as! PlaceCell
 
     // Configure the cell
-    let mapPlace:MapPlace = self.placesFiltered[indexPath.row]
+    let mapPlace:MapPlace = self.placeStore.placesFiltered[indexPath.row]
     let place = mapPlace.place
     cell.setPlace(place: place)
     return cell
@@ -37,7 +37,7 @@ extension MapViewController: UICollectionViewDelegate {
 
   func collectionView(_ collectionView: UICollectionView, shouldSelectItemAt indexPath: IndexPath) -> Bool {
     if indexOfMajorCell() == indexPath.row {
-      let mapPlace:MapPlace = self.placesFiltered[indexPath.row]
+      let mapPlace:MapPlace = self.placeStore.placesFiltered[indexPath.row]
       let place:Place = mapPlace.place
       analytics.log(.tapsOnViewArticle(post: place.post, currentLocation: self.lastCoordinate))
       let app = AppDelegate.shared()
@@ -46,7 +46,7 @@ extension MapViewController: UICollectionViewDelegate {
       }
     } else {
       scrollToItem(at: indexPath)
-      let mapPlace:MapPlace = self.placesFiltered[indexPath.row]
+      let mapPlace:MapPlace = self.placeStore.placesFiltered[indexPath.row]
       self.currentPlace = mapPlace
     }
     return true
@@ -79,7 +79,7 @@ extension MapViewController : MKMapViewDelegate {
 
   func mapView(_ mapView: MKMapView, didSelect view: MKAnnotationView) {
     let indexPath = IndexPath(row: view.tag, section: 0)
-    let mapPlace:MapPlace = self.places[indexPath.row]
+    let mapPlace:MapPlace = self.placeStore.places[indexPath.row]
     let place = mapPlace.place
     analytics.log(.tapsOnPin(post: place.post, currentLocation: self.lastCoordinate))
     scrollToItem(at: indexPath)
@@ -109,11 +109,11 @@ extension MapViewController: UISearchBarDelegate {
   }
 
   func searchBarTextDidChange(searchText: String) {
-    self.updateFilter(searchText: searchText)
+    self.placeStore.updateFilter(searchText: searchText)
     self.reloadMap()
 
-    if (self.placesFiltered.count > 0) {
-      let mapPlace = self.placesFiltered.first
+    if (self.placeStore.placesFiltered.count > 0) {
+      let mapPlace = self.placeStore.placesFiltered.first
       self.currentPlace = mapPlace
     }
 
@@ -138,6 +138,24 @@ extension MapViewController: UISearchBarDelegate {
 
 }
 
+extension MapViewController : PlaceStoreDelegate {
+  func didSetPlaceFiltered() {
+    var annotations:[MKAnnotation] = []
+    for (index, place) in self.placeStore.placesFiltered.enumerated() {
+      if let annotation = place.annotation {
+        annotation.index = index
+        annotations.append(annotation)
+      }
+    }
+    self.annotations = annotations
+  }
+
+  func filterText() -> String? {
+    return self.searchBar.text
+  }
+
+}
+
 class MapViewController: UIViewController, FilterViewControllerDelegate, CuisinesViewControllerDelegate {
 
   let padding = CGFloat(45)
@@ -150,6 +168,7 @@ class MapViewController: UIViewController, FilterViewControllerDelegate, Cuisine
   var ratings = [Int]()
   var prices = [Int]()
   var categories = [Category]()
+  let placeStore = PlaceStore()
 
   var topBarIsHidden = false {
     didSet {
@@ -179,46 +198,6 @@ class MapViewController: UIViewController, FilterViewControllerDelegate, Cuisine
 
     let center = mapView.region.center
     fetchMapData(coordinate: center)
-  }
-
-
-
-  var placesFiltered = [MapPlace]()
-  {
-    didSet
-    {
-      var annotations:[MKAnnotation] = []
-      for (index, place) in placesFiltered.enumerated() {
-        if let annotation = place.annotation {
-          annotation.index = index
-          annotations.append(annotation)
-        }
-      }
-      self.annotations = annotations
-    }
-  }
-
-  var places:[MapPlace] = [MapPlace]()
-  {
-    didSet
-    {
-      self.updateFilter(searchText: self.searchBar.text)
-    }
-  }
-
-  func updateFilter(searchText: String?) {
-    if let searchText = searchText, searchText.count > 0{
-      placesFiltered = self.places.filter {
-        if let title = $0.place.name?.lowercased() {
-          if title.contains(searchText.lowercased()) {
-            return true
-          }
-        }
-        return false
-      }
-    } else {
-      placesFiltered = self.places
-    }
   }
 
   private var _currentPlace:MapPlace? {
@@ -322,6 +301,8 @@ class MapViewController: UIViewController, FilterViewControllerDelegate, Cuisine
     self.collectionView.delegate = self
     self.collectionView.dataSource = self
 
+    self.placeStore.delegate = self
+
     NotificationCenter.default.addObserver(self, selector: #selector(onLocationUpdated(_:)), name: .locationUpdated, object: nil)
 
     self.topBar?.isHidden = self.topBarIsHidden
@@ -401,10 +382,10 @@ class MapViewController: UIViewController, FilterViewControllerDelegate, Cuisine
       for place in data {
         places.append(MapPlace(place: place))
       }
-      self.places = places
+      self.placeStore.places = places
 
-      if (self.placesFiltered.count > 0) {
-        let mapPlace = self.placesFiltered.first
+      if (self.placeStore.placesFiltered.count > 0) {
+        let mapPlace = self.placeStore.placesFiltered.first
         self.currentPlace = mapPlace
       }
 
@@ -443,7 +424,7 @@ class MapViewController: UIViewController, FilterViewControllerDelegate, Cuisine
   func scrollViewDidEndDecelerating(_ scrollView: UIScrollView) {
     var mapPlace:MapPlace
     let snapToIndex = indexOfMajorCell()
-    mapPlace = self.placesFiltered[snapToIndex]
+    mapPlace = self.placeStore.placesFiltered[snapToIndex]
     let place = mapPlace.place
 
     analytics.log(.swipesCarousel(post: place.post, currentLocation: self.lastCoordinate))
