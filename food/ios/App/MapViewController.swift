@@ -239,22 +239,11 @@ class MapViewController: UIViewController, FilterViewControllerDelegate, Cuisine
       _currentPlace = newValue
     }
     get {
-     return _currentPlace
+      return _currentPlace
     }
   }
 
   var initalDataFetched = false
-
-  class MapPlace : NSObject {
-    var place: Place
-    var annotation : ABPointAnnotation?
-
-    init(place: Place) {
-      self.place = place
-      self.annotation = ABPointAnnotation(place: place)
-    }
-
-  }
 
   var lastCoordinate: CLLocationCoordinate2D? {
     return locationManager.latestCoordinate
@@ -330,6 +319,9 @@ class MapViewController: UIViewController, FilterViewControllerDelegate, Cuisine
   override func viewDidLoad() {
     super.viewDidLoad()
 
+    self.collectionView.delegate = self
+    self.collectionView.dataSource = self
+
     NotificationCenter.default.addObserver(self, selector: #selector(onLocationUpdated(_:)), name: .locationUpdated, object: nil)
 
     self.topBar?.isHidden = self.topBarIsHidden
@@ -356,10 +348,6 @@ class MapViewController: UIViewController, FilterViewControllerDelegate, Cuisine
     let nib = UINib(nibName: "PlaceCell", bundle:nil)
     self.collectionView.register(nib, forCellWithReuseIdentifier: reuseIdentifier)
 
-//    self.title = env.appName
-    if let fontStyle = UIFont(name: "WorkSans-Medium", size: 18) {
-      navigationController?.navigationBar.titleTextAttributes = [NSAttributedString.Key.font: fontStyle]
-    }
     self.styleViewController()
 
     if let location = self.locationManager.latestLocation {

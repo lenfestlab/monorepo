@@ -42,10 +42,6 @@
                         <size key="footerReferenceSize" width="0.0" height="0.0"/>
                         <inset key="sectionInset" minX="0.0" minY="0.0" maxX="0.0" maxY="0.0"/>
                     </collectionViewFlowLayout>
-                    <connections>
-                        <outlet property="dataSource" destination="-1" id="YoU-h8-gmc"/>
-                        <outlet property="delegate" destination="-1" id="s7y-W2-FbS"/>
-                    </connections>
                 </collectionView>
                 <button opaque="NO" contentMode="scaleAspectFit" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="N35-07-4di">
                     <rect key="frame" x="317" y="475" width="43" height="43"/>
@@ -70,7 +66,7 @@
                             </connections>
                         </barButtonItem>
                         <barButtonItem systemItem="flexibleSpace" id="crh-fG-yOX"/>
-                        <barButtonItem title="Cusines" id="e2j-QV-99P">
+                        <barButtonItem title="Cusines" style="plain" id="e2j-QV-99P">
                             <connections>
                                 <action selector="showCategories" destination="-1" id="153-fT-1xK"/>
                             </connections>
