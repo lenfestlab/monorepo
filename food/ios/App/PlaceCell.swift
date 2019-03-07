@@ -1,6 +1,5 @@
 import UIKit
 import AlamofireImage
-import CoreLocation
 
 class PlaceCell: UICollectionViewCell {
   
@@ -73,10 +72,7 @@ class PlaceCell: UICollectionViewCell {
       content.append(dollars.joined(separator: ","))
     }
 
-    let locationManager = LocationManager.shared
-    if let currentLocation = locationManager.latestLocation {
-      let location = CLLocation(latitude: (place.location?.latitude)!, longitude: (place.location?.longitude)!)
-      let distance = location.distance(from: currentLocation)
+    if let distance = place.distance {
       let milesAway = String(format: "%0.2f miles away", (distance/1609.344))
       content.append(milesAway)
     }
