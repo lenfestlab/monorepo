@@ -48,7 +48,7 @@ class CuisinesViewController: UITableViewController {
     self.navigationItem.rightBarButtonItem = UIBarButtonItem(title: "Apply", style: .plain, target: self, action: #selector(applyFilter))
 
     self.tableView.register(UITableViewCell.self, forCellReuseIdentifier: "reuseIdentifier")
-    self.style()
+    self.styleViewController()
     self.view.backgroundColor = UIColor.beige()
 
     let store = CategoryDataStore()

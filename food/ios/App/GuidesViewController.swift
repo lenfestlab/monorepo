@@ -22,7 +22,7 @@ class GuidesViewController: UITableViewController {
 
     let nib = UINib.init(nibName: "GuideCell", bundle: nil)
     self.tableView.register(nib, forCellReuseIdentifier: "reuseIdentifier")
-    self.style()
+    self.styleViewController()
     self.navigationItem.title = "Guides"
     self.view.backgroundColor = UIColor.beige()
 
