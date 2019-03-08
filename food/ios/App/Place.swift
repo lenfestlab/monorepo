@@ -38,7 +38,7 @@ struct Post: JSONDecodable, Codable, Identifiable {
   let imageURL: URL?
   let price: Array<Int>?
   let rating: Int?
-  var link: URL?
+  var link: URL? = URL(string: "http://media.philly.com/storage/special_projects/best-restaurants-philadelphia-philly-2018.html")
   var linkShort: URL?
 
   init?(json: JSON) {

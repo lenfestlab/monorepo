@@ -7,7 +7,6 @@ import RxSwift
 import RxCocoa
 import NSObject_Rx
 
-private let reuseIdentifier = "PlaceCell"
 private let mapPinIdentifier = "pin"
 
 fileprivate let sectionInsets = UIEdgeInsets(top: 0, left: 0, bottom: 0, right: 0)
@@ -97,49 +96,14 @@ extension MapViewController: UIGestureRecognizerDelegate {
 
 }
 
-extension MapViewController: UISearchBarDelegate {
+class MapViewController: UIViewController {
 
-  func searchBarTextDidBeginEditing(_ searchBar: UISearchBar) {
-    searchBar.showsCancelButton = true
-  }
+  let padding = CGFloat(45)
+  let env: Env
+  let locationManager = LocationManager.shared
+  let placeStore : PlaceStore!
 
-  func searchBarShouldEndEditing(_ searchBar: UISearchBar) -> Bool {
-    searchBar.showsCancelButton = false
-    return true
-  }
-
-  func searchBarTextDidChange(searchText: String) {
-    self.placeStore.updateFilter(searchText: searchText)
-    self.reloadMap()
-
-    if (self.placeStore.placesFiltered.count > 0) {
-      let mapPlace = self.placeStore.placesFiltered.first
-      self.currentPlace = mapPlace
-    }
-
-    self.collectionView.contentOffset = CGPoint.zero
-    self.collectionView.reloadData()
-  }
-
-  func clearSearch() {
-    searchBar.text = ""
-    searchBarTextDidChange(searchText: "")
-    searchBar.resignFirstResponder()
-  }
-
-  func searchBarCancelButtonClicked(_ searchBar: UISearchBar) {
-    clearSearch()
-  }
-
-  func searchBarSearchButtonClicked(_ searchBar: UISearchBar) {
-    searchBarTextDidChange(searchText: searchBar.text ?? "")
-    searchBar.resignFirstResponder()
-  }
-
-}
-
-extension MapViewController : PlaceStoreDelegate {
-  func didSetPlaceFiltered() {
+  func updateAnnotations() {
     var annotations:[MKAnnotation] = []
     for (index, place) in self.placeStore.placesFiltered.enumerated() {
       if let annotation = place.annotation {
@@ -148,56 +112,6 @@ extension MapViewController : PlaceStoreDelegate {
       }
     }
     self.annotations = annotations
-  }
-
-  func filterText() -> String? {
-    return self.searchBar.text
-  }
-
-}
-
-class MapViewController: UIViewController, FilterViewControllerDelegate, CuisinesViewControllerDelegate {
-
-  let padding = CGFloat(45)
-  let spacing = CGFloat(0)
-  let env: Env
-  let dataStore = PlaceDataStore()
-  let locationManager = LocationManager.shared
-  var cuisineFilter : CuisinesViewController!
-  var filter : FilterViewController!
-  var ratings = [Int]()
-  var prices = [Int]()
-  var categories = [Category]()
-  let placeStore = PlaceStore()
-
-  var topBarIsHidden = false {
-    didSet {
-      self.topBar?.isHidden = topBarIsHidden
-    }
-  }
-
-  func categoriesUpdated(_ viewController: CuisinesViewController, categories: [Category]) {
-    viewController.dismiss(animated: true, completion: nil)
-
-    print(categories)
-
-    self.categories = categories
-
-    let center = mapView.region.center
-    fetchMapData(coordinate: center)
-  }
-
-  func filterUpdated(_ viewController: FilterViewController, ratings: [Int], prices: [Int]) {
-    viewController.dismiss(animated: true, completion: nil)
-
-    print(ratings)
-    print(prices)
-
-    self.ratings = ratings
-    self.prices = prices
-
-    let center = mapView.region.center
-    fetchMapData(coordinate: center)
   }
 
   private var _currentPlace:MapPlace? {
@@ -231,22 +145,14 @@ class MapViewController: UIViewController, FilterViewControllerDelegate, Cuisine
   @IBOutlet weak var collectionView:UICollectionView!
   @IBOutlet weak var mapView:MKMapView!
   @IBOutlet weak var locationButton:UIButton!
-  @IBOutlet weak var topBar: UIToolbar?
-
-  lazy var searchBar: UISearchBar! = {
-    let searchBar = UISearchBar(frame: CGRect(x: 0, y: 0, width: 600, height: 60))
-    searchBar.placeholder = "Search All Restaurants"
-    searchBar.delegate = self
-    return searchBar
-  }()
 
   private let analytics: AnalyticsManager
   @IBOutlet weak var settingsButton:UIButton!
 
-  init(analytics: AnalyticsManager, categories: [Category] = []) {
+  init(analytics: AnalyticsManager, placeStore: PlaceStore) {
     env = Env()
-    self.categories = categories
     self.analytics = analytics
+    self.placeStore = placeStore
     super.init(nibName: nil, bundle: nil)
   }
 
@@ -267,24 +173,13 @@ class MapViewController: UIViewController, FilterViewControllerDelegate, Cuisine
     AppDelegate.shared().lastViewedURL = nil
   }
 
-  @IBAction func dismissSearch(sender: UIButton) {
-    self.searchBar.resignFirstResponder()
-  }
-
-
   func initialMapDataFetch(coordinate: CLLocationCoordinate2D) {
     if initalDataFetched {
       return
     }
     initalDataFetched = true
     centerMap(coordinate)
-    fetchMapData(coordinate: coordinate)
-  }
-
-  @IBAction func showCategories() {
-    clearSearch()
-    let navigationController = UINavigationController(rootViewController: self.cuisineFilter)
-    self.navigationController?.present(navigationController, animated: true, completion: nil)
+    self.placeStore.fetchMapData(coordinate: coordinate)
   }
 
   @objc func onLocationUpdated(_ notification: Notification) {
@@ -295,25 +190,23 @@ class MapViewController: UIViewController, FilterViewControllerDelegate, Cuisine
     }
   }
 
+  func fetchedMapData() {
+    if (self.placeStore.placesFiltered.count > 0) {
+      let mapPlace = self.placeStore.placesFiltered.first
+      self.currentPlace = mapPlace
+    }
+
+    self.collectionView.contentOffset = CGPoint.zero
+    self.collectionView.reloadData()
+  }
+
   override func viewDidLoad() {
     super.viewDidLoad()
 
     self.collectionView.delegate = self
     self.collectionView.dataSource = self
 
-    self.placeStore.delegate = self
-
     NotificationCenter.default.addObserver(self, selector: #selector(onLocationUpdated(_:)), name: .locationUpdated, object: nil)
-
-    self.topBar?.isHidden = self.topBarIsHidden
-    self.topBar?.barTintColor =  UIColor.beige()
-    self.topBar?.tintColor =  UIColor.offRed()
-
-    self.cuisineFilter = CuisinesViewController(analytics: self.analytics)
-    self.cuisineFilter?.delegate = self
-
-    self.filter = FilterViewController()
-    self.filter?.filterDelegate = self
 
     let layout = UPCarouselFlowLayout()
     layout.scrollDirection = .horizontal
@@ -329,24 +222,18 @@ class MapViewController: UIViewController, FilterViewControllerDelegate, Cuisine
     let nib = UINib(nibName: "PlaceCell", bundle:nil)
     self.collectionView.register(nib, forCellWithReuseIdentifier: reuseIdentifier)
 
-    self.styleViewController()
+    self.navigationController?.styleController()
 
     if let location = self.locationManager.latestLocation {
       initialMapDataFetch(coordinate: location.coordinate)
     } else {
       let coordinate = CLLocationCoordinate2D(latitude: 39.9526, longitude: -75.1652)
       centerMap(coordinate)
-      fetchMapData(coordinate: coordinate)
+      self.placeStore.fetchMapData(coordinate: coordinate)
     }
 
 //    self.navigationItem.rightBarButtonItem = UIBarButtonItem(title: "Filter", style: .plain, target: self, action: #selector(showFilter))
 
-  }
-
-  @IBAction func showFilter() {
-    clearSearch()
-    let navigationController = UINavigationController(rootViewController: self.filter)
-    self.navigationController?.present(navigationController, animated: true, completion: nil)
   }
 
   @IBAction func centerCurrentLocation() {
@@ -375,26 +262,6 @@ class MapViewController: UIViewController, FilterViewControllerDelegate, Cuisine
     self.mapView.removeAnnotations(self.mapView.annotations)
     self.mapView.addAnnotations(self.annotations)
   }
-
-  func fetchMapData(coordinate:CLLocationCoordinate2D, completionBlock: (() -> (Void))? = nil) {
-    dataStore.retrievePlaces(coordinate: coordinate, prices: self.prices, ratings: self.ratings, categories: self.categories, limit: 1000) { (success, data, count) in
-      var places = [MapPlace]()
-      for place in data {
-        places.append(MapPlace(place: place))
-      }
-      self.placeStore.places = places
-
-      if (self.placeStore.placesFiltered.count > 0) {
-        let mapPlace = self.placeStore.placesFiltered.first
-        self.currentPlace = mapPlace
-      }
-
-      self.collectionView.contentOffset = CGPoint.zero
-      self.collectionView.reloadData()
-      completionBlock?()
-    }
-  }
-
 
   private var collectionViewFlowLayout: UICollectionViewFlowLayout {
     return self.collectionView.collectionViewLayout as! UICollectionViewFlowLayout
