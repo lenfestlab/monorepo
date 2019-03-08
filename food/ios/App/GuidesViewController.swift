@@ -22,7 +22,7 @@ class GuidesViewController: UITableViewController {
 
     let nib = UINib.init(nibName: "GuideCell", bundle: nil)
     self.tableView.register(nib, forCellReuseIdentifier: "reuseIdentifier")
-    self.styleViewController()
+    self.navigationController?.styleController()
     self.navigationItem.title = "Guides"
     self.view.backgroundColor = UIColor.beige()
 
@@ -57,11 +57,10 @@ class GuidesViewController: UITableViewController {
 
   override func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
     let category = self.categories[indexPath.row]
-    let mapViewController = MapViewController(analytics: self.analytics, categories: [category])
-    mapViewController.title = category.name
-    mapViewController.topBarIsHidden = true
-    mapViewController.hidesBottomBarWhenPushed = true
-    self.navigationController?.pushViewController(mapViewController, animated: true)
+    let placeController = PlacesViewController(analytics: self.analytics, categories: [category])
+    placeController.title = category.name
+    placeController.topBarIsHidden = true
+    self.navigationController?.pushViewController(placeController, animated: true)
   }
 
 }

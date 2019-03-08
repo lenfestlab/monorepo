@@ -24,7 +24,7 @@ class NotificationViewController: UIViewController, UNUserNotificationCenterDele
 
     stepLabel.text = "Step 1 of 3:"
 
-    self.styleViewController()
+    self.navigationController?.styleController()
 
     doneButton.layer.cornerRadius = 5.0
     doneButton.clipsToBounds = true

@@ -32,7 +32,7 @@ class EmailViewController: UIViewController, UITextFieldDelegate {
 
     self.textField.delegate = self
 
-    self.styleViewController()
+    self.navigationController?.styleController()
 
     self.textView.layer.borderWidth = 1
     self.textView.layer.cornerRadius = 10

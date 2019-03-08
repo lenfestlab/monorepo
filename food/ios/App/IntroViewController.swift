@@ -19,7 +19,7 @@ class IntroViewController: UIViewController {
   override func viewDidLoad() {
     super.viewDidLoad()
 
-    self.styleViewController()
+    self.navigationController?.styleController()
 
     doneButton.layer.cornerRadius = 5.0
     doneButton.clipsToBounds = true

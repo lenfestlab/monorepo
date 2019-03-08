@@ -8,12 +8,22 @@ class CuisinesViewController: UITableViewController {
 
   weak var delegate: CuisinesViewControllerDelegate?
 
+  let alphabet = ["A","B","C","D", "E", "F","G","H","I","J","K","L","M","N","O","P","Q","R","S","T","U","V","W","X","Y","Z"]
+
+  override func sectionIndexTitles(for tableView: UITableView) -> [String]? {
+    return self.alphabet
+  }
+
   @objc func applyFilter() {
     var selectedCategories = [Category]()
 
     for indexPath in self.tableView?.indexPathsForSelectedRows ?? [] {
-      let category = self.categories[indexPath.row]
-      selectedCategories.append(category)
+      if let character = self.alphabet[indexPath.section].first {
+        if let categories = self.sortedCategories[character] {
+          let category = categories[indexPath.row]
+          selectedCategories.append(category)
+        }
+      }
     }
 
     self.delegate?.categoriesUpdated(self, categories: selectedCategories)
@@ -23,7 +33,7 @@ class CuisinesViewController: UITableViewController {
     self.dismiss(animated: true, completion: nil)
   }
 
-  var categories = [Category]()
+  var sortedCategories = [Character : [Category]]()
   private let analytics: AnalyticsManager
   var isCuisine = false
 
@@ -48,13 +58,23 @@ class CuisinesViewController: UITableViewController {
     self.navigationItem.rightBarButtonItem = UIBarButtonItem(title: "Apply", style: .plain, target: self, action: #selector(applyFilter))
 
     self.tableView.register(UITableViewCell.self, forCellReuseIdentifier: "reuseIdentifier")
-    self.styleViewController()
+    self.navigationController?.styleController()
     self.view.backgroundColor = UIColor.beige()
+
+    for string in self.alphabet {
+      if let character = string.first {
+        self.sortedCategories[character] = [Category]()
+      }
+    }
 
     let store = CategoryDataStore()
     store.retrieveCategories(isCuisine: self.isCuisine) { (success, categories, count) in
       if let categories = categories {
-        self.categories = categories
+        for category in categories {
+          if let character = category.name.uppercased().first {
+            self.sortedCategories[character]?.append(category)
+          }
+        }
       }
       self.tableView.reloadData()
     }
@@ -63,21 +83,30 @@ class CuisinesViewController: UITableViewController {
   // MARK: - Table view data source
 
   override func numberOfSections(in tableView: UITableView) -> Int {
-    return 1
+    return self.alphabet.count
   }
 
   override func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-    return self.categories.count
+    if let character = self.alphabet[section].first {
+      if let categories = self.sortedCategories[character] {
+        return categories.count
+      }
+    }
+    return 0
   }
 
    override func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
    let cell = tableView.dequeueReusableCell(withIdentifier: "reuseIdentifier", for: indexPath)
 
-    let category = self.categories[indexPath.row]
+    if let character = self.alphabet[indexPath.section].first {
+      if let categories = self.sortedCategories[character] {
+        let category = categories[indexPath.row]
+        cell.textLabel?.text = category.name
+      }
+    }
 
     let selected = tableView.indexPathsForSelectedRows?.contains(indexPath) ?? false
 
-    cell.textLabel?.text = category.name
     cell.textLabel?.font = UIFont.boldSystemFont(ofSize: 15)
     cell.selectionStyle = .none
     cell.accessoryType  = selected ? .checkmark : .none

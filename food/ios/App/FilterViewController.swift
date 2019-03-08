@@ -20,11 +20,11 @@ class FilterViewController: UIViewController {
 
   override func viewDidLoad() {
     super.viewDidLoad()
-    self.styleViewController()
+    self.navigationController?.styleController()
     self.title = "Filter"
     self.navigationItem.leftBarButtonItem = UIBarButtonItem(title: "Cancel", style: .plain, target: self, action: #selector(dismissFilter))
     self.navigationItem.rightBarButtonItem = UIBarButtonItem(title: "Apply", style: .plain, target: self, action: #selector(applyFilter))
-    self.view.backgroundColor = UIColor.beige()
+    self.view.backgroundColor = .white
   }
 
   @objc func dismissFilter() {

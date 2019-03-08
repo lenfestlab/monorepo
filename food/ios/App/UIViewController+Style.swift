@@ -1,15 +1,15 @@
 import UIKit
 
-extension UIViewController {
+extension UINavigationController {
 
-  func styleViewController() {
+  func styleController() {
     if let fontStyle = UIFont(name: "WorkSans-Medium", size: 18) {
-      navigationController?.navigationBar.titleTextAttributes = [NSAttributedString.Key.font: fontStyle]
+      self.navigationBar.titleTextAttributes = [NSAttributedString.Key.font: fontStyle]
     }
 
-    navigationController?.navigationBar.barTintColor =  UIColor.beige()
-    navigationController?.navigationBar.tintColor =  UIColor.offRed()
-    navigationController?.navigationBar.isTranslucent = false
+    self.navigationBar.barTintColor =  UIColor.beige()
+    self.navigationBar.tintColor =  UIColor.offRed()
+    self.navigationBar.isTranslucent = false
   }
 
 }
