@@ -7,7 +7,7 @@ class Category < ApplicationRecord
   has_many :categorizations, dependent: :destroy
   has_many :places, through: :categorizations
 
-  # save associated places to update their cached category_ids
+  # save associated places to update cached category_ids
   after_save :update_places
   def update_places
     self.places.map &:save!

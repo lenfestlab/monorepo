@@ -11,6 +11,12 @@ class Post < ApplicationRecord
 
   validates :published_at, uniqueness: { scope: :place_id }
 
+  # save associated places to update cached association values
+  after_save :update_places
+  def update_places
+    self.places.map &:save!
+  end
+
   def image_url
     Post.ensure_https read_attribute(:image_urls).first
   end
