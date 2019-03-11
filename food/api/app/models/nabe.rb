@@ -9,15 +9,8 @@ class Nabe < ApplicationRecord
 
   scope :union_geog_of, -> (uuids) {
     return unless uuids.present?
-    select( %{
-      ST_Transform(
-        ST_Multi(
-          ST_Union(
-           ST_Transform(nabes.geog::geometry, 26910)
-          )), 4326)::geography
-           }
-          )
-            .where(identifier: uuids)
+    select(%{ ST_Multi(ST_Union(geog::geometry)) })
+      .where(identifier: uuids)
   }
 
   ## Serialization
