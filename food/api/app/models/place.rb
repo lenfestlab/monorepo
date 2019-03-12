@@ -23,11 +23,20 @@ class Place < ApplicationRecord
     ENV["DEFAULT_SEARCH_RADIUS"].to_i || 200
   end
 
-  scope :nearest, -> (lat, lng, kilometers = Place.default_search_radius) {
-    distance_calc = "ST_Distance(lonlat, 'POINT(#{lng} #{lat})')"
-    select("places.*, #{distance_calc} as distance")
-      .where("#{distance_calc} < #{kilometers * 1000.0}")
-      .order("#{distance_calc} ASC")
+  scope :nearest, -> (lat, lng, sort = nil, kilometers = Place.default_search_radius) {
+    sort = sort.try(:to_sym) || :distance
+    distance_sql = "ST_Distance(lonlat, 'POINT(#{lng} #{lat})')"
+    chosen_sort_sql = {
+      rating: "places.post_rating DESC",
+      latest: "places.post_published_at DESC"
+    }[sort.to_sym]
+    order_sql =
+      [chosen_sort_sql].flatten.compact
+      .concat([distance_sql])
+      .join(", ")
+    select("*", %{ #{distance_sql} as distance })
+      .where(%{ #{distance_sql} < #{kilometers * 1000.0} })
+      .order(order_sql)
   }
 
   scope :located_in, -> (nabe_uuids) {
@@ -60,10 +69,13 @@ class Place < ApplicationRecord
   }
 
 
-  def update_category_identifiers
+  def update_cache
     self.category_identifiers = categories.map(&:identifier)
+    latest_post = self.post
+    self.post_rating = latest_post.try(:rating) || -1
+    self.post_published_at = latest_post.try(:published_at)
   end
-  before_save :update_category_identifiers
+  before_save :update_cache
   after_touch :save
 
 
