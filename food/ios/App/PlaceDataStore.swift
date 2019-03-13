@@ -9,6 +9,7 @@ class PlaceDataStore: NSObject {
                       prices: [Int] = [],
                       ratings: [Int] = [],
                       categories: [Category] = [],
+                      sort: SortMode = .distance,
                       limit: Int,
                       completion: @escaping (Bool, [Place], Int) -> Void) {
 
@@ -24,6 +25,7 @@ class PlaceDataStore: NSObject {
       "prices": prices,
       "ratings": ratings,
       "categories": category_ids,
+      "sort": sort.rawValue.lowercased(),
     ]
 
     let env = Env()

@@ -55,6 +55,14 @@ extension PlacesViewController : SortViewControllerDelegate {
 
   func sortUpdated(_ viewController: SortViewController, sort: SortMode) {
     viewController.dismiss(animated: true, completion: nil)
+
+    print(sort)
+
+    self.placeStore.sortMode = sort
+
+    let defaultCoordinate = CLLocationCoordinate2D(latitude: 39.9526, longitude: -75.1652)
+    let coordinate = LocationManager.shared.latestLocation?.coordinate ?? defaultCoordinate
+    self.placeStore.fetchMapData(coordinate: coordinate)
   }
 
 }
