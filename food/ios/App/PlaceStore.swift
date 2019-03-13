@@ -15,6 +15,7 @@ class PlaceStore: NSObject {
   var ratings = [Int]()
   var prices = [Int]()
   var categories = [Category]()
+  var sortMode : SortMode = .distance
 
   weak var delegate: PlaceStoreDelegate?
   let dataStore = PlaceDataStore()
@@ -51,7 +52,7 @@ class PlaceStore: NSObject {
   }
 
   func fetchMapData(coordinate:CLLocationCoordinate2D, completionBlock: (() -> (Void))? = nil) {
-    dataStore.retrievePlaces(coordinate: coordinate, prices: self.prices, ratings: self.ratings, categories: self.categories, limit: 1000) { (success, data, count) in
+    dataStore.retrievePlaces(coordinate: coordinate, prices: self.prices, ratings: self.ratings, categories: self.categories, sort: self.sortMode, limit: 1000) { (success, data, count) in
       var places = [MapPlace]()
       for place in data {
         places.append(MapPlace(place: place))

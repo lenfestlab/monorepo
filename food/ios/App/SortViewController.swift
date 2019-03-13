@@ -69,6 +69,11 @@ class SortViewController: UITableViewController {
     return cell
   }
 
+  override func tableView(_ tableView: UITableView, willDisplay cell: UITableViewCell, forRowAt indexPath: IndexPath) {
+    let sort = array[indexPath.row]
+    cell.accessoryType  = (sort == sortMode) ? .checkmark : .none
+  }
+
   override func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
     let sort = array[indexPath.row]
     self.sortMode = sort
