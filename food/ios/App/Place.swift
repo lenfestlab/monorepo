@@ -16,7 +16,6 @@ struct Category: JSONDecodable, Codable {
 
 }
 
-
 struct Location: JSONDecodable, Codable {
   let latitude: CLLocationDegrees
   let longitude: CLLocationDegrees

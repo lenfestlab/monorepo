@@ -5,10 +5,11 @@ import CoreLocation
 
 class PlaceDataStore: NSObject {
 
-  func retrievePlaces(coordinate: CLLocationCoordinate2D,
+  class func retrieve(coordinate: CLLocationCoordinate2D,
                       prices: [Int] = [],
                       ratings: [Int] = [],
                       categories: [Category] = [],
+                      neigborhoods: [Neighborhood] = [],
                       sort: SortMode = .distance,
                       limit: Int,
                       completion: @escaping (Bool, [Place], Int) -> Void) {
@@ -17,6 +18,7 @@ class PlaceDataStore: NSObject {
     print("fetchData: \(latitude) \(longitude)")
 
     let category_ids = categories.map { $0.identifier }
+    let nabe_ids = neigborhoods.map { $0.identifier }
 
     let params: [String: Any] = [
       "lat": latitude,
@@ -25,6 +27,7 @@ class PlaceDataStore: NSObject {
       "prices": prices,
       "ratings": ratings,
       "categories": category_ids,
+      "nabes": nabe_ids,
       "sort": sort.rawValue.lowercased(),
     ]
 

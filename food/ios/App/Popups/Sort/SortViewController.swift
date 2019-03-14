@@ -12,8 +12,8 @@ protocol SortViewControllerDelegate: class {
 
 class SortViewController: UITableViewController {
 
-  init() {
-    self.sortMode = .distance
+  init(sortMode: SortMode) {
+    self.sortMode = sortMode
     super.init(style: .plain)
   }
 

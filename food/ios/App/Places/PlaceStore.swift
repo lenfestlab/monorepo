@@ -10,15 +10,19 @@ protocol PlaceStoreDelegate: class {
 
 let reuseIdentifier = "PlaceCell"
 
-class PlaceStore: NSObject {
-
+class FilterModule : NSObject {
   var ratings = [Int]()
   var prices = [Int]()
   var categories = [Category]()
+  var nabes = [Neighborhood]()
   var sortMode : SortMode = .distance
+}
+
+class PlaceStore: NSObject {
+
+  var filterModule = FilterModule()
 
   weak var delegate: PlaceStoreDelegate?
-  let dataStore = PlaceDataStore()
 
   var placesFiltered = [MapPlace]()
   {
@@ -52,7 +56,13 @@ class PlaceStore: NSObject {
   }
 
   func fetchMapData(coordinate:CLLocationCoordinate2D, completionBlock: (() -> (Void))? = nil) {
-    dataStore.retrievePlaces(coordinate: coordinate, prices: self.prices, ratings: self.ratings, categories: self.categories, sort: self.sortMode, limit: 1000) { (success, data, count) in
+    PlaceDataStore.retrieve(coordinate: coordinate,
+                             prices: self.filterModule.prices,
+                             ratings: self.filterModule.ratings,
+                             categories: self.filterModule.categories,
+                             neigborhoods: self.filterModule.nabes,
+                             sort: self.filterModule.sortMode,
+                             limit: 1000) { (success, data, count) in
       var places = [MapPlace]()
       for place in data {
         places.append(MapPlace(place: place))
