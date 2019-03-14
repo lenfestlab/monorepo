@@ -15,6 +15,7 @@ gem 'fcm'
 gem 'bitly'
 gem 'activerecord-postgis-adapter'
 gem 'rgeo-geojson'
+gem 'kramdown'
 
 group :development, :test do
   gem 'byebug', platforms: [:mri, :mingw, :x64_mingw]

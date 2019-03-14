@@ -30,4 +30,12 @@
 # available at http://guides.rubyonrails.org/i18n.html.
 
 en:
-  hello: "Hello world"
+  md_place_summary: null, # pull quote lacks header
+  md_menu: Menu Highlight
+  md_drinks: Recommended Drinks
+  md_notes: Short dining notes
+  md_reservations: Reservations
+  md_accessibility: Accessibility
+  md_parking: Parking
+  md_price: Price
+

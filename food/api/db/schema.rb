@@ -10,12 +10,21 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2019_03_12_145125) do
+ActiveRecord::Schema.define(version: 2019_03_13_142308) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
   enable_extension "postgis"
   enable_extension "uuid-ossp"
+
+  create_table "authors", force: :cascade do |t|
+    t.uuid "identifier", default: -> { "uuid_generate_v4()" }
+    t.string "first"
+    t.string "last"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["identifier"], name: "index_authors_on_identifier"
+  end
 
   create_table "categories", force: :cascade do |t|
     t.datetime "created_at", null: false
@@ -100,6 +109,16 @@ ActiveRecord::Schema.define(version: 2019_03_12_145125) do
     t.text "image_urls", default: [], array: true
     t.string "source_key", null: false
     t.text "url"
+    t.text "md_place_summary"
+    t.text "md_menu"
+    t.text "md_drinks"
+    t.text "md_notes"
+    t.text "md_reservations"
+    t.text "md_accessibility"
+    t.text "md_parking"
+    t.text "md_price"
+    t.bigint "author_id"
+    t.index ["author_id"], name: "index_posts_on_author_id"
     t.index ["identifier"], name: "index_posts_on_identifier"
     t.index ["place_id"], name: "index_posts_on_place_id"
     t.index ["price"], name: "index_posts_on_price", using: :gin

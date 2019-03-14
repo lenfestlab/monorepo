@@ -6,15 +6,18 @@ class Post < ApplicationRecord
   belongs_to :place,
     dependent: :destroy
 
+  belongs_to :author,
+    dependent: :destroy
+
   validates :published_at, :blurb, :place,
     presence: true
 
   validates :published_at, uniqueness: { scope: :place_id }
 
   # save associated places to update cached association values
-  after_save :update_places
-  def update_places
-    self.places.map &:save!
+  after_save :update_place
+  def update_place
+    self.place.try :save!
   end
 
   def image_url
@@ -26,32 +29,77 @@ class Post < ApplicationRecord
   end
 
 
+  def self.md_fields
+    %i{
+      md_place_summary
+      md_menu
+      md_drinks
+      md_notes
+      md_reservations
+      md_accessibility
+      md_parking
+      md_price
+    }
+  end
+
+  def self.html_fields
+    self.md_fields.map {|attr| attr.to_s.gsub('md_','html_').to_sym }
+  end
+
+
+  ## Markdown
+  #
+
+  MD_OPTIONS = {}
+
+  self.md_fields.each do |attr|
+    define_method(attr.to_s.gsub('md_','html_')) do
+      md = self.send(attr)
+      return nil unless md
+      Kramdown::Document.new(md, MD_OPTIONS).to_html.html_safe
+    end
+  end
+
+
   ## Admin
   #
 
   rails_admin do
     object_label_method :admin_name
 
-    [:identifier, :created_at, :updated_at].each do |hidden_attr|
-      configure hidden_attr do
+    %i{
+      identifier
+      created_at
+      updated_at
+      source_key
+      title
+      image_urls
+    }.each do |attr|
+      configure attr do
         hide
       end
     end
 
-    configure :source_key do
-      hide
+    %i{
+      price
+      rating
+    }.each do |attr|
+      configure attr do
+        read_only true
+        show
+      end
     end
-    configure :title do
-      hide
+
+    configure :blurb do
+      rows = ENV["ADMIN_TEXTAREA_ROWS"] || 40
+      cols = ENV["ADMIN_TEXTAREA_COLS"] || 80
+      html_attributes rows: rows, cols: cols
     end
-    configure :price do
-      show
-    end
-    configure :rating do
-      show
-    end
-    configure :image_urls do
-      show
+
+    Post.md_fields.each do |attr|
+      configure attr, :markdown do
+        label attr.to_s.gsub('md_','').capitalize.concat(' [MD]')
+      end
     end
 
   end
@@ -75,18 +123,39 @@ class Post < ApplicationRecord
     string.present? ? string : nil
   end
 
+  def details_html
+    md = Post.md_fields.reduce([]) { |agg, attr|
+      attr_head = I18n.t(attr)
+      attr_value = self.send(attr)
+      section =
+        if attr_value.blank?
+          []
+        elsif attr == :md_place_summary
+          ["> #{attr_value}"]
+        elsif attr_value
+          [ "## #{attr_head}", attr_value ]
+        else
+          []
+        end
+      agg.concat(section).flatten.compact
+    }.join("\n")
+    Kramdown::Document.new(md, MD_OPTIONS).to_html.html_safe
+  end
+
   def as_json(options = nil)
     super({
-      only: [
-        :identifier,
-        :title,
-        :blurb,
-        :price,
-        :rating,
+      only: %i[
+        identifier
+        title
+        blurb
+        price
+        rating
       ],
-      methods: [
-        :image_url,
-        :url
+      methods: %i[
+        image_url
+        url
+        author
+        details_html
       ]
     }.merge(options || {}))
   end

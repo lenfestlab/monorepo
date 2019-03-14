@@ -73,3 +73,31 @@ class RailsAdmin::Config::Fields::Types::Geography < RailsAdmin::Config::Fields:
     false
   end
 end
+
+#require 'rails_admin/config/fields/types/text'
+#require 'kramdown'
+
+# support Markdown field
+# src: https://git.io/fjekR
+module RailsAdmin
+  module Config
+    module Fields
+      module Types
+        class Markdown < RailsAdmin::Config::Fields::Types::Text
+          RailsAdmin::Config::Fields::Types.register(self)
+
+          register_instance_option :pretty_value do
+            if value.presence
+              Kramdown::Document.new(value, markdown_options).to_html.html_safe
+            end
+          end
+
+          register_instance_option :markdown_options do
+            {}
+          end
+
+        end
+      end
+    end
+  end
+end
