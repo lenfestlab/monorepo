@@ -1,9 +1,14 @@
 Rails.application.routes.draw do
   mount RailsAdmin::Engine => '/admin', as: 'rails_admin'
   resources :places, only: :index
-  resources :categories, only: :index
   resources :installations, only: :update
-  resources :nabes, only: :index
+  %i[
+    categories
+    nabes
+    authors
+  ].each do |resource_name|
+    resources resource_name, only: :index
+  end
 
   # static pages
   get "/privacy", to: redirect("privacy.html")
