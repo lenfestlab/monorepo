@@ -12,7 +12,7 @@ class PlacesController < ApplicationController
 
     data =
       Place \
-      .includes(:posts, :categories)
+      .includes(:categories, posts: [:author])
       .limit(p[:limit].to_i || 20)
       .rated(ratings.map(&:to_i))
       .priced(prices.map(&:to_i))
