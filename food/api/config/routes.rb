@@ -1,8 +1,8 @@
 Rails.application.routes.draw do
   mount RailsAdmin::Engine => '/admin', as: 'rails_admin'
-  resources :places, only: :index
   resources :installations, only: :update
   %i[
+    places
     categories
     nabes
     authors
