@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2019_03_14_211305) do
+ActiveRecord::Schema.define(version: 2019_03_15_174132) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -89,10 +89,12 @@ ActiveRecord::Schema.define(version: 2019_03_14_211305) do
     t.integer "post_rating", default: -1
     t.datetime "post_published_at"
     t.string "author_identifiers", default: [], array: true
+    t.jsonb "nabe_cache", default: [], array: true
     t.index ["author_identifiers"], name: "index_places_on_author_identifiers"
     t.index ["category_identifiers"], name: "index_places_on_category_identifiers", using: :gin
     t.index ["identifier"], name: "index_places_on_identifier"
     t.index ["lonlat"], name: "index_places_on_lonlat", using: :gist
+    t.index ["nabe_cache"], name: "index_places_on_nabe_cache", using: :gin
     t.index ["name"], name: "index_places_on_name"
     t.index ["post_published_at"], name: "index_places_on_post_published_at"
     t.index ["post_rating"], name: "index_places_on_post_rating"

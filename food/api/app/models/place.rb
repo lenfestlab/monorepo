@@ -9,9 +9,13 @@ class Place < ApplicationRecord
 
   validates :name, uniqueness: true
 
+
   ## PostGIS
   #
-  #
+
+  def find_nabes
+    Nabe.covering self.lat, self.lng
+  end
 
   before_save do
     if lat && lng && lonlat.nil?
@@ -48,6 +52,31 @@ class Place < ApplicationRecord
   }
 
 
+  ## Cache
+  #
+
+  def reset_nabe_cache
+    self.nabe_cache = find_nabes.as_json
+  end
+
+  def nabes
+    nabe_cache
+  end
+
+  def update_cache
+    self.category_identifiers = categories.map(&:identifier)
+    latest_post = self.post
+    self.post_rating = latest_post.try(:rating) || -1
+    self.post_published_at = latest_post.try(:published_at)
+    if author = latest_post.try(:author)
+      self.author_identifiers = [author.identifier]
+    end
+    self.reset_nabe_cache
+  end
+  before_save :update_cache
+  after_touch :save
+
+
   ## Filters
   #
 
@@ -67,20 +96,6 @@ class Place < ApplicationRecord
         .where 'posts.price && ARRAY[?]', prices
     end
   }
-
-
-  def update_cache
-    self.category_identifiers = categories.map(&:identifier)
-    latest_post = self.post
-    self.post_rating = latest_post.try(:rating) || -1
-    self.post_published_at = latest_post.try(:published_at)
-    if author = latest_post.try(:author)
-      self.author_identifiers = [author.identifier]
-    end
-  end
-  before_save :update_cache
-  after_touch :save
-
 
   scope :categorized_in, -> (uuids) {
     if uuids.present?
@@ -140,6 +155,7 @@ class Place < ApplicationRecord
         :location,
         :post,
         :categories,
+        :nabes
       ]
     }.merge(options || {}))
   end
