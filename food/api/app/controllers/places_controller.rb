@@ -4,8 +4,8 @@ class PlacesController < ApplicationController
 
   def index
     p = params
-    nabes, categories, ratings, prices, sorts =
-      %i{ nabes categories ratings prices sort }.map do |key|
+    nabes, categories, ratings, prices, sorts, authors =
+      %i{ nabes categories ratings prices sort, authors }.map do |key|
         value = p.try(:[], key) || []
         [value].flatten.compact
       end
@@ -18,6 +18,7 @@ class PlacesController < ApplicationController
       .priced(prices.map(&:to_i))
       .categorized_in(categories)
       .located_in(nabes)
+      .reviewed_by(authors)
       .nearest(p[:lat], p[:lng], sorts.first)
       .to_a
 
