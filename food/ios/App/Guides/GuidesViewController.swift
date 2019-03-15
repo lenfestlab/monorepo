@@ -26,8 +26,7 @@ class GuidesViewController: UITableViewController {
     self.navigationItem.title = "Guides"
     self.view.backgroundColor = UIColor.beige()
 
-    let store = CategoryDataStore()
-    store.retrieveCategories(isCuisine: self.isCuisine) { (success, categories, count) in
+    CategoryDataStore.retrieve(isCuisine: self.isCuisine) { (success, categories, count) in
       if let categories = categories {
         self.categories = categories
       }

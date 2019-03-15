@@ -58,7 +58,7 @@ extension PlacesViewController : SortViewControllerDelegate {
 
     print(sort)
 
-    self.placeStore.sortMode = sort
+    self.placeStore.filterModule.sortMode = sort
 
     let defaultCoordinate = CLLocationCoordinate2D(latitude: 39.9526, longitude: -75.1652)
     let coordinate = LocationManager.shared.latestLocation?.coordinate ?? defaultCoordinate
@@ -70,11 +70,13 @@ extension PlacesViewController : SortViewControllerDelegate {
 extension PlacesViewController : CuisinesViewControllerDelegate {
 
   func categoriesUpdated(_ viewController: CuisinesViewController, categories: [Category]) {
+    clearSearch()
+
     viewController.dismiss(animated: true, completion: nil)
 
     print(categories)
 
-    self.placeStore.categories = categories
+    self.placeStore.filterModule.categories = categories
 
     let defaultCoordinate = CLLocationCoordinate2D(latitude: 39.9526, longitude: -75.1652)
     let coordinate = LocationManager.shared.latestLocation?.coordinate ?? defaultCoordinate
@@ -84,15 +86,8 @@ extension PlacesViewController : CuisinesViewControllerDelegate {
 }
 
 extension PlacesViewController : FilterViewControllerDelegate {
-
-  func filterUpdated(_ viewController: FilterViewController, ratings: [Int], prices: [Int]) {
+  func filterUpdated(_ viewController: FilterViewController, filter: FilterModule) {
     viewController.dismiss(animated: true, completion: nil)
-
-    print(ratings)
-    print(prices)
-
-    self.placeStore.ratings = ratings
-    self.placeStore.prices = prices
 
     let defaultCoordinate = CLLocationCoordinate2D(latitude: 39.9526, longitude: -75.1652)
     let coordinate = LocationManager.shared.latestLocation?.coordinate ?? defaultCoordinate
@@ -106,24 +101,6 @@ class PlacesViewController: UITabBarController {
 
   var mapViewController: MapViewController!
   var listViewController: ListViewController!
-
-  lazy var cuisineFilter : CuisinesViewController! = {
-    let cuisineFilter = CuisinesViewController(analytics: self.analytics)
-    cuisineFilter.delegate = self
-    return cuisineFilter
-  }()
-
-  lazy var filter : FilterViewController! = {
-    let filter = FilterViewController()
-    filter.filterDelegate = self
-    return filter
-  }()
-
-  lazy var sort : SortViewController! = {
-    let sort = SortViewController()
-    sort.sortDelegate = self
-    return sort
-  }()
 
   var topBar : UIToolbar!
 
@@ -149,7 +126,7 @@ class PlacesViewController: UITabBarController {
     self.analytics = analytics
 
     self.placeStore = PlaceStore()
-    self.placeStore.categories = categories
+    self.placeStore.filterModule.categories = categories
 
     super.init(nibName: nil, bundle: nil)
 
@@ -218,8 +195,9 @@ class PlacesViewController: UITabBarController {
   }
 
   @IBAction func showCategories() {
-    clearSearch()
-    let navigationController = PopupViewController(rootViewController: self.cuisineFilter)
+    let cuisineFilter = CuisinesViewController(analytics: self.analytics, selected: self.placeStore.filterModule.categories)
+    cuisineFilter.delegate = self
+    let navigationController = PopupViewController(rootViewController: cuisineFilter)
     navigationController.popUpHeight = 500
     navigationController.modalPresentationStyle = .overFullScreen
     navigationController.modalTransitionStyle = .crossDissolve
@@ -228,8 +206,10 @@ class PlacesViewController: UITabBarController {
 
   @IBAction func showFilter() {
     clearSearch()
-    let navigationController = PopupViewController(rootViewController: self.filter)
-    navigationController.popUpHeight = 500
+    let filter = FilterViewController(analytics: self.analytics, filter: self.placeStore.filterModule)
+    filter.filterDelegate = self
+    let navigationController = PopupViewController(rootViewController: filter)
+    navigationController.popUpHeight = 550
     navigationController.modalPresentationStyle = .overFullScreen
     navigationController.modalTransitionStyle = .crossDissolve
     self.navigationController?.present(navigationController, animated: true, completion: nil)
@@ -238,7 +218,9 @@ class PlacesViewController: UITabBarController {
 
   @IBAction func showSort() {
     clearSearch()
-    let navigationController = PopupViewController(rootViewController: self.sort)
+    let sort = SortViewController(sortMode: self.placeStore.filterModule.sortMode)
+    sort.sortDelegate = self
+    let navigationController = PopupViewController(rootViewController: sort)
     navigationController.popUpHeight = 175
     navigationController.modalPresentationStyle = .overFullScreen
     navigationController.modalTransitionStyle = .crossDissolve

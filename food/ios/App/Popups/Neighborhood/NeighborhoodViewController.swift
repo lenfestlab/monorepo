@@ -1,12 +1,12 @@
 import UIKit
 
-protocol CuisinesViewControllerDelegate: class {
-  func categoriesUpdated(_ viewController: CuisinesViewController, categories: [Category])
+protocol NeighborhoodViewControllerDelegate: class {
+  func neighborhoodsUpdated(_ viewController: NeighborhoodViewController, neighborhoods: [Neighborhood])
 }
 
-class CuisinesViewController: UITableViewController {
+class NeighborhoodViewController: UITableViewController {
 
-  weak var delegate: CuisinesViewControllerDelegate?
+  weak var delegate: NeighborhoodViewControllerDelegate?
 
   let alphabet = ["A","B","C","D", "E", "F","G","H","I","J","K","L","M","N","O","P","Q","R","S","T","U","V","W","X","Y","Z"]
 
@@ -15,20 +15,19 @@ class CuisinesViewController: UITableViewController {
   }
 
   @objc func applyFilter() {
-    self.delegate?.categoriesUpdated(self, categories: self.selected)
+    self.delegate?.neighborhoodsUpdated(self, neighborhoods: self.selected)
   }
 
   @objc func dismissFilter() {
     self.dismiss(animated: true, completion: nil)
   }
 
-  var sorted = [Character : [Category]]()
-  var selected = [Category]()
+  var sorted = [Character : [Neighborhood]]()
+  var selected = [Neighborhood]()
   private let analytics: AnalyticsManager
   var isCuisine = false
 
-  init(analytics: AnalyticsManager, selected: [Category]) {
-    self.isCuisine = true
+  init(analytics: AnalyticsManager, selected: [Neighborhood]) {
     self.analytics = analytics
     self.selected = selected
     super.init(nibName: nil, bundle: nil)
@@ -44,7 +43,7 @@ class CuisinesViewController: UITableViewController {
 
     self.tableView.allowsMultipleSelection = true
 
-    self.title = "Cuisines"
+    self.title = "Neighborhood"
     self.navigationItem.leftBarButtonItem = UIBarButtonItem(title: "Cancel", style: .plain, target: self, action: #selector(dismissFilter))
     self.navigationItem.rightBarButtonItem = UIBarButtonItem(title: "Apply", style: .plain, target: self, action: #selector(applyFilter))
 
@@ -53,20 +52,21 @@ class CuisinesViewController: UITableViewController {
 
     for string in self.alphabet {
       if let character = string.first {
-        self.sorted[character] = [Category]()
+        self.sorted[character] = [Neighborhood]()
       }
     }
 
-    CategoryDataStore.retrieve(isCuisine: self.isCuisine) { (success, categories, count) in
-      if let categories = categories {
-        for category in categories {
-          if let character = category.name.uppercased().first {
-            self.sorted[character]?.append(category)
+    NeighborhoodDataStore.retrieve { (success, neighborhoods, count) in
+      if let neighborhoods = neighborhoods {
+        for nabe in neighborhoods {
+          if let character = nabe.name.uppercased().first {
+            self.sorted[character]?.append(nabe)
           }
         }
       }
       self.tableView.reloadData()
     }
+
   }
 
   // MARK: - Table view data source
@@ -87,8 +87,8 @@ class CuisinesViewController: UITableViewController {
   override func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
     let cell = tableView.dequeueReusableCell(withIdentifier: "reuseIdentifier", for: indexPath)
 
-    if let category = self.categoryAtIndexPath(indexPath) {
-      cell.textLabel?.text = category.name
+    if let nabe = self.neigborhoodAtIndexPath(indexPath) {
+      cell.textLabel?.text = nabe.name
     }
 
     cell.textLabel?.font = UIFont.boldSystemFont(ofSize: 15)
@@ -97,7 +97,7 @@ class CuisinesViewController: UITableViewController {
     return cell
   }
 
-  func categoryAtIndexPath(_ indexPath: IndexPath) -> Category? {
+  func neigborhoodAtIndexPath(_ indexPath: IndexPath) -> Neighborhood? {
     if let character = self.alphabet[indexPath.section].first {
       if let categories = self.sorted[character] {
         let category = categories[indexPath.row]
@@ -108,12 +108,12 @@ class CuisinesViewController: UITableViewController {
   }
 
   override func tableView(_ tableView: UITableView, willDisplay cell: UITableViewCell, forRowAt indexPath: IndexPath) {
-    guard let category = self.categoryAtIndexPath(indexPath)  else {
+    guard let nabe = self.neigborhoodAtIndexPath(indexPath)  else {
       return
     }
 
     let categoryIds = self.selected.map { $0.identifier }
-    let selected = categoryIds.contains(category.identifier)
+    let selected = categoryIds.contains(nabe.identifier)
     if selected {
       tableView.selectRow(at: indexPath, animated: false, scrollPosition: .none)
       cell.accessoryType  = .checkmark
@@ -128,8 +128,8 @@ class CuisinesViewController: UITableViewController {
     let cell = tableView.cellForRow(at: indexPath)
     cell?.accessoryType  = .checkmark
 
-    if let category = self.categoryAtIndexPath(indexPath) {
-      self.selected.append(category)
+    if let nabe = self.neigborhoodAtIndexPath(indexPath) {
+      self.selected.append(nabe)
     }
   }
 
@@ -137,7 +137,7 @@ class CuisinesViewController: UITableViewController {
     let cell = tableView.cellForRow(at: indexPath)
     cell?.accessoryType  = .none
 
-    if let category = self.categoryAtIndexPath(indexPath) {
+    if let category = self.neigborhoodAtIndexPath(indexPath) {
       let categoryIds = self.selected.map { $0.identifier }
       if let index = categoryIds.index(of: category.identifier) {
         self.selected.remove(at: index)
