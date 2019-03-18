@@ -21,6 +21,16 @@ extension FilterViewController : CuisinesViewControllerDelegate {
   }
 }
 
+extension FilterViewController : AuthorViewControllerDelegate {
+  func authorsUpdated(_ viewController: AuthorViewController, authors: [Author]) {
+    self.filterModule.authors = authors
+    updateReviewerButton()
+    viewController.dismiss(animated: true, completion: nil)
+  }
+
+}
+
+
 class FilterViewController: UIViewController {
 
   weak var filterDelegate: FilterViewControllerDelegate?
@@ -45,6 +55,17 @@ class FilterViewController: UIViewController {
 
   private let analytics: AnalyticsManager
   private let filterModule: FilterModule
+
+  func updateReviewerButton() {
+    var title = "Choose Reviewers"
+    let categories = self.filterModule.authors
+    if categories.count == 1 {
+      title = categories.first?.name ?? title
+    } else if categories.count > 0 {
+      title = "\(categories.count) Reviewers Selected"
+    }
+    self.reviewerButton.setTitle(title, for: .normal)
+  }
 
   func updateCusineButton() {
     var title = "Choose Cuisines"
@@ -133,6 +154,7 @@ class FilterViewController: UIViewController {
     updateRatingButton()
     updatePriceButton()
     updateNeighborhoodButton()
+    updateReviewerButton()
   }
 
   @objc func dismissFilter() {
@@ -195,6 +217,16 @@ class FilterViewController: UIViewController {
 
   @IBAction func showNeighborhoods() {
     let vc = NeighborhoodViewController(analytics: self.analytics, selected: self.filterModule.nabes)
+    vc.delegate = self
+    let navigationController = PopupViewController(rootViewController: vc)
+    navigationController.popUpHeight = 500
+    navigationController.modalPresentationStyle = .overFullScreen
+    navigationController.modalTransitionStyle = .crossDissolve
+    self.present(navigationController, animated: true, completion: nil)
+  }
+
+  @IBAction func showReviewers() {
+    let vc = AuthorViewController(analytics: self.analytics, selected: self.filterModule.authors)
     vc.delegate = self
     let navigationController = PopupViewController(rootViewController: vc)
     navigationController.popUpHeight = 500

@@ -3,6 +3,7 @@ import UIKit
 class TabBarViewController: UITabBarController {
 
   var placesViewController: PlacesViewController!
+  var favoritesViewController: PlacesViewController!
   var listViewController: ListViewController!
   var guideViewController: GuidesViewController!
 
@@ -45,7 +46,15 @@ class TabBarViewController: UITabBarController {
     let guideNavigationController = UINavigationController(rootViewController: self.guideViewController)
     guideNavigationController.tabBarItem.title = "Guides"
 
-    self.viewControllers = [mapNavigationController, guideNavigationController]
+    self.favoritesViewController = PlacesViewController(analytics: self.analytics)
+    self.favoritesViewController.title = "My List"
+    self.favoritesViewController.selectedIndex = 1
+    self.favoritesViewController.topBarIsHidden = true
+    let favoritesNavigationController = UINavigationController(rootViewController: self.favoritesViewController)
+    favoritesNavigationController.styleController()
+    favoritesNavigationController.tabBarItem.title = "My List"
+
+    self.viewControllers = [mapNavigationController, guideNavigationController, favoritesNavigationController]
 
     self.tabBar.tintColor = UIColor.offRed()
     self.tabBar.barTintColor = UIColor.beige()
