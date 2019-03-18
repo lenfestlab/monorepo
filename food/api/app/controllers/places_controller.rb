@@ -5,7 +5,7 @@ class PlacesController < ApplicationController
   def index
     p = params
     nabes, categories, ratings, prices, sorts, authors =
-      %i{ nabes categories ratings prices sort, authors }.map do |key|
+      %i{ nabes categories ratings prices sort authors }.map do |key|
         value = p.try(:[], key) || []
         [value].flatten.compact
       end

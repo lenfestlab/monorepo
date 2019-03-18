@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2019_03_15_174132) do
+ActiveRecord::Schema.define(version: 2019_03_19_155654) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -100,6 +100,12 @@ ActiveRecord::Schema.define(version: 2019_03_15_174132) do
     t.index ["post_rating"], name: "index_places_on_post_rating"
   end
 
+  create_table "places_posts", id: false, force: :cascade do |t|
+    t.bigint "place_id", null: false
+    t.bigint "post_id", null: false
+    t.index ["place_id", "post_id"], name: "index_places_posts_on_place_id_and_post_id", unique: true
+  end
+
   create_table "posts", force: :cascade do |t|
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
@@ -107,11 +113,10 @@ ActiveRecord::Schema.define(version: 2019_03_15_174132) do
     t.datetime "published_at", null: false
     t.text "title"
     t.text "blurb", null: false
-    t.bigint "place_id"
     t.integer "price", default: [], array: true
     t.integer "rating"
     t.text "image_urls", default: [], array: true
-    t.string "source_key", null: false
+    t.string "source_key"
     t.text "url"
     t.text "md_place_summary"
     t.text "md_menu"
@@ -124,7 +129,6 @@ ActiveRecord::Schema.define(version: 2019_03_15_174132) do
     t.bigint "author_id"
     t.index ["author_id"], name: "index_posts_on_author_id"
     t.index ["identifier"], name: "index_posts_on_identifier"
-    t.index ["place_id"], name: "index_posts_on_place_id"
     t.index ["price"], name: "index_posts_on_price", using: :gin
     t.index ["rating"], name: "index_posts_on_rating"
   end
