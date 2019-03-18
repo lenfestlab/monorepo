@@ -4,6 +4,11 @@ class Nabe < ApplicationRecord
     presence: true
   validates :key, uniqueness: true
 
+  after_save :update_places
+  def update_places
+    Place.all.each &:save!
+  end
+
   ## PostGIS
   #
 
@@ -12,6 +17,22 @@ class Nabe < ApplicationRecord
     select(%{ ST_Multi(ST_Union(geog::geometry)) })
       .where(identifier: uuids)
   }
+
+  scope :covering, -> (lat, lng) {
+    return unless lat && lng
+    where(%{
+      ST_Covers(
+        nabes.geog,
+        ST_SetSRID(
+          ST_Point(#{lng}, #{lat}),
+          4326)
+        ) })
+  }
+
+  def self.covering_place place
+    lat, lng = place.lat, place.lng
+    Nabe.covering lat, lng
+  end
 
   ## Serialization
   #
