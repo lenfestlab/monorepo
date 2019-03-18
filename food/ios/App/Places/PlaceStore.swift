@@ -15,6 +15,7 @@ class FilterModule : NSObject {
   var prices = [Int]()
   var categories = [Category]()
   var nabes = [Neighborhood]()
+  var authors = [Author]()
   var sortMode : SortMode = .distance
 }
 
@@ -61,6 +62,7 @@ class PlaceStore: NSObject {
                              ratings: self.filterModule.ratings,
                              categories: self.filterModule.categories,
                              neigborhoods: self.filterModule.nabes,
+                             authors: self.filterModule.authors,
                              sort: self.filterModule.sortMode,
                              limit: 1000) { (success, data, count) in
       var places = [MapPlace]()

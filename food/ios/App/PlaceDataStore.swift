@@ -10,6 +10,7 @@ class PlaceDataStore: NSObject {
                       ratings: [Int] = [],
                       categories: [Category] = [],
                       neigborhoods: [Neighborhood] = [],
+                      authors: [Author] = [],
                       sort: SortMode = .distance,
                       limit: Int,
                       completion: @escaping (Bool, [Place], Int) -> Void) {
@@ -19,6 +20,7 @@ class PlaceDataStore: NSObject {
 
     let category_ids = categories.map { $0.identifier }
     let nabe_ids = neigborhoods.map { $0.identifier }
+    let author_ids = authors.map { $0.identifier }
 
     let params: [String: Any] = [
       "lat": latitude,
@@ -28,6 +30,7 @@ class PlaceDataStore: NSObject {
       "ratings": ratings,
       "categories": category_ids,
       "nabes": nabe_ids,
+      "authors": author_ids,
       "sort": sort.rawValue.lowercased(),
     ]
 

@@ -170,10 +170,9 @@ class PlacesViewController: UITabBarController {
     let one = UIBarButtonItem(title: "Filter", style: .plain, target: self, action: #selector(showFilter))
     let space = UIBarButtonItem(barButtonSystemItem: .flexibleSpace, target: nil, action: nil)
     let two = UIBarButtonItem(title: "Cusines", style: .plain, target: self, action: #selector(showCategories))
-    let spacetwo = UIBarButtonItem(barButtonSystemItem: .flexibleSpace, target: nil, action: nil)
     let three = UIBarButtonItem(title: "Sort", style: .plain, target: self, action: #selector(showSort))
 
-    self.topBar.setItems([one, space, two, spacetwo, three], animated: false)
+    self.topBar.setItems([space, one, space, two, space, three, space], animated: false)
     self.topBar.barTintColor = UIColor.beige()
     self.topBar.tintColor =  UIColor.offRed()
     self.topBar.isHidden = self.topBarIsHidden
