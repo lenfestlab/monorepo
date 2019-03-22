@@ -2,13 +2,21 @@ import UIKit
 
 extension UIColor {
 
+//  White: #FFFFFF
+//  Light Grey: #F3F3F3
+//  Grey: #EEEEEE
+//  Light Blue: #96BDC6
+//  Blue: #0066AA
+//  Greyish Blue: #546A7B
+//  Black: #000000
+//  Dark Red: #700000
+
   static let white = UIColor(hex: 0xFFFFFF)
   static let lightGrey = UIColor(hex: 0xF3F3F3)
   static let grey = UIColor(hex: 0xEEEEEE)
   static let lightBlue = UIColor(hex: 0xf96BDC6)
   static let blue = UIColor(hex: 0x0066AA)
   static let greyishBlue = UIColor(hex: 0x546A7B)
-  static let black = UIColor(hex: 0x000000)
   static let darkRed = UIColor(hex: 0x700000)
 
   convenience init(red: Int, green: Int, blue: Int, a: CGFloat = 1.0) {

@@ -29,12 +29,15 @@ extension ListViewController { // UICollectionViewDelegate
     let mapPlace:MapPlace = self.placeStore.placesFiltered[indexPath.row]
     let place:Place = mapPlace.place
     analytics.log(.tapsOnViewArticle(post: place.post, currentLocation: self.locationManager.latestCoordinate))
-    let app = AppDelegate.shared()
-    if let link = place.post?.link {
-      app.openInSafari(url: link)
-    }
+    openPlace(place)
     return true
   }
+
+  func openPlace(_ place: Place) {
+    let detailViewController = DetailViewController(place: place)
+    self.navigationController?.pushViewController(detailViewController, animated: true)
+  }
+
 
 }
 

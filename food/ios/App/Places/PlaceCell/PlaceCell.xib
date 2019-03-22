@@ -34,10 +34,18 @@
                                 <nil key="textColor"/>
                                 <nil key="highlightedColor"/>
                             </label>
+                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="2Jp-SL-git">
+                                <rect key="frame" x="424" y="15" width="0.0" height="0.0"/>
+                                <fontDescription key="fontDescription" type="system" pointSize="14"/>
+                                <color key="textColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                                <nil key="highlightedColor"/>
+                            </label>
                         </subviews>
                         <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
                         <constraints>
+                            <constraint firstAttribute="trailing" secondItem="2Jp-SL-git" secondAttribute="trailing" constant="15" id="2HW-Oa-j9D"/>
                             <constraint firstItem="xOb-IV-e8y" firstAttribute="top" secondItem="oW8-1A-AE3" secondAttribute="top" id="47J-du-43H"/>
+                            <constraint firstItem="2Jp-SL-git" firstAttribute="top" secondItem="oW8-1A-AE3" secondAttribute="top" constant="15" id="7DX-kg-LK8"/>
                             <constraint firstAttribute="trailing" secondItem="Dz4-fv-GMQ" secondAttribute="trailing" constant="10" id="LZ7-6F-EUE"/>
                             <constraint firstItem="Dz4-fv-GMQ" firstAttribute="top" secondItem="xOb-IV-e8y" secondAttribute="bottom" id="N3N-ww-jOn"/>
                             <constraint firstAttribute="bottom" secondItem="Dz4-fv-GMQ" secondAttribute="bottom" constant="5" id="QUF-P4-bWw"/>
@@ -60,6 +68,7 @@
             <connections>
                 <outlet property="containerView" destination="oW8-1A-AE3" id="jXR-pb-Mib"/>
                 <outlet property="imageView" destination="xOb-IV-e8y" id="Der-t3-xae"/>
+                <outlet property="milesAwayLabel" destination="2Jp-SL-git" id="pmf-OO-Ky7"/>
                 <outlet property="textLabel" destination="Dz4-fv-GMQ" id="yeb-jj-Enb"/>
             </connections>
             <point key="canvasLocation" x="132" y="57.121439280359823"/>

@@ -96,13 +96,50 @@ extension PlacesViewController : FilterViewControllerDelegate {
 
 }
 
+class PlacesViewController: UIViewController {
 
-class PlacesViewController: UITabBarController {
+  func displayContentController(_ content: UIViewController) {
+    addChild(content)
+    self.view.insertSubview(content.view, at: 0)
+    content.didMove(toParent: self)
+  }
+
+  func hideContentController(_ content: UIViewController) {
+    content.willMove(toParent: nil)
+    content.view.removeFromSuperview()
+    content.removeFromParent()
+  }
 
   var mapViewController: MapViewController!
   var listViewController: ListViewController!
+  var viewControllers: [UIViewController]! = []
 
-  var topBar : UIToolbar!
+  private var _selectedIndex: Int = 0
+  var selectedIndex: Int {
+    set {
+      hideContentController(self.viewControllers[selectedIndex])
+      displayContentController(self.viewControllers[newValue])
+      _selectedIndex = newValue
+    }
+    get {
+      return _selectedIndex
+    }
+  }
+
+  var topBar : UIToolbar! = {
+    let topBar = UIToolbar(frame: CGRect(x: 0, y: 0, width: 175, height: 44))
+    topBar.isTranslucent = false
+
+    let one = UIBarButtonItem(title: "Filter", style: .plain, target: self, action: #selector(showFilter))
+    let space = UIBarButtonItem(barButtonSystemItem: .flexibleSpace, target: nil, action: nil)
+    let two = UIBarButtonItem(title: "Cusines", style: .plain, target: self, action: #selector(showCategories))
+    let three = UIBarButtonItem(title: "Sort", style: .plain, target: self, action: #selector(showSort))
+
+    topBar.setItems([space, one, space, two, space, three, space], animated: false)
+    topBar.barTintColor = UIColor.navigationColor()
+    topBar.tintColor =  UIColor.iconColor()
+    return topBar
+  }()
 
   var topBarIsHidden = false {
     didSet {
@@ -128,13 +165,15 @@ class PlacesViewController: UITabBarController {
     self.placeStore = PlaceStore()
     self.placeStore.filterModule.categories = categories
 
+    self.mapViewController = MapViewController(analytics: self.analytics, placeStore: self.placeStore)
+    self.listViewController = ListViewController(analytics: self.analytics, placeStore: self.placeStore)
+
+    self.viewControllers = [self.mapViewController, self.listViewController]
+
     super.init(nibName: nil, bundle: nil)
+    self.selectedIndex = 0
 
     self.placeStore.delegate = self
-
-    self.navigationController?.isNavigationBarHidden = true
-
-    self.tabBar.isHidden = true
   }
 
   required init?(coder aDecoder: NSCoder) {
@@ -160,32 +199,16 @@ class PlacesViewController: UITabBarController {
   override func viewDidLoad() {
     super.viewDidLoad()
 
-    self.mapViewController = MapViewController(analytics: self.analytics, placeStore: self.placeStore)
-    self.listViewController = ListViewController(analytics: self.analytics, placeStore: self.placeStore)
-    self.viewControllers = [mapViewController, listViewController]
-
-    self.topBar = UIToolbar(frame: CGRect(x: 0, y: 0, width: 175, height: 44))
-    self.topBar.isTranslucent = false
-
-    let one = UIBarButtonItem(title: "Filter", style: .plain, target: self, action: #selector(showFilter))
-    let space = UIBarButtonItem(barButtonSystemItem: .flexibleSpace, target: nil, action: nil)
-    let two = UIBarButtonItem(title: "Cusines", style: .plain, target: self, action: #selector(showCategories))
-    let three = UIBarButtonItem(title: "Sort", style: .plain, target: self, action: #selector(showSort))
-
-    self.topBar.setItems([space, one, space, two, space, three, space], animated: false)
-    self.topBar.barTintColor = UIColor.beige()
-    self.topBar.tintColor =  UIColor.offRed()
     self.topBar.isHidden = self.topBarIsHidden
-
     self.view.addSubview(self.topBar)
-
-    self.navigationController?.isNavigationBarHidden = true
 
     self.navigationItem.rightBarButtonItem = UIBarButtonItem(title: "List", style: .plain, target: self, action: #selector(list))
   }
 
   override func viewWillLayoutSubviews() {
     super.viewWillLayoutSubviews()
+    let vc = viewControllers[self.selectedIndex]
+    vc.view.frame = self.view.bounds
     self.topBar.frame = CGRect(x: 0, y: 0, width: self.view.frame.width, height: 44)
   }
 
@@ -208,7 +231,7 @@ class PlacesViewController: UITabBarController {
     let filter = FilterViewController(analytics: self.analytics, filter: self.placeStore.filterModule)
     filter.filterDelegate = self
     let navigationController = PopupViewController(rootViewController: filter)
-    navigationController.popUpHeight = 550
+    navigationController.popUpHeight = 600
     navigationController.modalPresentationStyle = .overFullScreen
     navigationController.modalTransitionStyle = .crossDissolve
     self.navigationController?.present(navigationController, animated: true, completion: nil)

@@ -56,13 +56,15 @@ class TabBarViewController: UITabBarController {
 
     self.viewControllers = [mapNavigationController, guideNavigationController, favoritesNavigationController]
 
-    self.tabBar.tintColor = UIColor.offRed()
-    self.tabBar.barTintColor = UIColor.beige()
+    self.tabBar.tintColor = UIColor.iconColor()
+    self.tabBar.barTintColor = UIColor.white
 
     self.navigationController?.isNavigationBarHidden = true
 
     self.placesViewController.navigationItem.leftBarButtonItem = UIBarButtonItem(image: UIImage(named: "settings-button"), style: .plain, target: self, action: #selector(settings))
     self.placesViewController.navigationItem.titleView =  self.placesViewController.searchBar
+
+    self.extendedLayoutIncludesOpaqueBars = true
   }
 
 }

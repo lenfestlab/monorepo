@@ -3,19 +3,6 @@ import Gloss
 import CoreLocation
 import UserDefaultsStore
 
-struct Category: JSONDecodable, Codable {
-  let identifier: String
-  let name: String
-  let imageURL: URL
-
-  init?(json: JSON) {
-    self.identifier = ("identifier" <~~ json)!
-    self.name = ("name" <~~ json)!
-    self.imageURL = ("image_url" <~~ json)!
-  }
-
-}
-
 struct Location: JSONDecodable, Codable {
   let latitude: CLLocationDegrees
   let longitude: CLLocationDegrees
@@ -39,6 +26,7 @@ struct Post: JSONDecodable, Codable, Identifiable {
   let rating: Int?
   var link: URL? = URL(string: "http://media.philly.com/storage/special_projects/best-restaurants-philadelphia-philly-2018.html")
   var linkShort: URL?
+  var detailsHtml: String?
 
   init?(json: JSON) {
     self.identifier = ("identifier" <~~ json)!
@@ -47,6 +35,7 @@ struct Post: JSONDecodable, Codable, Identifiable {
     self.imageURL = "image_url" <~~ json
     self.price = "price" <~~ json
     self.rating = "rating" <~~ json
+    self.detailsHtml = "details_html" <~~ json
   }
 
   var publicationName: String? { return "" }
@@ -58,19 +47,27 @@ struct Place: JSONDecodable, Codable, Identifiable {
   static let idKey = \Place.identifier
 
   var name: String?
+  var phone: String?
   var identifier: String
+  var address: String?
   let location: Location?
   let post: Post?
   let radius: Double?
   let distance: Double?
+  let nabes: [Neighborhood]?
+  let categories: [Category]?
 
   init?(json: JSON) {
     self.identifier = ("identifier" <~~ json)!
+    self.phone = "phone" <~~ json
+    self.address = "address" <~~ json
     self.location = "location" <~~ json
     self.post = "post" <~~ json
     self.radius = "radius" <~~ json
     self.distance = "distance" <~~ json
     self.name = "name" <~~ json
+    self.nabes = "nabes" <~~ json
+    self.categories = "categories" <~~ json
   }
 
   var title: String? {

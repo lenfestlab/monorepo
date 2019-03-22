@@ -13,6 +13,8 @@ class PopupViewController: UIViewController {
   var rootViewController : UIViewController!
   var navigationBar : UINavigationBar! = {
     let navigationBar = UINavigationBar()
+    navigationBar.barTintColor = .white
+    navigationBar.isTranslucent = false
     return navigationBar
   }()
 

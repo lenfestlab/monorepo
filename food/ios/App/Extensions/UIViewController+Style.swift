@@ -7,8 +7,8 @@ extension UINavigationController {
       self.navigationBar.titleTextAttributes = [NSAttributedString.Key.font: fontStyle]
     }
 
-    self.navigationBar.barTintColor =  UIColor.beige()
-    self.navigationBar.tintColor =  UIColor.offRed()
+    self.navigationBar.barTintColor =  UIColor.navigationColor()
+    self.navigationBar.tintColor =  UIColor.iconColor()
     self.navigationBar.isTranslucent = false
   }
 

@@ -35,16 +35,19 @@ class FilterViewController: UIViewController {
 
   weak var filterDelegate: FilterViewControllerDelegate?
 
+  @IBOutlet weak var starView : UIView!
   @IBOutlet weak var oneStar : UIButton!
   @IBOutlet weak var twoStars : UIButton!
   @IBOutlet weak var threeStars : UIButton!
   @IBOutlet weak var fourStars : UIButton!
 
+  @IBOutlet weak var dollarView : UIView!
   @IBOutlet weak var oneDollar : UIButton!
   @IBOutlet weak var twoDollars : UIButton!
   @IBOutlet weak var threeDollars : UIButton!
   @IBOutlet weak var fourDollars : UIButton!
 
+  @IBOutlet weak var sortView : UIView!
   @IBOutlet weak var distanceButton : UIButton!
   @IBOutlet weak var ratingButton : UIButton!
   @IBOutlet weak var latestButton : UIButton!
@@ -52,6 +55,7 @@ class FilterViewController: UIViewController {
   @IBOutlet weak var cusineButton : UIButton!
   @IBOutlet weak var neighborhoodButton : UIButton!
   @IBOutlet weak var reviewerButton : UIButton!
+  @IBOutlet weak var searchButton : UIButton!
 
   private let analytics: AnalyticsManager
   private let filterModule: FilterModule
@@ -142,12 +146,52 @@ class FilterViewController: UIViewController {
     fatalError("init(coder:) has not been implemented")
   }
 
+  func styleView(_ view : UIView) {
+    view.layer.cornerRadius = 5.0
+    view.layer.borderWidth = 1.0
+    view.layer.borderColor = UIColor.iconColor().cgColor
+    view.clipsToBounds = true
+  }
+
+  func styleButton(_ button : UIButton) {
+    guard let selectedImage = UIColor.iconColor().pixelImage() else {
+      return
+    }
+
+    button.setBackgroundImage(selectedImage, for: .selected)
+    button.setTitleColor(.white, for: .selected)
+  }
+
   override func viewDidLoad() {
     super.viewDidLoad()
     self.navigationController?.styleController()
     self.title = "Filter"
     self.navigationItem.leftBarButtonItem = UIBarButtonItem(title: "Cancel", style: .plain, target: self, action: #selector(dismissFilter))
     self.view.backgroundColor = .white
+
+    styleView(self.sortView)
+    styleView(self.dollarView)
+    styleView(self.starView)
+    styleView(self.cusineButton)
+    styleView(self.reviewerButton)
+    styleView(self.neighborhoodButton)
+
+    styleButton(self.oneStar)
+    styleButton(self.twoStars)
+    styleButton(self.threeStars)
+    styleButton(self.fourStars)
+
+    styleButton(self.oneDollar)
+    styleButton(self.twoDollars)
+    styleButton(self.threeDollars)
+    styleButton(self.fourDollars)
+
+    styleButton(self.ratingButton)
+    styleButton(self.distanceButton)
+    styleButton(self.latestButton)
+
+    self.searchButton.layer.cornerRadius = 5.0
+    self.searchButton.clipsToBounds = true
 
     updateCusineButton()
     updateSortButton()
