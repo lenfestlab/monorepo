@@ -1,13 +1,14 @@
 class Place < ApplicationRecord
 
-  has_many :posts
+  has_and_belongs_to_many :posts
+
   has_many :categorizations, dependent: :destroy
   has_many :categories, through: :categorizations
 
   validates :name, :address, :lat, :lng,
     presence: true
 
-  validates :name, uniqueness: true
+  validates :lonlat, uniqueness: true
 
 
   ## PostGIS
@@ -17,9 +18,13 @@ class Place < ApplicationRecord
     Nabe.covering self.lat, self.lng
   end
 
-  before_save do
+  def self.format lng, lat
+    "POINT(#{lng} #{lat})"
+  end
+
+  before_validation do
     if lat && lng && lonlat.nil?
-      self.lonlat = "POINT(#{lng} #{lat})"
+      self.lonlat = self.class.format lon, lat
     end
   end
 
@@ -145,17 +150,19 @@ class Place < ApplicationRecord
 
   def as_json(options = nil)
     super({
-      only: [
-        :identifier,
-        :name,
-        :address,
-        :distance,
+      only: %i[
+        identifier
+        name
+        address
+        distance
+        website
+        phone
       ],
-      methods: [
-        :location,
-        :post,
-        :categories,
-        :nabes
+      methods: %i[
+        location
+        post
+        categories
+        nabes
       ]
     }.merge(options || {}))
   end

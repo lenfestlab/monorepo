@@ -1,9 +1,9 @@
 require 'rgeo/geo_json'
 
-namespace :nabes do
+namespace :seed do
 
   desc "import nabes from geojson"
-  task load: :environment do
+  task nabes: :environment do
     dir = ENV["ADMIN_DB_SEED_DIR"]
     raise "MIA: ADMIN_DB_SEED_DIR env var" unless dir
     data = JSON.parse(File.read("#{dir}/phl_nabes.geojson"))

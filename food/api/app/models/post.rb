@@ -3,25 +3,23 @@ require 'cgi'
 
 class Post < ApplicationRecord
 
-  belongs_to :place,
-    dependent: :destroy
+  has_and_belongs_to_many :places
 
   belongs_to :author,
     dependent: :destroy
 
-  validates :published_at, :blurb, :place,
+
+  validates :published_at, :blurb,
     presence: true
 
-  validates :published_at, uniqueness: { scope: :place_id }
-
   # save associated places to update cached association values
-  after_save :update_place
-  def update_place
-    self.place.try :save!
+  after_save :update_places
+  def update_places
+    self.places.map &:save!
   end
 
   def image_url
-    Post.ensure_https read_attribute(:image_urls).first
+    Post.ensure_https (read_attribute(:image_urls) || []).first
   end
 
   def url
@@ -105,7 +103,7 @@ class Post < ApplicationRecord
   end
 
   def admin_name
-    blurb.truncate(40)
+    blurb.try :truncate, 40
   end
 
 
@@ -133,12 +131,12 @@ class Post < ApplicationRecord
         elsif attr == :md_place_summary
           ["> #{attr_value}"]
         elsif attr_value
-          [ "## #{attr_head}", attr_value ]
+          ["## #{attr_head}", attr_value]
         else
           []
         end
       agg.concat(section).flatten.compact
-    }.join("\n")
+    }.join("\n\n")
     Kramdown::Document.new(md, MD_OPTIONS).to_html.html_safe
   end
 
