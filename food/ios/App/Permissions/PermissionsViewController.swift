@@ -31,7 +31,7 @@ class PermissionsViewController: UIViewController, LocationManagerAuthorizationD
     if let fontStyle = UIFont(name: "WorkSans-Medium", size: 18) {
       navigationController?.navigationBar.titleTextAttributes = [NSAttributedString.Key.font: fontStyle]
     }
-    navigationController?.navigationBar.barTintColor =  UIColor.beige()
+    navigationController?.navigationBar.barTintColor =  UIColor.navigationColor()
     navigationController?.navigationBar.isTranslucent =  false
 
     doneButton.layer.cornerRadius = 5.0

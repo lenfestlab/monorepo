@@ -39,16 +39,18 @@ extension MapViewController: UICollectionViewDelegate {
       let mapPlace:MapPlace = self.placeStore.placesFiltered[indexPath.row]
       let place:Place = mapPlace.place
       analytics.log(.tapsOnViewArticle(post: place.post, currentLocation: self.lastCoordinate))
-      let app = AppDelegate.shared()
-      if let link = place.post?.link {
-        app.openInSafari(url: link)
-      }
+      openPlace(place)
     } else {
       scrollToItem(at: indexPath)
       let mapPlace:MapPlace = self.placeStore.placesFiltered[indexPath.row]
       self.currentPlace = mapPlace
     }
     return true
+  }
+
+  func openPlace(_ place: Place) {
+    let detailViewController = DetailViewController(place: place)
+    self.navigationController?.pushViewController(detailViewController, animated: true)
   }
 }
 
@@ -73,12 +75,13 @@ extension MapViewController : MKMapViewDelegate {
     pinView.accessibilityLabel = "hello"
     let btn = UIButton(type: .detailDisclosure)
     pinView.rightCalloutAccessoryView = btn
+
     return pinView
   }
 
   func mapView(_ mapView: MKMapView, didSelect view: MKAnnotationView) {
     let indexPath = IndexPath(row: view.tag, section: 0)
-    let mapPlace:MapPlace = self.placeStore.places[indexPath.row]
+    let mapPlace:MapPlace = self.placeStore.placesFiltered[indexPath.row]
     let place = mapPlace.place
     analytics.log(.tapsOnPin(post: place.post, currentLocation: self.lastCoordinate))
     scrollToItem(at: indexPath)
@@ -116,8 +119,8 @@ class MapViewController: UIViewController {
 
   private var _currentPlace:MapPlace? {
     didSet {
-      NSObject.cancelPreviousPerformRequests(withTarget: self, selector: #selector(centerToCurrentPlace), object: nil)
-      self.perform(#selector(centerToCurrentPlace), with: nil, afterDelay: 0.5)
+      NSObject.cancelPreviousPerformRequests(withTarget: self, selector: #selector(centerToCurrentPlaceIfNotVisible), object: nil)
+      self.perform(#selector(centerToCurrentPlaceIfNotVisible), with: nil, afterDelay: 0.5)
     }
   }
 
@@ -302,10 +305,12 @@ class MapViewController: UIViewController {
     collectionViewFlowLayout.collectionView!.scrollToItem(at: indexPath, at: .centeredHorizontally, animated: true)
   }
 
-  @objc func centerToCurrentPlace() {
+  @objc func centerToCurrentPlaceIfNotVisible() {
     DispatchQueue.main.async {
       if let coordinate = self.currentPlace?.place.coordinate() {
-        self.centerMap(coordinate, span: self.mapView.region.span)
+        if(!self.mapView.visibleMapRect.contains(MKMapPoint(coordinate))){
+          self.centerMap(coordinate, span: self.mapView.region.span)
+        }
       }
     }
   }

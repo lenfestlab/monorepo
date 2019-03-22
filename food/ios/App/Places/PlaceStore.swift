@@ -2,6 +2,8 @@ import Foundation
 import UIKit
 import CoreLocation
 
+private let concurrentPlaceQueue = DispatchQueue(label: "org.lenfestlab.food.placeQueue", attributes: .concurrent)
+
 protocol PlaceStoreDelegate: class {
   func didSetPlaceFiltered()
   func filterText() -> String?
@@ -25,15 +27,9 @@ class PlaceStore: NSObject {
 
   weak var delegate: PlaceStoreDelegate?
 
-  var placesFiltered = [MapPlace]()
-  {
-    didSet
-    {
-      self.delegate?.didSetPlaceFiltered()
-    }
-  }
+  private var unsafePlaces = [MapPlace]()
 
-  var places:[MapPlace] = [MapPlace]()
+  private var places:[MapPlace] = [MapPlace]()
   {
     didSet
     {
@@ -41,18 +37,36 @@ class PlaceStore: NSObject {
     }
   }
 
+  var placesFiltered: [MapPlace] {
+    var placesFilteredCopy: [MapPlace]!
+    concurrentPlaceQueue.sync {
+      placesFilteredCopy = self.unsafePlaces
+    }
+    return placesFilteredCopy
+  }
+
   func updateFilter(searchText: String?) {
-    if let searchText = searchText, searchText.count > 0{
-      placesFiltered = self.places.filter {
-        if let title = $0.place.name?.lowercased() {
-          if title.contains(searchText.lowercased()) {
-            return true
-          }
-        }
-        return false
+    concurrentPlaceQueue.async(flags: .barrier) { [weak self] in
+      guard let self = self else {
+        return
       }
-    } else {
-      placesFiltered = self.places
+
+      if let searchText = searchText, searchText.count > 0{
+        self.unsafePlaces = self.places.filter {
+          if let title = $0.place.name?.lowercased() {
+            if title.contains(searchText.lowercased()) {
+              return true
+            }
+          }
+          return false
+        }
+      } else {
+        self.unsafePlaces = self.places
+      }
+
+      DispatchQueue.main.async { [weak self] in
+        self?.delegate?.didSetPlaceFiltered()
+      }
     }
   }
 

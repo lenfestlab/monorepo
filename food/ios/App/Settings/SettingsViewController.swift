@@ -184,7 +184,7 @@ class SettingsViewController: UITableViewController, SettingsToggleCellDelegate,
     let feedbackButton = UIButton(type: .custom)
     feedbackButton.layer.cornerRadius = 5.0
     feedbackButton.clipsToBounds = true
-    feedbackButton.backgroundColor = UIColor.ziggurat
+    feedbackButton.backgroundColor = .grey
     feedbackButton.setTitleColor(.black, for: .normal)
     feedbackButton.titleLabel?.font = UIFont(name: "WorkSans-Regular", size: 19)
     feedbackButton.setTitle("Share Your Feedback", for: .normal)
@@ -237,7 +237,7 @@ class SettingsViewController: UITableViewController, SettingsToggleCellDelegate,
     let title = section["title"] as! String
     let label = UILabel(frame: .zero)
     label.text = "    \(title)"
-    label.textColor = UIColor.gray
+    label.textColor = .grey
     label.font =  UIFont(name: "WorkSans-Medium", size: 16)
     return label
   }
