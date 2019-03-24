@@ -9,6 +9,7 @@ class Env {
   enum VariableKey: String {
     case name = "ENV_NAME"
     case apiHost = "API_HOST"
+    case apiProt = "API_PROT"
     case googleAnalyticsTrackingId = "GOOGLE_ANALYTICS_TID"
     case appName = "APP_NAME"
     case appMarketingPath = "APP_MARKETING_PATH"
@@ -28,7 +29,7 @@ class Env {
 
   var apiBaseUrlString: String {
     let host = self.get(.apiHost)
-    let prot = self.isRemote ? "https" : "http"
+    let prot = self.get(.apiProt)
     return "\(prot)://\(host)"
   }
 

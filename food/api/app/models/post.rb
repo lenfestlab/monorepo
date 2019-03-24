@@ -3,11 +3,11 @@ require 'cgi'
 
 class Post < ApplicationRecord
 
+  has_many :bookmarks
+
   has_and_belongs_to_many :places
 
-  belongs_to :author,
-    dependent: :destroy
-
+  belongs_to :author
 
   validates :published_at, :blurb,
     presence: true
@@ -74,7 +74,7 @@ class Post < ApplicationRecord
       image_urls
     }.each do |attr|
       configure attr do
-        hide
+        read_only true
       end
     end
 
