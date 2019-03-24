@@ -48,7 +48,9 @@ class Post < ApplicationRecord
   ## Markdown
   #
 
-  MD_OPTIONS = {}
+  MD_OPTIONS = {
+    auto_ids: false
+  }
 
   self.md_fields.each do |attr|
     define_method(attr.to_s.gsub('md_','html_')) do
@@ -122,22 +124,9 @@ class Post < ApplicationRecord
   end
 
   def details_html
-    md = Post.md_fields.reduce([]) { |agg, attr|
-      attr_head = I18n.t(attr)
-      attr_value = self.send(attr)
-      section =
-        if attr_value.blank?
-          []
-        elsif attr == :md_place_summary
-          ["> #{attr_value}"]
-        elsif attr_value
-          ["## #{attr_head}", attr_value]
-        else
-          []
-        end
-      agg.concat(section).flatten.compact
-    }.join("\n\n")
-    Kramdown::Document.new(md, MD_OPTIONS).to_html.html_safe
+    template_path = Rails.root.join(*%w{ app views product details.slim })
+    Slim::Embedded.options[:markdown] = {auto_ids: false}
+    Slim::Template.new(template_path, {}).render(self)
   end
 
   def as_json(options = nil)

@@ -1,4 +1,7 @@
 brew "asdf"
 brew "carthage"
 brew "git-lfs"
+brew "mas"
 brew "mint"
+
+mas "InjectionIII", id: 1380446739

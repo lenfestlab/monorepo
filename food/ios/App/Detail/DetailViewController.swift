@@ -2,6 +2,17 @@ import UIKit
 
 class DetailViewController: UIViewController {
 
+  #if DEBUG
+  @objc func injected() {
+    print("\n injected \n")
+    self.view.subviews.forEach({
+      $0.removeFromSuperview()
+    })
+    self.viewDidLoad()
+  }
+  #endif
+
+
   var place : Place
   
   @IBOutlet weak var imageView: UIImageView!
@@ -28,7 +39,7 @@ class DetailViewController: UIViewController {
 
   override func viewDidLoad() {
     super.viewDidLoad()
-    
+
     self.extendedLayoutIncludesOpaqueBars = true
 
     self.reservationButton.tintColor = .blue
@@ -71,10 +82,10 @@ class DetailViewController: UIViewController {
       }
 
       if var html = post.detailsHtml {
-        print(html)
+        html = stubDetailHTML
 
-        let font = "<style>body{font-family: \(regularFont.familyName);}</style>"
-        html = "\(font)<html><body>\(html)</body></html>"
+//        let font = "<style>body{font-family: \(regularFont.familyName);}</style>"
+//        html = "\(font)<html><body>\(html)</body></html>"
 
         if let htmlData = html.data(using: String.Encoding.unicode) { // utf8
           let options : [NSAttributedString.DocumentReadingOptionKey : Any] = [.documentType : NSAttributedString.DocumentType.html]
@@ -102,3 +113,49 @@ class DetailViewController: UIViewController {
   }
 
 }
+
+
+var stubDetailHTML = """
+
+<html><body><style type="text/css">
+body {
+font-family: "apple-system", "Lato-Regular";
+box-sizing: border-box;
+padding: 0;
+border: 0;
+}
+blockquote {
+background-color: rgb(67,86,103);
+color: white;
+font-style: italic;
+font-weigth: bold;
+font-size: 17;
+}
+blockquote:after {
+content: close-quote;
+vertical-align: bottom;
+}
+blockquote:before {
+content: open-quote;
+vertical-align: top;
+}
+#place_summary {
+  height: 100;
+}
+
+</style><section id="place_summary"><blockquote>Dynamic contemporary dishes built around the ever-changing tides of sustainable &#39;dock-to-table&#39; ingredients</blockquote></section><section id="menu"><h1>Menu Highlight</h1>
+<ul>
+<li>Meaty filefish over chilled poblano-avocado puree.</li>
+<li>Scallop ceviche splashed in bright yellow watermelon juice enriched with labne.</li>
+<li>Juicy halibut over puffed quinoa, minted tomato salad.</li>
+<li>Refreshing sweet tart spice of summer cantaloupe gazpacho.</li>
+</ul>
+</section><section id="drinks"><h1>Recommended Drinks</h1>
+<p>The city’s best martinis, highlighted by the housemade vermouth and Philly’s biggest collection of gin.</p>
+</section><section id="notes"><h1>Short dining notes</h1>
+<p>The region’s finest raw bar and the premier showplace for New Jersey’s revitalized oyster industry and pristine shellfish from around the globe. New chef Aaron Gottesman (ex-Hearthside, Fat Ham) has brought dynamic contemporary dishes built around the ever-changing tides of sustainable ‘dock-to-table’ ingredients chosen daily at market by Sam’s dad, David. Add a team of well-informed servers and beautiful seasonal desserts from Stephanie Vacca - grilled rum cake with peaches; strawberry pie ribboned with dark chocolate; timeless butterscotch pudding - and you have a very complete restaurant.</p>
+</section></body></html>
+
+
+
+"""

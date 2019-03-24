@@ -81,6 +81,11 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
       }
     }
 
+    // hot reload support - https://git.io/fjUfj
+    #if DEBUG
+    Bundle(path: "/Applications/InjectionIII.app/Contents/Resources/iOSInjection10.bundle")?.load()
+    #endif
+
     return true
   }
 

@@ -1,0 +1,33 @@
+html
+  body
+    css:
+      body {
+        font-family: "Lato-Regular";
+      }
+      blockquote {
+        background-color: rgb(67,86,103);
+        color: white;
+      }
+      blockquote:after {
+        content: close-quote;
+        vertical-align: bottom;
+      }
+      blockquote:before {
+        content: open-quote;
+        vertical-align: top;
+      }
+
+    - Post.md_fields.each do |attr|
+      - attr_value = self.send(attr)
+      - if attr_value.present? # skip empty fields
+        - html_id = attr.to_s.gsub('md_','').parameterize
+        section id=html_id
+          - if %w{ menu drinks notes }.include?(html_id)
+            - title = I18n.t(attr)
+            markdown:
+              # #{title}
+          - if attr == :md_place_summary
+            blockquote
+              = attr_value
+          - else
+            = Kramdown::Document.new(attr_value, MD_OPTIONS).to_html.html_safe
