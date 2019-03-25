@@ -48,13 +48,29 @@ class Post < ApplicationRecord
   ## Markdown
   #
 
-  MD_OPTIONS = {}
+  MD_OPTIONS = {auto_ids: false}
 
   self.md_fields.each do |attr|
     define_method(attr.to_s.gsub('md_','html_')) do
       md = self.send(attr)
       return nil unless md
+      field_name = attr.to_s.gsub('md_', '')
+      if %w{ places_summary menu drinks notes }.include?(field_name)
+         md.prepend("# #{I18n.t(attr)} \n\n")
+      end
       Kramdown::Document.new(md, MD_OPTIONS).to_html.html_safe
+    end
+  end
+
+  def self.detail_fields
+    self.md_fields.map {|attr| attr.to_s.gsub('md_','').to_sym }
+  end
+
+  self.html_fields.each do |attr|
+    field_name = attr.to_s.gsub('html_','')
+    define_method(field_name) do
+      html = self.send(attr)
+      html.blank? ? nil : html
     end
   end
 
@@ -121,6 +137,8 @@ class Post < ApplicationRecord
     string.present? ? string : nil
   end
 
+
+  # TODO: deprecate
   def details_html
     md = Post.md_fields.reduce([]) { |agg, attr|
       attr_head = I18n.t(attr)
@@ -140,6 +158,15 @@ class Post < ApplicationRecord
     Kramdown::Document.new(md, MD_OPTIONS).to_html.html_safe
   end
 
+  def details
+    self.class.html_fields.inject({}) do |agg, attr|
+      field_name = attr.to_s.gsub('html_', '')
+      field_html = self.send(attr)
+      agg[field_name] = field_html
+      agg
+    end
+  end
+
   def as_json(options = nil)
     super({
       only: %i[
@@ -154,7 +181,7 @@ class Post < ApplicationRecord
         url
         author
         details_html
-      ]
+      ].concat(self.class.detail_fields)
     }.merge(options || {}))
   end
 
