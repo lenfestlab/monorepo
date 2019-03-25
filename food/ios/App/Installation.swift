@@ -17,29 +17,50 @@ func iCloudUserIDAsync(complete: @escaping (String?, Error?) -> ()) {
   }
 }
 
+let authTokenKey = "auth-token"
+
 class Installation: NSObject {
 
-  class func register(cloudId: String, completion: @escaping (Bool, JSON?) -> Void) {
+  static let shared = Installation()
+
+  class func save(authToken: String) {
+    let defaults = UserDefaults.standard
+    defaults.set(authToken, forKey: authTokenKey)
+    defaults.synchronize()
+  }
+
+  class func authToken() -> String? {
+    let defaults = UserDefaults.standard
+    return defaults.string(forKey: authTokenKey)
+  }
+
+  class func register(cloudId: String, completion: @escaping (Bool, String?) -> Void) {
     patch(cloudId: cloudId, completion: completion)
   }
 
-  class func update(cloudId: String, emailAddress: String, completion: @escaping (Bool, JSON?) -> Void) {
+  class func update(cloudId: String, emailAddress: String, completion: @escaping (Bool, String?) -> Void) {
     let params = ["email" : emailAddress]
     patch(cloudId: cloudId, params: params, completion: completion)
   }
 
-  class func patch(cloudId: String, params: [String: Any]? = nil, completion: @escaping (Bool, JSON?) -> Void) {
+  class func patch(cloudId: String, params: [String: Any]? = nil, completion: @escaping (Bool, String?) -> Void) {
     let env = Env()
-    let url = "\(env.apiBaseUrlString)/installations/\(cloudId)"
+    let url = "\(env.apiBaseUrlString)/users/\(cloudId)"
     Alamofire.request(url, method:.patch, parameters:params).responseJSON { response in
-      let json = response.result.value as? JSON
-      if (json == nil) {
+      guard let json = response.result.value as? JSON else {
         DispatchQueue.main.async { completion(false, nil) }
         return
       }
 
+      guard let authToken = json["auth_token"] as? String else {
+        DispatchQueue.main.async { completion(false, nil) }
+        return
+      }
+
+      save(authToken: authToken)
+
       DispatchQueue.main.async {
-        completion(true, json)
+        completion(true, authToken)
       }
     }
   }

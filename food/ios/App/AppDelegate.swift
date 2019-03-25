@@ -55,28 +55,30 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
       return true
     }
 
-    showHomeScreen()
-
     let cloudViewController = CloudViewController()
     window!.rootViewController = cloudViewController
     window!.makeKeyAndVisible()
 
-    iCloudUserIDAsync() { cloudId, error in
-      if let cloudId = cloudId {
-        print("received iCloudID \(cloudId)")
+    if Installation.authToken() != nil {
+      DispatchQueue.main.async { [unowned self] in
+        self.showHomeScreen()
+      }
+    } else {
+      iCloudUserIDAsync() { cloudId, error in
+        if let cloudId = cloudId {
+          print("received iCloudID \(cloudId)")
 
-        Installation.register(cloudId: cloudId, completion: { (success, result) in
+          Installation.register(cloudId: cloudId, completion: { (success, accessToken) in
+            DispatchQueue.main.async { [unowned self] in
+              self.showHomeScreen()
+            }
+          })
+
+        } else {
+          print("Fetched iCloudID was nil")
           DispatchQueue.main.async { [unowned self] in
-//            self.window!.rootViewController = self.mainController
-            self.window!.rootViewController = self.tabController
+            self.showHomeScreen()
           }
-        })
-
-      } else {
-        print("Fetched iCloudID was nil")
-        DispatchQueue.main.async { [unowned self] in
-//            self.window!.rootViewController = self.mainController
-          self.window!.rootViewController = self.tabController
         }
       }
     }
@@ -98,12 +100,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
 
   func showHomeScreen() {
     self.tabController = TabBarViewController(analytics: self.analytics)
-
-//    mainController.navigationController?.isNavigationBarHidden = true
-//    mainController.pushViewController(self.tabController, animated: false)
-
     window!.rootViewController = self.tabController
-
   }
 
   func showEmailRegistration(cloudId: String) {

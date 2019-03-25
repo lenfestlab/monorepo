@@ -8,7 +8,10 @@ class PlaceCell: UICollectionViewCell {
   @IBOutlet weak var imageView: UIImageView!
   @IBOutlet weak var containerView: UIView!
   @IBOutlet weak var articleButton: UIButton!
-  
+  @IBOutlet weak var loveButton: UIButton!
+
+  var place : Place?
+
   override func awakeFromNib() {
     super.awakeFromNib()
     containerView.layer.cornerRadius = 5.0
@@ -22,6 +25,7 @@ class PlaceCell: UICollectionViewCell {
     imageView.clipsToBounds = true
     imageView.layer.addSublayer(self.gradientLayer(bounds: self.imageView.bounds))
 
+    NotificationCenter.default.addObserver(self, selector: #selector(onFavoritesUpdated(_:)), name: .favoritesUpdated, object: nil)
   }
 
   func gradientLayer(bounds: CGRect) -> CAGradientLayer {
@@ -47,8 +51,19 @@ class PlaceCell: UICollectionViewCell {
     
     return attributedString
   }
-  
+
+  @objc func onFavoritesUpdated(_ notification: Notification) {
+    self.refresh()
+  }
+
+  func refresh() {
+    if let identifier = self.place?.identifier {
+      self.loveButton.isSelected = Place.contains(identifier: identifier)
+    }
+  }
+
   func setPlace(place: Place) {
+    self.place = place
     let post = place.post
     let text = NSMutableAttributedString(string: "")
     
@@ -112,12 +127,39 @@ class PlaceCell: UICollectionViewCell {
     if let url = post?.imageURL {
       self.imageView.af_setImage(withURL: url)
     }
+
+    if let identifier = self.place?.identifier {
+      self.loveButton.isSelected = Place.contains(identifier: identifier)
+    }
   }
   
   override func prepareForReuse() {
     super.prepareForReuse()
     self.textLabel.text = nil
     self.imageView.image = nil
+  }
+
+  @IBAction func tapBookmarkButton() {
+    guard let identifier = self.place?.identifier else {
+      return
+    }
+
+
+    if loveButton.isSelected {
+      loveButton.isSelected = false
+      deleteBookmark(placeId: identifier) { (success) in
+        if !success {
+          self.loveButton.isSelected = true
+        }
+      }
+    } else {
+      loveButton.isSelected = true
+      createBookmark(placeId: identifier) { (success) in
+        if !success {
+          self.loveButton.isSelected = false
+        }
+      }
+    }
   }
   
 }

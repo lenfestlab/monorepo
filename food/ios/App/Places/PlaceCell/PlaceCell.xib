@@ -40,17 +40,31 @@
                                 <color key="textColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                                 <nil key="highlightedColor"/>
                             </label>
+                            <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="vlm-0v-r0S">
+                                <rect key="frame" x="389" y="110" width="50" height="50"/>
+                                <constraints>
+                                    <constraint firstAttribute="width" constant="50" id="WDh-Tn-j3A"/>
+                                    <constraint firstAttribute="height" constant="50" id="dAn-1N-cCM"/>
+                                </constraints>
+                                <state key="normal" image="heart"/>
+                                <state key="selected" image="heart-selected"/>
+                                <connections>
+                                    <action selector="tapBookmarkButton" destination="gTV-IL-0wX" eventType="touchUpInside" id="qSc-mh-BEc"/>
+                                </connections>
+                            </button>
                         </subviews>
                         <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
                         <constraints>
                             <constraint firstAttribute="trailing" secondItem="2Jp-SL-git" secondAttribute="trailing" constant="15" id="2HW-Oa-j9D"/>
                             <constraint firstItem="xOb-IV-e8y" firstAttribute="top" secondItem="oW8-1A-AE3" secondAttribute="top" id="47J-du-43H"/>
                             <constraint firstItem="2Jp-SL-git" firstAttribute="top" secondItem="oW8-1A-AE3" secondAttribute="top" constant="15" id="7DX-kg-LK8"/>
+                            <constraint firstAttribute="trailing" secondItem="vlm-0v-r0S" secondAttribute="trailing" id="GeF-tm-yKK"/>
                             <constraint firstAttribute="trailing" secondItem="Dz4-fv-GMQ" secondAttribute="trailing" constant="10" id="LZ7-6F-EUE"/>
                             <constraint firstItem="Dz4-fv-GMQ" firstAttribute="top" secondItem="xOb-IV-e8y" secondAttribute="bottom" id="N3N-ww-jOn"/>
                             <constraint firstAttribute="bottom" secondItem="Dz4-fv-GMQ" secondAttribute="bottom" constant="5" id="QUF-P4-bWw"/>
                             <constraint firstItem="Dz4-fv-GMQ" firstAttribute="leading" secondItem="oW8-1A-AE3" secondAttribute="leading" constant="15" id="fBW-cg-OmL"/>
                             <constraint firstAttribute="trailing" secondItem="xOb-IV-e8y" secondAttribute="trailing" id="gYj-hA-pvp"/>
+                            <constraint firstItem="Dz4-fv-GMQ" firstAttribute="top" secondItem="vlm-0v-r0S" secondAttribute="bottom" id="hUH-z3-1fl"/>
                             <constraint firstItem="xOb-IV-e8y" firstAttribute="leading" secondItem="oW8-1A-AE3" secondAttribute="leading" id="odM-Cl-tjR"/>
                         </constraints>
                     </view>
@@ -68,10 +82,15 @@
             <connections>
                 <outlet property="containerView" destination="oW8-1A-AE3" id="jXR-pb-Mib"/>
                 <outlet property="imageView" destination="xOb-IV-e8y" id="Der-t3-xae"/>
+                <outlet property="loveButton" destination="vlm-0v-r0S" id="Djo-n6-wMO"/>
                 <outlet property="milesAwayLabel" destination="2Jp-SL-git" id="pmf-OO-Ky7"/>
                 <outlet property="textLabel" destination="Dz4-fv-GMQ" id="yeb-jj-Enb"/>
             </connections>
             <point key="canvasLocation" x="132" y="57.121439280359823"/>
         </collectionViewCell>
     </objects>
+    <resources>
+        <image name="heart" width="22" height="23"/>
+        <image name="heart-selected" width="22" height="23"/>
+    </resources>
 </document>

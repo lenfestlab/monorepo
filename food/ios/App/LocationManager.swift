@@ -225,7 +225,7 @@ class LocationManager: NSObject, CLLocationManagerDelegate {
   }
 
   func fetchData(coordinate: CLLocationCoordinate2D, trackResults: Bool = true) {
-    PlaceDataStore.retrieve(coordinate: coordinate, limit: 10) { [unowned self] (success, data, count) in
+    PlaceDataStore.retrieve(path: "places.json", coordinate: coordinate, limit: 10) { [unowned self] (success, data, count) in
       if self.authorized && trackResults {
         PlaceManager.shared.trackPlaces(places: data)
       }
