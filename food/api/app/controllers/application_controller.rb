@@ -11,10 +11,16 @@ class ApplicationController < ActionController::API
   end
 
   def authenticate!
+    User.find_by! auth_token: self.auth_token
+  end
+
+
+  protected
+
+  def auth_token
     authenticate_with_http_token do |token, options|
-      token = token || params[:auth_token]
-      User.find_by! auth_token: token
-    end
+      token
+    end || params[:auth_token]
   end
 
 end
