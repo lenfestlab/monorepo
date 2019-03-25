@@ -139,8 +139,6 @@ class MapViewController: UIViewController {
     }
   }
 
-  var initalDataFetched = false
-
   var lastCoordinate: CLLocationCoordinate2D? {
     return locationManager.latestCoordinate
   }
@@ -176,23 +174,6 @@ class MapViewController: UIViewController {
     AppDelegate.shared().lastViewedURL = nil
   }
 
-  func initialMapDataFetch(coordinate: CLLocationCoordinate2D) {
-    if initalDataFetched {
-      return
-    }
-    initalDataFetched = true
-    centerMap(coordinate)
-    self.placeStore.fetchMapData(coordinate: coordinate)
-  }
-
-  @objc func onLocationUpdated(_ notification: Notification) {
-    if let location = notification.object as? CLLocation {
-      DispatchQueue.main.async {
-        self.initialMapDataFetch(coordinate: location.coordinate)
-      }
-    }
-  }
-
   func fetchedMapData() {
     if (self.placeStore.placesFiltered.count > 0) {
       let mapPlace = self.placeStore.placesFiltered.first
@@ -209,8 +190,6 @@ class MapViewController: UIViewController {
     self.collectionView.delegate = self
     self.collectionView.dataSource = self
 
-    NotificationCenter.default.addObserver(self, selector: #selector(onLocationUpdated(_:)), name: .locationUpdated, object: nil)
-
     let layout = UPCarouselFlowLayout()
     layout.scrollDirection = .horizontal
     let width = collectionView.frame.size.width - 2*padding
@@ -226,14 +205,6 @@ class MapViewController: UIViewController {
     self.collectionView.register(nib, forCellWithReuseIdentifier: reuseIdentifier)
 
     self.navigationController?.styleController()
-
-    if let location = self.locationManager.latestLocation {
-      initialMapDataFetch(coordinate: location.coordinate)
-    } else {
-      let coordinate = CLLocationCoordinate2D(latitude: 39.9526, longitude: -75.1652)
-      centerMap(coordinate)
-      self.placeStore.fetchMapData(coordinate: coordinate)
-    }
 
 //    self.navigationItem.rightBarButtonItem = UIBarButtonItem(title: "Filter", style: .plain, target: self, action: #selector(showFilter))
 

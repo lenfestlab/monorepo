@@ -3,6 +3,10 @@ import CoreLocation
 
 extension PlacesViewController : PlaceStoreDelegate {
   func fetchedMapData() {
+    if !_initalDataFetched {
+      _initalDataFetched = true
+      self.initalDataFetched()
+    }
     self.mapViewController.fetchedMapData()
     self.listViewController.fetchedMapData()
   }
@@ -62,7 +66,7 @@ extension PlacesViewController : SortViewControllerDelegate {
 
     let defaultCoordinate = CLLocationCoordinate2D(latitude: 39.9526, longitude: -75.1652)
     let coordinate = LocationManager.shared.latestLocation?.coordinate ?? defaultCoordinate
-    self.placeStore.fetchMapData(coordinate: coordinate)
+    self.placeStore.fetchMapData(path: self.path, coordinate: coordinate)
   }
 
 }
@@ -80,7 +84,7 @@ extension PlacesViewController : CuisinesViewControllerDelegate {
 
     let defaultCoordinate = CLLocationCoordinate2D(latitude: 39.9526, longitude: -75.1652)
     let coordinate = LocationManager.shared.latestLocation?.coordinate ?? defaultCoordinate
-    self.placeStore.fetchMapData(coordinate: coordinate)
+    self.placeStore.fetchMapData(path: self.path, coordinate: coordinate)
   }
 
 }
@@ -91,12 +95,18 @@ extension PlacesViewController : FilterViewControllerDelegate {
 
     let defaultCoordinate = CLLocationCoordinate2D(latitude: 39.9526, longitude: -75.1652)
     let coordinate = LocationManager.shared.latestLocation?.coordinate ?? defaultCoordinate
-    self.placeStore.fetchMapData(coordinate: coordinate)
+    self.placeStore.fetchMapData(path: self.path, coordinate: coordinate)
   }
 
 }
 
 class PlacesViewController: UIViewController {
+
+  let locationManager = LocationManager.shared
+
+  func initalDataFetched() {
+
+  }
 
   func displayContentController(_ content: UIViewController) {
     addChild(content)
@@ -120,6 +130,11 @@ class PlacesViewController: UIViewController {
       hideContentController(self.viewControllers[selectedIndex])
       displayContentController(self.viewControllers[newValue])
       _selectedIndex = newValue
+      if selectedIndex == 1 {
+        self.navigationItem.rightBarButtonItem = UIBarButtonItem(title: "Map", style: .plain, target: self, action: #selector(map))
+      } else {
+        self.navigationItem.rightBarButtonItem = UIBarButtonItem(title: "List", style: .plain, target: self, action: #selector(list))
+      }
     }
     get {
       return _selectedIndex
@@ -159,7 +174,10 @@ class PlacesViewController: UIViewController {
 
   private let analytics: AnalyticsManager
 
-  init(analytics: AnalyticsManager, categories: [Category] = []) {
+  let path : String!
+
+  init(path: String = "places.json", analytics: AnalyticsManager, categories: [Category] = []) {
+    self.path = path
     self.analytics = analytics
 
     self.placeStore = PlaceStore()
@@ -185,7 +203,6 @@ class PlacesViewController: UIViewController {
       let index = viewControllers.index(of: self.listViewController)
       self.selectedIndex = index ?? 0
     }
-    self.navigationItem.rightBarButtonItem = UIBarButtonItem(title: "Map", style: .plain, target: self, action: #selector(map))
   }
 
   @IBAction func map(sender: UIButton) {
@@ -193,16 +210,48 @@ class PlacesViewController: UIViewController {
       let index = viewControllers.index(of: self.mapViewController)
       self.selectedIndex = index ?? 0
     }
-    self.navigationItem.rightBarButtonItem = UIBarButtonItem(title: "List", style: .plain, target: self, action: #selector(list))
+  }
+
+  @objc func onLocationUpdated(_ notification: Notification) {
+    if let location = notification.object as? CLLocation {
+      DispatchQueue.main.async {
+        self.initialMapDataFetch(coordinate: location.coordinate)
+      }
+    }
   }
 
   override func viewDidLoad() {
     super.viewDidLoad()
 
+    NotificationCenter.default.addObserver(self, selector: #selector(onLocationUpdated(_:)), name: .locationUpdated, object: nil)
+
     self.topBar.isHidden = self.topBarIsHidden
     self.view.addSubview(self.topBar)
 
     self.navigationItem.rightBarButtonItem = UIBarButtonItem(title: "List", style: .plain, target: self, action: #selector(list))
+
+    if let location = self.locationManager.latestLocation {
+      initialMapDataFetch(coordinate: location.coordinate)
+    } else {
+      let coordinate = CLLocationCoordinate2D(latitude: 39.9526, longitude: -75.1652)
+      self.mapViewController.centerMap(coordinate)
+      self.placeStore.fetchMapData(path: self.path, coordinate: coordinate)
+    }
+
+  }
+
+  var _initalDataFetched = false
+
+  func refresh() {
+    self.placeStore.refresh()
+  }
+
+  func initialMapDataFetch(coordinate: CLLocationCoordinate2D) {
+    if _initalDataFetched {
+      return
+    }
+    self.mapViewController.centerMap(coordinate)
+    self.placeStore.fetchMapData(path: self.path, coordinate: coordinate)
   }
 
   override func viewWillLayoutSubviews() {

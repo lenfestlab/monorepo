@@ -27,6 +27,11 @@ struct Post: JSONDecodable, Codable, Identifiable {
   var link: URL? = URL(string: "http://media.philly.com/storage/special_projects/best-restaurants-philadelphia-philly-2018.html")
   var linkShort: URL?
   var detailsHtml: String?
+  var placeSummary: String?
+  var menu: String?
+  var notes: String?
+  var drinks: String?
+  var remainder: String?
 
   init?(json: JSON) {
     self.identifier = ("identifier" <~~ json)!
@@ -36,6 +41,11 @@ struct Post: JSONDecodable, Codable, Identifiable {
     self.price = "price" <~~ json
     self.rating = "rating" <~~ json
     self.detailsHtml = "details_html" <~~ json
+    self.placeSummary = "place_summary" <~~ json
+    self.menu = "menu" <~~ json
+    self.notes = "notes" <~~ json
+    self.drinks = "drinks" <~~ json
+    self.remainder = "remainder" <~~ json
   }
 
   var publicationName: String? { return "" }
@@ -43,7 +53,9 @@ struct Post: JSONDecodable, Codable, Identifiable {
 }
 
 struct Place: JSONDecodable, Codable, Identifiable {
-  
+
+  static let key = "saved-place-identifiers"
+
   static let idKey = \Place.identifier
 
   var name: String?

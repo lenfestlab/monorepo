@@ -5,7 +5,8 @@ import CoreLocation
 
 class PlaceDataStore: NSObject {
 
-  class func retrieve(coordinate: CLLocationCoordinate2D,
+  class func retrieve(path: String,
+                      coordinate: CLLocationCoordinate2D,
                       prices: [Int] = [],
                       ratings: [Int] = [],
                       categories: [Category] = [],
@@ -22,7 +23,7 @@ class PlaceDataStore: NSObject {
     let nabe_ids = neigborhoods.map { $0.identifier }
     let author_ids = authors.map { $0.identifier }
 
-    let params: [String: Any] = [
+    var params: [String: Any] = [
       "lat": latitude,
       "lng": longitude,
       "limit": limit,
@@ -34,8 +35,12 @@ class PlaceDataStore: NSObject {
       "sort": sort.rawValue.lowercased(),
     ]
 
+    if let authToken = Installation.authToken() {
+      params["auth_token"] = authToken
+    }
+
     let env = Env()
-    let url = "\(env.apiBaseUrlString)/places.json"
+    let url = "\(env.apiBaseUrlString)/\(path)"
     Alamofire.request(url, method: .get, parameters: params, encoding: URLEncoding.default, headers: nil).responseJSON { response in
       let json = response.result.value as? JSON
       if (json == nil) {

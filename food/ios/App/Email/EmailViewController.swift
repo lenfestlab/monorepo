@@ -83,7 +83,7 @@ class EmailViewController: UIViewController, UITextFieldDelegate {
 
     button.isEnabled = false
 
-    Installation.update(cloudId: cloudId, emailAddress: emailAddress, completion: { (success, result) in
+    Installation.update(cloudId: cloudId, emailAddress: emailAddress, completion: { (success, authToken) in
       DispatchQueue.main.async { [unowned self] in
         if success {
           self.next()

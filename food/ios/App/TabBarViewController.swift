@@ -16,7 +16,6 @@ class TabBarViewController: UITabBarController {
 
     self.navigationController?.isNavigationBarHidden = true
 
-
     navigationItem.hidesBackButton = true
   }
 
@@ -37,24 +36,29 @@ class TabBarViewController: UITabBarController {
 
     self.navigationController?.styleController()
 
+    var controllers : [UIViewController] = []
+
     self.placesViewController = PlacesViewController(analytics: self.analytics)
     let mapNavigationController = UINavigationController(rootViewController: self.placesViewController)
     mapNavigationController.styleController()
     mapNavigationController.tabBarItem.title = "All Restaurants"
+    controllers.append(mapNavigationController)
 
     self.guideViewController = GuidesViewController(analytics: self.analytics, isCuisine: false)
     let guideNavigationController = UINavigationController(rootViewController: self.guideViewController)
     guideNavigationController.tabBarItem.title = "Guides"
+    controllers.append(guideNavigationController)
 
-    self.favoritesViewController = PlacesViewController(analytics: self.analytics)
-    self.favoritesViewController.title = "My List"
-    self.favoritesViewController.selectedIndex = 1
-    self.favoritesViewController.topBarIsHidden = true
-    let favoritesNavigationController = UINavigationController(rootViewController: self.favoritesViewController)
-    favoritesNavigationController.styleController()
-    favoritesNavigationController.tabBarItem.title = "My List"
+    if Installation.authToken() != nil {
+      self.favoritesViewController = FavoritesViewController(analytics: self.analytics)
+      self.favoritesViewController.selectedIndex = 1
+      let favoritesNavigationController = UINavigationController(rootViewController: self.favoritesViewController)
+      favoritesNavigationController.styleController()
+      favoritesNavigationController.tabBarItem.title = "My List"
+      controllers.append(favoritesNavigationController)
+    }
 
-    self.viewControllers = [mapNavigationController, guideNavigationController, favoritesNavigationController]
+    self.viewControllers = controllers
 
     self.tabBar.tintColor = UIColor.iconColor()
     self.tabBar.barTintColor = UIColor.white
