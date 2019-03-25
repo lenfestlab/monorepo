@@ -4,6 +4,8 @@
 <dict>
 	<key>API_HOST</key>
 	<string>$(API_HOST)</string>
+	<key>API_PROT</key>
+	<string>$(API_PROT)</string>
 	<key>APP_MARKETING_PATH</key>
 	<string>$(APP_MARKETING_PATH)</string>
 	<key>APP_NAME</key>

@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2019_03_19_155654) do
+ActiveRecord::Schema.define(version: 2019_03_24_154625) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -24,6 +24,17 @@ ActiveRecord::Schema.define(version: 2019_03_19_155654) do
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.index ["identifier"], name: "index_authors_on_identifier"
+  end
+
+  create_table "bookmarks", force: :cascade do |t|
+    t.uuid "identifier", default: -> { "uuid_generate_v4()" }
+    t.bigint "user_id"
+    t.bigint "post_id"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["identifier"], name: "index_bookmarks_on_identifier"
+    t.index ["post_id"], name: "index_bookmarks_on_post_id"
+    t.index ["user_id"], name: "index_bookmarks_on_user_id"
   end
 
   create_table "categories", force: :cascade do |t|
@@ -47,19 +58,6 @@ ActiveRecord::Schema.define(version: 2019_03_19_155654) do
     t.index ["category_id"], name: "index_categorizations_on_category_id"
     t.index ["identifier"], name: "index_categorizations_on_identifier"
     t.index ["place_id"], name: "index_categorizations_on_place_id"
-  end
-
-  create_table "installations", force: :cascade do |t|
-    t.uuid "identifier", default: -> { "uuid_generate_v4()" }
-    t.string "icloud_id"
-    t.string "email"
-    t.uuid "auth_token", default: -> { "uuid_generate_v4()" }
-    t.datetime "created_at", null: false
-    t.datetime "updated_at", null: false
-    t.index ["auth_token"], name: "index_installations_on_auth_token"
-    t.index ["email"], name: "index_installations_on_email"
-    t.index ["icloud_id"], name: "index_installations_on_icloud_id"
-    t.index ["identifier"], name: "index_installations_on_identifier"
   end
 
   create_table "nabes", force: :cascade do |t|
@@ -131,6 +129,19 @@ ActiveRecord::Schema.define(version: 2019_03_19_155654) do
     t.index ["identifier"], name: "index_posts_on_identifier"
     t.index ["price"], name: "index_posts_on_price", using: :gin
     t.index ["rating"], name: "index_posts_on_rating"
+  end
+
+  create_table "users", force: :cascade do |t|
+    t.uuid "identifier", default: -> { "uuid_generate_v4()" }
+    t.string "icloud_id"
+    t.string "email"
+    t.uuid "auth_token", default: -> { "uuid_generate_v4()" }
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["auth_token"], name: "index_users_on_auth_token"
+    t.index ["email"], name: "index_users_on_email"
+    t.index ["icloud_id"], name: "index_users_on_icloud_id"
+    t.index ["identifier"], name: "index_users_on_identifier"
   end
 
 end

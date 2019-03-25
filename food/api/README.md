@@ -6,10 +6,17 @@ See `../README.md`, then:
 # Run setup script
 ./bootstrap.sh
 
+# enable localhost SSL
+mkcert -install
+mkcert --cert-file localhost-cert.pem --key-file localhost-key.pem localhost 127.0.0.1 ::1
+chmod +r localhost-key.pem
+mv localhost* ./config/cert/
+
 cp .env.dev.example .env
 heroku local:run rails db:setup
 heroku local
 ```
+
 
 ## Deployment
 

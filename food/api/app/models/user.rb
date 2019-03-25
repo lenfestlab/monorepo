@@ -1,4 +1,6 @@
-class Installation < ApplicationRecord
+class User < ApplicationRecord
+
+  has_many :bookmarks, -> { order(created_at: :desc) }
 
   validates :icloud_id,
     presence: true,
@@ -12,7 +14,7 @@ class Installation < ApplicationRecord
 
     [:identifier, :auth_token].each do |hidden_attr|
       configure hidden_attr do
-        hide
+        read_only true
       end
     end
 

@@ -1,6 +1,14 @@
 Rails.application.routes.draw do
+
   mount RailsAdmin::Engine => '/admin', as: 'rails_admin'
-  resources :installations, only: :update
+
+  resources :users, only: :update
+
+  # TODO: deprecate
+  resources :installations,
+    only: :update,
+    controller: :users
+
   %i[
     places
     categories
@@ -9,6 +17,9 @@ Rails.application.routes.draw do
   ].each do |resource_name|
     resources resource_name, only: :index
   end
+
+  resources :bookmarks, only: %i[ create index ]
+  delete '/bookmarks(/:id)', controller: :bookmarks, action: :destroy
 
   # static pages
   get "/privacy", to: redirect("privacy.html")
