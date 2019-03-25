@@ -4,17 +4,17 @@ class BookmarksController < ApplicationController
 
   def create
     current_user = self.authenticate!
-    post = Post.find_by! identifier: params[:post_id]
-    bookmark = Bookmark.find_or_create_by! user: current_user, post: post
+    place = Place.find_by! identifier: params[:place_id]
+    bookmark = Bookmark.find_or_create_by! user: current_user, place: place
     bookmark.reload
     render json: bookmark
   end
 
   def destroy
     current_user = self.authenticate!
-    if (post_identifier = params[:post_id]).present?
-      post = Post.find_by! identifier: post_identifier
-      bookmark = Bookmark.find_by! user: current_user, post: post
+    if (place_identifier = params[:place_id]).present?
+      place = Place.find_by! identifier: place_identifier
+      bookmark = Bookmark.find_by! user: current_user, place: place
     else
       bookmark = Bookmark.find_by! user: current_user, identifier: params[:id]
     end

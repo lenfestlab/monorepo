@@ -1,5 +1,7 @@
 class Place < ApplicationRecord
 
+  has_many :bookmarks
+
   has_and_belongs_to_many :posts
 
   has_many :categorizations, dependent: :destroy
@@ -114,6 +116,13 @@ class Place < ApplicationRecord
     end
   }
 
+  scope :bookmarked, -> (ids) {
+    if ids.present?
+      where 'id IN (?)', ids
+    end
+  }
+
+
 
   ## Admin
   #
@@ -122,7 +131,7 @@ class Place < ApplicationRecord
 
     [:identifier, :created_at, :updated_at, :lonlat].each do |hidden_attr|
       configure hidden_attr do
-        hide
+        read_only true
       end
     end
 
