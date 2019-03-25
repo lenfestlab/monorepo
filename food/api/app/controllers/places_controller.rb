@@ -5,10 +5,15 @@ class PlacesController < ApplicationController
   def index
     p = params
     nabes, categories, ratings, prices, sorts, authors =
-      %i{ nabes categories ratings prices sort authors }.map do |key|
+      %i{ nabes categories ratings prices sort authors bookmarked }.map do |key|
         value = p.try(:[], key) || []
         [value].flatten.compact
       end
+
+    if params[:bookmarked].present?
+      current_user = self.authenticate!
+      bookmarked_place_ids = current_user.bookmarks.pluck(:place_id)
+    end
 
     data =
       Place \
@@ -20,6 +25,7 @@ class PlacesController < ApplicationController
       .located_in(nabes)
       .reviewed_by(authors)
       .nearest(p[:lat], p[:lng], sorts.first)
+      .bookmarked(bookmarked_place_ids)
       .to_a
 
     render json: {

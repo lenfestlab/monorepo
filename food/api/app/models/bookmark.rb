@@ -1,9 +1,9 @@
 class Bookmark < ApplicationRecord
 
-  belongs_to :post
+  belongs_to :place
   belongs_to :user
 
-  validates :post,
+  validates :place,
     presence: true,
     uniqueness: { scope: :user }
 
@@ -20,7 +20,7 @@ class Bookmark < ApplicationRecord
         :identifier,
       ],
       methods: %i[
-        post
+        place
       ]
     }.merge(options || {}))
   end

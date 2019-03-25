@@ -3,8 +3,6 @@ require 'cgi'
 
 class Post < ApplicationRecord
 
-  has_many :bookmarks
-
   has_and_belongs_to_many :places
 
   belongs_to :author
