@@ -26,7 +26,11 @@ namespace :seed do
       Category.find_by_key(category_top_key) ||
       Category.create(
         key: category_top_key,
-        name: 'Top Restaurants in Philly’s Suburbs')
+        name: 'Top Restaurants in Philly’s Suburbs',
+        image_urls: [
+          "https://media.philly.com/storage/special_projects/images/RS_1500x1500_20171016_DG_FARMFISHERMAN19_d_418124950.jpg"
+        ]
+      )
 
     _photo_index =
       json(dir, "photos").reduce({}) do |hash, o|
@@ -34,8 +38,9 @@ namespace :seed do
         resource = o["resource"]
         filename = URI.escape(o["filename"])
         url = "https://media.philly.com/storage/inquirer/Graphics/dg-suburbs/RS#{resource}_#{filename}"
+        caption, credit = o.values_at(*%w{ caption credit })
         existing = hash[key]
-        addition = [url]
+        addition = [{url: url, caption: caption, credit: credit}]
         hash[key] = existing.present? ? existing.concat(addition) : addition
         hash
       end
@@ -76,6 +81,11 @@ namespace :seed do
           name: name,
           phone: phone,
           website: website,
+          address_street_with_number: i["Address"],
+          address_city: i["City"],
+          address_state: i["State"],
+          address_county: i["County"],
+          address_zip: i["Zip"],
       }
       ap place_attrs
       next unless lat.present? && lng.present?
@@ -102,26 +112,30 @@ namespace :seed do
         end
         Categorization.create(place: place, category: category) end
 
-      blurb, _rating, _price, _url, _photo_key =
+      blurb, _rating, _prices, _url, _photo_key =
         i.values_at(*%w{ from_hermes Bells price county_page photo_tag })
       rating = _rating.present? && _rating.scan(/bell/i).length
-      price = _price.split(/-/).map { |i| i.scan(/\$/).length }
+      prices = _prices.split(/-/).map { |i| i.scan(/\$/).length }
       url = Post.ensure_https(_url || guide_url)
-      image_urls = _photo_index[_photo_key] || []
+      images = _photo_index[_photo_key] || []
 
       post_attrs = {
         author: guide_author,
         published_at: guide_published_at,
         blurb: blurb,
-        price: price,
+        prices: prices,
         rating: rating,
         url: url,
-        image_urls: image_urls,
+        images: images,
       }
       ap post_attrs
 
-      place.posts.find_or_create_by!(author: guide_author) do |post|
-        post.assign_attributes(post_attrs.except(:author))
+      post = Post.find_or_create_by!(blurb: blurb) do |p|
+        p.assign_attributes(post_attrs.except(:blurb))
+      end
+      unless place.posts.include?(post)
+        place.posts << post
+        place.save!
       end
 
       parse_bool = Proc.new { |text| text.present? && (text == "yes")  }

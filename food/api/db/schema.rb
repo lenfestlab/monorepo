@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2019_03_25_203728) do
+ActiveRecord::Schema.define(version: 2019_03_27_130945) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -84,16 +84,26 @@ ActiveRecord::Schema.define(version: 2019_03_25_203728) do
     t.string "website"
     t.geography "lonlat", limit: {:srid=>4326, :type=>"st_point", :geographic=>true}
     t.string "category_identifiers", default: [], array: true
-    t.integer "post_rating", default: -1
+    t.integer "post_rating", default: 0
     t.datetime "post_published_at"
     t.string "author_identifiers", default: [], array: true
     t.jsonb "nabe_cache", default: [], array: true
+    t.string "address_number"
+    t.string "address_street"
+    t.string "address_city"
+    t.string "address_county"
+    t.string "address_state"
+    t.string "address_zip"
+    t.string "address_country"
+    t.string "address_street_with_number"
+    t.integer "post_prices", default: [], array: true
     t.index ["author_identifiers"], name: "index_places_on_author_identifiers"
     t.index ["category_identifiers"], name: "index_places_on_category_identifiers", using: :gin
     t.index ["identifier"], name: "index_places_on_identifier"
     t.index ["lonlat"], name: "index_places_on_lonlat", using: :gist
     t.index ["nabe_cache"], name: "index_places_on_nabe_cache", using: :gin
     t.index ["name"], name: "index_places_on_name"
+    t.index ["post_prices"], name: "index_places_on_post_prices", using: :gin
     t.index ["post_published_at"], name: "index_places_on_post_published_at"
     t.index ["post_rating"], name: "index_places_on_post_rating"
   end
@@ -111,9 +121,8 @@ ActiveRecord::Schema.define(version: 2019_03_25_203728) do
     t.datetime "published_at", null: false
     t.text "title"
     t.text "blurb", null: false
-    t.integer "price", default: [], array: true
-    t.integer "rating"
-    t.text "image_urls", default: [], array: true
+    t.integer "prices", default: [], array: true
+    t.integer "rating", default: 0
     t.string "source_key"
     t.text "url"
     t.text "md_place_summary"
@@ -125,9 +134,11 @@ ActiveRecord::Schema.define(version: 2019_03_25_203728) do
     t.text "md_parking"
     t.text "md_price"
     t.bigint "author_id"
+    t.jsonb "images_data", default: []
     t.index ["author_id"], name: "index_posts_on_author_id"
     t.index ["identifier"], name: "index_posts_on_identifier"
-    t.index ["price"], name: "index_posts_on_price", using: :gin
+    t.index ["images_data"], name: "index_posts_on_images_data", using: :gin
+    t.index ["prices"], name: "index_posts_on_prices", using: :gin
     t.index ["rating"], name: "index_posts_on_rating"
   end
 

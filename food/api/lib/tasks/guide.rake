@@ -1,6 +1,11 @@
+namespace :seed do
+
+  desc "import 2018 guide"
+  task guide: :environment do
+
 raise "attempted to seed prod!" if Rails.env == "production"
 
-dir = ENV["ADMIN_DB_SEED_DIR"]
+dir = File.join(ENV["ADMIN_DB_SEED_DIR"], "2018")
 return unless dir
 
 def json filedir, filename
@@ -9,22 +14,33 @@ end
 
 _addressinfo = json(dir, "addressinfo_clean")
 _addressinfo.each do |i|
+  # normalize: "St" => "St."
+  street_raw = i["Street"]
+  street = street_raw.gsub(/\s(St|Rd|Ave)$/) {|match| "#{match}."} if street_raw
   Place.create({
     name: i["name"],
     address: i["address"],
     lat: i["Latitude"],
-    lng: i["Longitude"]
+    lng: i["Longitude"],
+    address_number: i["Number"],
+    address_street: street,
+    address_city: i["City"],
+    address_state: i["State"],
+    address_county: i["County"],
+    address_zip: i["Zip"],
+    address_country: i["Country"],
   })
 end
 
 # tee up shared values
 Time.zone = 'Eastern Time (US & Canada)'
 guide_date = Time.zone.parse('2018-10-18')
+guide_author = Author.find_by! last: "LaBan"
 
 category_top25 = Category.create(key: "top25", name: "Top 25")
 category_classic = Category.create(key: "classic", name: "Classic")
 
-_data = json(dir, "data")
+_data = json(dir, "data_clean")
 _reviews = _data["restaurants"]
 _reviews.each do |review|
   name = review["Title"]
@@ -37,7 +53,7 @@ _reviews.each do |review|
   place.save!
 
   source_key = review["Tag"]
-  price = review["Price"].try(:split, /,\s*/).try(:map, &:length)
+  prices = review["Price"].try(:split, /,\s*/).try(:map, &:length)
   rating_text = review["Bells"]
   rating_match = rating_text.match(/\A\d/) if rating_text
   rating_raw = rating_match[0] if rating_match
@@ -49,14 +65,15 @@ _reviews.each do |review|
     .join("\n")
 
   attrs = {
-    place: place,
+    author: guide_author,
     published_at: guide_date,
-    price: price,
+    prices: prices,
     rating: rating,
     blurb: blurb,
     source_key: source_key,
   }
-  Post.create(attrs)
+  ap attrs
+  place.posts.create attrs
 
   parse_bool = Proc.new { |text| text.present? && (text == "yes")  }
   if parse_bool.call(review["Top-25"])
@@ -97,62 +114,17 @@ _photos.reduce({}) { |map, o|
   resource = o["resource"]
   filename = URI.escape(o["filename"])
   url = Post.ensure_https("http://media.philly.com/storage/inquirer/projects/dining-guide-2018/photos/RS#{resource}_#{filename}")
+  caption, credit = o.values_at(*%w{ caption credit })
   existing = map[key]
-  addition = [url]
+  addition = [{url: url, caption: caption, credit: credit}]
   map[key] = existing.present? ? existing.concat(addition) : addition
   map
 }.each do |source_key, images|
   if post = Post.find_by_source_key(source_key)
-    post.image_urls = images
+    post.images = images
     post.save
   end
 end
-
-## Bars
-# src data: https://goo.gl/svbxoM
-def csv filedir, filename
-  CSV.read("#{filedir}/#{filename}.csv", {
-    headers: true,
-    header_converters: :symbol,
-  })
-end
-
-_bar_data = csv(dir, "bars")
-_bar_data.each do |row|
-  name = row[:name]
-  place =
-    Place.find_by_name(name) ||
-    Place.create({
-      name: name,
-      address: row[:address],
-      lat: row[:lat],
-      lng: row[:long],
-    })
-
-  name = row[:type]
-  key = name.downcase.gsub(/[[:space:]]/, '')
-  category =
-    Category.find_by_key(key) ||
-    Category.create(key: key, name: name)
-  Categorization.create(place: place, category: category)
-
-  category.update_attributes!({
-    image_urls: [row[:image]]
-  })
-
-  url = row[:link]
-  attrs = {
-    place: place,
-    published_at: guide_date,
-    blurb: row[:description],
-    url: url,
-    source_key: url,
-    image_urls: [row[:image]]
-  }
-
-  Post.create(attrs)
-end
-
 
 ## Cuisine
 #
@@ -206,3 +178,5 @@ Category.all.each do |category|
   category.update_attributes!(attrs)
 end
 
+  end
+end
