@@ -1,12 +1,8 @@
 import UIKit
 
-protocol CuisinesViewControllerDelegate: class {
-  func categoriesUpdated(_ viewController: CuisinesViewController, categories: [Category])
-}
-
 class CuisinesViewController: UITableViewController {
 
-  weak var delegate: CuisinesViewControllerDelegate?
+  weak var delegate: FilterModuleDelegate?
 
   let alphabet = ["A","B","C","D", "E", "F","G","H","I","J","K","L","M","N","O","P","Q","R","S","T","U","V","W","X","Y","Z"]
 
@@ -15,7 +11,8 @@ class CuisinesViewController: UITableViewController {
   }
 
   @objc func applyFilter() {
-    self.delegate?.categoriesUpdated(self, categories: self.selected)
+    self.filterModule.categories = self.selected
+    self.delegate?.filterUpdated(self, filter: self.filterModule)
   }
 
   @objc func dismissFilter() {
@@ -23,14 +20,16 @@ class CuisinesViewController: UITableViewController {
   }
 
   var sorted = [Character : [Category]]()
+  private let filterModule: FilterModule
   var selected = [Category]()
   private let analytics: AnalyticsManager
   var isCuisine = false
 
-  init(analytics: AnalyticsManager, selected: [Category]) {
+  init(analytics: AnalyticsManager, filter: FilterModule) {
     self.isCuisine = true
     self.analytics = analytics
-    self.selected = selected
+    self.filterModule = filter
+    self.selected = filter.categories
     super.init(nibName: nil, bundle: nil)
     navigationItem.hidesBackButton = true
   }

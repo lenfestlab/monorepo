@@ -12,15 +12,6 @@ protocol PlaceStoreDelegate: class {
 
 let reuseIdentifier = "PlaceCell"
 
-class FilterModule : NSObject {
-  var ratings = [Int]()
-  var prices = [Int]()
-  var categories = [Category]()
-  var nabes = [Neighborhood]()
-  var authors = [Author]()
-  var sortMode : SortMode = .distance
-}
-
 class PlaceStore: NSObject {
 
   var lastCoordinateUsed : CLLocationCoordinate2D?

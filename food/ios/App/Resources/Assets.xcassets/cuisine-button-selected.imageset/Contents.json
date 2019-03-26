@@ -2,17 +2,17 @@
   "images" : [
     {
       "idiom" : "universal",
-      "filename" : "settingButton.png",
+      "filename" : "cuisineButtonActive.png",
       "scale" : "1x"
     },
     {
       "idiom" : "universal",
-      "filename" : "settingButton@2x.png",
+      "filename" : "cuisineButtonActive@2x.png",
       "scale" : "2x"
     },
     {
       "idiom" : "universal",
-      "filename" : "settingButton@3x.png",
+      "filename" : "cuisineButtonActive@3x.png",
       "scale" : "3x"
     }
   ],

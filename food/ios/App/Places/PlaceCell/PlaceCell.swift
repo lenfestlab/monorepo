@@ -2,8 +2,9 @@ import UIKit
 import AlamofireImage
 
 class PlaceCell: UICollectionViewCell {
-  
+
   @IBOutlet weak var textLabel: UILabel!
+  @IBOutlet weak var categoryLabel: UILabel!
   @IBOutlet weak var milesAwayLabel: UILabel!
   @IBOutlet weak var imageView: UIImageView!
   @IBOutlet weak var containerView: UIView!
@@ -37,18 +38,18 @@ class PlaceCell: UICollectionViewCell {
     return gradient
   }
 
-  
+
   func attributedText(text: String, font: UIFont) -> NSMutableAttributedString {
     let attributedString = NSMutableAttributedString(string: text)
     let paragraphStyle = NSMutableParagraphStyle()
-    
+
     // *** set LineSpacing property in points ***
     paragraphStyle.lineSpacing = 5 // Whatever line spacing you want in points
-    
+
     // *** Apply attribute to string ***
     attributedString.addAttribute(NSAttributedString.Key.paragraphStyle, value:paragraphStyle, range:NSMakeRange(0, attributedString.length))
     attributedString.addAttribute(NSAttributedString.Key.font, value:font, range:NSMakeRange(0, attributedString.length))
-    
+
     return attributedString
   }
 
@@ -65,39 +66,58 @@ class PlaceCell: UICollectionViewCell {
   func setPlace(place: Place) {
     self.place = place
     let post = place.post
+
+    let blurb = NSMutableAttributedString()
+
+    let space = NSMutableAttributedString(string: " ")
+
     let text = NSMutableAttributedString(string: "")
-    
+
     let boldFont = UIFont(name: "WorkSans-Bold", size: 16)
-    let regularFont = UIFont(name: "Lato-Regular", size: 14)
     let name = place.name ?? ""
     let title = self.attributedText(text: String(format: "%@ ", name), font: boldFont!)
 
-    text.append(title)
+    blurb.append(title)
 
-    var html = ""
+    var content = [NSAttributedString]()
 
-    var content = [String]()
+    content.append(space)
 
-    let rating = post?.rating ?? 0
-    if rating > 0 {
-      var bell = ""
-      for _ in 1 ... rating {
-        bell = String(format: "%@ &#x1F514", bell)
-      }
-      content.append(bell)
+    var bells = [NSAttributedString]()
+
+    if let bellText = NSAttributedString.bells(count: post?.rating ?? 0) {
+      bells.append(bellText)
     }
 
+    var prices = [NSAttributedString]()
     for value in post?.price ?? [] {
       var dollars = [String]()
-      if value > 0 {
-        var dollar = ""
-        for _ in 1 ... value {
-          dollar = String(format: "%@$", dollar)
-        }
+      if let dollar = String.dollarSymbols(count: value) {
         dollars.append(dollar)
       }
-      content.append(dollars.joined(separator: ","))
+      prices.append(NSAttributedString(string: dollars.joined(separator: ",")))
     }
+
+    content.append(contentsOf: bells)
+    if bells.count > 0, prices.count > 0 {
+      content.append(NSAttributedString(string: " | "))
+    }
+    content.append(contentsOf: prices)
+
+
+    if let distance = place.distance {
+      let milesAway = String(format: "%0.2f miles away", (distance/1609.344))
+      self.milesAwayLabel.text = milesAway
+    }
+
+    for attributedString in content {
+      blurb.append(attributedString)
+    }
+
+    text.append(blurb)
+
+    self.textLabel.attributedText = text
+    self.textLabel.lineBreakMode = .byTruncatingTail
 
     var names : [String] = []
     for category in place.categories ?? [] {
@@ -108,31 +128,21 @@ class PlaceCell: UICollectionViewCell {
     }
     let categories = names.joined(separator: " | ")
 
-    if let distance = place.distance {
-      let milesAway = String(format: "%0.2f miles away", (distance/1609.344))
-      self.milesAwayLabel.text = milesAway
-    }
+    self.categoryLabel.attributedText = NSAttributedString(string: categories)
+    self.categoryLabel.lineBreakMode = .byTruncatingTail
+    self.categoryLabel.textColor = .greyishBlue
 
-    html = content.joined(separator: "   &#8729   ")
-    html = "\(html) <br> \(categories)"
-
-    let blurb = try! NSMutableAttributedString(data: (html.data(using: String.Encoding.utf8))!, options: [NSAttributedString.DocumentReadingOptionKey.documentType : NSAttributedString.DocumentType.html], documentAttributes: nil)
-
-    blurb.setAttributes([NSAttributedString.Key.font : regularFont!], range: NSMakeRange(0, blurb.length))
-    text.append(blurb)
-
-    self.textLabel.attributedText = text
-    self.textLabel.lineBreakMode = .byTruncatingTail
-    
     if let url = post?.imageURL {
       self.imageView.af_setImage(withURL: url)
     }
+
+    self.loveButton.isHidden = Installation.authToken() == nil
 
     if let identifier = self.place?.identifier {
       self.loveButton.isSelected = Place.contains(identifier: identifier)
     }
   }
-  
+
   override func prepareForReuse() {
     super.prepareForReuse()
     self.textLabel.text = nil
@@ -161,5 +171,5 @@ class PlaceCell: UICollectionViewCell {
       }
     }
   }
-  
+
 }

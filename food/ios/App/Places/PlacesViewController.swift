@@ -55,43 +55,30 @@ extension PlacesViewController : UISearchBarDelegate {
 
 }
 
-extension PlacesViewController : SortViewControllerDelegate {
-
-  func sortUpdated(_ viewController: SortViewController, sort: SortMode) {
+extension PlacesViewController : FilterModuleDelegate {
+  func filterUpdated(_ viewController: UIViewController, filter: FilterModule) {
     viewController.dismiss(animated: true, completion: nil)
 
-    print(sort)
+    self.placeStore.filterModule = filter
 
-    self.placeStore.filterModule.sortMode = sort
+    if let labelText = filter.labelText() {
+      self.filterBar.attributedText = labelText
+      self.filterBarIsHidden = false
+    } else {
+      self.filterBar.attributedText = nil
+      self.filterBarIsHidden = true
+    }
 
-    let defaultCoordinate = CLLocationCoordinate2D(latitude: 39.9526, longitude: -75.1652)
-    let coordinate = LocationManager.shared.latestLocation?.coordinate ?? defaultCoordinate
-    self.placeStore.fetchMapData(path: self.path, coordinate: coordinate)
-  }
+    let authorsFiltered = filter.authors.count > 0
+    let pricesFiltered = filter.prices.count > 0
+    let nabesFiltered = filter.nabes.count > 0
+    let cuisinesFiltered = filter.categories.count > 0
+    let ratingsFiltered = filter.ratings.count > 0
+    let sort = filter.sortMode
 
-}
-
-extension PlacesViewController : CuisinesViewControllerDelegate {
-
-  func categoriesUpdated(_ viewController: CuisinesViewController, categories: [Category]) {
-    clearSearch()
-
-    viewController.dismiss(animated: true, completion: nil)
-
-    print(categories)
-
-    self.placeStore.filterModule.categories = categories
-
-    let defaultCoordinate = CLLocationCoordinate2D(latitude: 39.9526, longitude: -75.1652)
-    let coordinate = LocationManager.shared.latestLocation?.coordinate ?? defaultCoordinate
-    self.placeStore.fetchMapData(path: self.path, coordinate: coordinate)
-  }
-
-}
-
-extension PlacesViewController : FilterViewControllerDelegate {
-  func filterUpdated(_ viewController: FilterViewController, filter: FilterModule) {
-    viewController.dismiss(animated: true, completion: nil)
+    self.filterButton.isSelected = authorsFiltered || pricesFiltered || nabesFiltered || ratingsFiltered
+    self.cuisineButton.isSelected = cuisinesFiltered
+    self.sortButton.isSelected = sort != .distance
 
     let defaultCoordinate = CLLocationCoordinate2D(latitude: 39.9526, longitude: -75.1652)
     let coordinate = LocationManager.shared.latestLocation?.coordinate ?? defaultCoordinate
@@ -141,36 +128,73 @@ class PlacesViewController: UIViewController {
     }
   }
 
-  var topBar : UIToolbar! = {
-    let topBar = UIToolbar(frame: CGRect(x: 0, y: 0, width: 175, height: 44))
-    topBar.isTranslucent = false
-
-    let one = UIBarButtonItem(title: "Filter", style: .plain, target: self, action: #selector(showFilter))
-    let space = UIBarButtonItem(barButtonSystemItem: .flexibleSpace, target: nil, action: nil)
-    let two = UIBarButtonItem(title: "Cusines", style: .plain, target: self, action: #selector(showCategories))
-    let three = UIBarButtonItem(title: "Sort", style: .plain, target: self, action: #selector(showSort))
-
-    topBar.setItems([space, one, space, two, space, three, space], animated: false)
-    topBar.barTintColor = UIColor.navigationColor()
-    topBar.tintColor =  UIColor.iconColor()
-    return topBar
-  }()
-
-  var topBarIsHidden = false {
-    didSet {
-      self.topBar?.isHidden = topBarIsHidden
-      self.listViewController.topPadding = self.topBarIsHidden ? 20 : 64
-    }
-  }
-
-  let placeStore : PlaceStore!
-
   lazy var searchBar: UISearchBar! = {
     let searchBar = UISearchBar(frame: CGRect(x: 0, y: 0, width: 600, height: 60))
     searchBar.placeholder = "Search All Restaurants"
     searchBar.delegate = self
     return searchBar
   }()
+
+  lazy var filterButton: UIButton! = {
+    let filterButton = UIButton(frame: .zero)
+    filterButton.setImage(UIImage(named: "filter-button"), for: .normal)
+    filterButton.setImage(UIImage(named: "filter-button-selected"), for: .selected)
+    filterButton.setImage(UIImage(named: "filter-button-selected"), for: .highlighted)
+    filterButton.addTarget(self, action: #selector(showFilter), for: .touchUpInside)
+    return filterButton
+  }()
+
+  lazy var sortButton : UIButton! = {
+    let sortButton = UIButton(frame: .zero)
+    sortButton.setImage(UIImage(named: "sort-button"), for: .normal)
+    sortButton.setImage(UIImage(named: "sort-button-selected"), for: .selected)
+    sortButton.setImage(UIImage(named: "sort-button-selected"), for: .highlighted)
+    sortButton.addTarget(self, action: #selector(showSort), for: .touchUpInside)
+    return sortButton
+  }()
+
+  lazy var cuisineButton : UIButton! = {
+    let cuisineButton = UIButton(frame: .zero)
+    cuisineButton.setImage(UIImage(named: "cuisine-button"), for: .normal)
+    cuisineButton.setImage(UIImage(named: "cuisine-button-selected"), for: .selected)
+    cuisineButton.setImage(UIImage(named: "cuisine-button-selected"), for: .highlighted)
+    cuisineButton.addTarget(self, action: #selector(showCategories), for: .touchUpInside)
+    return cuisineButton
+  }()
+
+
+  var topBar : UIToolbar! = {
+    let topBar = UIToolbar(frame: CGRect(x: 0, y: 0, width: 175, height: 44))
+    topBar.isTranslucent = false
+    topBar.barTintColor = UIColor.navigationColor()
+    topBar.tintColor =  UIColor.iconColor()
+    return topBar
+  }()
+
+  var filterBar : UILabel! = {
+    let filterBar = UILabel(frame: CGRect(x: 0, y: 0, width: 175, height: 34))
+    filterBar.backgroundColor = UIColor.grey
+    filterBar.textAlignment = .center
+    return filterBar
+  }()
+
+
+  var topBarIsHidden = false {
+    didSet {
+      self.topBar?.isHidden = topBarIsHidden
+      self.listViewController.topPadding = 20 + (self.topBarIsHidden ? 0 : 44) + (self.filterBarIsHidden ? 0 : 34)
+    }
+  }
+
+  var filterBarIsHidden = false {
+    didSet {
+      self.filterBar?.isHidden = filterBarIsHidden
+      self.listViewController.topPadding = 20 + (self.topBarIsHidden ? 0 : 44) + (self.filterBarIsHidden ? 0 : 34)
+    }
+  }
+
+
+  let placeStore : PlaceStore!
 
   private let analytics: AnalyticsManager
 
@@ -226,7 +250,17 @@ class PlacesViewController: UIViewController {
     NotificationCenter.default.addObserver(self, selector: #selector(onLocationUpdated(_:)), name: .locationUpdated, object: nil)
 
     self.topBar.isHidden = self.topBarIsHidden
+    self.filterBarIsHidden = true
+
+    let space = UIBarButtonItem(barButtonSystemItem: .flexibleSpace, target: nil, action: nil)
+    let one = UIBarButtonItem(customView: self.filterButton)
+    let two = UIBarButtonItem(customView: self.sortButton)
+    let three = UIBarButtonItem(customView: self.cuisineButton)
+
+    self.topBar.setItems([space, space, space, one, space, two, space, three, space, space, space], animated: false)
+
     self.view.addSubview(self.topBar)
+    self.view.addSubview(self.filterBar)
 
     self.navigationItem.rightBarButtonItem = UIBarButtonItem(title: "List", style: .plain, target: self, action: #selector(list))
 
@@ -259,6 +293,7 @@ class PlacesViewController: UIViewController {
     let vc = viewControllers[self.selectedIndex]
     vc.view.frame = self.view.bounds
     self.topBar.frame = CGRect(x: 0, y: 0, width: self.view.frame.width, height: 44)
+    self.filterBar.frame = CGRect(x: 0, y: 44, width: self.view.frame.width, height: 34)
   }
 
   @IBAction func dismissSearch(sender: UIButton) {
@@ -266,7 +301,7 @@ class PlacesViewController: UIViewController {
   }
 
   @IBAction func showCategories() {
-    let cuisineFilter = CuisinesViewController(analytics: self.analytics, selected: self.placeStore.filterModule.categories)
+    let cuisineFilter = CuisinesViewController(analytics: self.analytics, filter: self.placeStore.filterModule)
     cuisineFilter.delegate = self
     let navigationController = PopupViewController(rootViewController: cuisineFilter)
     navigationController.popUpHeight = 500
@@ -289,7 +324,7 @@ class PlacesViewController: UIViewController {
 
   @IBAction func showSort() {
     clearSearch()
-    let sort = SortViewController(sortMode: self.placeStore.filterModule.sortMode)
+    let sort = SortViewController(filter: self.placeStore.filterModule)
     sort.sortDelegate = self
     let navigationController = PopupViewController(rootViewController: sort)
     navigationController.popUpHeight = 175
