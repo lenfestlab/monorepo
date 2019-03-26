@@ -14,10 +14,12 @@ class SettingsViewController: UITableViewController, SettingsToggleCellDelegate,
   private let analytics: AnalyticsManager
   private let notificationManager = NotificationManager.shared
   private let env: Env
+  private let disposeBag: DisposeBag
 
   init(analytics: AnalyticsManager) {
     self.analytics = analytics
     self.env = Env()
+    self.disposeBag = DisposeBag()
     super.init(style: .grouped)
     locationManager.authorizationDelegate = self
   }
@@ -200,7 +202,7 @@ class SettingsViewController: UITableViewController, SettingsToggleCellDelegate,
         }
         app.open(url, options: [:], completionHandler: nil)
       })
-      .disposed(by: self.rx.disposeBag)
+      .disposed(by: self.disposeBag)
 
     let footerView = UIView()
     footerView.addSubview(feedbackButton)

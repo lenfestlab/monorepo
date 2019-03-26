@@ -5,7 +5,6 @@ import UPCarouselFlowLayout
 import CoreMotion
 import RxSwift
 import RxCocoa
-import NSObject_Rx
 
 private let mapPinIdentifier = "pin"
 

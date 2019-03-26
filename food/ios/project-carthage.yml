@@ -9,14 +9,12 @@ targets:
       - carthage: SwiftDate
       - carthage: RxSwift
       - carthage: RxCocoa
-      - carthage: NSObject_Rx
       - carthage: SnapKit
       - carthage: Schedule
 
       # Alamofire
       - carthage: Alamofire
       - carthage: AlamofireImage
-      - carthage: AlamofireNetworkActivityLogger
 
       # Firebase - https://git.io/fAxBS
       # NOTE: omit base framework, per: https://git.io/fAjxM

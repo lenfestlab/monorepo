@@ -1,13 +1,11 @@
 github "Alamofire/Alamofire"
 github "hkellaway/Gloss"
 github "Alamofire/AlamofireImage"
-github "konkab/AlamofireNetworkActivityLogger"
 github "omaralbeik/UserDefaultsStore"
 github "ksmandersen/GoogleReporter"
 github "ink-spot/UPCarouselFlowLayout"
 github "malcommac/SwiftDate"
 github "ReactiveX/RxSwift"
-github "RxSwiftCommunity/NSObject-Rx"
 github "SnapKit/SnapKit"
 github "jianstm/Schedule"
 

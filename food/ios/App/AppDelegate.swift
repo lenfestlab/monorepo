@@ -1,6 +1,5 @@
 import UIKit
 import Firebase
-import AlamofireNetworkActivityLogger
 import FirebaseMessaging
 import Schedule
 import SafariServices
@@ -24,7 +23,6 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
   }
 
   func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: LaunchOptions) -> Bool {
-    NetworkActivityLogger.shared.startLogging()
 
     let env = Env()
 
