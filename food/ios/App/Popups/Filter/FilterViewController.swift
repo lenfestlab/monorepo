@@ -1,9 +1,5 @@
 import UIKit
 
-protocol FilterViewControllerDelegate: class {
-  func filterUpdated(_ viewController: FilterViewController, filter: FilterModule)
-}
-
 extension FilterViewController : NeighborhoodViewControllerDelegate {
   func neighborhoodsUpdated(_ viewController: NeighborhoodViewController, neighborhoods: [Neighborhood]) {
     self.filterModule.nabes = neighborhoods
@@ -12,10 +8,9 @@ extension FilterViewController : NeighborhoodViewControllerDelegate {
   }
 }
 
-
-extension FilterViewController : CuisinesViewControllerDelegate {
-  func categoriesUpdated(_ viewController: CuisinesViewController, categories: [Category]) {
-    self.filterModule.categories = categories
+extension FilterViewController : FilterModuleDelegate {
+  func filterUpdated(_ viewController: UIViewController, filter: FilterModule) {
+    self.filterModule.categories = filter.categories
     updateCusineButton()
     viewController.dismiss(animated: true, completion: nil)
   }
@@ -33,7 +28,7 @@ extension FilterViewController : AuthorViewControllerDelegate {
 
 class FilterViewController: UIViewController {
 
-  weak var filterDelegate: FilterViewControllerDelegate?
+  weak var filterDelegate: FilterModuleDelegate?
 
   @IBOutlet weak var starView : UIView!
   @IBOutlet weak var oneStar : UIButton!
@@ -250,7 +245,7 @@ class FilterViewController: UIViewController {
   }
 
   @IBAction func showCuisines() {
-    let vc = CuisinesViewController(analytics: self.analytics, selected: self.filterModule.categories)
+    let vc = CuisinesViewController(analytics: self.analytics, filter: self.filterModule)
     vc.delegate = self
     let navigationController = PopupViewController(rootViewController: vc)
     navigationController.popUpHeight = 500

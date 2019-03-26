@@ -6,14 +6,13 @@ enum SortMode : String {
   case latest = "Latest"
 }
 
-protocol SortViewControllerDelegate: class {
-  func sortUpdated(_ viewController: SortViewController, sort: SortMode)
-}
-
 class SortViewController: UITableViewController {
 
-  init(sortMode: SortMode) {
-    self.sortMode = sortMode
+  private let filterModule: FilterModule
+
+  init(filter: FilterModule) {
+    self.filterModule = filter
+    self.sortMode = filter.sortMode
     super.init(style: .plain)
   }
 
@@ -21,7 +20,7 @@ class SortViewController: UITableViewController {
     fatalError("init(coder:) has not been implemented")
   }
 
-  weak var sortDelegate: SortViewControllerDelegate?
+  weak var sortDelegate: FilterModuleDelegate?
 
   var sortMode : SortMode {
     willSet {
@@ -39,7 +38,8 @@ class SortViewController: UITableViewController {
         cell?.accessoryType  = .checkmark
       }
 
-      self.sortDelegate?.sortUpdated(self, sort: sortMode)
+      self.filterModule.sortMode = sortMode
+      self.sortDelegate?.filterUpdated(self, filter: self.filterModule)
     }
   }
 

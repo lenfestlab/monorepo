@@ -29,8 +29,20 @@
                                 </constraints>
                             </imageView>
                             <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Label" textAlignment="natural" lineBreakMode="tailTruncation" numberOfLines="99" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="Dz4-fv-GMQ">
-                                <rect key="frame" x="15" y="160" width="414" height="92"/>
+                                <rect key="frame" x="15" y="173" width="414" height="20"/>
+                                <constraints>
+                                    <constraint firstAttribute="height" constant="20" id="Nv6-QZ-BNd"/>
+                                </constraints>
                                 <fontDescription key="fontDescription" type="system" pointSize="17"/>
+                                <nil key="textColor"/>
+                                <nil key="highlightedColor"/>
+                            </label>
+                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Label" textAlignment="natural" lineBreakMode="tailTruncation" numberOfLines="99" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="tNe-d0-EMl">
+                                <rect key="frame" x="15" y="197" width="414" height="20"/>
+                                <constraints>
+                                    <constraint firstAttribute="height" constant="20" id="2sK-9j-y1g"/>
+                                </constraints>
+                                <fontDescription key="fontDescription" type="system" pointSize="14"/>
                                 <nil key="textColor"/>
                                 <nil key="highlightedColor"/>
                             </label>
@@ -58,13 +70,15 @@
                             <constraint firstAttribute="trailing" secondItem="2Jp-SL-git" secondAttribute="trailing" constant="15" id="2HW-Oa-j9D"/>
                             <constraint firstItem="xOb-IV-e8y" firstAttribute="top" secondItem="oW8-1A-AE3" secondAttribute="top" id="47J-du-43H"/>
                             <constraint firstItem="2Jp-SL-git" firstAttribute="top" secondItem="oW8-1A-AE3" secondAttribute="top" constant="15" id="7DX-kg-LK8"/>
+                            <constraint firstAttribute="trailing" secondItem="tNe-d0-EMl" secondAttribute="trailing" constant="10" id="BTd-Gx-8yE"/>
                             <constraint firstAttribute="trailing" secondItem="vlm-0v-r0S" secondAttribute="trailing" id="GeF-tm-yKK"/>
+                            <constraint firstItem="tNe-d0-EMl" firstAttribute="leading" secondItem="oW8-1A-AE3" secondAttribute="leading" constant="15" id="LWA-s0-afj"/>
                             <constraint firstAttribute="trailing" secondItem="Dz4-fv-GMQ" secondAttribute="trailing" constant="10" id="LZ7-6F-EUE"/>
-                            <constraint firstItem="Dz4-fv-GMQ" firstAttribute="top" secondItem="xOb-IV-e8y" secondAttribute="bottom" id="N3N-ww-jOn"/>
-                            <constraint firstAttribute="bottom" secondItem="Dz4-fv-GMQ" secondAttribute="bottom" constant="5" id="QUF-P4-bWw"/>
+                            <constraint firstItem="tNe-d0-EMl" firstAttribute="top" secondItem="Dz4-fv-GMQ" secondAttribute="bottom" constant="4" id="Mc5-f2-lbW"/>
+                            <constraint firstItem="Dz4-fv-GMQ" firstAttribute="top" secondItem="xOb-IV-e8y" secondAttribute="bottom" constant="13" id="N3N-ww-jOn"/>
+                            <constraint firstItem="xOb-IV-e8y" firstAttribute="bottom" secondItem="vlm-0v-r0S" secondAttribute="bottom" id="NEy-io-erE"/>
                             <constraint firstItem="Dz4-fv-GMQ" firstAttribute="leading" secondItem="oW8-1A-AE3" secondAttribute="leading" constant="15" id="fBW-cg-OmL"/>
                             <constraint firstAttribute="trailing" secondItem="xOb-IV-e8y" secondAttribute="trailing" id="gYj-hA-pvp"/>
-                            <constraint firstItem="Dz4-fv-GMQ" firstAttribute="top" secondItem="vlm-0v-r0S" secondAttribute="bottom" id="hUH-z3-1fl"/>
                             <constraint firstItem="xOb-IV-e8y" firstAttribute="leading" secondItem="oW8-1A-AE3" secondAttribute="leading" id="odM-Cl-tjR"/>
                         </constraints>
                     </view>
@@ -80,6 +94,7 @@
             <viewLayoutGuide key="safeArea" id="ZTg-uK-7eu"/>
             <size key="customSize" width="651" height="325"/>
             <connections>
+                <outlet property="categoryLabel" destination="tNe-d0-EMl" id="KeM-RR-hj5"/>
                 <outlet property="containerView" destination="oW8-1A-AE3" id="jXR-pb-Mib"/>
                 <outlet property="imageView" destination="xOb-IV-e8y" id="Der-t3-xae"/>
                 <outlet property="loveButton" destination="vlm-0v-r0S" id="Djo-n6-wMO"/>
