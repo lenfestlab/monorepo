@@ -8,7 +8,6 @@ extension UIColor {
   static let lightBlue = UIColor(hex: 0xf96BDC6)
   static let blue = UIColor(hex: 0x0066AA)
   static let greyishBlue = UIColor(hex: 0x546A7B)
-  static let black = UIColor(hex: 0x000000)
   static let darkRed = UIColor(hex: 0x700000)
 
   convenience init(red: Int, green: Int, blue: Int, a: CGFloat = 1.0) {

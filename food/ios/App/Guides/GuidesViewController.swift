@@ -58,7 +58,7 @@ class GuidesViewController: UITableViewController {
     let placeController = PlacesViewController(analytics: self.analytics, categories: [category])
     placeController.title = category.name
     placeController.topBarIsHidden = true
-    placeController.hidesBottomBarWhenPushed = true
+//    placeController.hidesBottomBarWhenPushed = true
     self.navigationController?.pushViewController(placeController, animated: true)
   }
 

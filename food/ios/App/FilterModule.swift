@@ -2,8 +2,8 @@ import UIKit
 
 extension NSAttributedString {
 
-  class func bellIcon() -> NSAttributedString {
-    let bellImage = UIImage(named: "bell-icon")
+  class func bellIcon(selected: Bool) -> NSAttributedString {
+    let bellImage = selected ? UIImage(named: "bell-selected-icon") : UIImage(named: "bell-icon")
     let attachment = NSTextAttachment()
     attachment.image = bellImage
     attachment.bounds = CGRect(x: 0, y: -3, width: bellImage?.size.width ?? 0, height: bellImage?.size.height ?? 0)
@@ -14,13 +14,13 @@ extension NSAttributedString {
     return NSAttributedString(string: " ")
   }
 
-  class func bells(count: Int) -> NSAttributedString? {
+  class func bells(count: Int, selected: Bool = false) -> NSAttributedString? {
     if count < 1 {
       return nil
     }
 
     let bells = NSMutableAttributedString(string: "")
-    let bellIcon = NSAttributedString.bellIcon()
+    let bellIcon = NSAttributedString.bellIcon(selected: selected)
     let space = NSAttributedString.space()
     for _ in 1 ... count {
       bells.append(bellIcon)
@@ -70,7 +70,7 @@ class FilterModule : NSObject {
 
     var bells = [NSAttributedString]()
     for (index, rating) in self.ratings.enumerated() {
-      if let bellText = NSAttributedString.bells(count: rating) {
+      if let bellText = NSAttributedString.bells(count: rating, selected: false) {
         bells.append(bellText)
       }
       if index != self.ratings.count - 1 {

@@ -42,11 +42,13 @@ class TabBarViewController: UITabBarController {
     let mapNavigationController = UINavigationController(rootViewController: self.placesViewController)
     mapNavigationController.styleController()
     mapNavigationController.tabBarItem.title = "All Restaurants"
+    mapNavigationController.tabBarItem.image = UIImage(named: "restaurant-icon")
     controllers.append(mapNavigationController)
 
     self.guideViewController = GuidesViewController(analytics: self.analytics, isCuisine: false)
     let guideNavigationController = UINavigationController(rootViewController: self.guideViewController)
     guideNavigationController.tabBarItem.title = "Guides"
+    guideNavigationController.tabBarItem.image = UIImage(named: "guides-icon")
     controllers.append(guideNavigationController)
 
     if Installation.authToken() != nil {
@@ -55,12 +57,13 @@ class TabBarViewController: UITabBarController {
       let favoritesNavigationController = UINavigationController(rootViewController: self.favoritesViewController)
       favoritesNavigationController.styleController()
       favoritesNavigationController.tabBarItem.title = "My List"
+      favoritesNavigationController.tabBarItem.image = UIImage(named: "list-icon")
       controllers.append(favoritesNavigationController)
     }
 
     self.viewControllers = controllers
 
-    self.tabBar.tintColor = UIColor.iconColor()
+    self.tabBar.tintColor = UIColor.greyishBlue
     self.tabBar.barTintColor = UIColor.white
 
     self.navigationController?.isNavigationBarHidden = true
