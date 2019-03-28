@@ -100,7 +100,7 @@ extension MapViewController: UIGestureRecognizerDelegate {
 
 class MapViewController: UIViewController {
 
-  let padding = CGFloat(45)
+  let padding = CGFloat(35)
   let env: Env
   let locationManager = LocationManager.shared
   let placeStore : PlaceStore!

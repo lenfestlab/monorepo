@@ -57,35 +57,47 @@ class FilterViewController: UIViewController {
 
   func updateReviewerButton() {
     var title = "Choose Reviewers"
+    self.reviewerButton.setTitle(title, for: .normal)
+
     let categories = self.filterModule.authors
     if categories.count == 1 {
       title = categories.first?.name ?? title
     } else if categories.count > 0 {
       title = "\(categories.count) Reviewers Selected"
     }
-    self.reviewerButton.setTitle(title, for: .normal)
+    self.reviewerButton.setTitle(title, for: .selected)
+
+    self.reviewerButton.isSelected = categories.count > 0
   }
 
   func updateCusineButton() {
     var title = "Choose Cuisines"
+    self.cusineButton.setTitle(title, for: .normal)
+
     let categories = self.filterModule.categories
     if categories.count == 1 {
       title = categories.first?.name ?? title
     } else if categories.count > 0 {
       title = "\(categories.count) Categories Selected"
     }
-    self.cusineButton.setTitle(title, for: .normal)
+    self.cusineButton.setTitle(title, for: .selected)
+
+    self.cusineButton.isSelected = categories.count > 0
   }
 
   func updateNeighborhoodButton() {
     var title = "Choose Neighborhoods"
+    self.neighborhoodButton.setTitle(title, for: .normal)
+
     let nabes = self.filterModule.nabes
     if nabes.count == 1 {
       title = nabes.first?.name ?? title
     } else if nabes.count > 0 {
       title = "\(nabes.count) Neighborhoods Selected"
     }
-    self.neighborhoodButton.setTitle(title, for: .normal)
+    self.neighborhoodButton.setTitle(title, for: .selected)
+
+    self.neighborhoodButton.isSelected = nabes.count > 0
   }
 
   @IBAction func clearAll(_ sender: Any?) {
@@ -149,11 +161,9 @@ class FilterViewController: UIViewController {
   }
 
   func styleButton(_ button : UIButton) {
-    guard let selectedImage = UIColor.iconColor().pixelImage() else {
-      return
-    }
-
-    button.setBackgroundImage(selectedImage, for: .selected)
+    button.titleLabel?.numberOfLines = 0
+    button.titleLabel?.textAlignment = .center
+    button.setBackgroundImage(UIColor.slate.pixelImage(), for: .selected)
     button.setTitleColor(.white, for: .selected)
   }
 
@@ -171,15 +181,42 @@ class FilterViewController: UIViewController {
     styleView(self.reviewerButton)
     styleView(self.neighborhoodButton)
 
+    styleButton(self.cusineButton)
+    styleButton(self.reviewerButton)
+    styleButton(self.neighborhoodButton)
+
     styleButton(self.oneStar)
+    self.oneStar.setAttributedTitle(NSAttributedString.bells(count: 1, selected: false), for: .normal)
+    self.oneStar.setAttributedTitle(NSAttributedString.bells(count: 1, selected: true), for: .selected)
+
     styleButton(self.twoStars)
+    self.twoStars.setAttributedTitle(NSAttributedString.bells(count: 2, selected: false), for: .normal)
+    self.twoStars.setAttributedTitle(NSAttributedString.bells(count: 2, selected: true), for: .selected)
+
     styleButton(self.threeStars)
+    self.threeStars.setAttributedTitle(NSAttributedString.bells(count: 3, selected: false), for: .normal)
+    self.threeStars.setAttributedTitle(NSAttributedString.bells(count: 3, selected: true), for: .selected)
+
     styleButton(self.fourStars)
+    self.fourStars.setAttributedTitle(NSAttributedString.bells(count: 4, selected: false), for: .normal)
+    self.fourStars.setAttributedTitle(NSAttributedString.bells(count: 4, selected: true), for: .selected)
+
 
     styleButton(self.oneDollar)
+    let oneTitle = NSMutableAttributedString(string: String.dollarSymbols(count: 1) ?? "", font: UIFont.largeBook, fontColor: nil)
+    self.oneDollar.setAttributedTitle(oneTitle, for: .normal)
+
     styleButton(self.twoDollars)
+    let twoTitle = NSMutableAttributedString(string: String.dollarSymbols(count: 2) ?? "", font: UIFont.largeBook, fontColor: nil)
+    self.twoDollars.setAttributedTitle(twoTitle, for: .normal)
+
     styleButton(self.threeDollars)
+    let threeTitle = NSMutableAttributedString(string: String.dollarSymbols(count: 3) ?? "", font: UIFont.largeBook, fontColor: nil)
+    self.threeDollars.setAttributedTitle(threeTitle, for: .normal)
+
     styleButton(self.fourDollars)
+    let fourTitle = NSMutableAttributedString(string: String.dollarSymbols(count: 4) ?? "", font: UIFont.largeBook, fontColor: nil)
+    self.fourDollars.setAttributedTitle(fourTitle, for: .normal)
 
     styleButton(self.ratingButton)
     styleButton(self.distanceButton)

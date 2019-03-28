@@ -32,6 +32,8 @@ struct Post: JSONDecodable, Codable, Identifiable {
   var notes: String?
   var drinks: String?
   var remainder: String?
+  var author: Author?
+  var images: [Img]?
 
   init?(json: JSON) {
     self.identifier = ("identifier" <~~ json)!
@@ -46,6 +48,8 @@ struct Post: JSONDecodable, Codable, Identifiable {
     self.notes = "notes" <~~ json
     self.drinks = "drinks" <~~ json
     self.remainder = "remainder" <~~ json
+    self.author = "author" <~~ json
+    self.images = "images" <~~ json
   }
 
   var publicationName: String? { return "" }
@@ -96,6 +100,21 @@ struct Place: JSONDecodable, Codable, Identifiable {
 
   func coordinate() -> CLLocationCoordinate2D {
     return CLLocationCoordinate2D(latitude: (self.location?.latitude)!, longitude: (self.location?.longitude)!)
+  }
+
+}
+
+
+struct Img: JSONDecodable, Codable {
+
+  var url: URL?
+  var credit: String?
+  var caption: String?
+
+  init?(json: JSON) {
+    self.url = "url" <~~ json
+    self.credit = "credit" <~~ json
+    self.caption = "caption" <~~ json
   }
 
 }

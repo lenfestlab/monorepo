@@ -1,6 +1,27 @@
 import UIKit
 import AlamofireImage
 
+extension NSMutableAttributedString {
+
+  convenience init(string: String, font: UIFont?, fontColor: UIColor?) {
+    self.init(string: string)
+    let paragraphStyle = NSMutableParagraphStyle()
+
+    // *** set LineSpacing property in points ***
+    paragraphStyle.lineSpacing = 5 // Whatever line spacing you want in points
+
+    // *** Apply attribute to string ***
+    self.addAttribute(NSAttributedString.Key.paragraphStyle, value:paragraphStyle, range:NSMakeRange(0, self.length))
+    if let font = font {
+      self.addAttribute(NSAttributedString.Key.font, value:font, range:NSMakeRange(0, self.length))
+    }
+    if let fontColor = fontColor {
+      self.addAttribute(NSAttributedString.Key.foregroundColor, value:fontColor, range:NSMakeRange(0, self.length))
+    }
+  }
+
+}
+
 class PlaceCell: UICollectionViewCell {
 
   @IBOutlet weak var textLabel: UILabel!
@@ -38,7 +59,6 @@ class PlaceCell: UICollectionViewCell {
     return gradient
   }
 
-
   func attributedText(text: String, font: UIFont) -> NSMutableAttributedString {
     let attributedString = NSMutableAttributedString(string: text)
     let paragraphStyle = NSMutableParagraphStyle()
@@ -67,68 +87,15 @@ class PlaceCell: UICollectionViewCell {
     self.place = place
     let post = place.post
 
-    let blurb = NSMutableAttributedString()
-
-    let space = NSMutableAttributedString(string: " ")
-
-    let text = NSMutableAttributedString(string: "")
-
-    let boldFont = UIFont(name: "WorkSans-Bold", size: 16)
-    let name = place.name ?? ""
-    let title = self.attributedText(text: String(format: "%@ ", name), font: boldFont!)
-
-    blurb.append(title)
-
-    var content = [NSAttributedString]()
-
-    content.append(space)
-
-    var bells = [NSAttributedString]()
-
-    if let bellText = NSAttributedString.bells(count: post?.rating ?? 0) {
-      bells.append(bellText)
-    }
-
-    var prices = [NSAttributedString]()
-    for value in post?.price ?? [] {
-      var dollars = [String]()
-      if let dollar = String.dollarSymbols(count: value) {
-        dollars.append(dollar)
-      }
-      prices.append(NSAttributedString(string: dollars.joined(separator: ",")))
-    }
-
-    content.append(contentsOf: bells)
-    if bells.count > 0, prices.count > 0 {
-      content.append(NSAttributedString(string: " | "))
-    }
-    content.append(contentsOf: prices)
-
-
     if let distance = place.distance {
       let milesAway = String(format: "%0.2f miles away", (distance/1609.344))
       self.milesAwayLabel.text = milesAway
     }
 
-    for attributedString in content {
-      blurb.append(attributedString)
-    }
-
-    text.append(blurb)
-
-    self.textLabel.attributedText = text
+    self.textLabel.attributedText = place.attributedTitle()
     self.textLabel.lineBreakMode = .byTruncatingTail
 
-    var names : [String] = []
-    for category in place.categories ?? [] {
-      names.append(category.name)
-    }
-    for nabe in place.nabes ?? [] {
-      names.append(nabe.name)
-    }
-    let categories = names.joined(separator: " | ")
-
-    self.categoryLabel.attributedText = NSAttributedString(string: categories)
+    self.categoryLabel.attributedText = place.attributedCategories()
     self.categoryLabel.lineBreakMode = .byTruncatingTail
     self.categoryLabel.textColor = .greyishBlue
 
