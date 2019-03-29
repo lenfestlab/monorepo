@@ -41,6 +41,8 @@
 	</dict>
 	<key>NSLocationAlwaysAndWhenInUseUsageDescription</key>
 	<string>$(APP_NAME) uses your location to send you news about places you go. Please Always Allow access.</string>
+	<key>NSLocationAlwaysUsageDescription</key>
+	<string>$(APP_NAME) uses your location to send you news about places you go. Please Always Allow access.</string>
 	<key>NSLocationWhenInUseUsageDescription</key>
 	<string>$(APP_NAME) uses your location to send you news about places you go. Please Always Allow access.</string>
 	<key>NSMotionUsageDescription</key>
