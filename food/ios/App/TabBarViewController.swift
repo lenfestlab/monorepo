@@ -42,13 +42,15 @@ class TabBarViewController: UITabBarController {
     let mapNavigationController = UINavigationController(rootViewController: self.placesViewController)
     mapNavigationController.styleController()
     mapNavigationController.tabBarItem.title = "All Restaurants"
-    mapNavigationController.tabBarItem.image = UIImage(named: "restaurant-icon")
+    mapNavigationController.tabBarItem.image = UIImage(named: "tab-restaurant-icon")
+    mapNavigationController.tabBarItem.selectedImage = UIImage(named: "tab-restaurant-icon-selected")
     controllers.append(mapNavigationController)
 
     self.guideViewController = GuidesViewController(analytics: self.analytics, isCuisine: false)
     let guideNavigationController = UINavigationController(rootViewController: self.guideViewController)
     guideNavigationController.tabBarItem.title = "Guides"
-    guideNavigationController.tabBarItem.image = UIImage(named: "guides-icon")
+    guideNavigationController.tabBarItem.image = UIImage(named: "tab-guides-icon")
+    guideNavigationController.tabBarItem.selectedImage = UIImage(named: "tab-guides-icon-selected")
     controllers.append(guideNavigationController)
 
     if Installation.authToken() != nil {
@@ -57,15 +59,15 @@ class TabBarViewController: UITabBarController {
       let favoritesNavigationController = UINavigationController(rootViewController: self.favoritesViewController)
       favoritesNavigationController.styleController()
       favoritesNavigationController.tabBarItem.title = "My List"
-      favoritesNavigationController.tabBarItem.image = UIImage(named: "list-icon")
+      favoritesNavigationController.tabBarItem.image = UIImage(named: "tab-list-icon")
+      favoritesNavigationController.tabBarItem.selectedImage = UIImage(named: "tab-list-icon-selected")
       controllers.append(favoritesNavigationController)
     }
 
     self.viewControllers = controllers
 
-    self.tabBar.tintColor = UIColor.greyishBlue
+    self.tabBar.tintColor = UIColor.slate
     self.tabBar.barTintColor = UIColor.white
-
     self.navigationController?.isNavigationBarHidden = true
 
     self.placesViewController.navigationItem.leftBarButtonItem = UIBarButtonItem(image: UIImage(named: "settings-button"), style: .plain, target: self, action: #selector(settings))

@@ -15,7 +15,12 @@ extension Place {
     return NSAttributedString(string: categories)
   }
 
-  func attributedTitle() -> NSAttributedString {
+  func attributedTitle(font: UIFont) -> NSAttributedString {
+    let name = self.name ?? ""
+    return NSMutableAttributedString(string: name.uppercased(), font: font, fontColor: .black)
+  }
+
+  func attributedSubtitle(font: UIFont) -> NSAttributedString {
     let post = self.post
 
     let blurb = NSMutableAttributedString()
@@ -23,10 +28,6 @@ extension Place {
     let space = NSMutableAttributedString(string: " ")
 
     let text = NSMutableAttributedString(string: "")
-
-    let name = self.name ?? ""
-    let title = NSMutableAttributedString(string: String(format: "%@ ", name.uppercased()), font: UIFont.mediumSmall, fontColor: .black)
-    blurb.append(title)
 
     var content = [NSAttributedString]()
 
@@ -38,20 +39,27 @@ extension Place {
       bells.append(bellText)
     }
 
-    var prices = [NSAttributedString]()
-    for value in post?.prices ?? [] {
-      var dollars = [String]()
-      if let dollar = String.dollarSymbols(count: value) {
-        dollars.append(dollar)
+    var dollars = [NSAttributedString]()
+    if let price = post?.prices {
+      for value in price {
+        if let dollar = NSMutableAttributedString.dollarSymbols(count: value) {
+          dollar.addAttribute(NSAttributedString.Key.font, value:UIFont.lightLarge, range:NSMakeRange(0, dollar.length))
+          dollars.append(dollar)
+        }
       }
+    }
 
-      let symbols = NSMutableAttributedString(string: dollars.joined(separator: ","), font: UIFont.lightLarge, fontColor: .slate)
-      prices.append(symbols)
+    var prices = [NSAttributedString]()
+    for (index, dollar) in dollars.enumerated() {
+      prices.append(dollar)
+      if index + 1 != dollars.count {
+        prices.append(NSMutableAttributedString(string: ","))
+      }
     }
 
     content.append(contentsOf: bells)
     if bells.count > 0, prices.count > 0 {
-      content.append(NSAttributedString(string: " | "))
+      content.append(NSMutableAttributedString(string: " | ", font: UIFont.lightLarge, fontColor: .slate))
     }
     content.append(contentsOf: prices)
 
@@ -63,4 +71,5 @@ extension Place {
 
     return text
   }
+
 }

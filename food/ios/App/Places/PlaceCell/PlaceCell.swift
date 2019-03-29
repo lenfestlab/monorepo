@@ -25,6 +25,7 @@ extension NSMutableAttributedString {
 class PlaceCell: UICollectionViewCell {
 
   @IBOutlet weak var textLabel: UILabel!
+  @IBOutlet weak var subtitleLabel: UILabel!
   @IBOutlet weak var categoryLabel: UILabel!
   @IBOutlet weak var milesAwayLabel: UILabel!
   @IBOutlet weak var imageView: UIImageView!
@@ -92,8 +93,11 @@ class PlaceCell: UICollectionViewCell {
       self.milesAwayLabel.text = milesAway
     }
 
-    self.textLabel.attributedText = place.attributedTitle()
+    self.textLabel.attributedText = place.attributedTitle(font: UIFont.mediumSmall)
     self.textLabel.lineBreakMode = .byTruncatingTail
+    
+    self.subtitleLabel.attributedText = place.attributedSubtitle(font: UIFont.mediumSmall)
+    self.subtitleLabel.lineBreakMode = .byTruncatingTail
 
     self.categoryLabel.attributedText = place.attributedCategories()
     self.categoryLabel.lineBreakMode = .byTruncatingTail

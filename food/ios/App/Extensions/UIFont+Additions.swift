@@ -31,5 +31,8 @@ extension UIFont {
   class var mediumLarge: UIFont {
     return UIFont(name: "GothamNarrowSSm-Medium", size: 16.0)!
   }
+  class var boldSmall: UIFont {
+    return UIFont(name: "GothamNarrowSSm-Bold", size: 14.0)!
+  }
 
 }

@@ -71,6 +71,7 @@ class DetailViewController: UIViewController {
   @IBOutlet weak var addressLabel: UILabel!
   @IBOutlet weak var callButton: UIButton!
   @IBOutlet weak var reservationButton: UIButton!
+  @IBOutlet weak var websiteButton: UIButton!
 
   @IBOutlet weak var quoteView: UIView!
   @IBOutlet weak var quoteLabel: UILabel!
@@ -95,6 +96,12 @@ class DetailViewController: UIViewController {
 
   override func viewDidLoad() {
     super.viewDidLoad()
+
+    self.websiteButton.isEnabled = self.place.website != nil
+    self.callButton.isEnabled = self.place.phone != nil
+    self.reservationButton.isEnabled = false
+
+    self.navigationItem.titleView = UIImageView(image: UIImage(named: "inquirer-logo"))
 
     let nib = UINib(nibName: "ImageViewCell", bundle:nil)
     self.collectionView.register(nib, forCellWithReuseIdentifier: imageIdentifier)
@@ -122,9 +129,14 @@ class DetailViewController: UIViewController {
     self.quoteLabel.font = UIFont.customFont(.large)?.boldItalic
     self.noteLabel.font = UIFont.customFont(.large)?.bold
 
-    self.titleLabel.attributedText = self.place.attributedTitle()
+    let title = NSMutableAttributedString()
+    title.append(self.place.attributedTitle(font: UIFont.mediumLarge))
+    title.append(self.place.attributedSubtitle(font: UIFont.mediumLarge))
+    self.titleLabel.attributedText = title
+
     self.categoryLabel.attributedText = self.place.attributedCategories()
     self.categoryLabel.font = UIFont.lightSmall
+
     self.addressLabel.text = self.place.address ?? ""
     self.addressLabel.font = UIFont.italicSmall
 
@@ -142,7 +154,7 @@ class DetailViewController: UIViewController {
 
     if let post = self.place.post {
       if let html = post.placeSummary {
-        if let attributedText = updateLabel(html: html, textColorHex: "white", font: UIFont.mediumItalicLarge, alignment: .center) {
+        if let attributedText = NSMutableAttributedString(html: html, textColorHex: "white", font: UIFont.mediumItalicLarge, alignment: .center) {
           attributedText.addAttribute(NSAttributedString.Key.font, value:UIFont.mediumItalicLarge, range:NSMakeRange(0, attributedText.length))
           attributedText.addAttribute(NSAttributedString.Key.foregroundColor, value:UIColor.white, range:NSMakeRange(0, attributedText.length))
           self.quoteLabel.attributedText = attributedText
@@ -150,25 +162,25 @@ class DetailViewController: UIViewController {
       }
       
       if let html = post.menu {
-        if let attributedText = updateLabel(html: html, textColorHex: "black", h1Font: UIFont.mediumLarge, font: UIFont.bookSmall) {
+        if let attributedText = NSMutableAttributedString(html: html, h1Font: UIFont.mediumLarge) {
           self.menuLabel.attributedText = attributedText
         }
       }
 
       if let html = post.drinks {
-        if let attributedText = updateLabel(html: html, textColorHex: "black", h1Font: UIFont.mediumLarge, font: UIFont.bookSmall) {
+        if let attributedText = NSMutableAttributedString(html: html, h1Font: UIFont.mediumLarge) {
           self.drinkLabel.attributedText = attributedText
         }
       }
 
       if let html = post.notes {
-        if let attributedText = updateLabel(html: html, textColorHex: "black", h1Font: UIFont.mediumLarge, font: UIFont.bookSmall) {
+        if let attributedText = NSMutableAttributedString(html: html, h1Font: UIFont.mediumLarge) {
           self.noteLabel.attributedText = attributedText
         }
       }
 
       if let html = post.remainder {
-        if let attributedText = updateLabel(html: html, textColorHex: "white", h1Font: UIFont.mediumLarge, font: UIFont.bookSmall) {
+        if let attributedText = NSMutableAttributedString(html: html, textColorHex: "white", font: UIFont.boldSmall) {
           self.remainderLabel.attributedText = attributedText
         }
       }
@@ -177,13 +189,41 @@ class DetailViewController: UIViewController {
 
   }
 
-  func updateLabel(html: String, textColorHex: String, h1Font: UIFont? = nil, font: UIFont?, alignment: NSTextAlignment = .left) -> NSMutableAttributedString? {
+  @IBAction func openFullReview() {
+    let app = AppDelegate.shared()
+    if let link = self.place.post?.link {
+      app.openInSafari(url: link)
+    }
+  }
+
+  @IBAction func openWebsite() {
+    let app = AppDelegate.shared()
+    if let link = self.place.website {
+      app.openInSafari(url: link)
+    }
+  }
+
+  @IBAction func call() {
+    if let phone = self.place.phone {
+      guard let number = URL(string: "tel://" + phone) else { return }
+      UIApplication.shared.open(number)
+    }
+  }
+
+
+
+}
+
+extension NSMutableAttributedString {
+
+  convenience init?(html: String, textColorHex: String = "black", h1Font: UIFont? = nil, font: UIFont? = UIFont.bookSmall, alignment: NSTextAlignment = .left) {
+    self.init()
     var style =     "<style>"
     if let font = h1Font {
       style = style + " h1 { font: \(Int(font.pointSize))px \(font.fontName); }"
     }
     if let font = font {
-      style = style + " p, ul { font: \(Int(font.pointSize))px \(font.fontName); }"
+      style = style + " p, ul { font: \(Int(font.pointSize))px \(font.fontName); line-height: 20px; }"
     }
     style = style + " body {"
 
@@ -203,15 +243,9 @@ class DetailViewController: UIViewController {
     if let htmlData = htmlString.data(using: String.Encoding.unicode) { // utf8
       let options : [NSAttributedString.DocumentReadingOptionKey : Any] = [.documentType : NSAttributedString.DocumentType.html]
       let content = try! NSMutableAttributedString(data: htmlData, options: options, documentAttributes: nil)
-      return content
-    }
-    return nil
-  }
-
-  @IBAction func openFullReview() {
-    let app = AppDelegate.shared()
-    if let link = self.place.post?.link {
-      app.openInSafari(url: link)
+      self.append(content)
+    } else {
+      return nil
     }
   }
 

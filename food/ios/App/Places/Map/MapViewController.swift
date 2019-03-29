@@ -328,7 +328,7 @@ class MapViewController: UIViewController {
 
     let keyboardEndFrame = (userInfo[UIResponder.keyboardFrameEndUserInfoKey] as! NSValue).cgRectValue
     let convertedKeyboardEndFrame = view.convert(keyboardEndFrame, from: self.view.window)
-    bottomLayoutConstraint.constant = view.bounds.maxY - convertedKeyboardEndFrame.minY
+    bottomLayoutConstraint.constant = max(0, view.bounds.maxY - convertedKeyboardEndFrame.minY - view.safeAreaInsets.bottom)
     self.view.layoutIfNeeded()
   }
 

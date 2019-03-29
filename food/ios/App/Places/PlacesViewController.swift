@@ -168,6 +168,7 @@ class PlacesViewController: UIViewController {
     topBar.isTranslucent = false
     topBar.barTintColor = UIColor.navigationColor()
     topBar.tintColor =  UIColor.iconColor()
+
     return topBar
   }()
 
