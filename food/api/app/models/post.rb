@@ -10,14 +10,26 @@ class Post < ApplicationRecord
   validates :published_at, :blurb,
     presence: true
 
+  validates :blurb, uniqueness: true
+
+
   # save associated places to update cached association values
   after_save :update_places
   def update_places
     self.places.map &:save!
   end
 
-  def image_url
-    Post.ensure_https (read_attribute(:image_urls) || []).first
+  def images
+    images_data
+  end
+  def images= data
+    clean = data.compact.map { |d| d.slice(*%i[ url caption credit ]) }
+    write_attribute( :images_data, clean)
+  end
+  def image_url # TODO: deprecate
+    if (image = images_data.first) && (url = image['url'])
+      Post.ensure_https url
+    end
   end
 
   def url
@@ -79,26 +91,25 @@ class Post < ApplicationRecord
   rails_admin do
     object_label_method :admin_name
 
-    %i{
-      identifier
+    %i[
       created_at
       updated_at
       source_key
       title
-      image_urls
-    }.each do |attr|
+    ].each do |attr|
       configure attr do
-        read_only true
+        hide
       end
     end
 
-    %i{
+    %i[
+      identifier
+      images_data
       price
       rating
-    }.each do |attr|
+    ].each do |attr|
       configure attr do
         read_only true
-        show
       end
     end
 
@@ -176,6 +187,7 @@ class Post < ApplicationRecord
       ],
       methods: %i[
         image_url
+        images
         url
         author
         details_html

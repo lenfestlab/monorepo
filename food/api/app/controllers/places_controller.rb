@@ -10,7 +10,7 @@ class PlacesController < ApplicationController
         [value].flatten.compact
       end
 
-    if params[:bookmarked].present?
+    if find_bookmarked = params[:bookmarked].present?
       current_user = self.authenticate!
       bookmarked_place_ids = current_user.bookmarks.pluck(:place_id)
     end
@@ -25,7 +25,7 @@ class PlacesController < ApplicationController
       .located_in(nabes)
       .reviewed_by(authors)
       .nearest(p[:lat], p[:lng], sorts.first)
-      .bookmarked(bookmarked_place_ids)
+      .bookmarked(find_bookmarked, bookmarked_place_ids)
       .to_a
 
     render json: {

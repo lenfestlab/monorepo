@@ -10,7 +10,18 @@ class Place < ApplicationRecord
   validates :name, :address, :lat, :lng,
     presence: true
 
-  validates :lonlat, uniqueness: true
+  validates :lonlat, uniqueness: { scope: :name }
+  validates :name,   uniqueness: { scope: %i[ address_street_with_number ] }
+
+  before_validation :set_address
+  def set_address
+    unless address_street_with_number
+      self.address_street_with_number = [
+        self.address_number,
+        self.address_street
+      ].join(" ")
+    end
+  end
 
 
   ## PostGIS
@@ -26,7 +37,7 @@ class Place < ApplicationRecord
 
   before_validation do
     if lat && lng && lonlat.nil?
-      self.lonlat = self.class.format lon, lat
+      self.lonlat = self.class.format lng, lat
     end
   end
 
@@ -72,11 +83,13 @@ class Place < ApplicationRecord
 
   def update_cache
     self.category_identifiers = categories.map(&:identifier)
-    latest_post = self.post
-    self.post_rating = latest_post.try(:rating) || -1
-    self.post_published_at = latest_post.try(:published_at)
-    if author = latest_post.try(:author)
-      self.author_identifiers = [author.identifier]
+    if latest_post = self.post
+      self.post_rating = latest_post.rating
+      self.post_published_at = latest_post.published_at
+      self.post_prices = latest_post.prices
+      if author = latest_post.author
+        self.author_identifiers = [author.identifier]
+      end
     end
     self.reset_nabe_cache
   end
@@ -90,8 +103,7 @@ class Place < ApplicationRecord
   scope :rated, -> (ratings) {
     ratings = [ratings].flatten.compact
     if ratings.present?
-      includes(:posts).references(:posts)
-        .where 'posts.rating IN (?)', ratings
+      where 'places.post_rating IN (?)', ratings
     end
   }
 
@@ -99,8 +111,7 @@ class Place < ApplicationRecord
   scope :priced, -> (prices) {
     prices = [prices].flatten.compact
     if prices.present?
-      includes(:posts).references(:posts)
-        .where 'posts.price && ARRAY[?]', prices
+      where('places.post_prices && ARRAY[?]', prices)
     end
   }
 
@@ -116,8 +127,8 @@ class Place < ApplicationRecord
     end
   }
 
-  scope :bookmarked, -> (ids) {
-    if ids.present?
+  scope :bookmarked, -> (find_bookmarked, ids) {
+    if find_bookmarked
       where 'id IN (?)', ids
     end
   }
@@ -129,7 +140,20 @@ class Place < ApplicationRecord
 
   rails_admin do
 
-    [:identifier, :created_at, :updated_at, :lonlat].each do |hidden_attr|
+    %i[ created_at updated_at ].each do |hidden_attr|
+      configure hidden_attr do
+        hide
+      end
+    end
+    %i[
+      identifier
+      lonlat
+      address_street_with_number
+      post_prices
+      post_rating
+      post_published_at
+      author_identifiers
+    ].each do |hidden_attr|
       configure hidden_attr do
         read_only true
       end
@@ -146,7 +170,7 @@ class Place < ApplicationRecord
   end
 
   def post
-    posts.first
+    posts.sort_by(&:published_at).last
   end
 
   [:title, :blurb].each do |attr|
