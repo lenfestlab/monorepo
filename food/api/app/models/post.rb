@@ -63,24 +63,16 @@ class Post < ApplicationRecord
   self.md_fields.each do |attr|
     define_method(attr.to_s.gsub('md_','html_')) do
       md = self.send(attr)
-      return nil unless md
+      return nil if md.blank?
+      if attr == :md_place_summary
+        md = %{"#{md.strip}"}
+      end
       field_name = attr.to_s.gsub('md_', '')
       if %w{ places_summary menu drinks notes }.include?(field_name)
-         md.prepend("# #{I18n.t(attr)} \n\n")
+         md.prepend("# #{I18n.t(attr)} \n")
       end
-      Kramdown::Document.new(md, MD_OPTIONS).to_html.html_safe
-    end
-  end
-
-  def self.detail_fields
-    self.md_fields.map {|attr| attr.to_s.gsub('md_','').to_sym }
-  end
-
-  self.html_fields.each do |attr|
-    field_name = attr.to_s.gsub('html_','')
-    define_method(field_name) do
-      html = self.send(attr)
-      html.blank? ? nil : html
+      result = Kramdown::Document.new(md, MD_OPTIONS).to_html.html_safe
+      result
     end
   end
 
@@ -146,34 +138,26 @@ class Post < ApplicationRecord
     string.present? ? string : nil
   end
 
-
-  # TODO: deprecate
-  def details_html
-    md = Post.md_fields.reduce([]) { |agg, attr|
-      attr_head = I18n.t(attr)
-      attr_value = self.send(attr)
-      section =
-        if attr_value.blank?
-          []
-        elsif attr == :md_place_summary
-          ["> #{attr_value}"]
-        elsif attr_value
-          ["## #{attr_head}", attr_value]
-        else
-          []
-        end
-      agg.concat(section).flatten.compact
-    }.join("\n\n")
-    Kramdown::Document.new(md, MD_OPTIONS).to_html.html_safe
-  end
-
   def details
+    remainder_field_names = %w{ reservations accessibility parking price }
     self.class.html_fields.inject({}) do |agg, attr|
       field_name = attr.to_s.gsub('html_', '')
       field_html = self.send(attr)
-      agg[field_name] = field_html
+      if remainder_field_names.include?(field_name)
+        remainder = agg["remainder"]
+        agg["remainder"] = remainder.present? \
+          ? remainder.concat(field_html) \
+          : field_html
+      else
+        agg[field_name] = field_html
+      end
       agg
     end
+  end
+
+  # TODO: deprecate
+  def price
+    prices
   end
 
   def as_json(options = nil)
@@ -183,6 +167,7 @@ class Post < ApplicationRecord
         title
         blurb
         price
+        prices
         rating
       ],
       methods: %i[
@@ -190,8 +175,8 @@ class Post < ApplicationRecord
         images
         url
         author
-        details_html
-      ].concat(self.class.detail_fields)
+        details
+      ]
     }.merge(options || {}))
   end
 
