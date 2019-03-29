@@ -30,7 +30,7 @@
                     </connections>
                 </mapView>
                 <collectionView clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="scaleToFill" showsHorizontalScrollIndicator="NO" showsVerticalScrollIndicator="NO" dataMode="none" translatesAutoresizingMaskIntoConstraints="NO" id="xfc-ON-2uS">
-                    <rect key="frame" x="0.0" y="488" width="375" height="240"/>
+                    <rect key="frame" x="0.0" y="538" width="375" height="240"/>
                     <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                     <constraints>
                         <constraint firstAttribute="height" constant="240" id="gmZ-Xm-eVz"/>
@@ -43,7 +43,7 @@
                     </collectionViewFlowLayout>
                 </collectionView>
                 <button opaque="NO" contentMode="scaleAspectFit" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="N35-07-4di">
-                    <rect key="frame" x="317" y="435" width="43" height="43"/>
+                    <rect key="frame" x="317" y="485" width="43" height="43"/>
                     <constraints>
                         <constraint firstAttribute="width" constant="43" id="MMV-uy-irk"/>
                         <constraint firstAttribute="height" constant="43" id="twR-ev-MoJ"/>
@@ -61,7 +61,7 @@
                 <constraint firstItem="Dzc-xs-8qs" firstAttribute="top" secondItem="i5M-Pr-FkT" secondAttribute="top" constant="-250" id="1bc-Pc-XrY"/>
                 <constraint firstItem="Dzc-xs-8qs" firstAttribute="leading" secondItem="i5M-Pr-FkT" secondAttribute="leading" id="4wz-hH-HSb"/>
                 <constraint firstItem="xfc-ON-2uS" firstAttribute="trailing" secondItem="i5M-Pr-FkT" secondAttribute="trailing" id="PaD-KR-psm"/>
-                <constraint firstItem="Dzc-xs-8qs" firstAttribute="bottom" secondItem="xfc-ON-2uS" secondAttribute="bottom" constant="84" id="ToX-J0-ser"/>
+                <constraint firstItem="fq1-Xw-T1U" firstAttribute="bottom" secondItem="xfc-ON-2uS" secondAttribute="bottom" id="ToX-J0-ser"/>
                 <constraint firstItem="fq1-Xw-T1U" firstAttribute="trailing" secondItem="N35-07-4di" secondAttribute="trailing" constant="15" id="WnZ-g7-HkX"/>
                 <constraint firstItem="xfc-ON-2uS" firstAttribute="top" secondItem="N35-07-4di" secondAttribute="bottom" constant="10" id="YzJ-91-ZMD"/>
                 <constraint firstAttribute="bottom" secondItem="Dzc-xs-8qs" secondAttribute="bottom" id="aCd-38-guG"/>
@@ -72,7 +72,7 @@
             </constraints>
             <simulatedNavigationBarMetrics key="simulatedTopBarMetrics" prompted="NO"/>
             <viewLayoutGuide key="safeArea" id="fq1-Xw-T1U"/>
-            <point key="canvasLocation" x="-58.399999999999999" y="8.8669950738916263"/>
+            <point key="canvasLocation" x="143" y="90"/>
         </view>
     </objects>
     <resources>

@@ -8,7 +8,7 @@ extension UINavigationController {
     }
 
     self.navigationBar.barTintColor =  UIColor.navigationColor()
-    self.navigationBar.tintColor =  UIColor.iconColor()
+    self.navigationBar.tintColor =  UIColor.darkRed
     self.navigationBar.isTranslucent = false
   }
 

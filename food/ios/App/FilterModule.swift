@@ -14,6 +14,14 @@ extension NSAttributedString {
     return NSAttributedString(string: " ")
   }
 
+  class func space(width: Int) -> NSAttributedString {
+    let attachment = NSTextAttachment()
+    attachment.image = UIColor.white.pixelImage()
+    attachment.bounds = CGRect(x: 0, y: 0, width: width, height: 1)
+    return NSAttributedString(attachment: attachment)
+  }
+
+
   class func bells(count: Int, selected: Bool = false) -> NSAttributedString? {
     if count < 1 {
       return nil
@@ -21,7 +29,7 @@ extension NSAttributedString {
 
     let bells = NSMutableAttributedString(string: "")
     let bellIcon = NSAttributedString.bellIcon(selected: selected)
-    let space = NSAttributedString.space()
+    let space = NSAttributedString.space(width: 2)
     for _ in 1 ... count {
       bells.append(bellIcon)
       bells.append(space)
@@ -29,18 +37,16 @@ extension NSAttributedString {
     return bells
   }
 
-}
-
-extension String {
-
-  static func dollarSymbols(count: Int) -> String? {
+  static func dollarSymbols(count: Int) -> NSMutableAttributedString? {
     if count < 1 {
       return nil
     }
 
-    var dollar = ""
+    let dollar = NSMutableAttributedString(string: "")
+    let space = NSAttributedString.space(width: 2)
     for _ in 1 ... count {
-      dollar = String(format: "%@$", dollar)
+      dollar.append(NSAttributedString(string:"$"))
+      dollar.append(space)
     }
     return dollar
   }
@@ -79,9 +85,9 @@ class FilterModule : NSObject {
       }
     }
 
-    var dollars = [String]()
+    var dollars = [NSAttributedString]()
     for value in self.prices {
-      if let dollar = String.dollarSymbols(count: value) {
+      if let dollar = NSMutableAttributedString.dollarSymbols(count: value) {
         dollars.append(dollar)
       }
     }
@@ -93,7 +99,9 @@ class FilterModule : NSObject {
     }
 
     if dollars.count > 0 {
-      content.append(NSAttributedString(string: dollars.joined(separator: ",")))
+      for dollar in dollars {
+        content.append(dollar)
+      }
     }
 
     let count = self.categories.count

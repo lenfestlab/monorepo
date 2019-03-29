@@ -56,9 +56,11 @@ class GuidesViewController: UITableViewController {
   override func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
     let category = self.categories[indexPath.row]
     let placeController = PlacesViewController(analytics: self.analytics, categories: [category])
+
+    placeController.additionalSafeAreaInsets.bottom = 49
     placeController.title = category.name
     placeController.topBarIsHidden = true
-//    placeController.hidesBottomBarWhenPushed = true
+    placeController.hidesBottomBarWhenPushed = true
     self.navigationController?.pushViewController(placeController, animated: true)
   }
 

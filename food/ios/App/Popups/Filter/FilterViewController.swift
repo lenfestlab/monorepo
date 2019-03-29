@@ -203,19 +203,23 @@ class FilterViewController: UIViewController {
 
 
     styleButton(self.oneDollar)
-    let oneTitle = NSMutableAttributedString(string: String.dollarSymbols(count: 1) ?? "", font: UIFont.largeBook, fontColor: nil)
+    let oneTitle = NSMutableAttributedString.dollarSymbols(count: 1)
+    self.oneDollar.titleLabel?.font = UIFont.largeBook
     self.oneDollar.setAttributedTitle(oneTitle, for: .normal)
 
     styleButton(self.twoDollars)
-    let twoTitle = NSMutableAttributedString(string: String.dollarSymbols(count: 2) ?? "", font: UIFont.largeBook, fontColor: nil)
+    let twoTitle = NSMutableAttributedString.dollarSymbols(count: 2)
+    self.twoDollars.titleLabel?.font = UIFont.largeBook
     self.twoDollars.setAttributedTitle(twoTitle, for: .normal)
 
     styleButton(self.threeDollars)
-    let threeTitle = NSMutableAttributedString(string: String.dollarSymbols(count: 3) ?? "", font: UIFont.largeBook, fontColor: nil)
+    let threeTitle = NSMutableAttributedString.dollarSymbols(count: 3)
+    self.threeDollars.titleLabel?.font = UIFont.largeBook
     self.threeDollars.setAttributedTitle(threeTitle, for: .normal)
 
     styleButton(self.fourDollars)
-    let fourTitle = NSMutableAttributedString(string: String.dollarSymbols(count: 4) ?? "", font: UIFont.largeBook, fontColor: nil)
+    let fourTitle = NSMutableAttributedString.dollarSymbols(count: 4)
+    self.fourDollars.titleLabel?.font = UIFont.largeBook
     self.fourDollars.setAttributedTitle(fourTitle, for: .normal)
 
     styleButton(self.ratingButton)

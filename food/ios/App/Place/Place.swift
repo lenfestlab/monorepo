@@ -52,7 +52,9 @@ struct Post: JSONDecodable, Codable, Identifiable {
 
   var publicationName: String? { return "" }
   var publicationTwitter: String? { return "" }
+
 }
+
 
 struct Place: JSONDecodable, Codable, Identifiable {
 
@@ -66,6 +68,7 @@ struct Place: JSONDecodable, Codable, Identifiable {
   var address: String?
   let location: Location?
   let post: Post?
+  let website: URL?
   let radius: Double?
   let distance: Double?
   let nabes: [Neighborhood]?
@@ -82,6 +85,7 @@ struct Place: JSONDecodable, Codable, Identifiable {
     self.name = "name" <~~ json
     self.nabes = "nabes" <~~ json
     self.categories = "categories" <~~ json
+    self.website = "website" <~~ json
   }
 
   var title: String? {
