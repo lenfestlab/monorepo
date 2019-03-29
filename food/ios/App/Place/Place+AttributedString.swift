@@ -39,7 +39,7 @@ extension Place {
     }
 
     var prices = [NSAttributedString]()
-    for value in post?.price ?? [] {
+    for value in post?.prices ?? [] {
       var dollars = [String]()
       if let dollar = String.dollarSymbols(count: value) {
         dollars.append(dollar)

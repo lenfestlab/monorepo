@@ -22,11 +22,10 @@ struct Post: JSONDecodable, Codable, Identifiable {
   let title: String?
   let blurb: String?
   let imageURL: URL?
-  let price: Array<Int>?
+  let prices: Array<Int>?
   let rating: Int?
   var link: URL? = URL(string: "http://media.philly.com/storage/special_projects/best-restaurants-philadelphia-philly-2018.html")
   var linkShort: URL?
-  var detailsHtml: String?
   var placeSummary: String?
   var menu: String?
   var notes: String?
@@ -40,14 +39,13 @@ struct Post: JSONDecodable, Codable, Identifiable {
     self.blurb = "blurb" <~~ json
     self.title = "title" <~~ json
     self.imageURL = "image_url" <~~ json
-    self.price = "price" <~~ json
+    self.prices = "prices" <~~ json
     self.rating = "rating" <~~ json
-    self.detailsHtml = "details_html" <~~ json
-    self.placeSummary = "place_summary" <~~ json
-    self.menu = "menu" <~~ json
-    self.notes = "notes" <~~ json
-    self.drinks = "drinks" <~~ json
-    self.remainder = "remainder" <~~ json
+    self.placeSummary = "details.place_summary" <~~ json
+    self.menu = "details.menu" <~~ json
+    self.notes = "details.notes" <~~ json
+    self.drinks = "details.drinks" <~~ json
+    self.remainder = "details.remainder" <~~ json
     self.author = "author" <~~ json
     self.images = "images" <~~ json
   }
