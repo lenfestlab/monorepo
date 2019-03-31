@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2019_03_27_130945) do
+ActiveRecord::Schema.define(version: 2019_03_31_161414) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -97,6 +97,8 @@ ActiveRecord::Schema.define(version: 2019_03_27_130945) do
     t.string "address_country"
     t.string "address_street_with_number"
     t.integer "post_prices", default: [], array: true
+    t.bigint "reservation_venue_id"
+    t.string "cached_reservation_url"
     t.index ["author_identifiers"], name: "index_places_on_author_identifiers"
     t.index ["category_identifiers"], name: "index_places_on_category_identifiers", using: :gin
     t.index ["identifier"], name: "index_places_on_identifier"
@@ -106,6 +108,7 @@ ActiveRecord::Schema.define(version: 2019_03_27_130945) do
     t.index ["post_prices"], name: "index_places_on_post_prices", using: :gin
     t.index ["post_published_at"], name: "index_places_on_post_published_at"
     t.index ["post_rating"], name: "index_places_on_post_rating"
+    t.index ["reservation_venue_id"], name: "index_places_on_reservation_venue_id"
   end
 
   create_table "places_posts", id: false, force: :cascade do |t|
@@ -140,6 +143,34 @@ ActiveRecord::Schema.define(version: 2019_03_27_130945) do
     t.index ["images_data"], name: "index_posts_on_images_data", using: :gin
     t.index ["prices"], name: "index_posts_on_prices", using: :gin
     t.index ["rating"], name: "index_posts_on_rating"
+  end
+
+  create_table "reservation_venues", force: :cascade do |t|
+    t.string "service"
+    t.string "service_identifier"
+    t.string "service_url"
+    t.string "name"
+    t.string "address_street_with_number"
+    t.string "city"
+    t.string "state"
+    t.string "country"
+    t.string "zip"
+    t.string "metro"
+    t.string "phone"
+    t.decimal "lat", precision: 10, scale: 6
+    t.decimal "lng", precision: 10, scale: 6
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["address_street_with_number"], name: "index_reservation_venues_on_address_street_with_number"
+    t.index ["city"], name: "index_reservation_venues_on_city"
+    t.index ["country"], name: "index_reservation_venues_on_country"
+    t.index ["metro"], name: "index_reservation_venues_on_metro"
+    t.index ["name"], name: "index_reservation_venues_on_name"
+    t.index ["phone"], name: "index_reservation_venues_on_phone"
+    t.index ["service"], name: "index_reservation_venues_on_service"
+    t.index ["service_identifier"], name: "index_reservation_venues_on_service_identifier"
+    t.index ["state"], name: "index_reservation_venues_on_state"
+    t.index ["zip"], name: "index_reservation_venues_on_zip"
   end
 
   create_table "users", force: :cascade do |t|

@@ -1,5 +1,7 @@
 class Place < ApplicationRecord
 
+  belongs_to :reservation_venue
+
   has_many :bookmarks
 
   has_and_belongs_to_many :posts
@@ -92,6 +94,9 @@ class Place < ApplicationRecord
       end
     end
     self.reset_nabe_cache
+    if venue = self.reservation_venue
+      self.cached_reservation_url =  venue.service_url
+    end
   end
   before_save :update_cache
   after_touch :save
@@ -140,7 +145,11 @@ class Place < ApplicationRecord
 
   rails_admin do
 
-    %i[ created_at updated_at ].each do |hidden_attr|
+    %i[
+      created_at
+      updated_at
+      cached_reservation_url
+    ].each do |hidden_attr|
       configure hidden_attr do
         hide
       end
@@ -157,6 +166,11 @@ class Place < ApplicationRecord
       configure hidden_attr do
         read_only true
       end
+    end
+
+    configure :reservation_venue do
+      inline_add false
+      inline_edit false
     end
 
   end
@@ -180,6 +194,10 @@ class Place < ApplicationRecord
     end
   end
 
+  def reservation_url
+    read_attribute :cached_reservation_url
+  end
+
 
   def as_json(options = nil)
     super({
@@ -196,6 +214,7 @@ class Place < ApplicationRecord
         post
         categories
         nabes
+        reservation_url
       ]
     }.merge(options || {}))
   end
