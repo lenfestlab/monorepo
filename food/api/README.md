@@ -8,9 +8,11 @@ See `../README.md`, then:
 
 # enable localhost SSL
 mkcert -install
-mkcert --cert-file localhost-cert.pem --key-file localhost-key.pem localhost 127.0.0.1 ::1
-chmod +r localhost-key.pem
-mv localhost* ./config/cert/
+(cd ./config/cert/ && mkcert \
+  --cert-file localhost-cert.pem \
+  --key-file localhost-key.pem \
+  localhost 127.0.0.1 ::1 \
+  )
 
 cp .env.dev.example .env
 heroku local:run rails db:setup
@@ -31,7 +33,7 @@ heroku git:remote -r prod -a lenfestlab-food-prod
 ## Replace local db w/ copy of remote database
 
 ```
-DISABLE_DATABASE_ENVIRONMENT_CHECK=1 heroku local:run -e .env.dev bundle exec rails db:drop
-heroku pg:pull DATABASE_URL lenfest_food_development -r stag
+DISABLE_DATABASE_ENVIRONMENT_CHECK=1 heroku local:run -e .env.dev bundle exec rails db:drop && \
+  heroku pg:pull DATABASE_URL lenfest_food_development -r stag
 ```
 

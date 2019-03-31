@@ -114,7 +114,12 @@ namespace :seed do
 
       blurb, _rating, _prices, _url, _photo_key =
         i.values_at(*%w{ from_hermes Bells price county_page photo_tag })
-      rating = _rating.present? && _rating.scan(/bell/i).length
+      # NOTE: 2017 guide doesn't have "no bells" entries: assume empty is unrated
+      rating = -1
+      if _rating.present?
+         count = _rating.scan(/bell/i).length
+         rating = (count == 0) ? -1 : count
+      end
       prices = _prices.split(/-/).map { |i| i.scan(/\$/).length }
       url = Post.ensure_https(_url || guide_url)
       images = _photo_index[_photo_key] || []

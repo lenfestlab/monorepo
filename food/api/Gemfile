@@ -16,6 +16,7 @@ gem 'bitly'
 gem 'activerecord-postgis-adapter'
 gem 'rgeo-geojson'
 gem 'kramdown'
+gem 'slim-rails'
 
 group :development, :test do
   gem 'byebug', platforms: [:mri, :mingw, :x64_mingw]

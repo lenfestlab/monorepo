@@ -53,11 +53,21 @@ _reviews.each do |review|
   place.save!
 
   source_key = review["Tag"]
+
   prices = review["Price"].try(:split, /,\s*/).try(:map, &:length)
+
+  rating = -1 # default, -1 == unrated
   rating_text = review["Bells"]
-  rating_match = rating_text.match(/\A\d/) if rating_text
-  rating_raw = rating_match[0] if rating_match
-  rating = Integer(rating_raw) if rating_raw
+  # if contains "no", assume assigned 0 bells
+  rating = 0 if rating_text && rating_text.match?(/no/i)
+  if rating_text
+    if (rating_match = rating_text.match(/\A\d/))
+      if (rating_raw = rating_match[0])
+         rating = Integer(rating_raw)
+      end
+    end
+  end
+
   blurb =
     (review["text"] || [])
     .select {|node| node["type"] == "text" }
@@ -71,6 +81,7 @@ _reviews.each do |review|
     rating: rating,
     blurb: blurb,
     source_key: source_key,
+    url: %{https://media.philly.com/storage/special_projects/best-restaurants-philadelphia-philly-2018.html},
   }
   ap attrs
   place.posts.create attrs

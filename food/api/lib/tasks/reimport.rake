@@ -3,7 +3,12 @@ namespace :seed do
   desc "import 2018 guide"
   task reimport: :environment do
     # drop non-use data
-    [Bookmark, Category, Place, Post].each { |klass| klass.destroy_all }
+    klasses = [Bookmark, Category, Place, Post]
+    klasses.each { |klass| klass.destroy_all } # trigger callbacks
+    klasses.each do |klass|
+      table_name = klass.to_s.tableize
+      klass.connection.execute("TRUNCATE #{table_name} RESTART IDENTITY")
+    end
     # reimport
     %w{
     seed:guide

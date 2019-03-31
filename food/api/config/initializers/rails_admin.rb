@@ -32,13 +32,21 @@ RailsAdmin.config do |config|
   config.actions do
     dashboard                     # mandatory
     index                         # mandatory
-    new
+    new do
+      only []
+    end
     export
     bulk_delete
     show
-    edit
-    delete
-    show_in_app
+    edit do
+      only [Post, Category]
+    end
+    delete do
+      only []
+    end
+    show_in_app do
+      only []
+    end
 
     ## With an audit adapter, you can add:
     # history_index
@@ -96,6 +104,41 @@ module RailsAdmin
             {}
           end
 
+        end
+      end
+    end
+  end
+end
+
+
+module RailsAdmin
+  module Config
+    module Fields
+      module Types
+        class Yaml < RailsAdmin::Config::Fields::Types::Text
+          # Register field type for the type loader
+          RailsAdmin::Config::Fields::Types.register(self)
+          RailsAdmin::Config::Fields::Types.register(:yaml, self)
+
+          register_instance_option :formatted_value do
+            value ? YAML.dump(value) : nil
+          end
+
+          register_instance_option :pretty_value do
+            bindings[:view].content_tag(:pre) { formatted_value }.html_safe
+          end
+
+          register_instance_option :export_value do
+            formatted_value
+          end
+
+          def parse_value(value)
+            value.present? ? YAML.load(value) : nil
+          end
+
+          def parse_input(params)
+            params[name] = parse_value(params[name]) if params[name].is_a?(::String)
+          end
         end
       end
     end
