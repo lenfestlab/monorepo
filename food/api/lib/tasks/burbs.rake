@@ -1,5 +1,3 @@
-raise "cannot seed prod" if Rails.env == "production"
-
 def json filedir, filename
   JSON.parse(File.read("#{filedir}/#{filename}.json"))
 end
@@ -8,6 +6,7 @@ namespace :seed do
 
   desc "import 2017 Guide (suburbs)"
   task burbs: :environment do
+    raise "cannot seed prod" if Rails.env == "production"
 
     dir = ENV["ADMIN_DB_SEED_DIR"]
     raise "MIA: ADMIN_DB_SEED_DIR env var" unless dir
