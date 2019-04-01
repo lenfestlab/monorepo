@@ -76,9 +76,15 @@ extension PlacesViewController : FilterModuleDelegate {
     let ratingsFiltered = filter.ratings.count > 0
     let sort = filter.sortMode
 
-    self.filterButton.isSelected = authorsFiltered || pricesFiltered || nabesFiltered || ratingsFiltered
+    let filtered = authorsFiltered || pricesFiltered || nabesFiltered || ratingsFiltered
+    let active = cuisinesFiltered || filtered
+
+    self.filterButton.isSelected = filtered
     self.cuisineButton.isSelected = cuisinesFiltered
     self.sortButton.isSelected = sort != .distance
+
+    self.mapViewController.showIndex = active
+    self.listViewController.showIndex = active
 
     let defaultCoordinate = CLLocationCoordinate2D(latitude: 39.9526, longitude: -75.1652)
     let coordinate = LocationManager.shared.latestLocation?.coordinate ?? defaultCoordinate
@@ -184,6 +190,7 @@ class PlacesViewController: UIViewController {
     didSet {
       self.topBar?.isHidden = topBarIsHidden
       self.listViewController.topPadding = 20 + (self.topBarIsHidden ? 0 : 44) + (self.filterBarIsHidden ? 0 : 34)
+      self.mapViewController.topPadding = (self.topBarIsHidden ? 0 : 44) + (self.filterBarIsHidden ? 0 : 34)
     }
   }
 
@@ -191,6 +198,7 @@ class PlacesViewController: UIViewController {
     didSet {
       self.filterBar?.isHidden = filterBarIsHidden
       self.listViewController.topPadding = 20 + (self.topBarIsHidden ? 0 : 44) + (self.filterBarIsHidden ? 0 : 34)
+      self.mapViewController.topPadding = (self.topBarIsHidden ? 0 : 44) + (self.filterBarIsHidden ? 0 : 34)
     }
   }
 

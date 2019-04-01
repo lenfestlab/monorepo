@@ -84,7 +84,7 @@ class PlaceCell: UICollectionViewCell {
     }
   }
 
-  func setPlace(place: Place) {
+  func setPlace(place: Place, index:Int, showIndex: Bool) {
     self.place = place
     let post = place.post
 
@@ -93,7 +93,13 @@ class PlaceCell: UICollectionViewCell {
       self.milesAwayLabel.text = milesAway
     }
 
-    self.textLabel.attributedText = place.attributedTitle(font: UIFont.mediumSmall)
+    let attributedTitle = NSMutableAttributedString()
+    if showIndex {
+      attributedTitle.append(NSMutableAttributedString(string: "\(index + 1). ", font: UIFont.mediumSmall, fontColor: .black))
+    }
+    attributedTitle.append(place.attributedTitle(font: UIFont.mediumSmall))
+
+    self.textLabel.attributedText = attributedTitle
     self.textLabel.lineBreakMode = .byTruncatingTail
     
     self.subtitleLabel.attributedText = place.attributedSubtitle(font: UIFont.mediumSmall)

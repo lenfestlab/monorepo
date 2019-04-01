@@ -10,6 +10,9 @@ extension UIFont {
   class var lightLarge: UIFont {
     return UIFont(name: "GothamNarrowSSm-Light", size: 16.0)!
   }
+  class var mediumExtraSmall: UIFont {
+    return UIFont(name: "GothamNarrowSSm-Medium", size: 12.0)!
+  }
   class var mediumSmall: UIFont {
     return UIFont(name: "GothamNarrowSSm-Medium", size: 14.0)!
   }

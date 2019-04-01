@@ -17,7 +17,7 @@ extension ListViewController { // UICollectionViewDataSource
     // Configure the cell
     let mapPlace:MapPlace = self.placeStore.placesFiltered[indexPath.row]
     let place = mapPlace.place
-    cell.setPlace(place: place)
+    cell.setPlace(place: place, index: indexPath.row, showIndex: self.showIndex)
     return cell
   }
 
@@ -57,6 +57,12 @@ class ListViewController: UICollectionViewController {
   let locationManager = LocationManager.shared
   let padding = CGFloat(10)
   var topPadding = CGFloat(64)
+
+  var showIndex = false {
+    didSet {
+      self.collectionView.reloadData()
+    }
+  }
 
   private let analytics: AnalyticsManager
   @IBOutlet weak var settingsButton:UIButton!
