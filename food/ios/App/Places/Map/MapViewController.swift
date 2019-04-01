@@ -26,7 +26,7 @@ extension MapViewController: UICollectionViewDataSource {
     // Configure the cell
     let mapPlace:MapPlace = self.placeStore.placesFiltered[indexPath.row]
     let place = mapPlace.place
-    cell.setPlace(place: place)
+    cell.setPlace(place: place, index: indexPath.row, showIndex: self.showIndex)
     return cell
   }
 }
@@ -55,6 +55,14 @@ extension MapViewController: UICollectionViewDelegate {
 
 extension MapViewController : MKMapViewDelegate {
 
+  func mapView(_ mapView: MKMapView, rendererFor overlay: MKOverlay) -> MKOverlayRenderer {
+    let renderer = MKPolygonRenderer(polygon: overlay as! MKPolygon)
+    renderer.fillColor = UIColor.black.withAlphaComponent(0.5)
+    renderer.strokeColor = UIColor.red
+    renderer.lineWidth = 10
+    return renderer
+  }
+
   func mapView(_ mapView: MKMapView, didUpdate userLocation: MKUserLocation) {
     let coordinate = userLocation.coordinate
     self.locationManager.latestLocation = CLLocation(latitude: coordinate.latitude, longitude: coordinate.longitude)
@@ -66,12 +74,13 @@ extension MapViewController : MKMapViewDelegate {
       return nil
     }
 
+    let index = (annotation as! ABPointAnnotation).index
+
     let  pinView = ABAnnotationView(annotation: annotation, reuseIdentifier: mapPinIdentifier)
-    pinView.tag = (annotation as! ABPointAnnotation).index
-
+    pinView.tag = index
     pinView.isSelected = (annotation.title == currentPlace?.place.name)
-
-    pinView.accessibilityLabel = "hello"
+    pinView.showsIndex = self.showIndex
+    pinView.setIndex(index)
     let btn = UIButton(type: .detailDisclosure)
     pinView.rightCalloutAccessoryView = btn
 
@@ -104,6 +113,14 @@ class MapViewController: UIViewController {
   let env: Env
   let locationManager = LocationManager.shared
   let placeStore : PlaceStore!
+  var topPadding = CGFloat(64)
+
+  var showIndex = false {
+    didSet {
+      self.collectionView.reloadData()
+      self.reloadMap()
+    }
+  }
 
   func updateAnnotations() {
     var annotations:[MKAnnotation] = []
@@ -278,7 +295,26 @@ class MapViewController: UIViewController {
   @objc func centerToCurrentPlaceIfNotVisible() {
     DispatchQueue.main.async {
       if let coordinate = self.currentPlace?.place.coordinate() {
-        if(!self.mapView.visibleMapRect.contains(MKMapPoint(coordinate))){
+        let visibleMapRect = self.mapView.visibleMapRect
+        let scale = visibleMapRect.width / Double(self.mapView.frame.width)
+        let downBy = 250 + self.topPadding
+        let x = visibleMapRect.origin.x + 0 * scale
+        let y = visibleMapRect.origin.y + Double(downBy) * scale
+        let pixelWidth = self.locationButton.frame.minX
+        let width = scale * Double(pixelWidth)
+        let pixelHeight = self.mapView.frame.height - self.collectionView.frame.height - downBy - self.view.safeAreaInsets.bottom
+        let height = scale * Double(pixelHeight)
+        let remainderRect = MKMapRect(x: x, y: y, width: width, height: height)
+
+//        var remPoints = [MKMapPoint]()
+//        remPoints.append(remainderRect.origin) // topLeft
+//        remPoints.append(MKMapPoint(x: remainderRect.origin.x + remainderRect.size.width, y: remainderRect.origin.y))
+//        remPoints.append(MKMapPoint(x: remainderRect.origin.x + remainderRect.size.width, y: remainderRect.origin.y + remainderRect.size.height))
+//        remPoints.append(MKMapPoint(x: remainderRect.origin.x, y: remainderRect.origin.y + remainderRect.size.height)) // topRight
+//        let remPoly = MKPolygon.init(points: remPoints, count: 4)
+//        self.mapView.addOverlay(remPoly)
+
+        if(!remainderRect.contains(MKMapPoint(coordinate))){
           self.centerMap(coordinate, span: self.mapView.region.span)
         }
       }
