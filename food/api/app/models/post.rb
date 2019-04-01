@@ -7,7 +7,7 @@ class Post < ApplicationRecord
 
   belongs_to :author
 
-  validates :published_at, :blurb,
+  validates :published_at, :blurb, :url, :rating,
     presence: true
 
   validates :blurb, uniqueness: true
@@ -84,21 +84,29 @@ class Post < ApplicationRecord
     object_label_method :admin_name
 
     %i[
+      identifier
       created_at
       updated_at
       source_key
-      title
+      images_data
     ].each do |attr|
       configure attr do
         hide
       end
     end
 
+    list do
+      fields(*%i[
+        id author published_at places blurb rating
+      ].concat(Post.md_fields))
+    end
+
     %i[
-      identifier
-      images_data
-      price
-      rating
+      published_at
+      prices
+      url
+      author
+      places
     ].each do |attr|
       configure attr do
         read_only true
@@ -114,9 +122,35 @@ class Post < ApplicationRecord
     Post.md_fields.each do |attr|
       configure attr, :markdown do
         label attr.to_s.gsub('md_','').capitalize.concat(' [MD]')
+        html_attributes rows: 4, cols: 80, wrap: "off"
       end
     end
 
+    configure :images, :yaml do
+      label "Images [YAML]"
+      html_attributes rows: 20, cols: 80, wrap: "off"
+      help %{TIP: copy/paste edits to validate: http://yaml-online-parser.appspot.com }
+      pretty_value do
+        data = bindings[:object].images
+        bindings[:view].render(
+          partial: "post_images_data",
+          locals: { data: data }
+        )
+      end
+    end
+
+    configure :published_at do
+      formatted_value do
+        value.strftime("%F")
+      end
+    end
+
+    configure :url do
+      pretty_value do
+        url = bindings[:object].url
+        bindings[:view].content_tag(:a, url, href: url, target: "_blank")
+      end
+    end
   end
 
   def admin_name
@@ -164,7 +198,6 @@ class Post < ApplicationRecord
     super({
       only: %i[
         identifier
-        title
         blurb
         price
         prices

@@ -17,23 +17,31 @@ class Category < ApplicationRecord
     Post.ensure_https read_attribute(:image_urls).first
   end
 
+
   ## Admin
   #
 
   rails_admin do
     object_label_method :admin_name
+
     %i{
       identifier
       created_at
       updated_at
       categorizations
+      image_urls
     }.each do |hidden_attr|
       configure hidden_attr do
         hide
       end
     end
-    configure :image_urls do
+
+    configure :image_url do
       read_only true
+      pretty_value do
+        url = bindings[:object].image_url
+        bindings[:view].tag(:img, { src: url, width: "50%"})
+      end
     end
   end
 

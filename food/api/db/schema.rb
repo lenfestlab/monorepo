@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2019_03_27_130945) do
+ActiveRecord::Schema.define(version: 2019_03_31_231404) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -84,7 +84,7 @@ ActiveRecord::Schema.define(version: 2019_03_27_130945) do
     t.string "website"
     t.geography "lonlat", limit: {:srid=>4326, :type=>"st_point", :geographic=>true}
     t.string "category_identifiers", default: [], array: true
-    t.integer "post_rating", default: 0
+    t.integer "post_rating", default: -1, null: false
     t.datetime "post_published_at"
     t.string "author_identifiers", default: [], array: true
     t.jsonb "nabe_cache", default: [], array: true
@@ -119,10 +119,9 @@ ActiveRecord::Schema.define(version: 2019_03_27_130945) do
     t.datetime "updated_at", null: false
     t.uuid "identifier", default: -> { "uuid_generate_v4()" }
     t.datetime "published_at", null: false
-    t.text "title"
     t.text "blurb", null: false
     t.integer "prices", default: [], array: true
-    t.integer "rating", default: 0
+    t.integer "rating", default: -1, null: false
     t.string "source_key"
     t.text "url"
     t.text "md_place_summary"

@@ -1,0 +1,6 @@
+- data.each do |datum|
+  - url, caption, credit = datum.values_at(*%w{ url caption credit  })
+  p
+    image src=url width="50%"
+    div= caption
+    div= credit

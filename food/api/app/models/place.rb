@@ -139,26 +139,62 @@ class Place < ApplicationRecord
   #
 
   rails_admin do
+    object_label_method :admin_name
 
-    %i[ created_at updated_at ].each do |hidden_attr|
-      configure hidden_attr do
+    %i[
+      created_at
+      updated_at
+      identifier
+      lonlat
+      lat
+      lng
+      post_published_at
+      post_prices
+      post_rating
+      bookmarks
+      author_identifiers
+    ].concat(%i[
+      address_number
+      address_street
+      address_city
+      address_county
+      address_state
+      address_zip
+      address_country
+      address_street_with_number
+    ]).each do |attr|
+      configure attr do
         hide
       end
     end
+
+    list do
+      %i[
+        phone
+        website
+      ].each do |attr|
+        configure attr do
+          hide
+        end
+      end
+    end
+
     %i[
-      identifier
-      lonlat
-      address_street_with_number
-      post_prices
-      post_rating
-      post_published_at
-      author_identifiers
-    ].each do |hidden_attr|
-      configure hidden_attr do
+      name
+      address
+      phone
+      website
+      posts
+    ].each do |attr|
+      configure attr do
         read_only true
       end
     end
 
+  end
+
+  def admin_name
+    %{#{name} [#{address}]}
   end
 
 
