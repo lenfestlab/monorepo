@@ -16,7 +16,7 @@ extension NSAttributedString {
 
   class func space(width: Int) -> NSAttributedString {
     let attachment = NSTextAttachment()
-    attachment.image = UIColor.white.pixelImage()
+    attachment.image = UIColor.clear.pixelImage()
     attachment.bounds = CGRect(x: 0, y: 0, width: width, height: 1)
     return NSAttributedString(attachment: attachment)
   }
@@ -37,7 +37,7 @@ extension NSAttributedString {
     return bells
   }
 
-  static func dollarSymbols(count: Int) -> NSMutableAttributedString? {
+  static func dollarSymbols(count: Int, color: UIColor = .black) -> NSMutableAttributedString? {
     if count < 1 {
       return nil
     }
@@ -45,7 +45,7 @@ extension NSAttributedString {
     let dollar = NSMutableAttributedString(string: "")
     let space = NSAttributedString.space(width: 2)
     for _ in 1 ... count {
-      dollar.append(NSAttributedString(string:"$"))
+      dollar.append(NSMutableAttributedString(string: "$", font: nil, fontColor: color))
       dollar.append(space)
     }
     return dollar

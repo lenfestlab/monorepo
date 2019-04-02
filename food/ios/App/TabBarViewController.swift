@@ -72,6 +72,7 @@ class TabBarViewController: UITabBarController {
 
     self.placesViewController.navigationItem.leftBarButtonItem = UIBarButtonItem(image: UIImage(named: "settings-button"), style: .plain, target: self, action: #selector(settings))
     self.placesViewController.navigationItem.titleView =  self.placesViewController.searchBar
+    self.placesViewController.navigationController?.navigationBar.shadowImage = UIImage()
 
     self.extendedLayoutIncludesOpaqueBars = true
   }

@@ -32,12 +32,6 @@ class SortViewController: UITableViewController {
     }
 
     didSet {
-      if let row = self.array.index(of: sortMode) {
-        let selectedIndexPath = IndexPath(row: row, section: 0)
-        let cell = tableView.cellForRow(at: selectedIndexPath)
-        cell?.accessoryType  = .checkmark
-      }
-
       self.filterModule.sortMode = sortMode
       self.sortDelegate?.filterUpdated(self, filter: self.filterModule)
     }
@@ -51,6 +45,10 @@ class SortViewController: UITableViewController {
     self.title = "Sort"
     self.tableView.register(UITableViewCell.self, forCellReuseIdentifier: "reuseIdentifier")
     self.tableView.allowsMultipleSelection = false
+    self.tableView.rowHeight = 56
+    self.tableView.isScrollEnabled = false
+    self.tableView.separatorInset = .zero
+    self.popUpViewController?.isToolbarHidden = true
   }
 
   // MARK: - Table view data source
@@ -65,13 +63,24 @@ class SortViewController: UITableViewController {
 
   override func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
     let cell = tableView.dequeueReusableCell(withIdentifier: "reuseIdentifier", for: indexPath)
-    cell.textLabel?.text = array[indexPath.row].rawValue
+
+    let sort = array[indexPath.row]
+    if sort == .distance {
+      cell.textLabel?.text = "DISTANCE (Default)"
+    } else if sort == .latest {
+      cell.textLabel?.text = "LATEST"
+    } else if sort == .rating {
+      cell.textLabel?.text = "RATING"
+    }
+
+    cell.textLabel?.textAlignment = .center
     return cell
   }
 
   override func tableView(_ tableView: UITableView, willDisplay cell: UITableViewCell, forRowAt indexPath: IndexPath) {
     let sort = array[indexPath.row]
-    cell.accessoryType  = (sort == sortMode) ? .checkmark : .none
+    cell.backgroundColor  = (sort == sortMode) ? .slate : .white
+    cell.textLabel?.textColor  = (sort == sortMode) ? .white : .black
   }
 
   override func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {

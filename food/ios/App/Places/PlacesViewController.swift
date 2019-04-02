@@ -136,7 +136,17 @@ class PlacesViewController: UIViewController {
 
   lazy var searchBar: UISearchBar! = {
     let searchBar = UISearchBar(frame: CGRect(x: 0, y: 0, width: 600, height: 60))
-    searchBar.placeholder = "Search All Restaurants"
+    searchBar.setSearchFieldBackgroundImage(UIImage(named: "search-bar"), for: .normal)
+
+    let placeholderAppearance = UILabel.appearance(whenContainedInInstancesOf: [UISearchBar.self])
+    placeholderAppearance.font = UIFont.lightSmall
+
+    let searchTextAppearance = UITextField.appearance(whenContainedInInstancesOf: [UISearchBar.self])
+    searchTextAppearance.font = UIFont.lightSmall
+
+    searchBar.searchTextPositionAdjustment = UIOffset(horizontal: -10, vertical: 0)
+    searchBar.setImage(UIImage(), for: UISearchBar.Icon.search, state: .normal)
+    searchBar.placeholder = "Type a restaurant name"
     searchBar.delegate = self
     return searchBar
   }()
@@ -174,7 +184,6 @@ class PlacesViewController: UIViewController {
     topBar.isTranslucent = false
     topBar.barTintColor = UIColor.navigationColor()
     topBar.tintColor =  UIColor.iconColor()
-
     return topBar
   }()
 
@@ -324,7 +333,8 @@ class PlacesViewController: UIViewController {
     let filter = FilterViewController(analytics: self.analytics, filter: self.placeStore.filterModule)
     filter.filterDelegate = self
     let navigationController = PopupViewController(rootViewController: filter)
-    navigationController.popUpHeight = 600
+    let screenHeight = AppDelegate.shared().window?.frame.size.height ?? 568
+    navigationController.popUpHeight = max(screenHeight - 81 - 74, 568 - 20 - 40)
     navigationController.modalPresentationStyle = .overFullScreen
     navigationController.modalTransitionStyle = .crossDissolve
     self.navigationController?.present(navigationController, animated: true, completion: nil)
@@ -336,7 +346,7 @@ class PlacesViewController: UIViewController {
     let sort = SortViewController(filter: self.placeStore.filterModule)
     sort.sortDelegate = self
     let navigationController = PopupViewController(rootViewController: sort)
-    navigationController.popUpHeight = 175
+    navigationController.popUpHeight = 238
     navigationController.modalPresentationStyle = .overFullScreen
     navigationController.modalTransitionStyle = .crossDissolve
     self.navigationController?.present(navigationController, animated: true, completion: nil)

@@ -85,6 +85,8 @@ class DetailViewController: UIViewController {
   @IBOutlet weak var reviewButton: UIButton!
   @IBOutlet weak var reviewLabel: UILabel!
 
+  @IBOutlet weak var loveButton: UIButton!
+
   init(place: Place) {
     self.place = place
     super.init(nibName: nil, bundle: nil)
@@ -94,8 +96,42 @@ class DetailViewController: UIViewController {
     fatalError("init(coder:) has not been implemented")
   }
 
+  @objc func onFavoritesUpdated(_ notification: Notification) {
+    self.refresh()
+  }
+
+  func refresh() {
+    self.loveButton.isSelected = Place.contains(identifier: self.place.identifier)
+  }
+
+  @IBAction func tapBookmarkButton() {
+    let identifier = self.place.identifier
+
+    if loveButton.isSelected {
+      loveButton.isSelected = false
+      deleteBookmark(placeId: identifier) { (success) in
+        if !success {
+          self.loveButton.isSelected = true
+        }
+      }
+    } else {
+      loveButton.isSelected = true
+      createBookmark(placeId: identifier) { (success) in
+        if !success {
+          self.loveButton.isSelected = false
+        }
+      }
+    }
+  }
+
   override func viewDidLoad() {
     super.viewDidLoad()
+
+    self.loveButton.isHidden = Installation.authToken() == nil
+
+    refresh()
+
+    NotificationCenter.default.addObserver(self, selector: #selector(onFavoritesUpdated(_:)), name: .favoritesUpdated, object: nil)
 
     self.websiteButton.isEnabled = self.place.website != nil
     self.callButton.isEnabled = self.place.phone != nil
@@ -131,6 +167,7 @@ class DetailViewController: UIViewController {
 
     let title = NSMutableAttributedString()
     title.append(self.place.attributedTitle(font: UIFont.mediumLarge))
+    title.append(NSAttributedString.space())
     title.append(self.place.attributedSubtitle(font: UIFont.mediumLarge))
     self.titleLabel.attributedText = title
 
@@ -146,9 +183,9 @@ class DetailViewController: UIViewController {
     self.reviewButton.clipsToBounds = true
 
     if let authorName = self.place.post?.author?.name {
-      self.reviewLabel.text = "REVIEWED BY \(authorName.uppercased())"
+      self.reviewLabel.text = "Reviewed By \(authorName)"
     } else {
-      self.reviewLabel.text = "UNKNOWN REVIEWER"
+      self.reviewLabel.text = "Unknown Reviewer"
     }
     self.reviewLabel.font = UIFont.lightLarge
 

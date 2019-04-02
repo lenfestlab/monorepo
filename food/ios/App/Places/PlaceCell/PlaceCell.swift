@@ -37,6 +37,7 @@ class PlaceCell: UICollectionViewCell {
 
   override func awakeFromNib() {
     super.awakeFromNib()
+    self.milesAwayLabel.font = UIFont.lightSmall
     containerView.layer.cornerRadius = 5.0
     containerView.layer.borderColor = UIColor.lightGray.cgColor
     containerView.layer.borderWidth = 1
@@ -46,18 +47,8 @@ class PlaceCell: UICollectionViewCell {
 
     imageView.layer.cornerRadius = 5.0
     imageView.clipsToBounds = true
-    imageView.layer.addSublayer(self.gradientLayer(bounds: self.imageView.bounds))
 
     NotificationCenter.default.addObserver(self, selector: #selector(onFavoritesUpdated(_:)), name: .favoritesUpdated, object: nil)
-  }
-
-  func gradientLayer(bounds: CGRect) -> CAGradientLayer {
-    let transparent = UIColor.black.withAlphaComponent(0.0).cgColor
-    let opaque = UIColor.black.withAlphaComponent(1.0).cgColor
-    let gradient = CAGradientLayer()
-    gradient.frame = bounds
-    gradient.colors = [opaque, transparent, transparent, transparent]
-    return gradient
   }
 
   func attributedText(text: String, font: UIFont) -> NSMutableAttributedString {
@@ -115,9 +106,7 @@ class PlaceCell: UICollectionViewCell {
 
     self.loveButton.isHidden = Installation.authToken() == nil
 
-    if let identifier = self.place?.identifier {
-      self.loveButton.isSelected = Place.contains(identifier: identifier)
-    }
+    refresh()
   }
 
   override func prepareForReuse() {

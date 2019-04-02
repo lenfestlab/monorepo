@@ -18,8 +18,8 @@ class AuthorViewController: UITableViewController {
     self.delegate?.authorsUpdated(self, authors: self.selected)
   }
 
-  @objc func dismissFilter() {
-    self.dismiss(animated: true, completion: nil)
+  @IBAction func clearAll() {
+    self.delegate?.authorsUpdated(self, authors: [])
   }
 
   var sorted = [Character : [Author]]()
@@ -42,10 +42,14 @@ class AuthorViewController: UITableViewController {
     super.viewDidLoad()
 
     self.tableView.allowsMultipleSelection = true
+    self.tableView.sectionIndexColor = .lightGreyBlue
 
     self.title = "Reviewers"
-    self.navigationItem.leftBarButtonItem = UIBarButtonItem(title: "Cancel", style: .plain, target: self, action: #selector(dismissFilter))
-    self.navigationItem.rightBarButtonItem = UIBarButtonItem(title: "Apply", style: .plain, target: self, action: #selector(applyFilter))
+
+    let space = UIBarButtonItem(barButtonSystemItem: .flexibleSpace, target: nil, action: nil)
+    let clear = UIBarButtonItem(title: "Clear All", style: .plain, target: self, action: #selector(clearAll))
+    let apply = UIBarButtonItem(title: "Apply", style: .done, target: self, action: #selector(applyFilter))
+    self.toolbarItems = [clear, space, apply]
 
     self.tableView.register(UITableViewCell.self, forCellReuseIdentifier: "reuseIdentifier")
     self.navigationController?.styleController()

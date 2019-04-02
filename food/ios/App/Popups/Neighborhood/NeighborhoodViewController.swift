@@ -18,9 +18,10 @@ class NeighborhoodViewController: UITableViewController {
     self.delegate?.neighborhoodsUpdated(self, neighborhoods: self.selected)
   }
 
-  @objc func dismissFilter() {
-    self.dismiss(animated: true, completion: nil)
+  @IBAction func clearAll() {
+    self.delegate?.neighborhoodsUpdated(self, neighborhoods: [])
   }
+
 
   var sorted = [Character : [Neighborhood]]()
   var selected = [Neighborhood]()
@@ -42,10 +43,14 @@ class NeighborhoodViewController: UITableViewController {
     super.viewDidLoad()
 
     self.tableView.allowsMultipleSelection = true
+    self.tableView.sectionIndexColor = .lightGreyBlue
 
     self.title = "Neighborhood"
-    self.navigationItem.leftBarButtonItem = UIBarButtonItem(title: "Cancel", style: .plain, target: self, action: #selector(dismissFilter))
-    self.navigationItem.rightBarButtonItem = UIBarButtonItem(title: "Apply", style: .plain, target: self, action: #selector(applyFilter))
+
+    let space = UIBarButtonItem(barButtonSystemItem: .flexibleSpace, target: nil, action: nil)
+    let clear = UIBarButtonItem(title: "Clear All", style: .plain, target: self, action: #selector(clearAll))
+    let apply = UIBarButtonItem(title: "Apply", style: .done, target: self, action: #selector(applyFilter))
+    self.toolbarItems = [clear, space, apply]
 
     self.tableView.register(UITableViewCell.self, forCellReuseIdentifier: "reuseIdentifier")
     self.navigationController?.styleController()

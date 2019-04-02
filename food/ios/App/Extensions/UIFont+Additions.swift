@@ -37,5 +37,10 @@ extension UIFont {
   class var boldSmall: UIFont {
     return UIFont(name: "GothamNarrowSSm-Bold", size: 14.0)!
   }
-
+  class var filterTitleFont: UIFont {
+    return UIFont(name: "GothamNarrowSSm-Bold", size: 18.0)!
+  }
+  class var titleFont: UIFont {
+    return UIFont(name: "GothamNarrowSSm-Medium", size: 18.0)!
+  }
 }

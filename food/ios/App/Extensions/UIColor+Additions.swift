@@ -13,4 +13,7 @@ extension UIColor {
   @nonobjc class var oceanBlue: UIColor {
     return UIColor(red: 0.0, green: 102.0 / 255.0, blue: 170.0 / 255.0, alpha: 1.0)
   }
+  @nonobjc class var offWhite: UIColor {
+    return UIColor(white: 238.0 / 255.0, alpha: 1.0)
+  }
 }

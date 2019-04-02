@@ -50,7 +50,17 @@ class FilterViewController: UIViewController {
   @IBOutlet weak var cusineButton : UIButton!
   @IBOutlet weak var neighborhoodButton : UIButton!
   @IBOutlet weak var reviewerButton : UIButton!
+  @IBOutlet weak var clearButton : UIButton!
   @IBOutlet weak var searchButton : UIButton!
+
+  @IBOutlet weak var bellsTitle : UILabel!
+  @IBOutlet weak var priceTitle : UILabel!
+  @IBOutlet weak var cuisineTitle : UILabel!
+  @IBOutlet weak var neighborhoodTitle : UILabel!
+  @IBOutlet weak var reviewerTitle : UILabel!
+  @IBOutlet weak var sortTitle : UILabel!
+
+  @IBOutlet weak var divider : UIView!
 
   private let analytics: AnalyticsManager
   private let filterModule: FilterModule
@@ -100,7 +110,7 @@ class FilterViewController: UIViewController {
     self.neighborhoodButton.isSelected = nabes.count > 0
   }
 
-  @IBAction func clearAll(_ sender: Any?) {
+  @IBAction func clearAll() {
     self.filterModule.sortMode = .distance
     self.filterModule.ratings = []
     self.filterModule.prices = []
@@ -171,8 +181,18 @@ class FilterViewController: UIViewController {
     super.viewDidLoad()
     self.navigationController?.styleController()
     self.title = "Filter"
-    self.navigationItem.leftBarButtonItem = UIBarButtonItem(title: "Cancel", style: .plain, target: self, action: #selector(dismissFilter))
     self.view.backgroundColor = .white
+
+    divider.backgroundColor = .offWhite
+    
+    bellsTitle.font = UIFont.mediumSmall
+    priceTitle.font = UIFont.mediumSmall
+    cuisineTitle.font = UIFont.mediumSmall
+    neighborhoodTitle.font = UIFont.mediumSmall
+    reviewerTitle.font = UIFont.mediumSmall
+    sortTitle.font = UIFont.mediumSmall
+
+    self.popUpViewController?.isToolbarHidden = true
 
     styleView(self.sortView)
     styleView(self.dollarView)
@@ -202,30 +222,20 @@ class FilterViewController: UIViewController {
     self.fourStars.setAttributedTitle(NSAttributedString.bells(count: 4, selected: true), for: .selected)
 
 
-    styleButton(self.oneDollar)
-    let oneTitle = NSMutableAttributedString.dollarSymbols(count: 1)
-    self.oneDollar.titleLabel?.font = UIFont.largeBook
-    self.oneDollar.setAttributedTitle(oneTitle, for: .normal)
-
-    styleButton(self.twoDollars)
-    let twoTitle = NSMutableAttributedString.dollarSymbols(count: 2)
-    self.twoDollars.titleLabel?.font = UIFont.largeBook
-    self.twoDollars.setAttributedTitle(twoTitle, for: .normal)
-
-    styleButton(self.threeDollars)
-    let threeTitle = NSMutableAttributedString.dollarSymbols(count: 3)
-    self.threeDollars.titleLabel?.font = UIFont.largeBook
-    self.threeDollars.setAttributedTitle(threeTitle, for: .normal)
-
-    styleButton(self.fourDollars)
-    let fourTitle = NSMutableAttributedString.dollarSymbols(count: 4)
-    self.fourDollars.titleLabel?.font = UIFont.largeBook
-    self.fourDollars.setAttributedTitle(fourTitle, for: .normal)
+    styleDollarButton(self.oneDollar, count: 1)
+    styleDollarButton(self.twoDollars, count: 2)
+    styleDollarButton(self.threeDollars, count: 3)
+    styleDollarButton(self.fourDollars, count: 4)
 
     styleButton(self.ratingButton)
     styleButton(self.distanceButton)
     styleButton(self.latestButton)
 
+    self.clearButton.titleLabel?.textColor = UIColor.oceanBlue
+    self.clearButton.titleLabel?.font = UIFont.largeBook
+
+    self.searchButton.backgroundColor = UIColor.lightGreyBlue
+    self.searchButton.titleLabel?.font = UIFont.lightLarge
     self.searchButton.layer.cornerRadius = 5.0
     self.searchButton.clipsToBounds = true
 
@@ -237,8 +247,11 @@ class FilterViewController: UIViewController {
     updateReviewerButton()
   }
 
-  @objc func dismissFilter() {
-    self.dismiss(animated: true, completion: nil)
+  func styleDollarButton(_ button: UIButton, count: Int) {
+    styleButton(button)
+    button.titleLabel?.font = UIFont.largeBook
+    button.setAttributedTitle(NSMutableAttributedString.dollarSymbols(count: count, color: .black), for: .normal)
+    button.setAttributedTitle(NSMutableAttributedString.dollarSymbols(count: count, color: .white), for: .selected)
   }
 
   @IBAction func applyFilter() {
