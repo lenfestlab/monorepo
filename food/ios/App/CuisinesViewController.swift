@@ -15,8 +15,9 @@ class CuisinesViewController: UITableViewController {
     self.delegate?.filterUpdated(self, filter: self.filterModule)
   }
 
-  @objc func dismissFilter() {
-    self.dismiss(animated: true, completion: nil)
+  @IBAction func clearAll() {
+    self.filterModule.categories = []
+    self.delegate?.filterUpdated(self, filter: self.filterModule)
   }
 
   var sorted = [Character : [Category]]()
@@ -41,11 +42,16 @@ class CuisinesViewController: UITableViewController {
   override func viewDidLoad() {
     super.viewDidLoad()
 
+    self.tableView.sectionIndexColor = .lightGreyBlue
     self.tableView.allowsMultipleSelection = true
+    self.tableView.rowHeight = 42
 
     self.title = "Cuisines"
-    self.navigationItem.leftBarButtonItem = UIBarButtonItem(title: "Cancel", style: .plain, target: self, action: #selector(dismissFilter))
-    self.navigationItem.rightBarButtonItem = UIBarButtonItem(title: "Apply", style: .plain, target: self, action: #selector(applyFilter))
+
+    let space = UIBarButtonItem(barButtonSystemItem: .flexibleSpace, target: nil, action: nil)
+    let clear = UIBarButtonItem(title: "Clear All", style: .plain, target: self, action: #selector(clearAll))
+    let apply = UIBarButtonItem(title: "Apply", style: .done, target: self, action: #selector(applyFilter))
+    self.toolbarItems = [clear, space, apply]
 
     self.tableView.register(UITableViewCell.self, forCellReuseIdentifier: "reuseIdentifier")
     self.navigationController?.styleController()
@@ -90,7 +96,7 @@ class CuisinesViewController: UITableViewController {
       cell.textLabel?.text = category.name
     }
 
-    cell.textLabel?.font = UIFont.boldSystemFont(ofSize: 15)
+    cell.textLabel?.font = UIFont.largeBook
     cell.selectionStyle = .none
 
     return cell

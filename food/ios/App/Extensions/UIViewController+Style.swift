@@ -3,9 +3,7 @@ import UIKit
 extension UINavigationController {
 
   func styleController() {
-    if let fontStyle = UIFont(name: "WorkSans-Medium", size: 18) {
-      self.navigationBar.titleTextAttributes = [NSAttributedString.Key.font: fontStyle]
-    }
+    self.navigationBar.titleTextAttributes = [NSAttributedString.Key.font: UIFont.titleFont]
 
     self.navigationBar.barTintColor =  UIColor.navigationColor()
     self.navigationBar.tintColor =  UIColor.darkRed

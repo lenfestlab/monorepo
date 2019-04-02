@@ -109,7 +109,7 @@ extension MapViewController: UIGestureRecognizerDelegate {
 
 class MapViewController: UIViewController {
 
-  let padding = CGFloat(35)
+  let padding = placeCellPadding
   let env: Env
   let locationManager = LocationManager.shared
   let placeStore : PlaceStore!
@@ -209,7 +209,7 @@ class MapViewController: UIViewController {
     let layout = UPCarouselFlowLayout()
     layout.scrollDirection = .horizontal
     let width = collectionView.frame.size.width - 2*padding
-    layout.spacingMode = .fixed(spacing: 0)
+    layout.spacingMode = .fixed(spacing: 10)
     layout.sideItemScale = 1.0
     layout.itemSize = CGSize(width: width, height: collectionView.frame.size.height)
 
