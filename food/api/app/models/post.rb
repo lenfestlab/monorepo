@@ -89,6 +89,7 @@ class Post < ApplicationRecord
       updated_at
       source_key
       images_data
+      url
     ].each do |attr|
       configure attr do
         hide
@@ -103,8 +104,8 @@ class Post < ApplicationRecord
 
     %i[
       published_at
+      review_url
       prices
-      url
       author
       places
     ].each do |attr|
@@ -145,7 +146,7 @@ class Post < ApplicationRecord
       end
     end
 
-    configure :url do
+    configure :review_url do
       pretty_value do
         url = bindings[:object].url
         bindings[:view].content_tag(:a, url, href: url, target: "_blank")
@@ -155,6 +156,10 @@ class Post < ApplicationRecord
 
   def admin_name
     blurb.try :truncate, 40
+  end
+
+  def review_url
+    url
   end
 
 

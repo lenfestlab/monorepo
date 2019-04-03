@@ -1,2 +1,7 @@
-release: bundle exec rails db:migrate
 web: bundle exec puma -t 5:5 -e ${RACK_ENV:-development}
+
+# prod-only
+release: bundle exec rails db:migrate
+
+# dev-only
+pgweb: pgweb --skip-open --ssl disable --url ${DATABASE_URL} --listen ${PGWEB_PORT:=8081}

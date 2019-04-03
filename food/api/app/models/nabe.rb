@@ -53,11 +53,19 @@ class Nabe < ApplicationRecord
   #
 
   rails_admin do
-    [:identifier, :created_at, :updated_at, :key, :geog].each do |hidden_attr|
+
+    %i[
+      identifier
+      created_at
+      updated_at
+      key
+      geog
+    ].each do |hidden_attr|
       configure hidden_attr do
         hide
       end
     end
+
   end
 
 end
