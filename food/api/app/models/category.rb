@@ -1,6 +1,6 @@
 class Category < ApplicationRecord
 
-  validates :key, :name,
+  validates :name,
     presence: true,
     uniqueness: true
 
@@ -30,23 +30,49 @@ class Category < ApplicationRecord
       updated_at
       categorizations
       image_urls
+      image_url
+      key
     }.each do |hidden_attr|
       configure hidden_attr do
         hide
       end
     end
 
-    configure :image_url do
-      read_only true
-      pretty_value do
-        url = bindings[:object].image_url
-        bindings[:view].tag(:img, { src: url, width: "50%"})
+    show do
+      configure :image_url do
+        pretty_value do
+          url = bindings[:object].image_url
+          bindings[:view].tag(:img, { src: url, width: "50%"})
+        end
       end
     end
+
+    edit do
+      configure :images, :yaml do
+        label "Images [YAML]"
+        html_attributes rows: 5, cols: 80, wrap: "off"
+        help %{NOTE: currently only the first URL in list is rendered in app - TIP: copy/paste edits to validate: http://yaml-online-parser.appspot.com }
+        pretty_value do
+          data = bindings[:object].images
+          bindings[:view].render(
+            partial: "post_images_data",
+            locals: { data: data }
+          )
+        end
+      end
+    end
+
   end
 
   def admin_name
     name
+  end
+
+  def images
+    image_urls
+  end
+  def images= data
+    write_attribute(:image_urls, data.compact)
   end
 
   ## Filters

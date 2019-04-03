@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2019_03_31_231404) do
+ActiveRecord::Schema.define(version: 2019_04_03_142301) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -42,11 +42,10 @@ ActiveRecord::Schema.define(version: 2019_03_31_231404) do
     t.datetime "updated_at", null: false
     t.uuid "identifier", default: -> { "uuid_generate_v4()" }
     t.string "name", null: false
-    t.string "key", null: false
+    t.string "key"
     t.boolean "is_cuisine", default: false
     t.text "image_urls", default: [], array: true
     t.index ["identifier"], name: "index_categories_on_identifier"
-    t.index ["key"], name: "index_categories_on_key", unique: true
   end
 
   create_table "categorizations", force: :cascade do |t|
