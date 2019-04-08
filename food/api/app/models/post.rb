@@ -86,7 +86,6 @@ class Post < ApplicationRecord
     %i[
       identifier
       created_at
-      updated_at
       source_key
       images_data
       url
@@ -98,20 +97,8 @@ class Post < ApplicationRecord
 
     list do
       fields(*%i[
-        id author published_at places blurb rating
+        id updated_at published_at author places blurb rating
       ].concat(Post.md_fields))
-    end
-
-    %i[
-      published_at
-      review_url
-      prices
-      author
-      places
-    ].each do |attr|
-      configure attr do
-        read_only true
-      end
     end
 
     configure :blurb do
@@ -123,7 +110,8 @@ class Post < ApplicationRecord
     Post.md_fields.each do |attr|
       configure attr, :markdown do
         label attr.to_s.gsub('md_','').capitalize.concat(' [MD]')
-        html_attributes rows: 4, cols: 80, wrap: "off"
+        html_attributes rows: 4, cols: 80
+        help %{Markdown synax: https://commonmark.org/help -- Editor: https://jbt.github.io/markdown-editor }
       end
     end
 
@@ -137,12 +125,6 @@ class Post < ApplicationRecord
           partial: "post_images_data",
           locals: { data: data }
         )
-      end
-    end
-
-    configure :published_at do
-      formatted_value do
-        value.strftime("%F")
       end
     end
 
