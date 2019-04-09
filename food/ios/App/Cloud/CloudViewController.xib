@@ -22,21 +22,13 @@
             <subviews>
                 <activityIndicatorView opaque="NO" contentMode="scaleToFill" horizontalHuggingPriority="750" verticalHuggingPriority="750" style="gray" translatesAutoresizingMaskIntoConstraints="NO" id="RQy-Nl-qHH">
                     <rect key="frame" x="177.5" y="333.5" width="20" height="20"/>
-                    <color key="color" red="0.71372549019999998" green="0.31764705879999999" blue="0.12549019610000001" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+                    <color key="color" red="0.58823529409999997" green="0.74117647060000003" blue="0.77647058820000003" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                 </activityIndicatorView>
-                <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Syncing with iCloud" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="EFy-1k-LVx">
-                    <rect key="frame" x="116.5" y="380" width="142" height="18"/>
-                    <fontDescription key="fontDescription" type="system" weight="semibold" pointSize="15"/>
-                    <color key="textColor" red="0.71372549019999998" green="0.31764705879999999" blue="0.12549019610000001" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
-                    <nil key="highlightedColor"/>
-                </label>
             </subviews>
-            <color key="backgroundColor" red="0.96078431369999995" green="0.94509803920000002" blue="0.91764705879999997" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+            <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
             <constraints>
                 <constraint firstItem="RQy-Nl-qHH" firstAttribute="centerX" secondItem="fnl-2z-Ty3" secondAttribute="centerX" id="Eks-E4-uOM"/>
-                <constraint firstItem="EFy-1k-LVx" firstAttribute="centerX" secondItem="fnl-2z-Ty3" secondAttribute="centerX" id="Ssn-Gr-y0S"/>
                 <constraint firstItem="RQy-Nl-qHH" firstAttribute="centerY" secondItem="fnl-2z-Ty3" secondAttribute="centerY" id="hcT-GX-h21"/>
-                <constraint firstItem="EFy-1k-LVx" firstAttribute="top" secondItem="RQy-Nl-qHH" secondAttribute="bottom" constant="26.5" id="qQE-BZ-lGN"/>
             </constraints>
             <viewLayoutGuide key="safeArea" id="fnl-2z-Ty3"/>
         </view>

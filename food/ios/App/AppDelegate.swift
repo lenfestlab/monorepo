@@ -53,15 +53,13 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
       return true
     }
 
-    let cloudViewController = CloudViewController()
-    window!.rootViewController = cloudViewController
-    window!.makeKeyAndVisible()
-
     if Installation.authToken() != nil {
-      DispatchQueue.main.async { [unowned self] in
-        self.showHomeScreen()
-      }
+      self.showHomeScreen()
+      window!.makeKeyAndVisible()
     } else {
+      let cloudViewController = CloudViewController()
+      window!.rootViewController = cloudViewController
+      window!.makeKeyAndVisible()
       iCloudUserIDAsync() { cloudId, error in
         if let cloudId = cloudId {
           print("received iCloudID \(cloudId)")
