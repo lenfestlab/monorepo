@@ -20,7 +20,7 @@ class FavoritesViewController : PlacesViewController {
   }
 
   @objc func onFavoritesUpdated(_ notification: Notification) {
-    self.refresh()
+    self.placeStore.refresh(showLoadingIndicator: false)
   }
 
   override func viewDidLoad() {

@@ -209,7 +209,7 @@ class MapViewController: UIViewController {
     let layout = UPCarouselFlowLayout()
     layout.scrollDirection = .horizontal
     let width = collectionView.frame.size.width - 2*padding
-    layout.spacingMode = .fixed(spacing: 10)
+    layout.spacingMode = .fixed(spacing: 0)
     layout.sideItemScale = 1.0
     layout.itemSize = CGSize(width: width, height: collectionView.frame.size.height)
 

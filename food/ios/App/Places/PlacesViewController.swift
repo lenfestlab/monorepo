@@ -148,6 +148,7 @@ class PlacesViewController: UIViewController {
     searchBar.setImage(UIImage(), for: UISearchBar.Icon.search, state: .normal)
     searchBar.placeholder = "Type a restaurant name"
     searchBar.delegate = self
+    searchBar.tintColor = .oceanBlue
     return searchBar
   }()
 
@@ -310,8 +311,8 @@ class PlacesViewController: UIViewController {
     super.viewWillLayoutSubviews()
     let vc = viewControllers[self.selectedIndex]
     vc.view.frame = self.view.bounds
-    self.topBar.frame = CGRect(x: 0, y: 0, width: self.view.frame.width, height: 44)
-    self.filterBar.frame = CGRect(x: 0, y: 44, width: self.view.frame.width, height: 34)
+    self.topBar.frame = CGRect(x: 0, y: -12, width: self.view.frame.width, height: 54)
+    self.filterBar.frame = CGRect(x: 0, y: 40, width: self.view.frame.width, height: 34)
   }
 
   @IBAction func dismissSearch(sender: UIButton) {
@@ -322,7 +323,8 @@ class PlacesViewController: UIViewController {
     let cuisineFilter = CuisinesViewController(analytics: self.analytics, filter: self.placeStore.filterModule)
     cuisineFilter.delegate = self
     let navigationController = PopupViewController(rootViewController: cuisineFilter)
-    navigationController.popUpHeight = 500
+    let screenHeight = AppDelegate.shared().window?.frame.size.height ?? 568
+    navigationController.popUpHeight = max(screenHeight - 130 - 122, 568 - 20 - 40)
     navigationController.modalPresentationStyle = .overFullScreen
     navigationController.modalTransitionStyle = .crossDissolve
     self.navigationController?.present(navigationController, animated: true, completion: nil)

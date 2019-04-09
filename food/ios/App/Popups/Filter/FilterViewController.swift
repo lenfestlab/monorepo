@@ -249,7 +249,7 @@ class FilterViewController: UIViewController {
 
   func styleDollarButton(_ button: UIButton, count: Int) {
     styleButton(button)
-    button.titleLabel?.font = UIFont.largeBook
+    button.titleLabel?.font = UIFont.lightLarge
     button.setAttributedTitle(NSMutableAttributedString.dollarSymbols(count: count, color: .black), for: .normal)
     button.setAttributedTitle(NSMutableAttributedString.dollarSymbols(count: count, color: .white), for: .selected)
   }
@@ -302,7 +302,8 @@ class FilterViewController: UIViewController {
     let vc = CuisinesViewController(analytics: self.analytics, filter: self.filterModule)
     vc.delegate = self
     let navigationController = PopupViewController(rootViewController: vc)
-    navigationController.popUpHeight = 500
+    let screenHeight = AppDelegate.shared().window?.frame.size.height ?? 568
+    navigationController.popUpHeight = max(screenHeight - 130 - 122, 568 - 20 - 40)
     navigationController.modalPresentationStyle = .overFullScreen
     navigationController.modalTransitionStyle = .crossDissolve
     self.present(navigationController, animated: true, completion: nil)
@@ -312,7 +313,8 @@ class FilterViewController: UIViewController {
     let vc = NeighborhoodViewController(analytics: self.analytics, selected: self.filterModule.nabes)
     vc.delegate = self
     let navigationController = PopupViewController(rootViewController: vc)
-    navigationController.popUpHeight = 500
+    let screenHeight = AppDelegate.shared().window?.frame.size.height ?? 568
+    navigationController.popUpHeight = max(screenHeight - 130 - 122, 568 - 20 - 40)
     navigationController.modalPresentationStyle = .overFullScreen
     navigationController.modalTransitionStyle = .crossDissolve
     self.present(navigationController, animated: true, completion: nil)
@@ -322,7 +324,7 @@ class FilterViewController: UIViewController {
     let vc = AuthorViewController(analytics: self.analytics, selected: self.filterModule.authors)
     vc.delegate = self
     let navigationController = PopupViewController(rootViewController: vc)
-    navigationController.popUpHeight = 500
+    navigationController.popUpHeight = 282
     navigationController.modalPresentationStyle = .overFullScreen
     navigationController.modalTransitionStyle = .crossDissolve
     self.present(navigationController, animated: true, completion: nil)

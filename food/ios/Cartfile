@@ -8,6 +8,7 @@ github "malcommac/SwiftDate"
 github "ReactiveX/RxSwift"
 github "SnapKit/SnapKit"
 github "jianstm/Schedule"
+github "SVProgressHUD/SVProgressHUD"
 
 # Firebase experimental carthage support: https://git.io/fAxBS
 binary "https://dl.google.com/dl/firebase/ios/carthage/FirebaseAnalyticsBinary.json"
