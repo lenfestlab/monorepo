@@ -210,7 +210,7 @@ class MapViewController: UIViewController {
   override func viewDidLoad() {
     super.viewDidLoad()
 
-    NotificationCenter.default.addObserver(self, selector: #selector(updateLocationButton), name: .locationUpdated, object: nil)
+    NotificationCenter.default.addObserver(self, selector: #selector(updateLocationButton), name: .locationAuthorizationUpdated, object: nil)
 
     self.collectionView.delegate = self
     self.collectionView.dataSource = self
@@ -265,12 +265,9 @@ class MapViewController: UIViewController {
     }
 
     if self.locationManager.authorized() {
-      let showsUserLocation = !locationButton.isSelected
-//      locationButton.isSelected = showsUserLocation
-//      self.mapView.showsUserLocation = showsUserLocation
-
-      if showsUserLocation && lastCoordinate != nil {
-        mapView.setCenter(lastCoordinate!, animated: true)
+      let showsUserLocation = locationButton.isSelected
+      if showsUserLocation {
+        mapView.setCenter(self.mapView.userLocation.coordinate, animated: true)
       }
     }
   }

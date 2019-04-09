@@ -42,7 +42,6 @@ class LocationManager: NSObject, CLLocationManagerDelegate {
 
   weak var authorizationDelegate: LocationManagerAuthorizationDelegate?
   var locationManager:CLLocationManager
-//  var authorized = false
 
   func startMonitoringSignificantLocationChanges() {
     print("locationManager startMonitoringSignificantLocationChanges")
@@ -89,13 +88,11 @@ class LocationManager: NSObject, CLLocationManagerDelegate {
       // Request when-in-use authorization initially
       locationManager.requestAlwaysAuthorization()
     case .restricted, .denied:
-//      authorized = false
       guard let authDelegate = authorizationDelegate else {
         print("ERROR: MIA: LocationManaager.authorizationDelegate")
         return }
       authDelegate.notAuthorized(self, status: status)
     case .authorizedWhenInUse, .authorizedAlways:
-//      authorized = true
       self.startMonitoringSignificantLocationChanges()
       guard let authDelegate = authorizationDelegate else {
         print("ERROR: MIA: LocationManaager.authorizationDelegate")
