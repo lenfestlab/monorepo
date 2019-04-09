@@ -5,7 +5,9 @@ extension Place {
   func attributedCategories() -> NSAttributedString {
     var names : [String] = []
     for category in self.categories ?? [] {
-      names.append(category.name)
+      if let name = category.name {
+        names.append(name)
+      }
     }
     for nabe in self.nabes ?? [] {
       names.append(nabe.name)

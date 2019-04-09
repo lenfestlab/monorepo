@@ -26,7 +26,9 @@ class GuideCell: UITableViewCell {
 
   func setCategory(category: Category){
     self.guideLabel?.text = category.name
-    self.guideImageView?.af_setImage(withURL: category.imageURL)
+    if let imageURL = category.imageURL {
+      self.guideImageView?.af_setImage(withURL: imageURL)
+    }
     self.selectionStyle = .none
   }
 
