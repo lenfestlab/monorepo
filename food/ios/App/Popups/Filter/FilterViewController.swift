@@ -250,8 +250,8 @@ class FilterViewController: UIViewController {
   func styleDollarButton(_ button: UIButton, count: Int) {
     styleButton(button)
     button.titleLabel?.font = UIFont.lightLarge
-    button.setAttributedTitle(NSMutableAttributedString.dollarSymbols(count: count, color: .black), for: .normal)
-    button.setAttributedTitle(NSMutableAttributedString.dollarSymbols(count: count, color: .white), for: .selected)
+    button.setAttributedTitle(NSMutableAttributedString.dollarSymbols(count: count, font: UIFont.lightLarge, color: .black), for: .normal)
+    button.setAttributedTitle(NSMutableAttributedString.dollarSymbols(count: count, font: UIFont.lightLarge, color: .white), for: .selected)
   }
 
   @IBAction func applyFilter() {

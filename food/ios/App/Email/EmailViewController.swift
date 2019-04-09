@@ -64,10 +64,12 @@ class EmailViewController: UIViewController, UITextFieldDelegate {
       return
     }
 
-    guard let emailAddress = self.textField.text else {
+    guard let text = self.textField.text else {
       errorLabel.text = "Missing email address"
       return
     }
+
+    let emailAddress = text.trimmingCharacters(in: .whitespacesAndNewlines)
 
     if emailAddress.count == 0 {
       errorLabel.text = "Missing email address"

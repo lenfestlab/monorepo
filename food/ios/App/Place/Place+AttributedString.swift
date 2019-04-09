@@ -5,7 +5,9 @@ extension Place {
   func attributedCategories() -> NSAttributedString {
     var names : [String] = []
     for category in self.categories ?? [] {
-      names.append(category.name)
+      if let name = category.name {
+        names.append(name)
+      }
     }
     for nabe in self.nabes ?? [] {
       names.append(nabe.name)
@@ -42,7 +44,7 @@ extension Place {
     var dollars = [NSAttributedString]()
     if let price = post?.prices {
       for value in price {
-        if let dollar = NSMutableAttributedString.dollarSymbols(count: value) {
+        if let dollar = NSMutableAttributedString.dollarSymbols(count: value, font: UIFont.lightLarge) {
           dollar.addAttribute(NSAttributedString.Key.font, value:UIFont.lightLarge, range:NSMakeRange(0, dollar.length))
           dollars.append(dollar)
         }
@@ -53,7 +55,7 @@ extension Place {
     for (index, dollar) in dollars.enumerated() {
       prices.append(dollar)
       if index + 1 != dollars.count {
-        prices.append(NSMutableAttributedString(string: ","))
+        prices.append(NSMutableAttributedString(string: ", "))
       }
     }
 

@@ -26,6 +26,7 @@ class NotificationViewController: UIViewController, UNUserNotificationCenterDele
 
     self.navigationController?.styleController()
 
+    doneButton.setBackgroundImage(UIColor.lightGreyBlue.pixelImage(), for: .normal)
     doneButton.layer.cornerRadius = 5.0
     doneButton.clipsToBounds = true
   }

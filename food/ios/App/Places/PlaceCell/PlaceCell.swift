@@ -1,27 +1,6 @@
 import UIKit
 import AlamofireImage
 
-extension NSMutableAttributedString {
-
-  convenience init(string: String, font: UIFont?, fontColor: UIColor?) {
-    self.init(string: string)
-    let paragraphStyle = NSMutableParagraphStyle()
-
-    // *** set LineSpacing property in points ***
-    paragraphStyle.lineSpacing = 5 // Whatever line spacing you want in points
-
-    // *** Apply attribute to string ***
-    self.addAttribute(NSAttributedString.Key.paragraphStyle, value:paragraphStyle, range:NSMakeRange(0, self.length))
-    if let font = font {
-      self.addAttribute(NSAttributedString.Key.font, value:font, range:NSMakeRange(0, self.length))
-    }
-    if let fontColor = fontColor {
-      self.addAttribute(NSAttributedString.Key.foregroundColor, value:fontColor, range:NSMakeRange(0, self.length))
-    }
-  }
-
-}
-
 class PlaceCell: UICollectionViewCell {
 
   @IBOutlet weak var textLabel: UILabel!

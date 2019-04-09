@@ -17,7 +17,7 @@ class PlaceDataStore: NSObject {
                       completion: @escaping (Bool, [Place], Int) -> Void) {
 
     let (latitude, longitude) = (coordinate.latitude, coordinate.longitude)
-    print("fetchData: \(latitude) \(longitude)")
+    print("fetchData: \(path) \(latitude) \(longitude)")
 
     let category_ids = categories.map { $0.identifier }
     let nabe_ids = neigborhoods.map { $0.identifier }

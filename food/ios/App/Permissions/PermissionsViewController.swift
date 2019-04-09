@@ -36,6 +36,7 @@ class PermissionsViewController: UIViewController, LocationManagerAuthorizationD
 
     doneButton.layer.cornerRadius = 5.0
     doneButton.clipsToBounds = true
+    doneButton.setBackgroundImage(UIColor.lightGreyBlue.pixelImage(), for: .normal)
   }
 
   func authorized(_ locationManager: LocationManager, status: CLAuthorizationStatus) {

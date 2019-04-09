@@ -65,8 +65,10 @@ class CuisinesViewController: UITableViewController {
     CategoryDataStore.retrieve(isCuisine: self.isCuisine) { (success, categories, count) in
       if let categories = categories {
         for category in categories {
-          if let character = category.name.uppercased().first {
-            self.sorted[character]?.append(category)
+          if let name = category.name {
+            if let character = name.uppercased().first {
+              self.sorted[character]?.append(category)
+            }
           }
         }
       }

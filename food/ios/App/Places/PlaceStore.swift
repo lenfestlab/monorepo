@@ -18,6 +18,8 @@ class PlaceStore: NSObject {
   var lastCoordinateUsed : CLLocationCoordinate2D?
   var path : String?
 
+  var loading = false
+
   var filterModule = FilterModule()
 
   weak var delegate: PlaceStoreDelegate?
@@ -65,18 +67,25 @@ class PlaceStore: NSObject {
     }
   }
 
-  func fetchMapData(path: String, coordinate:CLLocationCoordinate2D, completionBlock: (() -> (Void))? = nil) {
+  func fetchMapData(path: String, showLoadingIndicator: Bool, coordinate:CLLocationCoordinate2D, completionBlock: (() -> (Void))? = nil) {
     self.path = path
     self.lastCoordinateUsed = coordinate
-    refresh(completionBlock: completionBlock)
+    refresh(showLoadingIndicator: showLoadingIndicator, completionBlock: completionBlock)
   }
 
-  func refresh(showLoadingIndicator: Bool = true, completionBlock: (() -> (Void))? = nil) {
+  func refresh(showLoadingIndicator: Bool, completionBlock: (() -> (Void))? = nil) {
+    guard !self.loading else {
+      completionBlock?()
+      return
+    }
+
     guard let path = self.path else {
+      completionBlock?()
       return
     }
 
     guard let coordinate = self.lastCoordinateUsed else {
+      completionBlock?()
       return
     }
 
@@ -84,6 +93,8 @@ class PlaceStore: NSObject {
       SVProgressHUD.show()
       SVProgressHUD.setForegroundColor(UIColor.slate)
     }
+
+    self.loading = true
 
     PlaceDataStore.retrieve(
       path: path,
@@ -101,10 +112,19 @@ class PlaceStore: NSObject {
       }
       self.places = places
 
+      self.loading = false
+
       self.delegate?.fetchedMapData()
       completionBlock?()
+
       if showLoadingIndicator {
-        SVProgressHUD.dismiss()
+        DispatchQueue.main.async {
+          if places.count == 0 {
+            SVProgressHUD.showError(withStatus: "No Results Found")
+          } else {
+            SVProgressHUD.dismiss()
+          }
+        }
       }
     }
   }

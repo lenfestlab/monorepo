@@ -251,39 +251,3 @@ class DetailViewController: UIViewController {
 
 }
 
-extension NSMutableAttributedString {
-
-  convenience init?(html: String, textColorHex: String = "black", h1Font: UIFont? = nil, font: UIFont? = UIFont.bookSmall, alignment: NSTextAlignment = .left) {
-    self.init()
-    var style =     "<style>"
-    if let font = h1Font {
-      style = style + " h1 { font: \(Int(font.pointSize))px \(font.fontName); }"
-    }
-    if let font = font {
-      style = style + " p, ul { font: \(Int(font.pointSize))px \(font.fontName); line-height: 20px; }"
-    }
-    style = style + " body {"
-
-    var textAlignment = "left"
-    if alignment == .center {
-      textAlignment = "center"
-    }
-    if alignment == .right {
-      textAlignment = "right"
-    }
-
-    style = style + " text-align: \(textAlignment);"
-    style = style + " color: \(textColorHex);"
-    style = style + " }</style>"
-
-    let htmlString = "\(style)<html><body>\(html)</body></html>"
-    if let htmlData = htmlString.data(using: String.Encoding.unicode) { // utf8
-      let options : [NSAttributedString.DocumentReadingOptionKey : Any] = [.documentType : NSAttributedString.DocumentType.html]
-      let content = try! NSMutableAttributedString(data: htmlData, options: options, documentAttributes: nil)
-      self.append(content)
-    } else {
-      return nil
-    }
-  }
-
-}

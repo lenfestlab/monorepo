@@ -5,6 +5,7 @@ import SwiftDate
 
 extension Notification.Name {
   static let locationUpdated = Notification.Name("locationUpdated")
+  static let locationAuthorizationUpdated = Notification.Name("locationAuthorizationUpdated")
 }
 
 extension CLAuthorizationStatus: CustomStringConvertible, CustomDebugStringConvertible {
@@ -32,11 +33,15 @@ class LocationManager: NSObject, CLLocationManagerDelegate {
   static let shared = LocationManager()
 
   let env: Env
+  var authorizationStatus: CLAuthorizationStatus = .notDetermined {
+    didSet {
+      NotificationCenter.default.post(name: .locationAuthorizationUpdated, object: nil)
+    }
+  }
 
 
   weak var authorizationDelegate: LocationManagerAuthorizationDelegate?
   var locationManager:CLLocationManager
-  var authorized = false
 
   func startMonitoringSignificantLocationChanges() {
     print("locationManager startMonitoringSignificantLocationChanges")
@@ -58,6 +63,16 @@ class LocationManager: NSObject, CLLocationManagerDelegate {
     locationManager.delegate = self
   }
 
+  func authorized() -> Bool {
+    if self.authorizationStatus == .authorizedWhenInUse {
+      return true
+    }
+    if self.authorizationStatus == .authorizedAlways {
+      return true
+    }
+    return false
+  }
+
   func enableBasicLocationServices() {
     print("locationManager enableBasicLocationServices")
     let status = CLLocationManager.authorizationStatus()
@@ -66,18 +81,18 @@ class LocationManager: NSObject, CLLocationManagerDelegate {
 
   func authorizationStatusUpdated(status: CLAuthorizationStatus) {
     print("locationManager authorizationStatusUpdated: \(status.rawValue)")
+    self.authorizationStatus = status
+
     switch status {
     case .notDetermined:
       // Request when-in-use authorization initially
       locationManager.requestAlwaysAuthorization()
     case .restricted, .denied:
-      authorized = false
       guard let authDelegate = authorizationDelegate else {
         print("ERROR: MIA: LocationManaager.authorizationDelegate")
         return }
       authDelegate.notAuthorized(self, status: status)
     case .authorizedWhenInUse, .authorizedAlways:
-      authorized = true
       self.startMonitoringSignificantLocationChanges()
       guard let authDelegate = authorizationDelegate else {
         print("ERROR: MIA: LocationManaager.authorizationDelegate")
@@ -226,7 +241,7 @@ class LocationManager: NSObject, CLLocationManagerDelegate {
 
   func fetchData(coordinate: CLLocationCoordinate2D, trackResults: Bool = true) {
     PlaceDataStore.retrieve(path: "places.json", coordinate: coordinate, limit: 10) { [unowned self] (success, data, count) in
-      if self.authorized && trackResults {
+      if self.authorized() && trackResults {
         PlaceManager.shared.trackPlaces(places: data)
       }
     }
