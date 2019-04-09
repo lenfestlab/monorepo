@@ -67,60 +67,75 @@ class FilterModule : NSObject {
 
   func labelText() -> NSAttributedString? {
 
-    let space = NSMutableAttributedString(string: " ")
-    let comma = NSMutableAttributedString(string: ",")
+    let space = NSMutableAttributedString(string: " ", font: .lightSmall, fontColor: .black)
+    let comma = NSMutableAttributedString(string: ",", font: .lightSmall, fontColor: .black)
 
     var content = [NSAttributedString]()
 
-    let text = NSMutableAttributedString(string: "")
-
-    var bells = [NSAttributedString]()
-    for (index, rating) in self.ratings.enumerated() {
+    for rating in self.ratings {
       if let bellText = NSAttributedString.bells(count: rating, selected: false) {
-        bells.append(bellText)
-      }
-      if index != self.ratings.count - 1 {
-        bells.append(comma)
-        bells.append(space)
+        content.append(bellText)
       }
     }
 
-    var dollars = [NSAttributedString]()
     for value in self.prices {
       if let dollar = NSMutableAttributedString.dollarSymbols(count: value) {
-        dollars.append(dollar)
-      }
-    }
-
-    if bells.count > 0 {
-      for bell in bells {
-        content.append(bell)
-      }
-    }
-
-    if dollars.count > 0 {
-      for dollar in dollars {
         content.append(dollar)
       }
     }
 
-    let count = self.categories.count
-    if let first = self.categories.first {
-      if count == 1 {
-        content.append(NSAttributedString(string: "\(first.name)"))
-      } else {
-        content.append(NSAttributedString(string: "\(first.name)+\(count)"))
-      }
+    for category in self.categories {
+      let string = NSMutableAttributedString(string: "\(category.name)", font: .lightSmall, fontColor: .black)
+      content.append(string)
+    }
+
+    for nabe in self.nabes {
+      let string = NSMutableAttributedString(string: "\(nabe.name)", font: .lightSmall, fontColor: .black)
+      content.append(string)
+    }
+
+    for author in self.authors {
+      let string = NSMutableAttributedString(string: "\(author.name)", font: .lightSmall, fontColor: .black)
+      content.append(string)
     }
 
     if content.count == 0 {
       return nil
     }
 
-    for attributedString in content {
+    let text = NSMutableAttributedString(string: "")
+    let labelText = NSMutableAttributedString(string: "")
+
+    let screenWidth = UIScreen.main.bounds.width
+    var more = 0
+
+
+    for (index, attributedString) in content.enumerated() {
       text.append(attributedString)
+      text.append(comma)
+      text.append(space)
+      let rect = text.boundingRect(with: CGSize(width: CGFloat.greatestFiniteMagnitude, height: CGFloat.greatestFiniteMagnitude), options: [], context: nil)
+      print(rect.size.width)
+      if rect.size.width < screenWidth - 30 {
+        labelText.append(attributedString)
+        if index != content.count - 1 {
+          labelText.append(comma)
+          labelText.append(space)
+        }
+      } else {
+        more += 1
+      }
     }
 
-    return text
+    if more > 0 {
+      labelText.append(NSAttributedString(string: "+\(more)"))
+    }
+
+    labelText.addAttribute(NSAttributedString.Key.font, value:UIFont.lightSmall, range:NSMakeRange(0, labelText.length))
+    let paragraphStyle = NSMutableParagraphStyle()
+    paragraphStyle.alignment = .center
+    labelText.addAttribute(NSAttributedString.Key.paragraphStyle, value:paragraphStyle, range:NSMakeRange(0, labelText.length))
+
+    return labelText
   }
 }

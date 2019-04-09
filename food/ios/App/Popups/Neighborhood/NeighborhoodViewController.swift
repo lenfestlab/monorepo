@@ -98,6 +98,7 @@ class NeighborhoodViewController: UITableViewController {
 
     cell.textLabel?.font = UIFont.boldSystemFont(ofSize: 15)
     cell.selectionStyle = .none
+    cell.textLabel?.font = UIFont.largeBook
 
     return cell
   }

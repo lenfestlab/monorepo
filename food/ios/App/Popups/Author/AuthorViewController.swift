@@ -10,10 +10,6 @@ class AuthorViewController: UITableViewController {
 
   let alphabet = ["A","B","C","D", "E", "F","G","H","I","J","K","L","M","N","O","P","Q","R","S","T","U","V","W","X","Y","Z"]
 
-  override func sectionIndexTitles(for tableView: UITableView) -> [String]? {
-    return self.alphabet
-  }
-
   @objc func applyFilter() {
     self.delegate?.authorsUpdated(self, authors: self.selected)
   }
@@ -41,8 +37,10 @@ class AuthorViewController: UITableViewController {
   override func viewDidLoad() {
     super.viewDidLoad()
 
+    self.tableView.separatorInset = .zero
     self.tableView.allowsMultipleSelection = true
     self.tableView.sectionIndexColor = .lightGreyBlue
+    self.tableView.rowHeight = 56
 
     self.title = "Reviewers"
 
@@ -97,6 +95,7 @@ class AuthorViewController: UITableViewController {
 
     cell.textLabel?.font = UIFont.boldSystemFont(ofSize: 15)
     cell.selectionStyle = .none
+    cell.textLabel?.font = UIFont.largeBook
 
     return cell
   }

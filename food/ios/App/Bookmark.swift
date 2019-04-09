@@ -1,6 +1,7 @@
 import UIKit
 import Alamofire
 import Gloss
+import SVProgressHUD
 
 func createBookmark(placeId: String, completion: ((Bool) -> Void)?) {
   let env = Env()
@@ -21,6 +22,9 @@ func createBookmark(placeId: String, completion: ((Bool) -> Void)?) {
       completion?(true)
     }
 
+    SVProgressHUD.showSuccess(withStatus: "Added to List")
+    SVProgressHUD.dismiss(withDelay: 0.5)
+    
     Place.save(identifier: placeId)
     NotificationCenter.default.post(name: .favoritesUpdated, object: nil)
   }

@@ -30,10 +30,10 @@
                     </connections>
                 </mapView>
                 <collectionView clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="scaleToFill" showsHorizontalScrollIndicator="NO" showsVerticalScrollIndicator="NO" dataMode="none" translatesAutoresizingMaskIntoConstraints="NO" id="xfc-ON-2uS">
-                    <rect key="frame" x="0.0" y="538" width="375" height="240"/>
+                    <rect key="frame" x="0.0" y="536" width="375" height="242"/>
                     <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                     <constraints>
-                        <constraint firstAttribute="height" constant="240" id="gmZ-Xm-eVz"/>
+                        <constraint firstAttribute="height" constant="242" id="gmZ-Xm-eVz"/>
                     </constraints>
                     <collectionViewFlowLayout key="collectionViewLayout" scrollDirection="horizontal" minimumLineSpacing="0.0" minimumInteritemSpacing="0.0" id="xgy-gn-Rtr">
                         <size key="itemSize" width="50" height="50"/>
@@ -43,7 +43,7 @@
                     </collectionViewFlowLayout>
                 </collectionView>
                 <button opaque="NO" contentMode="scaleAspectFit" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="N35-07-4di">
-                    <rect key="frame" x="317" y="485" width="43" height="43"/>
+                    <rect key="frame" x="317" y="483" width="43" height="43"/>
                     <constraints>
                         <constraint firstAttribute="width" constant="43" id="MMV-uy-irk"/>
                         <constraint firstAttribute="height" constant="43" id="twR-ev-MoJ"/>

@@ -1,6 +1,7 @@
 import Foundation
 import UIKit
 import CoreLocation
+import SVProgressHUD
 
 private let concurrentPlaceQueue = DispatchQueue(label: "org.lenfestlab.food.placeQueue", attributes: .concurrent)
 
@@ -70,13 +71,18 @@ class PlaceStore: NSObject {
     refresh(completionBlock: completionBlock)
   }
 
-  func refresh(completionBlock: (() -> (Void))? = nil) {
+  func refresh(showLoadingIndicator: Bool = true, completionBlock: (() -> (Void))? = nil) {
     guard let path = self.path else {
       return
     }
 
     guard let coordinate = self.lastCoordinateUsed else {
       return
+    }
+
+    if showLoadingIndicator {
+      SVProgressHUD.show()
+      SVProgressHUD.setForegroundColor(UIColor.slate)
     }
 
     PlaceDataStore.retrieve(
@@ -97,6 +103,9 @@ class PlaceStore: NSObject {
 
       self.delegate?.fetchedMapData()
       completionBlock?()
+      if showLoadingIndicator {
+        SVProgressHUD.dismiss()
+      }
     }
   }
 

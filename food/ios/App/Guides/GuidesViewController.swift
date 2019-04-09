@@ -24,6 +24,8 @@ class GuidesViewController: UITableViewController {
     self.tableView.register(nib, forCellReuseIdentifier: "reuseIdentifier")
     self.navigationController?.styleController()
     self.navigationItem.title = "Guides"
+    self.tableView.separatorStyle = .none
+    self.tableView.contentInset = UIEdgeInsets(top: 0, left: 0, bottom: 15, right: 0);
 
     CategoryDataStore.retrieve(isCuisine: self.isCuisine) { (success, categories, count) in
       if let categories = categories {
