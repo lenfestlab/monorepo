@@ -37,7 +37,7 @@ extension NSAttributedString {
     return bells
   }
 
-  static func dollarSymbols(count: Int, color: UIColor = .black) -> NSMutableAttributedString? {
+  static func dollarSymbols(count: Int, font: UIFont, color: UIColor = .black) -> NSMutableAttributedString? {
     if count < 1 {
       return nil
     }
@@ -45,8 +45,15 @@ extension NSAttributedString {
     let dollar = NSMutableAttributedString(string: "")
     let space = NSAttributedString.space(width: 2)
     for _ in 1 ... count {
-      dollar.append(NSMutableAttributedString(string: "$", font: nil, fontColor: color))
+      dollar.append(NSMutableAttributedString(string: "$", font: font, fontColor: color))
       dollar.append(space)
+    }
+
+    if let image = dollar.image() {
+      let attachment = NSTextAttachment()
+      attachment.image = image
+      attachment.bounds = CGRect(x: 0, y: -9, width: image.size.width, height: image.size.height)
+      return NSMutableAttributedString(attachment: attachment)
     }
     return dollar
   }
@@ -79,14 +86,16 @@ class FilterModule : NSObject {
     }
 
     for value in self.prices {
-      if let dollar = NSMutableAttributedString.dollarSymbols(count: value) {
+      if let dollar = NSMutableAttributedString.dollarSymbols(count: value, font: .lightSmall) {
         content.append(dollar)
       }
     }
 
     for category in self.categories {
-      let string = NSMutableAttributedString(string: "\(category.name)", font: .lightSmall, fontColor: .black)
-      content.append(string)
+      if let name = category.name {
+        let string = NSMutableAttributedString(string: name, font: .lightSmall, fontColor: .black)
+        content.append(string)
+      }
     }
 
     for nabe in self.nabes {

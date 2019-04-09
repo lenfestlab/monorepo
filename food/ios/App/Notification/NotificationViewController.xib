@@ -39,12 +39,12 @@
             <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
             <subviews>
                 <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Get Notified" textAlignment="center" lineBreakMode="tailTruncation" numberOfLines="2" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="8jS-Ui-kq5">
-                    <rect key="frame" x="115.66666666666667" y="220.66666666666666" width="143.66666666666663" height="28.333333333333343"/>
+                    <rect key="frame" x="123" y="221" width="129" height="28"/>
                     <fontDescription key="fontDescription" name="WorkSans-SemiBold" family="Work Sans" pointSize="24"/>
                     <nil key="highlightedColor"/>
                 </label>
                 <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Step 1 of 2:" textAlignment="center" lineBreakMode="tailTruncation" numberOfLines="2" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="w9t-Yb-HD8">
-                    <rect key="frame" x="138" y="180.66666666666666" width="99.333333333333314" height="30"/>
+                    <rect key="frame" x="140.66666666666666" y="181" width="93.666666666666657" height="30"/>
                     <constraints>
                         <constraint firstAttribute="height" constant="30" id="rq7-ft-DfX"/>
                     </constraints>
@@ -60,15 +60,15 @@
                     <fontDescription key="fontDescription" name="WorkSans-Regular" family="Work Sans" pointSize="20"/>
                     <inset key="contentEdgeInsets" minX="0.0" minY="0.0" maxX="-9" maxY="0.0"/>
                     <inset key="imageEdgeInsets" minX="0.0" minY="0.0" maxX="30" maxY="0.0"/>
-                    <state key="normal" title="Enable Notifications" image="alert-button" backgroundImage="blue-button">
+                    <state key="normal" title="Enable Notifications" image="alert-button">
                         <color key="titleColor" white="0.0" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                     </state>
                     <connections>
                         <action selector="doneWithSender:" destination="-1" eventType="touchUpInside" id="yQw-0v-Vqm"/>
                     </connections>
                 </button>
-                <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Receive arts, architecture and real estate news notifications based on where you are." textAlignment="center" lineBreakMode="tailTruncation" numberOfLines="6" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="Kau-OB-wCo">
-                    <rect key="frame" x="34" y="434" width="307" height="72"/>
+                <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Receive food and drink notifications. " textAlignment="center" lineBreakMode="tailTruncation" numberOfLines="6" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="Kau-OB-wCo">
+                    <rect key="frame" x="34" y="434" width="307" height="46.666666666666686"/>
                     <fontDescription key="fontDescription" name="Lato-Regular" family="Lato" pointSize="20"/>
                     <nil key="highlightedColor"/>
                 </label>
@@ -79,7 +79,7 @@
                     </constraints>
                 </imageView>
                 <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="rsY-Bx-Exu">
-                    <rect key="frame" x="306" y="66" width="35" height="40"/>
+                    <rect key="frame" x="301" y="66" width="40" height="40"/>
                     <constraints>
                         <constraint firstAttribute="height" constant="40" id="Fev-t6-dPg"/>
                     </constraints>
@@ -114,7 +114,6 @@
     </objects>
     <resources>
         <image name="alert-button" width="26" height="30"/>
-        <image name="blue-button" width="17.333333969116211" height="60"/>
         <image name="notifications-image" width="322" height="116"/>
     </resources>
 </document>

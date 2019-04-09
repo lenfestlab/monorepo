@@ -88,7 +88,7 @@ extension PlacesViewController : FilterModuleDelegate {
 
     let defaultCoordinate = CLLocationCoordinate2D(latitude: 39.9526, longitude: -75.1652)
     let coordinate = LocationManager.shared.latestLocation?.coordinate ?? defaultCoordinate
-    self.placeStore.fetchMapData(path: self.path, coordinate: coordinate)
+    self.placeStore.fetchMapData(path: self.path, showLoadingIndicator: self.viewIfLoaded?.window != nil, coordinate: coordinate)
   }
 
 }
@@ -288,7 +288,7 @@ class PlacesViewController: UIViewController {
     } else {
       let coordinate = CLLocationCoordinate2D(latitude: 39.9526, longitude: -75.1652)
       self.mapViewController.centerMap(coordinate)
-      self.placeStore.fetchMapData(path: self.path, coordinate: coordinate)
+      self.placeStore.fetchMapData(path: self.path, showLoadingIndicator: self.viewIfLoaded?.window != nil, coordinate: coordinate)
     }
 
   }
@@ -296,15 +296,19 @@ class PlacesViewController: UIViewController {
   var _initalDataFetched = false
 
   func refresh() {
-    self.placeStore.refresh()
+    self.placeStore.refresh(showLoadingIndicator: self.viewIfLoaded?.window != nil)
   }
 
   func initialMapDataFetch(coordinate: CLLocationCoordinate2D) {
     if _initalDataFetched {
       return
     }
-    self.mapViewController.centerMap(coordinate)
-    self.placeStore.fetchMapData(path: self.path, coordinate: coordinate)
+    if self.placeStore.loading {
+      return
+    }
+    print(self.placeStore.loading)
+//    self.mapViewController.centerMap(coordinate)
+    self.placeStore.fetchMapData(path: self.path, showLoadingIndicator: self.viewIfLoaded?.window != nil, coordinate: coordinate)
   }
 
   override func viewWillLayoutSubviews() {

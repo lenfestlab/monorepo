@@ -23,8 +23,7 @@ class IntroViewController: UIViewController {
 
     doneButton.layer.cornerRadius = 5.0
     doneButton.clipsToBounds = true
-    self.view.backgroundColor = UIColor.offBlue()
-    // Do any additional setup after loading the view.
+    self.view.backgroundColor = UIColor.white
   }
 
   @IBAction func done(sender: UIButton) {

@@ -253,6 +253,18 @@ class DetailViewController: UIViewController {
 
 extension NSMutableAttributedString {
 
+  func image() -> UIImage? {
+    UIGraphicsBeginImageContextWithOptions(self.size(), false, 0.0)
+    // draw in context
+    self.draw(at: .zero)
+
+    // transfer image
+    let image = UIGraphicsGetImageFromCurrentImageContext()?.withRenderingMode(.alwaysOriginal)
+    UIGraphicsEndImageContext()
+
+    return image;
+  }
+
   convenience init?(html: String, textColorHex: String = "black", h1Font: UIFont? = nil, font: UIFont? = UIFont.bookSmall, alignment: NSTextAlignment = .left) {
     self.init()
     var style =     "<style>"

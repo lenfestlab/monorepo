@@ -177,10 +177,17 @@ class MapViewController: UIViewController {
     fatalError("init(coder:) has not been implemented")
   }
 
+  @objc func updateLocationButton() {
+    self.locationButton.isSelected = self.locationManager.authorized()
+    self.mapView.showsUserLocation = self.locationManager.authorized()
+  }
+
   override func viewDidAppear(_ animated: Bool) {
     super.viewDidAppear(animated)
     let url: URL? = AppDelegate.shared().lastViewedURL
     // Currently we send the map viewed data regardless of whether we have the coordinates yet or not
+
+    updateLocationButton()
 
     let state = UIApplication.shared.applicationState
     if state != .background {
@@ -202,6 +209,8 @@ class MapViewController: UIViewController {
 
   override func viewDidLoad() {
     super.viewDidLoad()
+
+    NotificationCenter.default.addObserver(self, selector: #selector(updateLocationButton), name: .locationUpdated, object: nil)
 
     self.collectionView.delegate = self
     self.collectionView.dataSource = self
@@ -227,16 +236,42 @@ class MapViewController: UIViewController {
   }
 
   @IBAction func centerCurrentLocation() {
-    if self.locationManager.authorized {
+    if self.locationManager.authorizationStatus == .denied {
+
+      let alertController = UIAlertController(
+        title: "Want to Enable Location?",
+        message: "This app uses your location to recommend restaurants around you.\nPlease select \"Always\" in Settings.",
+        preferredStyle: .alert)
+
+      let cancel = UIAlertAction(title: "Nevermind", style: .default) { (action:UIAlertAction) in
+      }
+      alertController.addAction(cancel)
+
+      let action1 = UIAlertAction(title: "Enable", style: .cancel) { (action:UIAlertAction) in
+        if let url = URL(string: UIApplication.openSettingsURLString) {
+          // If general location settings are enabled then open location settings for the app
+          UIApplication.shared.open(url, options: [:], completionHandler: nil)
+        }
+      }
+      alertController.addAction(action1)
+
+      self.present(alertController, animated: true, completion: nil)
+
+      return
+    }
+    if self.locationManager.authorizationStatus == .notDetermined {
+      self.locationManager.enableBasicLocationServices()
+      return
+    }
+
+    if self.locationManager.authorized() {
       let showsUserLocation = !locationButton.isSelected
-      locationButton.isSelected = showsUserLocation
-      self.mapView.showsUserLocation = showsUserLocation
+//      locationButton.isSelected = showsUserLocation
+//      self.mapView.showsUserLocation = showsUserLocation
 
       if showsUserLocation && lastCoordinate != nil {
         mapView.setCenter(lastCoordinate!, animated: true)
       }
-    } else {
-      self.locationManager.enableBasicLocationServices()
     }
   }
 

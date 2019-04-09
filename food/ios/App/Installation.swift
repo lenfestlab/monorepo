@@ -29,7 +29,7 @@ class Installation: NSObject {
     defaults.synchronize()
   }
 
-  class func authToken() -> String? {    
+  class func authToken() -> String? {
     let defaults = UserDefaults.standard
     return defaults.string(forKey: authTokenKey)
   }
