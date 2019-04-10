@@ -7,14 +7,40 @@ class Category < ApplicationRecord
   has_many :categorizations, dependent: :destroy
   has_many :places, through: :categorizations
 
+  # see related notes in Post
+  has_and_belongs_to_many :photos, -> (s) {
+    order('categories_images.insert_id')
+  },
+  class_name: "Image",
+  join_table: "categories_images",
+  foreign_key: "category_id",
+  association_foreign_key: "image_id"
+  def photo_ids=(ids)
+    super([])
+    super(ids)
+  end
+
+  validates :photos, presence: true
+
   # save associated places to update cached category_ids
   after_save :update_places
   def update_places
     self.places.map &:save!
   end
 
+  # TODO: drop legacy cache column #images_data
+  before_save :update_cache
+  def update_cache
+    self.cached_images = self.photos.as_json
+  end
+  def images
+    self.cached_images
+  end
+
   def image_url
-    Post.ensure_https read_attribute(:image_urls).first
+    if url = images.first["url"]
+      Post.ensure_https url
+    end
   end
 
 
@@ -38,26 +64,24 @@ class Category < ApplicationRecord
       end
     end
 
-    show do
+    configure :photos do
+      orderable true
+      pretty_value do
+        bindings[:view].render(
+          partial: "images",
+          locals: { images: bindings[:object].photos }
+        )
+      end
+    end
+
+    list do
+      configure :photos do
+        hide
+      end
       configure :image_url do
         pretty_value do
           url = bindings[:object].image_url
           bindings[:view].tag(:img, { src: url, width: "50%"})
-        end
-      end
-    end
-
-    edit do
-      configure :images, :yaml do
-        label "Images [YAML]"
-        html_attributes rows: 5, cols: 80, wrap: "off"
-        help %{NOTE: currently only the first URL in list is rendered in app - TIP: copy/paste edits to validate: http://yaml-online-parser.appspot.com }
-        pretty_value do
-          data = bindings[:object].images
-          bindings[:view].render(
-            partial: "post_images_data",
-            locals: { data: data }
-          )
         end
       end
     end
@@ -68,12 +92,6 @@ class Category < ApplicationRecord
     name
   end
 
-  def images
-    image_urls
-  end
-  def images= data
-    write_attribute(:image_urls, data.compact)
-  end
 
   ## Filters
   #

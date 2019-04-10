@@ -10,9 +10,10 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2019_04_03_142301) do
+ActiveRecord::Schema.define(version: 2019_04_10_143220) do
 
   # These are extensions that must be enabled in order to support this database
+  enable_extension "pg_stat_statements"
   enable_extension "plpgsql"
   enable_extension "postgis"
   enable_extension "uuid-ossp"
@@ -45,7 +46,17 @@ ActiveRecord::Schema.define(version: 2019_04_03_142301) do
     t.string "key"
     t.boolean "is_cuisine", default: false
     t.text "image_urls", default: [], array: true
+    t.jsonb "cached_images", default: [], array: true
+    t.index ["cached_images"], name: "index_categories_on_cached_images", using: :gin
     t.index ["identifier"], name: "index_categories_on_identifier"
+  end
+
+  create_table "categories_images", id: false, force: :cascade do |t|
+    t.bigint "image_id", null: false
+    t.bigint "category_id", null: false
+    t.bigserial "insert_id", null: false
+    t.index ["category_id"], name: "index_categories_images_on_category_id"
+    t.index ["image_id"], name: "index_categories_images_on_image_id"
   end
 
   create_table "categorizations", force: :cascade do |t|
@@ -57,6 +68,23 @@ ActiveRecord::Schema.define(version: 2019_04_03_142301) do
     t.index ["category_id"], name: "index_categorizations_on_category_id"
     t.index ["identifier"], name: "index_categorizations_on_identifier"
     t.index ["place_id"], name: "index_categorizations_on_place_id"
+  end
+
+  create_table "images", force: :cascade do |t|
+    t.uuid "identifier", default: -> { "uuid_generate_v4()" }
+    t.string "url"
+    t.string "credit"
+    t.string "caption"
+    t.index ["identifier"], name: "index_images_on_identifier"
+    t.index ["url"], name: "index_images_on_url"
+  end
+
+  create_table "images_posts", id: false, force: :cascade do |t|
+    t.bigint "image_id", null: false
+    t.bigint "post_id", null: false
+    t.bigserial "insert_id", null: false
+    t.index ["image_id"], name: "index_images_posts_on_image_id"
+    t.index ["post_id"], name: "index_images_posts_on_post_id"
   end
 
   create_table "nabes", force: :cascade do |t|
@@ -133,7 +161,9 @@ ActiveRecord::Schema.define(version: 2019_04_03_142301) do
     t.text "md_price"
     t.bigint "author_id"
     t.jsonb "images_data", default: []
+    t.jsonb "cached_images", default: [], array: true
     t.index ["author_id"], name: "index_posts_on_author_id"
+    t.index ["cached_images"], name: "index_posts_on_cached_images", using: :gin
     t.index ["identifier"], name: "index_posts_on_identifier"
     t.index ["images_data"], name: "index_posts_on_images_data", using: :gin
     t.index ["prices"], name: "index_posts_on_prices", using: :gin

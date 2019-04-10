@@ -141,8 +141,6 @@ class Place < ApplicationRecord
   rails_admin do
     object_label_method :admin_name
 
-      #lat
-      #lng
     %i[
       created_at
       identifier
