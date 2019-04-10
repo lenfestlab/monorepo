@@ -140,6 +140,9 @@ class Post < ApplicationRecord
     blurb.try :truncate, 40
   end
 
+  def review_url= new_value
+    self.url = new_value
+  end
   def review_url
     url
   end

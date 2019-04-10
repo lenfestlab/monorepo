@@ -33,13 +33,13 @@ RailsAdmin.config do |config|
     dashboard                     # mandatory
     index                         # mandatory
     new do
-      only [Post, Category]
+      only [Post, Category, Place]
     end
     export
     bulk_delete
     show
     edit do
-      only [Post, Category]
+      only [Post, Category, Place]
     end
     delete do
       only []

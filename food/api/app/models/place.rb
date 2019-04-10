@@ -141,18 +141,18 @@ class Place < ApplicationRecord
   rails_admin do
     object_label_method :admin_name
 
+      #lat
+      #lng
     %i[
       created_at
-      updated_at
       identifier
       lonlat
-      lat
-      lng
       post_published_at
       post_prices
       post_rating
       bookmarks
       author_identifiers
+      posts
     ].concat(%i[
       address_number
       address_street
@@ -176,18 +176,6 @@ class Place < ApplicationRecord
         configure attr do
           hide
         end
-      end
-    end
-
-    %i[
-      name
-      address
-      phone
-      website
-      posts
-    ].each do |attr|
-      configure attr do
-        read_only true
       end
     end
 
