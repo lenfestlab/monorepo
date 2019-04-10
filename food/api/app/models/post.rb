@@ -5,29 +5,51 @@ class Post < ApplicationRecord
 
   has_and_belongs_to_many :places
 
+  # NOTE: "(s)" arg is workaround rails_admin bug, which passes self to nake
+  # scope proc on new/edit actions.
+  # NOTE: due to bug above, can't preload "images" in as_json, so we proxy
+  # the images collection through identical "photos" relation in admin.
+  has_and_belongs_to_many :photos, -> (s) {
+    order('images_posts.insert_id')
+  },
+  class_name: "Image",
+  join_table: "images_posts",
+  foreign_key: "post_id",
+  association_foreign_key: "image_id"
+  def photo_ids=(ids)
+    super([])
+    super(ids)
+  end
+
   belongs_to :author
 
-  validates :published_at, :blurb, :url, :rating,
-    presence: true
+  validates(*%i[
+    published_at
+    blurb
+    url
+    rating
+    author
+  ], presence: true )
 
   validates :blurb, uniqueness: true
 
+  before_save :update_cache
+  def update_cache
+    self.cached_images = photos.as_json
+  end
 
   # save associated places to update cached association values
-  after_save :update_places
   def update_places
     self.places.map &:save!
   end
+  after_save :update_places
+  after_touch :save
 
-  def images
-    images_data
-  end
-  def images= data
-    clean = data.compact.map { |d| d.slice(*%i[ url caption credit ]) }
-    write_attribute( :images_data, clean)
-  end
-  def image_url # TODO: deprecate
-    if (image = images_data.first) && (url = image['url'])
+  # TODO: drop #images_data
+
+  # TODO: deprecate
+  def image_url
+    if (image = images.first) && (url = image['url'])
       Post.ensure_https url
     end
   end
@@ -88,6 +110,7 @@ class Post < ApplicationRecord
       created_at
       source_key
       images_data
+      images
       url
     ].each do |attr|
       configure attr do
@@ -97,7 +120,13 @@ class Post < ApplicationRecord
 
     list do
       fields(*%i[
-        id updated_at published_at author places blurb rating
+        id
+        updated_at
+        published_at
+        author
+        places
+        blurb
+        rating
       ].concat(Post.md_fields))
     end
 
@@ -115,15 +144,13 @@ class Post < ApplicationRecord
       end
     end
 
-    configure :images, :yaml do
-      label "Images [YAML]"
-      html_attributes rows: 20, cols: 80, wrap: "off"
-      help %{TIP: copy/paste edits to validate: http://yaml-online-parser.appspot.com }
+    configure :photos do
+      #inverse_of :posts
+      orderable true
       pretty_value do
-        data = bindings[:object].images
         bindings[:view].render(
-          partial: "post_images_data",
-          locals: { data: data }
+          partial: "images",
+          locals: { images: bindings[:object].photos }
         )
       end
     end
@@ -150,6 +177,10 @@ class Post < ApplicationRecord
 
   ## Serialization
   #
+
+  def images
+    self.cached_images
+  end
 
   def self.ensure_https url_string
     return nil unless url_string
