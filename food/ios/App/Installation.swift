@@ -43,6 +43,10 @@ class Installation: NSObject {
     patch(cloudId: cloudId, params: params, completion: completion)
   }
 
+  class func updateToken(cloudId: String, gcmToken: String, completion: @escaping (Bool, String?) -> Void) {
+    patch(cloudId: cloudId, params: ["gcm_token" : gcmToken], completion: completion)
+  }
+
   class func patch(cloudId: String, params: [String: Any]? = nil, completion: @escaping (Bool, String?) -> Void) {
     let env = Env()
     let url = "\(env.apiBaseUrlString)/users/\(cloudId)"

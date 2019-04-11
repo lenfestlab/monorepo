@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2019_04_11_231258) do
+ActiveRecord::Schema.define(version: 2019_04_15_193806) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_stat_statements"
@@ -103,6 +103,23 @@ ActiveRecord::Schema.define(version: 2019_04_11_231258) do
     t.index ["key"], name: "index_nabes_on_key"
   end
 
+  create_table "notifications", force: :cascade do |t|
+    t.uuid "identifier", default: -> { "uuid_generate_v4()" }
+    t.bigint "post_id"
+    t.bigint "user_id"
+    t.datetime "deliver_at"
+    t.integer "state"
+    t.string "title"
+    t.text "body"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["deliver_at"], name: "index_notifications_on_deliver_at"
+    t.index ["identifier"], name: "index_notifications_on_identifier"
+    t.index ["post_id"], name: "index_notifications_on_post_id"
+    t.index ["state"], name: "index_notifications_on_state"
+    t.index ["user_id"], name: "index_notifications_on_user_id"
+  end
+
   create_table "places", force: :cascade do |t|
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
@@ -189,8 +206,10 @@ ActiveRecord::Schema.define(version: 2019_04_11_231258) do
     t.uuid "auth_token", default: -> { "uuid_generate_v4()" }
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.string "gcm_token"
     t.index ["auth_token"], name: "index_users_on_auth_token"
     t.index ["email"], name: "index_users_on_email"
+    t.index ["gcm_token"], name: "index_users_on_gcm_token"
     t.index ["icloud_id"], name: "index_users_on_icloud_id"
     t.index ["identifier"], name: "index_users_on_identifier"
   end

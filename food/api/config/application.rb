@@ -43,5 +43,10 @@ module Lenfest
 
     config.action_controller.permit_all_parameters = true
 
+
+    # https://stackoverflow.com/a/6118837
+    config.time_zone = 'Eastern Time (US & Canada)'
+    config.active_record.default_timezone = :utc
+
   end
 end

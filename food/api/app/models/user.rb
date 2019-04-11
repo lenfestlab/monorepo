@@ -2,6 +2,9 @@ class User < ApplicationRecord
 
   has_many :bookmarks, -> { order(created_at: :desc) }
 
+  has_many :notifications,
+    inverse_of: :user
+
   validates :icloud_id,
     presence: true,
     uniqueness: true
@@ -19,6 +22,7 @@ class User < ApplicationRecord
       auth_token
       created_at
       updated_at
+      gcm_token
     ].each do |attr|
       configure attr do
         hide

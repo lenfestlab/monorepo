@@ -3,6 +3,10 @@ require 'cgi'
 
 class Post < ApplicationRecord
 
+  has_many :notifications,
+    inverse_of: :post,
+    dependent: :destroy
+
   has_and_belongs_to_many :places
 
   # NOTE: "(s)" arg is workaround rails_admin bug, which passes self to nake
@@ -121,6 +125,7 @@ class Post < ApplicationRecord
       images_data
       images
       url
+      notifications
     ].each do |attr|
       configure attr do
         hide
@@ -183,7 +188,7 @@ class Post < ApplicationRecord
   end
 
   def admin_name
-    blurb.try :truncate, 40
+    "[#{id}] #{blurb.try(:truncate, 40)}"
   end
 
   def review_url= new_value

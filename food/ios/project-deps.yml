@@ -1,6 +1,9 @@
 targets:
   App:
     dependencies:
+      - target: NotificationService
+        codeSign: true
+        embed: true
       - sdk: CloudKit.framework
       - carthage: Gloss
       - carthage: UserDefaultsStore
@@ -16,6 +19,7 @@ targets:
       # Alamofire
       - carthage: Alamofire
       - carthage: AlamofireImage
+      - carthage: AlamofireNetworkActivityLogger
 
       # Firebase - https://git.io/fAxBS
       # NOTE: omit base framework, per: https://git.io/fAjxM

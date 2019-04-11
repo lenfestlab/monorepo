@@ -2,7 +2,7 @@ name: project
 
 include:
   - project-secrets.yml
-  - project-carthage.yml
+  - project-deps.yml
 
 options:
   deploymentTarget: # IPHONEOS_DEPLOYMENT_TARGET
@@ -84,13 +84,32 @@ targets:
         - test
         - stag
         - prod
-    dependencies: [] # carthage.yml
+    dependencies: [] # ./deps.yml
     prebuildScripts:
       - name: Copy Firebase config
         path: scripts/copy_firebase_config.sh
     postbuildScripts:
       - name: "Bump build number"
         path: scripts/update_build_number.sh
+
+  NotificationService:
+    platform: iOS
+    type: app-extension
+    sources:
+      Extension/Notification
+    settings:
+      PRODUCT_BUNDLE_IDENTIFIER: $(BUNDLE_ID_PREFIX)$(BUNDLE_ID_SUFFIX).notification-service
+      TARGETED_DEVICE_FAMILY: "$(inherited)"
+      # extension code signing not automatically set like in App target:
+      # https://git.io/fjYBY
+      CODE_SIGN_IDENTITY: iPhone Developer
+    info:
+      path: Extension/Notification/Service/Info.plist
+      properties:
+        CFBundleDisplayName: notification-service
+        NSExtension:
+          NSExtensionPointIdentifier: com.apple.usernotifications.service
+          NSExtensionPrincipalClass: $(PRODUCT_MODULE_NAME).NotificationService
 
   Tests:
     platform: iOS
