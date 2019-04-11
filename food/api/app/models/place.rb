@@ -7,6 +7,10 @@ class Place < ApplicationRecord
   has_many :categorizations, dependent: :destroy
   has_many :categories, through: :categorizations
 
+  def visible_categories
+    self.categories.visible
+  end
+
   validates :name, :address, :lat, :lng,
     presence: true
 
@@ -82,7 +86,7 @@ class Place < ApplicationRecord
   end
 
   def update_cache
-    self.category_identifiers = categories.map(&:identifier)
+    self.category_identifiers = self.visible_categories.map(&:identifier)
     if latest_post = self.post
       self.post_rating = latest_post.rating
       self.post_published_at = latest_post.published_at

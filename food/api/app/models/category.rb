@@ -86,6 +86,15 @@ class Category < ApplicationRecord
       end
     end
 
+    %i[
+      display_starts
+      display_ends
+    ].each do |attr|
+      configure attr do
+        help "Leave 'display' fields blank to display shortly after saving."
+      end
+    end
+
   end
 
   def admin_name
@@ -101,6 +110,15 @@ class Category < ApplicationRecord
       where(is_cuisine: value)
     end
   }
+
+  scope :visible, -> {
+    today = Time.zone.today
+    where("(display_starts <= ?) OR (display_starts IS NULL)", today)
+      .where("(display_ends >= ?) OR (display_ends IS NULL)", today)
+  }
+
+  ## Serialization
+  #
 
   def as_json(options = nil)
     super({
