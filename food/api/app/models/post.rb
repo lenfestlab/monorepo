@@ -49,6 +49,7 @@ class Post < ApplicationRecord
     today = Time.zone.today
     where("(display_starts <= ?) OR (display_starts IS NULL)", today)
       .where("(display_ends >= ?) OR (display_ends IS NULL)", today)
+      .where(live: true)
   }
 
   # TODO: drop #images_data
@@ -104,6 +105,8 @@ class Post < ApplicationRecord
     end
   end
 
+  scope :live, ->{ where(live: true) }
+  scope :wip, -> { where(live: false) }
 
   ## Admin
   #
@@ -127,6 +130,7 @@ class Post < ApplicationRecord
     list do
       fields(*%i[
         id
+        live
         updated_at
         published_at
         author
@@ -134,6 +138,7 @@ class Post < ApplicationRecord
         blurb
         rating
       ].concat(Post.md_fields))
+      scopes([nil, :live, :wip])
     end
 
     configure :blurb do
