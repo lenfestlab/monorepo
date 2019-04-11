@@ -12,7 +12,7 @@ typealias Meta = Dictionary<String, String>
 
 enum AnalyticsCategory: String {
   case debug // for pre-production use only
-  case onboarding, notification, settings, background
+  case onboarding, notification, settings, background, detail, card, filter, navigation
   case app = "in-app"
 }
 
@@ -109,7 +109,7 @@ struct AnalyticsEvent {
   }
 
   static func tapsOnViewArticle(post: Post?, currentLocation: CLLocationCoordinate2D?) -> AnalyticsEvent {
-    return AnalyticsEvent(name:  "view-article", category: .app, label:post?.link?.absoluteString, location:currentLocation)
+    return AnalyticsEvent(name:  "tap", category: .card, label:post?.link?.absoluteString, location:currentLocation)
   }
 
   static func swipesCarousel(post: Post?, currentLocation: CLLocationCoordinate2D?) -> AnalyticsEvent {
@@ -163,6 +163,43 @@ struct AnalyticsEvent {
   static func locationChanged(_ location: CLLocationCoordinate2D?) -> AnalyticsEvent {
     return AnalyticsEvent(name: "location-changed", category: .background, location: location)
   }
+
+  static func tapsFullReviewButton(place: Place) -> AnalyticsEvent {
+    return AnalyticsEvent(name:  "full-story", category: .detail, label:place.post?.link?.absoluteString)
+  }
+
+  static func tapsReservationButton(place: Place) -> AnalyticsEvent {
+    return AnalyticsEvent(name:  "reservation", category: .detail, label:place.post?.link?.absoluteString)
+  }
+
+  static func tapsCallButton(place: Place) -> AnalyticsEvent {
+    return AnalyticsEvent(name:  "call", category: .detail, label:place.post?.link?.absoluteString)
+  }
+
+  static func selectsSortFromFilter(mode: SortMode, category: AnalyticsCategory) -> AnalyticsEvent {
+    return AnalyticsEvent(name:  "sort", category: category, label:mode.rawValue)
+  }
+
+  static func searchForRestaurant(searchTerm: String) -> AnalyticsEvent {
+    return AnalyticsEvent(name:  "search", category: .navigation, label:searchTerm)
+  }
+
+  static func tapsSettingsButton() -> AnalyticsEvent {
+    return AnalyticsEvent(name:  "settings", category: .navigation, label:nil)
+  }
+
+  static func tapsCuisineButton() -> AnalyticsEvent {
+    return AnalyticsEvent(name:  "cuisine", category: .navigation, label:nil)
+  }
+
+  static func tapsFilterButton() -> AnalyticsEvent {
+    return AnalyticsEvent(name:  "filter", category: .navigation, label:nil)
+  }
+
+  static func tapsSortButton() -> AnalyticsEvent {
+    return AnalyticsEvent(name:  "tap-sort-button", category: .navigation, label:nil)
+  }
+
 
 }
 

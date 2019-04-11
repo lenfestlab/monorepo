@@ -24,6 +24,7 @@ class TabBarViewController: UITabBarController {
   }
 
   @IBAction func settings(sender: UIButton) {
+    self.analytics.log(.tapsSettingsButton())
     let settingsController = SettingsViewController(analytics: self.analytics)
     settingsController.hidesBottomBarWhenPushed = true
     self.placesViewController.navigationController?.pushViewController(settingsController, animated: true)

@@ -87,7 +87,10 @@ class DetailViewController: UIViewController {
 
   @IBOutlet weak var loveButton: UIButton!
 
-  init(place: Place) {
+  private let analytics: AnalyticsManager
+
+  init(analytics: AnalyticsManager, place: Place) {
+    self.analytics = analytics
     self.place = place
     super.init(nibName: nil, bundle: nil)
   }
@@ -126,6 +129,8 @@ class DetailViewController: UIViewController {
 
   override func viewDidLoad() {
     super.viewDidLoad()
+
+    self.reviewButton.isHidden = self.place.post?.link == nil
 
     self.loveButton.isHidden = Installation.authToken() == nil
 
@@ -226,7 +231,13 @@ class DetailViewController: UIViewController {
 
   }
 
+  @IBAction func makeReservation() {
+    self.analytics.log(.tapsReservationButton(place: self.place))
+    let app = AppDelegate.shared()
+  }
+
   @IBAction func openFullReview() {
+    self.analytics.log(.tapsFullReviewButton(place: self.place))
     let app = AppDelegate.shared()
     if let link = self.place.post?.link {
       app.openInSafari(url: link)
@@ -241,6 +252,7 @@ class DetailViewController: UIViewController {
   }
 
   @IBAction func call() {
+    self.analytics.log(.tapsCallButton(place: self.place))
     if let phone = self.place.phone {
       guard let number = URL(string: "tel://" + phone) else { return }
       UIApplication.shared.open(number)
