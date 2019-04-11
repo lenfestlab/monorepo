@@ -17,7 +17,7 @@ class PlacesController < ApplicationController
 
     data =
       Place \
-      .includes(:categories, posts: [:author])
+      .with_post
       .limit(p[:limit].to_i || 20)
       .rated(ratings.map(&:to_i))
       .priced(prices.map(&:to_i))
@@ -28,12 +28,14 @@ class PlacesController < ApplicationController
       .bookmarked(find_bookmarked, bookmarked_place_ids)
       .to_a
 
-    render json: {
-      meta: {
-        count: data.size
-      },
-      data: data
-    }
+    render(
+      adapter: :json,
+      root: :data,
+      meta: { count: data.size },
+      json: data,
+      each_serializer: PlaceSerializer
+    )
+
   end
 
 end

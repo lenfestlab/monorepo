@@ -6,7 +6,7 @@ class NabesController < ApplicationController
     data =
       Place
         .where.not(post_published_at: nil) # skip places missing posts
-        .pluck(:nabe_cache) # aggregate cached nabes data
+        .pluck(:cached_nabes) # aggregate cached nabes data
         .flatten # dedupe and sort
         .uniq { |n| n["identifier"] }
         .sort_by { |n| n["name"] }

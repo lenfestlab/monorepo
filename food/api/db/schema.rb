@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2019_04_11_124900) do
+ActiveRecord::Schema.define(version: 2019_04_11_162355) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_stat_statements"
@@ -50,6 +50,8 @@ ActiveRecord::Schema.define(version: 2019_04_11_124900) do
     t.date "display_starts"
     t.date "display_ends"
     t.index ["cached_images"], name: "index_categories_on_cached_images", using: :gin
+    t.index ["display_ends"], name: "index_categories_on_display_ends"
+    t.index ["display_starts"], name: "index_categories_on_display_starts"
     t.index ["identifier"], name: "index_categories_on_identifier"
   end
 
@@ -116,7 +118,7 @@ ActiveRecord::Schema.define(version: 2019_04_11_124900) do
     t.integer "post_rating", default: -1, null: false
     t.datetime "post_published_at"
     t.string "author_identifiers", default: [], array: true
-    t.jsonb "nabe_cache", default: [], array: true
+    t.jsonb "cached_nabes", default: [], array: true
     t.string "address_number"
     t.string "address_street"
     t.string "address_city"
@@ -126,11 +128,13 @@ ActiveRecord::Schema.define(version: 2019_04_11_124900) do
     t.string "address_country"
     t.string "address_street_with_number"
     t.integer "post_prices", default: [], array: true
+    t.jsonb "cached_categories", default: [], array: true
+    t.jsonb "cached_post", default: {}
     t.index ["author_identifiers"], name: "index_places_on_author_identifiers"
+    t.index ["cached_nabes"], name: "index_places_on_cached_nabes", using: :gin
     t.index ["category_identifiers"], name: "index_places_on_category_identifiers", using: :gin
     t.index ["identifier"], name: "index_places_on_identifier"
     t.index ["lonlat"], name: "index_places_on_lonlat", using: :gist
-    t.index ["nabe_cache"], name: "index_places_on_nabe_cache", using: :gin
     t.index ["name"], name: "index_places_on_name"
     t.index ["post_prices"], name: "index_places_on_post_prices", using: :gin
     t.index ["post_published_at"], name: "index_places_on_post_published_at"
@@ -164,8 +168,12 @@ ActiveRecord::Schema.define(version: 2019_04_11_124900) do
     t.bigint "author_id"
     t.jsonb "images_data", default: []
     t.jsonb "cached_images", default: [], array: true
+    t.date "display_starts"
+    t.date "display_ends"
     t.index ["author_id"], name: "index_posts_on_author_id"
     t.index ["cached_images"], name: "index_posts_on_cached_images", using: :gin
+    t.index ["display_ends"], name: "index_posts_on_display_ends"
+    t.index ["display_starts"], name: "index_posts_on_display_starts"
     t.index ["identifier"], name: "index_posts_on_identifier"
     t.index ["images_data"], name: "index_posts_on_images_data", using: :gin
     t.index ["prices"], name: "index_posts_on_prices", using: :gin

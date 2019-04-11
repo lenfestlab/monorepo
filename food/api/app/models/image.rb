@@ -9,9 +9,21 @@ class Image < ApplicationRecord
 
   validates_uniqueness_of :url
 
-  def preview
-    url
+
+  ## Cache
+  #
+
+  # save associated places to update cached category_ids
+  after_save :update_associations
+  after_destroy :update_associations
+  def update_associations
+    self.posts.map &:save!
+    self.categories.map &:save!
   end
+
+
+  ## Admin
+  #
 
   rails_admin do
     object_label_method :admin_name
@@ -36,9 +48,15 @@ class Image < ApplicationRecord
     end
 
   end
+
   def admin_name
     [caption, credit, url].compact.join(" - ")
   end
+
+  def preview
+    url
+  end
+
 
 
   ## Serialization

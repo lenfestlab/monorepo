@@ -31,6 +31,10 @@ class Place < ApplicationRecord
   ## PostGIS
   #
 
+  def location
+    { lat: lat, lng: lng }
+  end
+
   def find_nabes
     Nabe.covering self.lat, self.lng
   end
@@ -77,25 +81,21 @@ class Place < ApplicationRecord
   ## Cache
   #
 
-  def reset_nabe_cache
-    self.nabe_cache = find_nabes.as_json
-  end
-
-  def nabes
-    nabe_cache
+  def latest_post
+    posts.visible.sort_by(&:published_at).last
   end
 
   def update_cache
     self.category_identifiers = self.visible_categories.map(&:identifier)
-    if latest_post = self.post
-      self.post_rating = latest_post.rating
-      self.post_published_at = latest_post.published_at
-      self.post_prices = latest_post.prices
-      if author = latest_post.author
-        self.author_identifiers = [author.identifier]
-      end
-    end
-    self.reset_nabe_cache
+    self.cached_categories = self.visible_categories.as_json
+    self.post_rating = latest_post.try(:rating) || -1
+    self.post_published_at = latest_post.try(:published_at)
+    self.post_prices = latest_post.try(:prices) || []
+    self.author_identifiers = [
+      latest_post.try(:author).try(:identifier)
+    ].compact
+    self.cached_nabes = find_nabes.as_json
+    self.cached_post = latest_post.as_json
   end
   before_save :update_cache
   after_touch :save
@@ -103,6 +103,10 @@ class Place < ApplicationRecord
 
   ## Filters
   #
+
+  scope :with_post, -> {
+    where.not(post_published_at: nil)
+  }
 
   scope :rated, -> (ratings) {
     ratings = [ratings].flatten.compact
@@ -155,6 +159,7 @@ class Place < ApplicationRecord
       bookmarks
       author_identifiers
       posts
+      cached_post
     ].concat(%i[
       address_number
       address_street
@@ -185,45 +190,6 @@ class Place < ApplicationRecord
 
   def admin_name
     %{#{name} [#{address}]}
-  end
-
-
-  ## Serialization
-  #
-
-  def location
-    { lat: lat, lng: lng }
-  end
-
-  def post
-    posts.sort_by(&:published_at).last
-  end
-
-  [:title, :blurb].each do |attr|
-    define_method(attr) do
-      Post.ensure_present(read_attribute(attr)) ||
-        Post.ensure_present(post.send(attr))
-    end
-  end
-
-
-  def as_json(options = nil)
-    super({
-      only: %i[
-        identifier
-        name
-        address
-        distance
-        website
-        phone
-      ],
-      methods: %i[
-        location
-        post
-        categories
-        nabes
-      ]
-    }.merge(options || {}))
   end
 
 end

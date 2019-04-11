@@ -2,7 +2,9 @@ namespace :cache do
 
   desc "import nabes from geojson"
   task refresh: :environment do
-    Category.all.each &:save!
+    [Category, Post].each do  |klass|
+      klass.all.each &:save!
+    end
   end
 
 end

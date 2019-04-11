@@ -45,6 +45,12 @@ class Post < ApplicationRecord
   after_save :update_places
   after_touch :save
 
+  scope :visible, -> {
+    today = Time.zone.today
+    where("(display_starts <= ?) OR (display_starts IS NULL)", today)
+      .where("(display_ends >= ?) OR (display_ends IS NULL)", today)
+  }
+
   # TODO: drop #images_data
 
   # TODO: deprecate
@@ -161,6 +167,14 @@ class Post < ApplicationRecord
         bindings[:view].content_tag(:a, url, href: url, target: "_blank")
       end
     end
+
+    configure :display_starts do
+      help "Leave 'display' fields blank to display shortly after saving."
+    end
+    configure :display_ends do
+      help "Set to a past date to hide post indefinitely."
+    end
+
   end
 
   def admin_name
