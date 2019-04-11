@@ -36,7 +36,7 @@ extension ListViewController { // UICollectionViewDelegate
   }
 
   func openPlace(_ place: Place) {
-    let detailViewController = DetailViewController(place: place)
+    let detailViewController = DetailViewController(analytics: self.analytics, place: place)
     self.navigationController?.pushViewController(detailViewController, animated: true)
   }
 

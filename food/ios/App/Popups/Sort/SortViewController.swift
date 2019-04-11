@@ -9,8 +9,10 @@ enum SortMode : String {
 class SortViewController: UITableViewController {
 
   private let filterModule: FilterModule
+  var analytics: AnalyticsManager!
 
-  init(filter: FilterModule) {
+  init(analytics: AnalyticsManager, filter: FilterModule) {
+    self.analytics = analytics
     self.filterModule = filter
     self.sortMode = filter.sortMode
     super.init(style: .plain)
@@ -33,6 +35,7 @@ class SortViewController: UITableViewController {
 
     didSet {
       self.filterModule.sortMode = sortMode
+      self.analytics.log(.selectsSortFromFilter(mode: sortMode, category: .navigation))
       self.sortDelegate?.filterUpdated(self, filter: self.filterModule)
     }
   }

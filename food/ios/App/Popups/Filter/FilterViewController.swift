@@ -120,16 +120,19 @@ class FilterViewController: UIViewController {
 
   @IBAction func selectDistanceButton(_ sender: Any?) {
     self.filterModule.sortMode = .distance
+    self.analytics.log(.selectsSortFromFilter(mode: self.filterModule.sortMode, category: .filter))
     updateSortButton()
   }
 
   @IBAction func selectRatingButton(_ sender: Any?) {
     self.filterModule.sortMode = .rating
+    self.analytics.log(.selectsSortFromFilter(mode: self.filterModule.sortMode, category: .filter))
     updateSortButton()
   }
 
   @IBAction func selectLatestButton(_ sender: Any?) {
     self.filterModule.sortMode = .latest
+    self.analytics.log(.selectsSortFromFilter(mode: self.filterModule.sortMode, category: .filter))
     updateSortButton()
   }
 

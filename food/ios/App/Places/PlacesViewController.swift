@@ -45,10 +45,12 @@ extension PlacesViewController : UISearchBarDelegate {
   }
 
   func searchBarCancelButtonClicked(_ searchBar: UISearchBar) {
+    self.analytics.log(.searchForRestaurant(searchTerm: searchBar.text ?? ""))
     clearSearch()
   }
 
   func searchBarSearchButtonClicked(_ searchBar: UISearchBar) {
+    self.analytics.log(.searchForRestaurant(searchTerm: searchBar.text ?? ""))
     searchBarTextDidChange(searchText: searchBar.text ?? "")
     searchBar.resignFirstResponder()
   }
@@ -324,6 +326,7 @@ class PlacesViewController: UIViewController {
   }
 
   @IBAction func showCategories() {
+    self.analytics.log(.tapsCuisineButton())
     let cuisineFilter = CuisinesViewController(analytics: self.analytics, filter: self.placeStore.filterModule)
     cuisineFilter.delegate = self
     let navigationController = PopupViewController(rootViewController: cuisineFilter)
@@ -335,6 +338,7 @@ class PlacesViewController: UIViewController {
   }
 
   @IBAction func showFilter() {
+    self.analytics.log(.tapsFilterButton())
     clearSearch()
     let filter = FilterViewController(analytics: self.analytics, filter: self.placeStore.filterModule)
     filter.filterDelegate = self
@@ -348,8 +352,9 @@ class PlacesViewController: UIViewController {
 
 
   @IBAction func showSort() {
+    self.analytics.log(.tapsSortButton())
     clearSearch()
-    let sort = SortViewController(filter: self.placeStore.filterModule)
+    let sort = SortViewController(analytics: self.analytics, filter: self.placeStore.filterModule)
     sort.sortDelegate = self
     let navigationController = PopupViewController(rootViewController: sort)
     navigationController.popUpHeight = 238

@@ -157,6 +157,9 @@
                             <state key="normal" image="detail-reservation-button">
                                 <color key="titleColor" white="0.33333333329999998" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                             </state>
+                            <connections>
+                                <action selector="makeReservation" destination="-1" eventType="touchUpInside" id="niw-fe-FpS"/>
+                            </connections>
                         </button>
                         <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="REVIEWED BY CRAIG LABAN" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="yWd-kx-huO">
                             <rect key="frame" x="142" y="363.5" width="222.5" height="20"/>
