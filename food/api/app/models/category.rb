@@ -24,6 +24,7 @@ class Category < ApplicationRecord
 
   # save associated places to update cached category_ids
   after_save :update_places
+  after_destroy :update_places
   def update_places
     self.places.map &:save!
   end

@@ -13,6 +13,17 @@ class Author < ApplicationRecord
   end
 
 
+  ## Cache
+  #
+
+  # save associated places to update cached category_ids
+  after_save :update_associations
+  after_destroy :update_associations
+  def update_associations
+    self.posts.map &:save!
+  end
+
+
   ## Admin
   #
 
