@@ -3,6 +3,7 @@ import Firebase
 import FirebaseMessaging
 import Schedule
 import SafariServices
+import AlamofireNetworkActivityLogger
 
 typealias LaunchOptions = [UIApplication.LaunchOptionsKey: Any]?
 let gcmMessageIDKey = "gcm.message_id"
@@ -23,8 +24,11 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
   }
 
   func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: LaunchOptions) -> Bool {
-
     let env = Env()
+    if !env.isRemote {
+      NetworkActivityLogger.shared.level = .debug
+      NetworkActivityLogger.shared.startLogging()
+    }
 
     FirebaseApp.configure()
     Messaging.messaging().delegate = self
@@ -118,10 +122,10 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
       notificationType == "location" {
       let locationManager = LocationManager.shared
       let plan = Plan.after(3.seconds) // wait for location update
-      plan.do {
+      let _ = plan.do {
         if let latestLocation = locationManager.latestLocation {
           locationManager.logLocationChange(latestLocation)
-          Plan.after(3.seconds).do { // wait for GA to fire
+          let _ = Plan.after(3.seconds).do { // wait for GA to fire
             completionHandler(.newData)
           }
         } else {
@@ -141,6 +145,20 @@ extension AppDelegate: MessagingDelegate {
 
   func messaging(_ messaging: Messaging, didReceiveRegistrationToken gcmToken: String) {
     print("gcm: registration token: \(gcmToken)")
+
+    // sync latest GCM token w/ server
+    iCloudUserIDAsync() { cloudId, error in
+      guard let id = cloudId else { return }
+      let params = ["gcm_token": gcmToken]
+      Installation.patch(cloudId: id, params: params, completion: { (success, _) in
+        if success {
+          print("synced GCM token")
+        } else {
+          print("FAIL: sync GCM token")
+        }
+      })
+    }
+
     // NOTE: shared topic for all notification types; fork behavior on payload
     let topic = "all"
     Messaging.messaging().subscribe(toTopic: topic) { error in
@@ -150,6 +168,7 @@ extension AppDelegate: MessagingDelegate {
         print("gcm: subscribed to topic: \(topic)")
       }
     }
+
   }
 
 }

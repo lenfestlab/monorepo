@@ -2,6 +2,11 @@ require 'fcm'
 
 namespace :notify do
 
+  desc "every 5 minutes, deliver all scheduled notifications"
+  task scheduled: :environment do
+    Notification.scheduled.each &:deliver!
+  end
+
   desc "request location of all installed apps"
   task locations: :environment do
     fcm = FCM.new(ENV["GCM_API_KEY"])
