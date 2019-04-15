@@ -1,10 +1,3 @@
-//
-//  GuideViewController.swift
-//  App
-//
-//  Created by Ajay Chainani on 4/14/19.
-//
-
 import UIKit
 
 class GuideViewController: PlacesViewController {

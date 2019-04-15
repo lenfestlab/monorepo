@@ -205,7 +205,7 @@ class FilterModule : NSObject {
       return true
     }
 
-    if self.ratings.count > 0 {
+    if self.ratingsFiltered() {
       return true
     }
 
