@@ -66,14 +66,14 @@ class FilterViewController: UIViewController {
   private let filterModule: FilterModule
 
   func updateReviewerButton() {
-    var title = "Choose Reviewers"
+    var title = "Choose Authors"
     self.reviewerButton.setTitle(title, for: .normal)
 
     let categories = self.filterModule.authors
     if categories.count == 1 {
       title = categories.first?.name ?? title
     } else if categories.count > 0 {
-      title = "\(categories.count) Reviewers Selected"
+      title = "\(categories.count) Authors Selected"
     }
     self.reviewerButton.setTitle(title, for: .selected)
 

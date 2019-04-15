@@ -15,6 +15,7 @@ class NeighborhoodViewController: UITableViewController {
   }
 
   @objc func applyFilter() {
+    self.analytics.log(.clicksNeighborhoodApplyButton(nabes: self.selected))
     self.delegate?.neighborhoodsUpdated(self, neighborhoods: self.selected)
   }
 

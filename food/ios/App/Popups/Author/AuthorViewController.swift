@@ -42,7 +42,7 @@ class AuthorViewController: UITableViewController {
     self.tableView.sectionIndexColor = .lightGreyBlue
     self.tableView.rowHeight = 56
 
-    self.title = "Reviewers"
+    self.title = "Authors"
 
     let space = UIBarButtonItem(barButtonSystemItem: .flexibleSpace, target: nil, action: nil)
     let clear = UIBarButtonItem(title: "Clear All", style: .plain, target: self, action: #selector(clearAll))

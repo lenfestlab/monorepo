@@ -20,11 +20,13 @@ class FavoritesViewController : PlacesViewController {
   }
 
   @objc func onFavoritesUpdated(_ notification: Notification) {
-    self.placeStore.refresh(showLoadingIndicator: false)
+    self.placeStore.refresh()
   }
 
   override func viewDidLoad() {
     super.viewDidLoad()
+    self.listViewController.controllerIdentifierKey = "my-list"
+    self.mapViewController.controllerIdentifierKey = "my-list"
 
     NotificationCenter.default.addObserver(self, selector: #selector(onFavoritesUpdated(_:)), name: .favoritesUpdated, object: nil)
 

@@ -57,8 +57,8 @@ class GuidesViewController: UITableViewController {
 
   override func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
     let category = self.categories[indexPath.row]
-    let placeController = PlacesViewController(analytics: self.analytics, categories: [category])
-
+    self.analytics.log(.tapsOnGuideCell(category: category))
+    let placeController = GuideViewController(analytics: self.analytics, category: category)
     placeController.additionalSafeAreaInsets.bottom = 49
     placeController.title = category.name
     placeController.topBarIsHidden = true

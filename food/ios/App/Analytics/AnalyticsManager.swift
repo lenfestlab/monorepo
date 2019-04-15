@@ -12,7 +12,7 @@ typealias Meta = Dictionary<String, String>
 
 enum AnalyticsCategory: String {
   case debug // for pre-production use only
-  case onboarding, notification, settings, background, detail, card, filter, navigation
+  case onboarding, notification, settings, background, detail, card, filter, navigation, tab, search
   case app = "in-app"
 }
 
@@ -27,19 +27,56 @@ struct AnalyticsEvent {
     metadata meta: Meta = [:],
     category: AnalyticsCategory,
     label: String? = "",
-    location: CLLocationCoordinate2D? = nil
+    cd2: String? = nil,
+    cd6: String? = nil,
+    cd7: String? = nil,
+    cd8: String? = nil,
+    cd9: String? = nil,
+    cd10: String? = nil,
+    cd11: String? = nil
     ) {
     self.name = name
     self.category = category
     self.label = label
     self.metadata = meta
-    if location != nil {
-      let lat = String(format:"%f", location!.latitude)
-      let lng = String(format:"%f", location!.longitude)
-      let latlng = "\(lat),\(lng)"
-      self.metadata["lat-lng"] = latlng
-      self.metadata["cd2"] = latlng
+    if let cd2 = cd2 {
+      self.metadata["cd2"] = cd2
     }
+    if let cd6 = cd6 {
+      self.metadata["cd6"] = cd6
+    }
+    if let cd7 = cd7 {
+      self.metadata["cd7"] = cd7
+    }
+    if let cd8 = cd8 {
+      self.metadata["cd8"] = cd8
+    }
+    if let cd9 = cd9 {
+      self.metadata["cd9"] = cd9
+    }
+    if let cd10 = cd10 {
+      self.metadata["cd10"] = cd10
+    }
+    if let cd11 = cd11 {
+      self.metadata["cd11"] = cd11
+    }
+  }
+
+
+  init(
+    name: String,
+    metadata meta: Meta = [:],
+    category: AnalyticsCategory,
+    label: String? = "",
+    location: CLLocationCoordinate2D? = nil
+    ) {
+    var latlng : String? = nil
+    var meta : Meta = [:]
+    if let location = location {
+      latlng = String(format:"%f,%f", location.latitude, location.longitude)
+      meta["lat-lng"] = latlng
+    }
+    self.init(name: name, metadata: meta, category: category, label: label, cd2: latlng)
   }
 
   static func selectsNotificationPermissions(authorizationStatus: UNAuthorizationStatus) -> AnalyticsEvent{
@@ -53,14 +90,15 @@ struct AnalyticsEvent {
   }
 
   static let tapsGetStartedButton = AnalyticsEvent(name: "get-started", category: .onboarding)
-  static let tapsGetNotifiedButton = AnalyticsEvent(name: "enable-notifications", category: .onboarding, label: "Get Notified")
-  static let tapsEnableMotionButton = AnalyticsEvent(name: "enable-motion", category: .onboarding, label: "enable-motion")
+
   static let tapsEnableLocationButton = AnalyticsEvent(name: "enable-location", category: .onboarding, label: "enable-location")
-
   static let tapsSkipLocationButton = AnalyticsEvent(name: "enable-location", category: .onboarding, label: "skip")
-  static let tapsSkipNotifificationsButton = AnalyticsEvent(name: "enable-notifications", category: .onboarding, label: "skip")
-  static let tapsSkipMotionButton = AnalyticsEvent(name: "enable-motion", category: .onboarding, label: "skip")
 
+  static let tapsGetNotifiedButton = AnalyticsEvent(name: "enable-notifications", category: .onboarding, label: "enable-notifications")
+  static let tapsSkipNotifificationsButton = AnalyticsEvent(name: "enable-notifications", category: .onboarding, label: "skip")
+
+  static let tapsSubmitEmailButton = AnalyticsEvent(name: "email", category: .onboarding, label: "submitted")
+  static let tapsSkipEmailButton = AnalyticsEvent(name: "email", category: .onboarding, label: "skip")
 
   static func selectsLocationTrackingPermissions(status: CLAuthorizationStatus) -> AnalyticsEvent {
     var label = "not-determined"
@@ -104,16 +142,16 @@ struct AnalyticsEvent {
     return AnalyticsEvent(name:  "open-map", category: .app, label:label, location:currentLocation)
   }
 
-  static func tapsOnPin(post: Post?, currentLocation: CLLocationCoordinate2D?) -> AnalyticsEvent {
-    return AnalyticsEvent(name:  "click-pin", category: .app, label:post?.link?.absoluteString, location:currentLocation)
+  static func tapsOnPin(place: Place) -> AnalyticsEvent {
+    return AnalyticsEvent(name: "click-pin", category: .app, label: place.name, cd7: place.analyticsCuisine, cd8: place.analyticsNeighborhood, cd9: place.analyticsBells, cd10: place.analyticsPrice, cd11: place.analyticsReviewer)
   }
 
-  static func tapsOnViewArticle(post: Post?, currentLocation: CLLocationCoordinate2D?) -> AnalyticsEvent {
-    return AnalyticsEvent(name:  "tap", category: .card, label:post?.link?.absoluteString, location:currentLocation)
+  static func tapsOnCard(place: Place, controllerIdentifierKey: String) -> AnalyticsEvent {
+    return AnalyticsEvent(name: "tap", category: .card, label: place.name, cd6: controllerIdentifierKey, cd7: place.analyticsCuisine, cd8: place.analyticsNeighborhood, cd9: place.analyticsBells, cd10: place.analyticsPrice, cd11: place.analyticsReviewer)
   }
 
-  static func swipesCarousel(post: Post?, currentLocation: CLLocationCoordinate2D?) -> AnalyticsEvent {
-    return AnalyticsEvent(name:  "swipe-carousel", category: .app, label:post?.link?.absoluteString, location:currentLocation)
+  static func swipesCarousel(place: Place, currentLocation: CLLocationCoordinate2D?) -> AnalyticsEvent {
+    return AnalyticsEvent(name: "swipe-carousel", category: .app, label: place.name, cd7: place.analyticsCuisine, cd8: place.analyticsNeighborhood, cd9: place.analyticsBells, cd10: place.analyticsPrice, cd11: place.analyticsReviewer)
   }
 
   static func changeNotificationSettings(enabled: Bool) -> AnalyticsEvent {
@@ -165,15 +203,17 @@ struct AnalyticsEvent {
   }
 
   static func tapsFullReviewButton(place: Place) -> AnalyticsEvent {
-    return AnalyticsEvent(name:  "full-story", category: .detail, label:place.post?.link?.absoluteString)
+    return AnalyticsEvent(name: "taps-full-review-button", category: .detail, label: place.name, cd7: place.analyticsCuisine, cd8: place.analyticsNeighborhood, cd9: place.analyticsBells, cd10: place.analyticsPrice, cd11: place.analyticsReviewer)
+
   }
 
   static func tapsReservationButton(place: Place) -> AnalyticsEvent {
-    return AnalyticsEvent(name:  "reservation", category: .detail, label:place.post?.link?.absoluteString)
+    return AnalyticsEvent(name: "taps-reservation-button", category: .detail, label: place.name, cd7: place.analyticsCuisine, cd8: place.analyticsNeighborhood, cd9: place.analyticsBells, cd10: place.analyticsPrice, cd11: place.analyticsReviewer)
+
   }
 
   static func tapsCallButton(place: Place) -> AnalyticsEvent {
-    return AnalyticsEvent(name:  "call", category: .detail, label:place.post?.link?.absoluteString)
+    return AnalyticsEvent(name: "taps-call-button", category: .detail, label: place.name, cd7: place.analyticsCuisine, cd8: place.analyticsNeighborhood, cd9: place.analyticsBells, cd10: place.analyticsPrice, cd11: place.analyticsReviewer)
   }
 
   static func selectsSortFromFilter(mode: SortMode, category: AnalyticsCategory) -> AnalyticsEvent {
@@ -181,25 +221,70 @@ struct AnalyticsEvent {
   }
 
   static func searchForRestaurant(searchTerm: String) -> AnalyticsEvent {
-    return AnalyticsEvent(name:  "search", category: .navigation, label:searchTerm)
+    return AnalyticsEvent(name: "search", category: .navigation, label:searchTerm)
   }
 
-  static func tapsSettingsButton() -> AnalyticsEvent {
-    return AnalyticsEvent(name:  "settings", category: .navigation, label:nil)
+  static let tapsSettingsButton = AnalyticsEvent(name: "settings", category: .navigation)
+
+  static let tapsAllRestaurant = AnalyticsEvent(name: "all-restaurant", category: .tab)
+  static let tapsGuides = AnalyticsEvent(name: "guides", category: .tab, label: "home")
+  static let tapsMyList = AnalyticsEvent(name: "my-list", category: .tab)
+
+  static func switchesViewCarouselToList(page: String) -> AnalyticsEvent {
+    return AnalyticsEvent(name: "view-list", category: .navigation, label: page)
   }
 
-  static func tapsCuisineButton() -> AnalyticsEvent {
-    return AnalyticsEvent(name:  "cuisine", category: .navigation, label:nil)
+  static func switchesViewListToCarousel(page: String) -> AnalyticsEvent {
+    return AnalyticsEvent(name: "view-carousel", category: .navigation, label: page)
   }
 
-  static func tapsFilterButton() -> AnalyticsEvent {
-    return AnalyticsEvent(name:  "filter", category: .navigation, label:nil)
+  static let tapsFilterButton = AnalyticsEvent(name: "filter", category: .navigation)
+  static let tapsSortButton = AnalyticsEvent(name: "taps-sort-button", category: .navigation)
+  static let tapsCuisineButton = AnalyticsEvent(name: "cuisine", category: .navigation)
+
+  static func tapsOnGuideCell(category: Category) -> AnalyticsEvent {
+    return AnalyticsEvent(name: "guides", category: .navigation, label: category.name)
   }
 
-  static func tapsSortButton() -> AnalyticsEvent {
-    return AnalyticsEvent(name:  "tap-sort-button", category: .navigation, label:nil)
+  static func noResultsWhenSearching(searchTerm: String) -> AnalyticsEvent {
+    return AnalyticsEvent(name: "no-results", category: .search, label: searchTerm)
   }
 
+  static func noResultsWhenFiltering(filterModule: FilterModule) -> AnalyticsEvent {
+    let cuisines = filterModule.categories.map { $0.name ?? "" }.joined(separator: ",")
+    let neighborhoods = filterModule.nabes.map { $0.name }.joined(separator: ",")
+    let bells = filterModule.ratings.map { "\($0)" }.joined(separator: ",")
+    let price = filterModule.prices.map { "\($0)" }.joined(separator: ",")
+    let reviewer = filterModule.authors.map { $0.name }.joined(separator: ",")
+    return AnalyticsEvent(name: "no-results", category: .filter, cd7: cuisines, cd8: neighborhoods, cd9: bells, cd10: price, cd11: reviewer)
+  }
+
+  static func tapsFavoriteButtonOnCard(save: Bool, place: Place, controllerIdentifierKey: String) -> AnalyticsEvent {
+    let name = save ? "save" : "unsave"
+    return AnalyticsEvent(name: name, category: .card, label: place.name, cd6: controllerIdentifierKey, cd7: place.analyticsCuisine, cd8: place.analyticsNeighborhood, cd9: place.analyticsBells, cd10: place.analyticsPrice, cd11: place.analyticsReviewer)
+  }
+
+  static func tapsFavoriteButtonOnDetailPage(save: Bool, place: Place) -> AnalyticsEvent {
+    let name = save ? "save" : "unsave"
+    return AnalyticsEvent(name: name, category: .detail, label: place.name, cd7: place.analyticsCuisine, cd8: place.analyticsNeighborhood, cd9: place.analyticsBells, cd10: place.analyticsPrice, cd11: place.analyticsReviewer)
+  }
+
+  static let opensApp = AnalyticsEvent(name: "open-map", category: .app, label: "direct/notification")
+  static let TapsSortSelectedFromTopPanel2ndstepofthesortselectingsorttype = AnalyticsEvent(name: "sort-selected", category: .navigation, label: "distance/rating/latest")
+  static let Selectsmultiplecriteriatofilterby = AnalyticsEvent(name: "search", category: .filter, label: "distance/rating/latest (sort)", cd7: "cuisines selected  (comma separated)", cd8: "neighborhoods selected (comma separated)", cd9: "bells selected ", cd10: "price selected", cd11: "reviewer selected")
+
+  static func clicksCuisineApplyButton(cuisines: [Category]) -> AnalyticsEvent {
+    return AnalyticsEvent(name: "apply-cuisine", category: .filter, cd7: cuisines.map{ $0.name ?? ""}.joined(separator: ","))
+  }
+
+  static func clicksNeighborhoodApplyButton(nabes: [Neighborhood]) -> AnalyticsEvent {
+    return AnalyticsEvent(name: "apply-neighborhood", category: .filter, cd8: nabes.map{ $0.name }.joined(separator: ","))
+  }
+
+  static let Selectstosortonacriteria = AnalyticsEvent(name: "sort-selected", category: .filter, label: "distance/rating/latest")
+
+  static let Spendsmorethan15minsinarestaurantlocation = AnalyticsEvent(name: "restaurant-visited", category: .background, label: "restaurant", cd2: "Lat/Long", cd7: "cuisine", cd8: "neighborhood", cd9: "bells", cd10: "price", cd11: "reviewer")
+  static let backgroundTrackingforLocation = AnalyticsEvent(name: "location", category: .background, cd2: "Lat/Long")
 
 }
 

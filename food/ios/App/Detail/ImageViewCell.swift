@@ -8,4 +8,8 @@ class ImageViewCell: UICollectionViewCell {
     super.awakeFromNib()
   }
 
+  override func prepareForReuse() {
+    self.imageView.image = nil
+  }
+
 }

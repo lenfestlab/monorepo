@@ -12,6 +12,8 @@ class PlaceCell: UICollectionViewCell {
   @IBOutlet weak var articleButton: UIButton!
   @IBOutlet weak var loveButton: UIButton!
 
+  weak var analytics: AnalyticsManager?
+  var controllerIdentifierKey : String = "unknown"
   var place : Place?
 
   override func awakeFromNib() {
@@ -102,6 +104,9 @@ class PlaceCell: UICollectionViewCell {
 
     if loveButton.isSelected {
       loveButton.isSelected = false
+      if let place = self.place {
+        self.analytics?.log(.tapsFavoriteButtonOnCard(save: false, place: place, controllerIdentifierKey: self.controllerIdentifierKey))
+      }
       deleteBookmark(placeId: identifier) { (success) in
         if !success {
           self.loveButton.isSelected = true
@@ -109,6 +114,9 @@ class PlaceCell: UICollectionViewCell {
       }
     } else {
       loveButton.isSelected = true
+      if let place = self.place {
+        self.analytics?.log(.tapsFavoriteButtonOnCard(save: true, place: place, controllerIdentifierKey: self.controllerIdentifierKey))
+      }
       createBookmark(placeId: identifier) { (success) in
         if !success {
           self.loveButton.isSelected = false

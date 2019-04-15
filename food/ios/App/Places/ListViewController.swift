@@ -20,6 +20,8 @@ extension ListViewController { // UICollectionViewDataSource
     let mapPlace:MapPlace = self.placeStore.placesFiltered[indexPath.row]
     let place = mapPlace.place
     cell.setPlace(place: place, index: indexPath.row, showIndex: self.showIndex)
+    cell.analytics = self.analytics
+    cell.controllerIdentifierKey = self.controllerIdentifierKey
     return cell
   }
 
@@ -30,7 +32,7 @@ extension ListViewController { // UICollectionViewDelegate
   override func collectionView(_ collectionView: UICollectionView, shouldSelectItemAt indexPath: IndexPath) -> Bool {
     let mapPlace:MapPlace = self.placeStore.placesFiltered[indexPath.row]
     let place:Place = mapPlace.place
-    analytics.log(.tapsOnViewArticle(post: place.post, currentLocation: self.locationManager.latestCoordinate))
+    analytics.log(.tapsOnCard(place: place, controllerIdentifierKey: self.controllerIdentifierKey))
     openPlace(place)
     return true
   }
@@ -54,6 +56,8 @@ extension ListViewController: UICollectionViewDelegateFlowLayout {
 }
 
 class ListViewController: UICollectionViewController {
+
+  var controllerIdentifierKey = "unknown"
 
   let placeStore : PlaceStore!
   let locationManager = LocationManager.shared
