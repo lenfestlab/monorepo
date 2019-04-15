@@ -269,10 +269,6 @@ struct AnalyticsEvent {
     return AnalyticsEvent(name: name, category: .detail, label: place.name, cd7: place.analyticsCuisine, cd8: place.analyticsNeighborhood, cd9: place.analyticsBells, cd10: place.analyticsPrice, cd11: place.analyticsReviewer)
   }
 
-  static let opensApp = AnalyticsEvent(name: "open-map", category: .app, label: "direct/notification")
-  static let TapsSortSelectedFromTopPanel2ndstepofthesortselectingsorttype = AnalyticsEvent(name: "sort-selected", category: .navigation, label: "distance/rating/latest")
-  static let Selectsmultiplecriteriatofilterby = AnalyticsEvent(name: "search", category: .filter, label: "distance/rating/latest (sort)", cd7: "cuisines selected  (comma separated)", cd8: "neighborhoods selected (comma separated)", cd9: "bells selected ", cd10: "price selected", cd11: "reviewer selected")
-
   static func clicksCuisineApplyButton(cuisines: [Category]) -> AnalyticsEvent {
     return AnalyticsEvent(name: "apply-cuisine", category: .filter, cd7: cuisines.map{ $0.name ?? ""}.joined(separator: ","))
   }
@@ -280,11 +276,6 @@ struct AnalyticsEvent {
   static func clicksNeighborhoodApplyButton(nabes: [Neighborhood]) -> AnalyticsEvent {
     return AnalyticsEvent(name: "apply-neighborhood", category: .filter, cd8: nabes.map{ $0.name }.joined(separator: ","))
   }
-
-  static let Selectstosortonacriteria = AnalyticsEvent(name: "sort-selected", category: .filter, label: "distance/rating/latest")
-
-  static let Spendsmorethan15minsinarestaurantlocation = AnalyticsEvent(name: "restaurant-visited", category: .background, label: "restaurant", cd2: "Lat/Long", cd7: "cuisine", cd8: "neighborhood", cd9: "bells", cd10: "price", cd11: "reviewer")
-  static let backgroundTrackingforLocation = AnalyticsEvent(name: "location", category: .background, cd2: "Lat/Long")
 
 }
 
