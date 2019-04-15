@@ -1,11 +1,10 @@
 import Foundation
 import UIKit
 import CoreLocation
-import SVProgressHUD
 
 private let concurrentPlaceQueue = DispatchQueue(label: "org.lenfestlab.food.placeQueue", attributes: .concurrent)
 
-protocol PlaceStoreDelegate: class {
+@objc protocol PlaceStoreDelegate: class {
   func didSetPlaceFiltered()
   func filterText() -> String?
   func fetchedMapData()
@@ -67,31 +66,20 @@ class PlaceStore: NSObject {
     }
   }
 
-  func fetchMapData(path: String, showLoadingIndicator: Bool, coordinate:CLLocationCoordinate2D, completionBlock: (() -> (Void))? = nil) {
-    self.path = path
-    self.lastCoordinateUsed = coordinate
-    refresh(showLoadingIndicator: showLoadingIndicator, completionBlock: completionBlock)
-  }
-
-  func refresh(showLoadingIndicator: Bool, completionBlock: (() -> (Void))? = nil) {
+  func refresh(completionBlock: (([MapPlace]) -> (Void))? = nil) {
     guard !self.loading else {
-      completionBlock?()
+      completionBlock?([])
       return
     }
 
     guard let path = self.path else {
-      completionBlock?()
+      completionBlock?([])
       return
     }
 
     guard let coordinate = self.lastCoordinateUsed else {
-      completionBlock?()
+      completionBlock?([])
       return
-    }
-
-    if showLoadingIndicator {
-      SVProgressHUD.show()
-      SVProgressHUD.setForegroundColor(UIColor.slate)
     }
 
     self.loading = true
@@ -115,17 +103,7 @@ class PlaceStore: NSObject {
       self.loading = false
 
       self.delegate?.fetchedMapData()
-      completionBlock?()
-
-      if showLoadingIndicator {
-        DispatchQueue.main.async {
-          if places.count == 0 {
-            SVProgressHUD.showError(withStatus: "No Results Found")
-          } else {
-            SVProgressHUD.dismiss()
-          }
-        }
-      }
+      completionBlock?(places)
     }
   }
 

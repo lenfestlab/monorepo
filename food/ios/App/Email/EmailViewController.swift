@@ -41,6 +41,7 @@ class EmailViewController: UIViewController, UITextFieldDelegate {
   }
 
   @IBAction func skip(sender: UIButton) {
+    self.analytics.log(.tapsSkipEmailButton)
     next()
   }
 
@@ -84,6 +85,8 @@ class EmailViewController: UIViewController, UITextFieldDelegate {
     errorLabel.text = ""
 
     button.isEnabled = false
+
+    self.analytics.log(.tapsSubmitEmailButton)
 
     Installation.update(cloudId: cloudId, emailAddress: emailAddress, completion: { (success, authToken) in
       DispatchQueue.main.async { [unowned self] in

@@ -112,6 +112,7 @@ class DetailViewController: UIViewController {
 
     if loveButton.isSelected {
       loveButton.isSelected = false
+      self.analytics.log(.tapsFavoriteButtonOnDetailPage(save: false, place: self.place))
       deleteBookmark(placeId: identifier) { (success) in
         if !success {
           self.loveButton.isSelected = true
@@ -119,6 +120,7 @@ class DetailViewController: UIViewController {
       }
     } else {
       loveButton.isSelected = true
+      self.analytics.log(.tapsFavoriteButtonOnDetailPage(save: true, place: self.place))
       createBookmark(placeId: identifier) { (success) in
         if !success {
           self.loveButton.isSelected = false
@@ -150,6 +152,7 @@ class DetailViewController: UIViewController {
     self.collectionView.delegate = self
     self.collectionView.dataSource = self
     self.collectionView.contentInset = .zero
+    self.collectionView.showsHorizontalScrollIndicator = false
     let layout = UPCarouselFlowLayout()
     layout.scrollDirection = .horizontal
     layout.spacingMode = .fixed(spacing: 0)
@@ -179,8 +182,8 @@ class DetailViewController: UIViewController {
     self.categoryLabel.attributedText = self.place.attributedCategories()
     self.categoryLabel.font = UIFont.lightSmall
 
-    self.addressLabel.text = self.place.address ?? ""
-    self.addressLabel.font = UIFont.italicSmall
+    let address = self.place.address ?? ""
+    self.addressLabel.attributedText = NSMutableAttributedString(string: address, font: UIFont.italicSmall, fontColor: nil)
 
     self.reviewButton.titleLabel?.font = UIFont.lightLarge
     self.reviewButton.setBackgroundImage(UIColor.lightGreyBlue.pixelImage(), for: .normal)
@@ -188,7 +191,7 @@ class DetailViewController: UIViewController {
     self.reviewButton.clipsToBounds = true
 
     if let authorName = self.place.post?.author?.name {
-      self.reviewLabel.text = "Reviewed By \(authorName)"
+      self.reviewLabel.text = "Authored By \(authorName)"
     } else {
       self.reviewLabel.text = "Unknown Reviewer"
     }

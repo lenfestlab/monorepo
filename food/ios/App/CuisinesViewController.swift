@@ -13,6 +13,7 @@ class CuisinesViewController: UITableViewController {
   @objc func applyFilter() {
     self.filterModule.categories = self.selected
     self.delegate?.filterUpdated(self, filter: self.filterModule)
+    self.analytics.log(.clicksCuisineApplyButton(cuisines: self.selected))
   }
 
   @IBAction func clearAll() {

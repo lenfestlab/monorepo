@@ -53,7 +53,7 @@
                             <nil key="textColor"/>
                             <nil key="highlightedColor"/>
                         </label>
-                        <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Address" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="VxG-Fb-Rao">
+                        <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Address" textAlignment="natural" lineBreakMode="tailTruncation" numberOfLines="0" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="VxG-Fb-Rao">
                             <rect key="frame" x="33" y="277.5" width="453" height="18"/>
                             <fontDescription key="fontDescription" type="system" pointSize="15"/>
                             <nil key="textColor"/>
@@ -271,7 +271,6 @@
                         <constraint firstItem="EIw-Hk-sJl" firstAttribute="top" secondItem="OXe-E2-GTQ" secondAttribute="bottom" id="S0V-Dz-wdI"/>
                         <constraint firstItem="hJ8-4L-VGF" firstAttribute="leading" secondItem="yWd-kx-huO" secondAttribute="trailing" constant="14" id="UdK-8s-fiE"/>
                         <constraint firstAttribute="trailing" secondItem="0Du-xu-VxK" secondAttribute="trailing" constant="32" id="Z7J-8l-Pwt"/>
-                        <constraint firstItem="B2F-q3-8JB" firstAttribute="height" secondItem="VxG-Fb-Rao" secondAttribute="height" id="Zr4-M6-xJj"/>
                         <constraint firstItem="0Du-xu-VxK" firstAttribute="top" secondItem="CMQ-mE-znW" secondAttribute="bottom" constant="24" id="cOp-QI-FEH"/>
                         <constraint firstAttribute="trailing" secondItem="byn-VW-N4g" secondAttribute="trailing" id="dl0-oL-wp7"/>
                         <constraint firstItem="vcp-GK-3Jk" firstAttribute="leading" secondItem="EKL-wW-4DM" secondAttribute="leading" id="fBr-df-Klb"/>

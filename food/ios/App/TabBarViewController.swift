@@ -2,8 +2,12 @@ import UIKit
 
 class TabBarViewController: UITabBarController {
 
-  var placesViewController: PlacesViewController!
-  var favoritesViewController: PlacesViewController!
+  let restaurantsTitle = "All Restaurants"
+  let guidesTitle = "Guides"
+  let myListTitle = "My List"
+
+  var placesViewController: HomeViewController!
+  var favoritesViewController: FavoritesViewController!
   var listViewController: ListViewController!
   var guideViewController: GuidesViewController!
 
@@ -24,7 +28,7 @@ class TabBarViewController: UITabBarController {
   }
 
   @IBAction func settings(sender: UIButton) {
-    self.analytics.log(.tapsSettingsButton())
+    self.analytics.log(.tapsSettingsButton)
     let settingsController = SettingsViewController(analytics: self.analytics)
     settingsController.hidesBottomBarWhenPushed = true
     self.placesViewController.navigationController?.pushViewController(settingsController, animated: true)
@@ -39,10 +43,10 @@ class TabBarViewController: UITabBarController {
 
     var controllers : [UIViewController] = []
 
-    self.placesViewController = PlacesViewController(analytics: self.analytics)
+    self.placesViewController = HomeViewController(analytics: self.analytics)
     let mapNavigationController = UINavigationController(rootViewController: self.placesViewController)
     mapNavigationController.styleController()
-    mapNavigationController.tabBarItem.title = "All Restaurants"
+    mapNavigationController.tabBarItem.title = restaurantsTitle
     mapNavigationController.tabBarItem.image = UIImage(named: "tab-restaurant-icon")
     mapNavigationController.tabBarItem.selectedImage = UIImage(named: "tab-restaurant-icon-selected")
     controllers.append(mapNavigationController)
@@ -72,10 +76,26 @@ class TabBarViewController: UITabBarController {
     self.navigationController?.isNavigationBarHidden = true
 
     self.placesViewController.navigationItem.leftBarButtonItem = UIBarButtonItem(image: UIImage(named: "settings-button"), style: .plain, target: self, action: #selector(settings))
-    self.placesViewController.navigationItem.titleView =  self.placesViewController.searchBar
     self.placesViewController.navigationController?.navigationBar.shadowImage = UIImage()
 
     self.extendedLayoutIncludesOpaqueBars = true
   }
+
+  override func tabBar(_ tabBar: UITabBar, didSelect item: UITabBarItem) {
+    if item.title == restaurantsTitle {
+      self.analytics.log(.tapsAllRestaurant)
+      return
+    }
+    if item.title == guidesTitle {
+      self.analytics.log(.tapsGuides)
+      return
+    }
+    if item.title == myListTitle {
+      self.analytics.log(.tapsMyList)
+      return
+    }
+
+  }
+
 
 }

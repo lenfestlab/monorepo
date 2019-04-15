@@ -147,4 +147,68 @@ class FilterModule : NSObject {
 
     return labelText
   }
+
+  func authorsFiltered() -> Bool {
+    if self.authors.count > 0 {
+      return true
+    }
+
+    return false
+  }
+
+  func pricesFiltered() -> Bool {
+    if self.prices.count > 0 {
+      return true
+    }
+
+    return false
+  }
+
+  func nabesFiltered() -> Bool {
+    if self.nabes.count > 0 {
+      return true
+    }
+
+    return false
+  }
+
+  func ratingsFiltered() -> Bool {
+    if self.ratings.count > 0 {
+      return true
+    }
+
+    return false
+  }
+
+  func cuisinesFiltered() -> Bool {
+    if self.categories.count > 0 {
+      return true
+    }
+
+    return false
+  }
+
+  func active() -> Bool {
+    if self.authorsFiltered() {
+      return true
+    }
+
+    if self.pricesFiltered() {
+      return true
+    }
+
+    if self.nabesFiltered() {
+      return true
+    }
+
+    if self.cuisinesFiltered() {
+      return true
+    }
+
+    if self.ratings.count > 0 {
+      return true
+    }
+
+    return false
+  }
 }

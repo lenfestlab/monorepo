@@ -37,7 +37,7 @@ extension MapViewController: UICollectionViewDelegate {
     if indexOfMajorCell() == indexPath.row {
       let mapPlace:MapPlace = self.placeStore.placesFiltered[indexPath.row]
       let place:Place = mapPlace.place
-      analytics.log(.tapsOnViewArticle(post: place.post, currentLocation: self.lastCoordinate))
+      analytics.log(.tapsOnCard(place: place, controllerIdentifierKey: self.controllerIdentifierKey))
       openPlace(place)
     } else {
       scrollToItem(at: indexPath)
@@ -91,7 +91,7 @@ extension MapViewController : MKMapViewDelegate {
     let indexPath = IndexPath(row: view.tag, section: 0)
     let mapPlace:MapPlace = self.placeStore.placesFiltered[indexPath.row]
     let place = mapPlace.place
-    analytics.log(.tapsOnPin(post: place.post, currentLocation: self.lastCoordinate))
+    analytics.log(.tapsOnPin(place: place))
     scrollToItem(at: indexPath)
 
     self.currentPlace = mapPlace
@@ -109,6 +109,7 @@ extension MapViewController: UIGestureRecognizerDelegate {
 
 class MapViewController: UIViewController {
 
+  var controllerIdentifierKey = "unknown"
   let padding = placeCellPadding
   let env: Env
   let locationManager = LocationManager.shared
@@ -316,7 +317,7 @@ class MapViewController: UIViewController {
     mapPlace = self.placeStore.placesFiltered[snapToIndex]
     let place = mapPlace.place
 
-    analytics.log(.swipesCarousel(post: place.post, currentLocation: self.lastCoordinate))
+    analytics.log(.swipesCarousel(place: place, currentLocation: self.lastCoordinate))
     self.currentPlace = mapPlace
   }
 
