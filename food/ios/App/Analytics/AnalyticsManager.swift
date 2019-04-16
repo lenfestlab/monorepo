@@ -216,10 +216,6 @@ struct AnalyticsEvent {
     return AnalyticsEvent(name: "taps-call-button", category: .detail, label: place.name, cd7: place.analyticsCuisine, cd8: place.analyticsNeighborhood, cd9: place.analyticsBells, cd10: place.analyticsPrice, cd11: place.analyticsReviewer)
   }
 
-  static func selectsSortFromFilter(mode: SortMode, category: AnalyticsCategory) -> AnalyticsEvent {
-    return AnalyticsEvent(name:  "sort", category: category, label:mode.rawValue)
-  }
-
   static func searchForRestaurant(searchTerm: String) -> AnalyticsEvent {
     return AnalyticsEvent(name: "search", category: .navigation, label:searchTerm)
   }
@@ -275,6 +271,19 @@ struct AnalyticsEvent {
 
   static func clicksNeighborhoodApplyButton(nabes: [Neighborhood]) -> AnalyticsEvent {
     return AnalyticsEvent(name: "apply-neighborhood", category: .filter, cd8: nabes.map{ $0.name }.joined(separator: ","))
+  }
+
+  static func selectsSortFromFilter(mode: SortMode, category: AnalyticsCategory) -> AnalyticsEvent {
+    return AnalyticsEvent(name:  "sort-selected", category: category, label:mode.rawValue)
+  }
+
+  static func selectsMultipleCriteriaToFilterBy(filterModule: FilterModule, mode: SortMode) -> AnalyticsEvent {
+    let cuisines = filterModule.categories.map { $0.name ?? "" }.joined(separator: ",")
+    let neighborhoods = filterModule.nabes.map { $0.name }.joined(separator: ",")
+    let bells = filterModule.ratings.map { "\($0)" }.joined(separator: ",")
+    let price = filterModule.prices.map { "\($0)" }.joined(separator: ",")
+    let reviewer = filterModule.authors.map { $0.name }.joined(separator: ",")
+    return AnalyticsEvent(name: "search", category: .filter, label:mode.rawValue, cd7: cuisines, cd8: neighborhoods, cd9: bells, cd10: price, cd11: reviewer)
   }
 
 }
