@@ -65,7 +65,6 @@ struct AnalyticsEvent {
 
   init(
     name: String,
-    metadata meta: Meta = [:],
     category: AnalyticsCategory,
     label: String? = "",
     location: CLLocationCoordinate2D? = nil
@@ -115,10 +114,6 @@ struct AnalyticsEvent {
 
   static func notificationShown(post: Post?, currentLocation: CLLocationCoordinate2D?) -> AnalyticsEvent {
     return AnalyticsEvent(name: "shows", category: .notification, label:post?.link?.absoluteString, location:currentLocation)
-  }
-
-  static func tapsNotificationDefaultTapToClickThrough(post: Post?, currentLocation: CLLocationCoordinate2D?) -> AnalyticsEvent {
-    return AnalyticsEvent(name:  "taps", category: .notification, label:post?.link?.absoluteString, location:currentLocation)
   }
 
   static func tapsOpenInNotificationCTA(post: Post, currentLocation: CLLocationCoordinate2D?) -> AnalyticsEvent {
@@ -183,7 +178,6 @@ struct AnalyticsEvent {
     return
       AnalyticsEvent(
         name: "skip",
-        metadata: [:],
         category: .notification,
         label: "motion",
         location: location)
@@ -284,6 +278,21 @@ struct AnalyticsEvent {
     let price = filterModule.prices.map { "\($0)" }.joined(separator: ",")
     let reviewer = filterModule.authors.map { $0.name }.joined(separator: ",")
     return AnalyticsEvent(name: "search", category: .filter, label:mode.rawValue, cd7: cuisines, cd8: neighborhoods, cd9: bells, cd10: price, cd11: reviewer)
+  }
+
+  static func appLaunched(launchOptions: LaunchOptions) -> AnalyticsEvent {
+    let direct = launchOptions?[UIApplication.LaunchOptionsKey.remoteNotification] == nil
+    return AnalyticsEvent(name: "launched", category: .app, label: direct ? "direct" : "notification")
+  }
+
+  static func tapsNotificationDefaultTapToClickThrough(place: Place, location: CLLocationCoordinate2D? = nil) -> AnalyticsEvent {
+    var latlng : String? = nil
+    var meta : Meta = [:]
+    if let location = location {
+      latlng = String(format:"%f,%f", location.latitude, location.longitude)
+      meta["lat-lng"] = latlng
+    }
+    return AnalyticsEvent(name: "taps", metadata: meta, category: .notification, label: place.name, cd2: latlng, cd7: place.analyticsCuisine, cd8: place.analyticsNeighborhood, cd9: place.analyticsBells, cd10: place.analyticsPrice, cd11: place.analyticsReviewer)
   }
 
 }

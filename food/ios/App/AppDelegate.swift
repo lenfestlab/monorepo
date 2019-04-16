@@ -83,6 +83,8 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
       }
     }
 
+    self.analytics.log(.appLaunched(launchOptions: launchOptions))
+
     return true
   }
 
@@ -108,7 +110,6 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
       EmailViewController(analytics: self.analytics, cloudId: cloudId),
       animated: false)
   }
-
 
   func application(
     _ application: UIApplication,
