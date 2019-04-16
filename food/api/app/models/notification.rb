@@ -51,7 +51,7 @@ class Notification < ApplicationRecord
 
   scope :scheduled, -> {
     now = Time.zone.now
-    start = 5.minutes.ago now
+    start = 11.minutes.ago now
     deliverable.where("(deliver_at >= ?) AND (deliver_at <= ?)", start, now)
   }
 

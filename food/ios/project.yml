@@ -39,6 +39,7 @@ settings:
     # > scripts have moved the dSYM from the location Xcode generated it.
     # > Unable to process Here.app.dSYM at path...
     DEBUG_INFORMATION_FORMAT: "dwarf-with-dsym"
+    APP_VERSION: 1.0.0
   configs:
     # > Each key will be matched to any configs that contain the key and
     # > is case insensitive. So if you had Staging Debug and Staging Release,
@@ -103,10 +104,14 @@ targets:
       # extension code signing not automatically set like in App target:
       # https://git.io/fjYBY
       CODE_SIGN_IDENTITY: iPhone Developer
+    postbuildScripts:
+      - name: "Bump build number"
+        path: scripts/update_build_number.sh
     info:
       path: Extension/Notification/Service/Info.plist
       properties:
         CFBundleDisplayName: notification-service
+        CFBundleShortVersionString: "$(APP_VERSION)"
         NSExtension:
           NSExtensionPointIdentifier: com.apple.usernotifications.service
           NSExtensionPrincipalClass: $(PRODUCT_MODULE_NAME).NotificationService

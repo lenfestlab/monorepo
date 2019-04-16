@@ -7,7 +7,7 @@ github "ink-spot/UPCarouselFlowLayout"
 github "malcommac/SwiftDate"
 github "ReactiveX/RxSwift"
 github "SnapKit/SnapKit"
-github "jianstm/Schedule"
+github "brenthargrave/Schedule" "fix-project-version"
 github "SVProgressHUD/SVProgressHUD"
 github "konkab/AlamofireNetworkActivityLogger"
 
