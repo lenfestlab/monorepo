@@ -1,6 +1,6 @@
 class User < ApplicationRecord
 
-  has_many :bookmarks, -> { order(created_at: :desc) }
+  has_many :bookmarks, -> { order(created_at: :desc) }, dependent: :destroy
 
   has_many :notifications,
     inverse_of: :user
