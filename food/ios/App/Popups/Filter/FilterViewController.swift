@@ -115,6 +115,8 @@ class FilterViewController: UIViewController {
     self.filterModule.ratings = []
     self.filterModule.prices = []
     self.filterModule.categories = []
+    self.filterModule.nabes = []
+    self.filterModule.authors = []
     self.filterDelegate?.filterUpdated(self, filter: self.filterModule)
   }
 
@@ -291,6 +293,7 @@ class FilterViewController: UIViewController {
     self.filterModule.ratings = ratings
     self.filterModule.prices = prices
 
+    self.analytics.log(.selectsMultipleCriteriaToFilterBy(filterModule: self.filterModule, mode: self.filterModule.sortMode))
     self.filterDelegate?.filterUpdated(self, filter: self.filterModule)
   }
 
