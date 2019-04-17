@@ -287,7 +287,7 @@
                                     <nil key="textColor"/>
                                     <nil key="highlightedColor"/>
                                 </label>
-                                <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="left" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="tR3-Rs-04d">
+                                <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="left" contentVerticalAlignment="center" lineBreakMode="tailTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="tR3-Rs-04d">
                                     <rect key="frame" x="16" y="40" width="200" height="37"/>
                                     <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                                     <constraints>
@@ -296,7 +296,7 @@
                                     </constraints>
                                     <fontDescription key="fontDescription" type="system" pointSize="16"/>
                                     <color key="tintColor" red="0.39428379520000001" green="0.17486517160000001" blue="0.066610201549999998" alpha="1" colorSpace="custom" customColorSpace="displayP3"/>
-                                    <inset key="titleEdgeInsets" minX="10" minY="0.0" maxX="0.0" maxY="0.0"/>
+                                    <inset key="titleEdgeInsets" minX="10" minY="0.0" maxX="10" maxY="0.0"/>
                                     <state key="normal" title="Choose Cuisine">
                                         <color key="titleColor" white="0.0" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                                     </state>
@@ -329,7 +329,7 @@
                                     <nil key="textColor"/>
                                     <color key="highlightedColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                                 </label>
-                                <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="left" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="goc-E3-XHu">
+                                <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="left" contentVerticalAlignment="center" lineBreakMode="tailTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="goc-E3-XHu">
                                     <rect key="frame" x="16" y="40" width="200" height="37"/>
                                     <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                                     <constraints>
@@ -337,8 +337,8 @@
                                     </constraints>
                                     <fontDescription key="fontDescription" type="system" pointSize="16"/>
                                     <color key="tintColor" red="0.39428379520000001" green="0.17486517160000001" blue="0.066610201549999998" alpha="1" colorSpace="custom" customColorSpace="displayP3"/>
-                                    <inset key="titleEdgeInsets" minX="10" minY="0.0" maxX="0.0" maxY="0.0"/>
-                                    <state key="normal" title="Choose Neighborhood">
+                                    <inset key="titleEdgeInsets" minX="10" minY="0.0" maxX="10" maxY="0.0"/>
+                                    <state key="normal" title="Fishtown - Lower Kensington">
                                         <color key="titleColor" white="0.0" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                                     </state>
                                     <state key="selected">
@@ -370,7 +370,7 @@
                                     <nil key="textColor"/>
                                     <nil key="highlightedColor"/>
                                 </label>
-                                <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="left" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="Lvo-Gr-bS9">
+                                <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="left" contentVerticalAlignment="center" lineBreakMode="tailTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="Lvo-Gr-bS9">
                                     <rect key="frame" x="16" y="40" width="200" height="37"/>
                                     <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                                     <constraints>
@@ -378,7 +378,7 @@
                                     </constraints>
                                     <fontDescription key="fontDescription" type="system" pointSize="16"/>
                                     <color key="tintColor" red="0.39428379520000001" green="0.17486517160000001" blue="0.066610201549999998" alpha="1" colorSpace="custom" customColorSpace="displayP3"/>
-                                    <inset key="titleEdgeInsets" minX="10" minY="0.0" maxX="0.0" maxY="0.0"/>
+                                    <inset key="titleEdgeInsets" minX="10" minY="0.0" maxX="10" maxY="0.0"/>
                                     <state key="normal" title="Choose Reviewer">
                                         <color key="titleColor" white="0.0" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                                     </state>
@@ -419,7 +419,7 @@
                                             <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                                             <fontDescription key="fontDescription" type="system" pointSize="16"/>
                                             <color key="tintColor" red="0.39428379520000001" green="0.17486517160000001" blue="0.066610201549999998" alpha="1" colorSpace="custom" customColorSpace="displayP3"/>
-                                            <state key="normal" title="Distance (Default)">
+                                            <state key="normal" title="Distance">
                                                 <color key="titleColor" white="0.0" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                                             </state>
                                             <state key="selected">
@@ -451,7 +451,7 @@
                                             <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                                             <fontDescription key="fontDescription" type="system" pointSize="16"/>
                                             <color key="tintColor" red="0.39428379520000001" green="0.17486517160000001" blue="0.066610201549999998" alpha="1" colorSpace="custom" customColorSpace="displayP3"/>
-                                            <state key="normal" title="Latest Reviews">
+                                            <state key="normal" title="Latest">
                                                 <color key="titleColor" white="0.0" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                                             </state>
                                             <state key="selected">

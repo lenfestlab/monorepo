@@ -154,7 +154,7 @@ class NotificationManager: NSObject, UNUserNotificationCenterDelegate {
       } else if let identifier = response.notification.request.content.userInfo["identifier"] as? String {
 
         if let place = PlaceManager.shared.placeForIdentifier(identifier) {
-          self.analytics!.log(.tapsNotificationDefaultTapToClickThrough(post: place.post, currentLocation: coordinate))
+          self.analytics!.log(.tapsNotificationDefaultTapToClickThrough(place: place, location: coordinate))
         } else {
           print("WARN: MIA: place for identifier \(identifier); analytics event dropped")
         }

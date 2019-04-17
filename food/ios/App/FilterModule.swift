@@ -2,11 +2,20 @@ import UIKit
 
 extension NSAttributedString {
 
-  class func bellIcon(selected: Bool) -> NSAttributedString {
-    let bellImage = selected ? UIImage(named: "bell-selected-icon") : UIImage(named: "bell-icon")
+  class func heartIcon() -> NSAttributedString {
+    let image = UIImage(named: "heart")
     let attachment = NSTextAttachment()
-    attachment.image = bellImage
-    attachment.bounds = CGRect(x: 0, y: -3, width: bellImage?.size.width ?? 0, height: bellImage?.size.height ?? 0)
+    attachment.image = image
+    attachment.bounds = CGRect(x: 0, y: -5, width: image?.size.width ?? 0, height: image?.size.height ?? 0)
+    return NSAttributedString(attachment: attachment)
+  }
+
+
+  class func bellIcon(selected: Bool) -> NSAttributedString {
+    let image = selected ? UIImage(named: "bell-selected-icon") : UIImage(named: "bell-icon")
+    let attachment = NSTextAttachment()
+    attachment.image = image
+    attachment.bounds = CGRect(x: 0, y: -3, width: image?.size.width ?? 0, height: image?.size.height ?? 0)
     return NSAttributedString(attachment: attachment)
   }
 

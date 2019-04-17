@@ -69,7 +69,7 @@ class SortViewController: UITableViewController {
 
     let sort = array[indexPath.row]
     if sort == .distance {
-      cell.textLabel?.text = "DISTANCE (Default)"
+      cell.textLabel?.text = "DISTANCE"
     } else if sort == .latest {
       cell.textLabel?.text = "LATEST"
     } else if sort == .rating {
