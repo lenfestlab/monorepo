@@ -25,9 +25,6 @@ extension UIFont {
   class var lightSmall: UIFont {
     return UIFont(name: "GothamNarrowSSm-Light", size: 14.0)!
   }
-  class var lightSmallTwo: UIFont {
-    return UIFont(name: "GothamNarrowSSm-Light", size: 14.0)!
-  }
   class var mediumItalicLarge: UIFont {
     return UIFont(name: "GothamNarrowSSm-MediumItalic", size: 16.0)!
   }

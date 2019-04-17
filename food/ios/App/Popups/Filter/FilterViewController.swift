@@ -176,8 +176,8 @@ class FilterViewController: UIViewController {
   }
 
   func styleButton(_ button : UIButton) {
-    button.titleLabel?.numberOfLines = 0
     button.titleLabel?.textAlignment = .center
+    button.titleLabel?.font = .lightSmall
     button.setBackgroundImage(UIColor.slate.pixelImage(), for: .selected)
     button.setTitleColor(.white, for: .selected)
   }
@@ -205,6 +205,9 @@ class FilterViewController: UIViewController {
     styleView(self.cusineButton)
     styleView(self.reviewerButton)
     styleView(self.neighborhoodButton)
+    self.cusineButton.titleLabel?.lineBreakMode = .byTruncatingTail
+    self.reviewerButton.titleLabel?.lineBreakMode = .byTruncatingTail
+    self.neighborhoodButton.titleLabel?.lineBreakMode = .byTruncatingTail
 
     styleButton(self.cusineButton)
     styleButton(self.reviewerButton)
@@ -234,6 +237,7 @@ class FilterViewController: UIViewController {
 
     styleButton(self.ratingButton)
     styleButton(self.distanceButton)
+    self.distanceButton.titleLabel?.numberOfLines = 0
     styleButton(self.latestButton)
 
     self.clearButton.titleLabel?.textColor = UIColor.oceanBlue

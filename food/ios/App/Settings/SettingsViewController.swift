@@ -89,19 +89,26 @@ class SettingsViewController: UITableViewController, SettingsToggleCellDelegate,
       [
         "identifier": "default",
         "title":"About Us",
-        "path":"about",
+        "path":"\(env.apiBaseUrlString)/about",
         ],
       [
         "identifier": "default",
         "title":"Privacy Policy",
-        "path":"privacy",
+        "path":"\(env.apiBaseUrlString)/privacy",
         ],
       [
         "identifier": "default",
         "title":"Terms of Service",
-        "path":"tos",
+        "path":"\(env.apiBaseUrlString)/tos",
+        "inset":"zero",
+        ],
+      [
+        "identifier": "default",
+        "title":"Share Your Feedback",
+        "path": "https://goo.gl/forms/rJzeBGvAs5vDxCnP2",
         "inset":"zero",
         ]
+
     ]
 
     var toggleRows: [[String: Any]] = [
@@ -137,6 +144,15 @@ class SettingsViewController: UITableViewController, SettingsToggleCellDelegate,
         "rows": toggleRows
       ],
       [
+        "title": "EMAIL",
+        "rows": [[
+          "identifier": "default",
+          "title":"ajay.chainani@gmail.com",
+          "path": "https://goo.gl/forms/rJzeBGvAs5vDxCnP2",
+          "inset":"zero",
+        ]]
+      ],
+      [
         "title": "GENERAL",
         "rows": rows
       ]
@@ -150,7 +166,7 @@ class SettingsViewController: UITableViewController, SettingsToggleCellDelegate,
     super.viewDidLoad()
 
     self.navigationController?.styleController()
-    self.tableView.separatorColor = UIColor.init(red: 241/255, green: 221/255, blue: 187/255, alpha: 1)
+    self.tableView.separatorColor = UIColor.slate.withAlphaComponent(0.3)
 
     loadSettings()
     notification =
@@ -180,44 +196,6 @@ class SettingsViewController: UITableViewController, SettingsToggleCellDelegate,
     tableView.register(UITableViewCell.self, forCellReuseIdentifier: "default")
   }
 
-  override func tableView(_ tableView: UITableView, viewForFooterInSection section: Int) -> UIView? {
-    guard section == (settings.count - 1) else { return nil }
-
-    let feedbackButton = UIButton(type: .custom)
-    feedbackButton.layer.cornerRadius = 5.0
-    feedbackButton.clipsToBounds = true
-    feedbackButton.backgroundColor = .grey
-    feedbackButton.setTitleColor(.black, for: .normal)
-    feedbackButton.titleLabel?.font = UIFont(name: "WorkSans-Regular", size: 19)
-    feedbackButton.setTitle("Share Your Feedback", for: .normal)
-    feedbackButton
-      .rx.tap
-      .asDriver()
-      .drive(onNext: { _ in
-        let url = URL(string: "https://goo.gl/forms/rJzeBGvAs5vDxCnP2")!
-        let app = UIApplication.shared
-        guard app.canOpenURL(url) else {
-          print("ERROR: cannot open \(url)")
-          return
-        }
-        app.open(url, options: [:], completionHandler: nil)
-      })
-      .disposed(by: self.disposeBag)
-
-    let footerView = UIView()
-    footerView.addSubview(feedbackButton)
-    feedbackButton.snp.makeConstraints { (make) in
-      make.centerX.equalToSuperview()
-      make.height.equalTo(45)
-      make.width.equalTo(280)
-      make.topMargin.equalToSuperview().inset(24)
-      make.bottomMargin.equalToSuperview().inset(15)
-    }
-
-    return footerView
-  }
-
-
   // MARK: - Table view data source
 
   override func numberOfSections(in tableView: UITableView) -> Int {
@@ -239,8 +217,8 @@ class SettingsViewController: UITableViewController, SettingsToggleCellDelegate,
     let title = section["title"] as! String
     let label = UILabel(frame: .zero)
     label.text = "    \(title)"
-    label.textColor = .grey
-    label.font =  UIFont(name: "WorkSans-Medium", size: 16)
+    label.textColor = .darkGray
+    label.font =  .largeBook
     return label
   }
 
@@ -253,16 +231,19 @@ class SettingsViewController: UITableViewController, SettingsToggleCellDelegate,
     if identifier == "setting" {
       let cell:SettingsToggleCell = tableView.dequeueReusableCell(withIdentifier: identifier, for: indexPath) as! SettingsToggleCell
       cell.titleLabel.text = row["title"] as? String
+      cell.titleLabel.font = .mediumLarge
       cell.descriptionLabel.text = row["description"] as? String
+      cell.descriptionLabel.font = .lightLarge
       cell.permissionSwitch.isOn = row["toggle"] as? Bool == true
       cell.permissionSwitch.tag = indexPath.row
+      cell.permissionSwitch.onTintColor = .lightGreyBlue
       cell.delegate = self
       cell.selectionStyle = .none
       return cell
     } else {
       let cell = tableView.dequeueReusableCell(withIdentifier: identifier, for: indexPath)
       cell.textLabel?.text = row["title"] as? String
-      cell.textLabel?.font = UIFont(name: "WorkSans-Medium", size: 16)
+      cell.textLabel?.font = .mediumLarge
       cell.detailTextLabel?.text = row["description"] as? String
       cell.accessoryView = UIImageView(image: UIImage(named: "disclosure-indicator"))
       if (row["inset"] as? String) == "zero" {
@@ -278,7 +259,7 @@ class SettingsViewController: UITableViewController, SettingsToggleCellDelegate,
     let rows = section["rows"] as! [Any]
     let row = rows[indexPath.row] as! [String:Any]
     if let path = row["path"] as? String {
-      let url = URL(string: "\(env.apiBaseUrlString)/\(path)")
+      let url = URL(string: path)
       let svc = SFSafariViewController(url: url!)
       self.present(svc, animated: true)
     }

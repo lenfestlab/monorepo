@@ -83,7 +83,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
       }
     }
 
-    self.analytics.log(.appLaunched(launchOptions: launchOptions))
+    self.analytics.log(.appLaunched)
 
     return true
   }

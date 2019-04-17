@@ -7,6 +7,19 @@ import CoreMotion
 import Firebase
 typealias FirebaseAnalytics = Analytics
 
+extension UIApplication.State: CustomStringConvertible, CustomDebugStringConvertible {
+  public var description: String {
+    switch self {
+    case .active: return "active"
+    case .inactive: return "inactive"
+    case .background: return "background"
+    }
+  }
+  public var debugDescription: String {
+    return description
+  }
+}
+
 
 typealias Meta = Dictionary<String, String>
 
@@ -60,6 +73,8 @@ struct AnalyticsEvent {
     if let cd11 = cd11 {
       self.metadata["cd11"] = cd11
     }
+
+    self.metadata["cd12"] = UIApplication.shared.applicationState.description
   }
 
 
@@ -280,10 +295,7 @@ struct AnalyticsEvent {
     return AnalyticsEvent(name: "search", category: .filter, label:mode.rawValue, cd7: cuisines, cd8: neighborhoods, cd9: bells, cd10: price, cd11: reviewer)
   }
 
-  static func appLaunched(launchOptions: LaunchOptions) -> AnalyticsEvent {
-    let direct = launchOptions?[UIApplication.LaunchOptionsKey.remoteNotification] == nil
-    return AnalyticsEvent(name: "launched", category: .app, label: direct ? "direct" : "notification")
-  }
+  static let appLaunched = AnalyticsEvent(name: "launched", category: .app)
 
   static func tapsNotificationDefaultTapToClickThrough(place: Place, location: CLLocationCoordinate2D? = nil) -> AnalyticsEvent {
     var latlng : String? = nil

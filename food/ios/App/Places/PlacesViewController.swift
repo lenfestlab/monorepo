@@ -218,4 +218,8 @@ class PlacesViewController: UIViewController {
     self.filterBar.frame = CGRect(x: 0, y: 40, width: self.view.frame.width, height: 34)
   }
 
+  func isEmpty() -> Bool {
+    return self.placeStore.placesFiltered.count == 0
+  }
+
 }

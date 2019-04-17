@@ -191,7 +191,7 @@ class DetailViewController: UIViewController {
     self.reviewButton.clipsToBounds = true
 
     if let authorName = self.place.post?.author?.name {
-      self.reviewLabel.text = "Authored By \(authorName)"
+      self.reviewLabel.text = "By \(authorName)"
     } else {
       self.reviewLabel.text = "Unknown Reviewer"
     }
