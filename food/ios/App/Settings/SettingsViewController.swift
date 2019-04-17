@@ -138,12 +138,20 @@ class SettingsViewController: UITableViewController, SettingsToggleCellDelegate,
       )
     }
 
+    let general = [
+      "title": "GENERAL",
+      "rows": rows
+      ] as [String : Any]
+
     self.settings = [
       [
         "title": "PERMISSIONS",
         "rows": toggleRows
-      ],
-      [
+      ]
+    ]
+
+    if Installation.authToken() != nil {
+      let email = [
         "title": "EMAIL",
         "rows": [[
           "identifier": "default",
@@ -152,13 +160,13 @@ class SettingsViewController: UITableViewController, SettingsToggleCellDelegate,
           "action": "email",
           "description" : "Edit",
           "inset":"zero",
-        ]]
-      ],
-      [
-        "title": "GENERAL",
-        "rows": rows
-      ]
-    ]
+          ]]
+        ] as [String : Any]
+
+      self.settings.append(email)
+    }
+
+    self.settings.append(general)
 
   }
 
