@@ -355,6 +355,7 @@ class AnalyticsManager {
 
     // skip debugging events
     guard (event.category != .debug) else { return }
+    let vetted: Bool = env.isPreProduction
 
     // NOTE: workaround iOS 12 networking bug that drops requests prematurely
     // GH discussion: https://git.io/fpY6S
@@ -367,6 +368,9 @@ class AnalyticsManager {
         UIApplication.shared.endBackgroundTask(backgroundTaskID)
         backgroundTaskID = UIBackgroundTaskIdentifier.invalid
       }
+
+      // omit from prod pending QA:
+      guard vetted else { return }
 
       // Google Analytics
       GoogleReporter.shared.event(
