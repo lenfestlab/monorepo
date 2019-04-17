@@ -136,6 +136,8 @@ class HomeViewController: PlacesViewController {
 
   override func viewDidLoad() {
     super.viewDidLoad()
+    self.navigationItem.backBarButtonItem  = UIBarButtonItem(title: "", style: .plain, target: nil, action: nil)
+
     self.mapViewController.controllerIdentifierKey = "home"
     self.listViewController.controllerIdentifierKey = "home"
     self.navigationItem.titleView =  self.searchBar

@@ -6,6 +6,7 @@ import GoogleReporter
 import CoreMotion
 import Firebase
 import Amplitude
+
 typealias FirebaseAnalytics = Analytics
 
 extension UIApplication.State: CustomStringConvertible, CustomDebugStringConvertible {

@@ -21,6 +21,8 @@ let authTokenKey = "auth-token"
 
 class Installation: NSObject {
 
+  var email : String?
+
   static let shared = Installation()
 
   class func save(authToken: String) {
@@ -59,6 +61,10 @@ class Installation: NSObject {
       guard let authToken = json["auth_token"] as? String else {
         DispatchQueue.main.async { completion(false, nil) }
         return
+      }
+
+      if let email = json["email"] as? String {
+        self.shared.email = email
       }
 
       save(authToken: authToken)

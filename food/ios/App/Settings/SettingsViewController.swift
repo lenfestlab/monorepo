@@ -147,8 +147,10 @@ class SettingsViewController: UITableViewController, SettingsToggleCellDelegate,
         "title": "EMAIL",
         "rows": [[
           "identifier": "default",
-          "title":"ajay.chainani@gmail.com",
-          "path": "https://goo.gl/forms/rJzeBGvAs5vDxCnP2",
+          "title": Installation.shared.email ?? "Email Address",
+          "font": UIFont.lightLarge,
+          "action": "email",
+          "description" : "Edit",
           "inset":"zero",
         ]]
       ],
@@ -186,14 +188,13 @@ class SettingsViewController: UITableViewController, SettingsToggleCellDelegate,
     self.title = "Settings"
 
     self.tableView.backgroundColor = UIColor.white
+    self.navigationItem.backBarButtonItem  = UIBarButtonItem(title: "", style: .plain, target: nil, action: nil)
 
     tableView.rowHeight = UITableView.automaticDimension
     tableView.estimatedRowHeight = 125
 
     let nib = UINib.init(nibName: "SettingsToggleCell", bundle: nil)
     tableView.register(nib, forCellReuseIdentifier: "setting")
-
-    tableView.register(UITableViewCell.self, forCellReuseIdentifier: "default")
   }
 
   // MARK: - Table view data source
@@ -241,9 +242,10 @@ class SettingsViewController: UITableViewController, SettingsToggleCellDelegate,
       cell.selectionStyle = .none
       return cell
     } else {
-      let cell = tableView.dequeueReusableCell(withIdentifier: identifier, for: indexPath)
+      let cell:UITableViewCell = tableView.dequeueReusableCell(withIdentifier: identifier) ?? UITableViewCell(style: UITableViewCell.CellStyle.value1, reuseIdentifier: identifier)
       cell.textLabel?.text = row["title"] as? String
-      cell.textLabel?.font = .mediumLarge
+      let font = row["font"] as? UIFont
+      cell.textLabel?.font = font != nil ? font : .mediumLarge
       cell.detailTextLabel?.text = row["description"] as? String
       cell.accessoryView = UIImageView(image: UIImage(named: "disclosure-indicator"))
       if (row["inset"] as? String) == "zero" {
@@ -262,7 +264,16 @@ class SettingsViewController: UITableViewController, SettingsToggleCellDelegate,
       let url = URL(string: path)
       let svc = SFSafariViewController(url: url!)
       self.present(svc, animated: true)
+      return
     }
+
+    if let action = row["action"] as? String {
+      if action == "email"  {
+        self.navigationController?.pushViewController(UpdateEmailViewController(analytics: self.analytics), animated: true)
+        return
+      }
+    }
+
   }
 
 }
