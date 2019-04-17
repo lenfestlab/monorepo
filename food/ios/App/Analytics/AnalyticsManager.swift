@@ -5,6 +5,7 @@ import Gloss
 import GoogleReporter
 import CoreMotion
 import Firebase
+import Amplitude
 typealias FirebaseAnalytics = Analytics
 
 
@@ -292,12 +293,15 @@ class AnalyticsManager {
 
   private let env: Env
   private var ga: GoogleReporter
+  private let amplitude: Amplitude
 
   init(_ env: Env) {
     self.env = env
     self.ga = GoogleReporter.shared // NOTE: init private, must use `.shared`
+    self.amplitude = Amplitude.instance()
 
     ga.configure(withTrackerId: env.get(.googleAnalyticsTrackingId))
+    amplitude.initializeApiKey(env.get(.amplitudeApiKey))
 
     ga.anonymizeIP = false // pending GDPR compliance - https://git.io/fxuUt
 
@@ -317,12 +321,13 @@ class AnalyticsManager {
     // NOTE: the value is reset if our app is deleted/reinstalled.
     ga.usesVendorIdentifier = true
 
+    let installationId = env.installationId
     ga.customDimensionArguments = [
       // "t" (hit type) defaults to "event" - https://git.io/fxuMm
       "ds": "app", // "Data source" - https://goo.gl/BNTRMF
 
       //"installation-id"
-      "cd1": env.installationId // same value as "cid" param above
+      "cd1": installationId // same value as "cid" param above
 
       // "User ID" - https://goo.gl/ZXsk6q
       // > This is intended to be a known identifier for a user provided by the
@@ -335,9 +340,10 @@ class AnalyticsManager {
       // "uid": env.userId,
     ]
 
-    // Firebase
+    // Firebase, Amplitude
     ["installation_id", "cd1"].forEach { propName in
-      FirebaseAnalytics.setUserProperty(env.installationId, forName: propName)
+      FirebaseAnalytics.setUserProperty(installationId, forName: propName)
+      amplitude.setUserProperties([propName: installationId])
     }
 
   }
@@ -347,45 +353,54 @@ class AnalyticsManager {
     let category = event.category.rawValue
     let label = (event.label ?? "")
 
-    // Google Analytics
-    if ![.debug].contains(event.category) { // skip events used for debugging
+    // skip debugging events
+    guard (event.category != .debug) else { return }
 
-      // NOTE: workaround iOS 12 networking bug that drop random GA requests
-      // GH discussion: https://git.io/fpY6S
-      DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
-
-        // > The handler is called synchronously on the main thread, blocking
-        // > the app’s suspension momentarily while the app is notified.
-        // - https://goo.gl/yRgxEG
-        var backgroundTaskID: UIBackgroundTaskIdentifier = UIBackgroundTaskIdentifier(rawValue: 0)
-        backgroundTaskID = UIApplication.shared.beginBackgroundTask(withName: "GA") {
-          UIApplication.shared.endBackgroundTask(backgroundTaskID)
-          backgroundTaskID = UIBackgroundTaskIdentifier.invalid
-        }
-        GoogleReporter.shared.event(category, action: action, label: label, parameters: event.metadata)
+    // NOTE: workaround iOS 12 networking bug that drops requests prematurely
+    // GH discussion: https://git.io/fpY6S
+    DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
+      // > The handler is called synchronously on the main thread, blocking
+      // > the app’s suspension momentarily while the app is notified.
+      // - https://goo.gl/yRgxEG
+      var backgroundTaskID: UIBackgroundTaskIdentifier = UIBackgroundTaskIdentifier(rawValue: 0)
+      backgroundTaskID = UIApplication.shared.beginBackgroundTask(withName: "GA") {
         UIApplication.shared.endBackgroundTask(backgroundTaskID)
         backgroundTaskID = UIBackgroundTaskIdentifier.invalid
-
       }
 
+      // Google Analytics
+      GoogleReporter.shared.event(
+        category,
+        action: action,
+        label: label,
+        parameters: event.metadata)
+
+      // event + property map services (eg, Amplitude, Firebase)
+
+      // Firebase
+      // ... > Event name must contain only letters, numbers, or underscores
+      let name = event.name.replacingOccurrences(of: "-", with: "_")
+      // > Event parameter name must contain only letters, numbers, or underscores: lat-lng
+      var props = event.metadata as Dictionary<String, NSObject>
+      props.replacingOccurrencesInAllKeys(of: "-", with: "_")
+      props.merge([
+        // > Parameter name uses reserved prefix. Ignoring parameter: ga_category
+        "category": category as NSObject,
+        // TODO: if FIR support requested in prod, must first resolve FIR/GA data
+        // model incompatibility, eg:
+        // > Event parameter value is too long. The maximum supported length is 100
+        "label": label.prefix(100) as NSObject,
+      ]) { (_, new) -> NSObject in new }
+      FirebaseAnalytics.logEvent(name, parameters: props)
+
+      // Amplitude
+      Amplitude.instance().logEvent(name, withEventProperties: props)
+
+      // iOS 12 networking bug fix completion
+      UIApplication.shared.endBackgroundTask(backgroundTaskID)
+      backgroundTaskID = UIBackgroundTaskIdentifier.invalid
     }
 
-    // Firebase
-    guard env.isPreProduction else { return } // no need for FIR in prod yet
-    // ... > Event name must contain only letters, numbers, or underscores
-    let name = event.name.replacingOccurrences(of: "-", with: "_")
-    var firebaseParams = event.metadata as Dictionary<String, NSObject>
-    // > Event parameter name must contain only letters, numbers, or underscores: lat-lng
-    firebaseParams.replacingOccurrencesInAllKeys(of: "-", with: "_")
-    firebaseParams.merge([
-      // > Parameter name uses reserved prefix. Ignoring parameter: ga_category
-      "category": category as NSObject,
-      // TODO: if FIR support requested in prod, must first resolve FIR/GA data
-      // model incompatibility, eg:
-      // > Event parameter value is too long. The maximum supported length is 100: https://...
-      "label": label.prefix(100) as NSObject,
-    ]) { (_, new) -> NSObject in new }
-    FirebaseAnalytics.logEvent(name, parameters: firebaseParams)
   }
 
   func mergeCustomDimensions(cds: Dictionary<String, String>) -> Void {
@@ -398,7 +413,7 @@ class AnalyticsManager {
 
 public extension Dictionary where Key: StringProtocol {
 
-  public mutating func replacingOccurrencesInAllKeys(of: String, with: String) {
+  mutating func replacingOccurrencesInAllKeys(of: String, with: String) {
     for key in keys {
       // https://stackoverflow.com/questions/33180028/extend-dictionary-where-key-is-of-type-string
       if let newKey = String(describing: key).replacingOccurrences(of: of, with: with) as? Key {

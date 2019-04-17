@@ -15,6 +15,7 @@ targets:
       - carthage: SnapKit
       - carthage: Schedule
       - carthage: SVProgressHUD
+      - carthage: Amplitude
 
       # Alamofire
       - carthage: Alamofire

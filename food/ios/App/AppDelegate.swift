@@ -121,8 +121,8 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
     if let notificationType: String = userInfo["type"] as? String,
       notificationType == "location" {
       let locationManager = LocationManager.shared
-      let plan = Plan.after(3.seconds) // wait for location update
-      let _ = plan.do {
+      // wait for location update
+      let _ = Plan.after(3.seconds).do {
         if let latestLocation = locationManager.latestLocation {
           locationManager.logLocationChange(latestLocation)
           let _ = Plan.after(3.seconds).do { // wait for GA to fire

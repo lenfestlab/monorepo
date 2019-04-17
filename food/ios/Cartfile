@@ -10,6 +10,7 @@ github "SnapKit/SnapKit"
 github "brenthargrave/Schedule" "fix-project-version"
 github "SVProgressHUD/SVProgressHUD"
 github "konkab/AlamofireNetworkActivityLogger"
+github "amplitude/Amplitude-iOS"
 
 # Firebase experimental carthage support: https://git.io/fAxBS
 binary "https://dl.google.com/dl/firebase/ios/carthage/FirebaseAnalyticsBinary.json"
