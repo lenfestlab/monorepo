@@ -38,10 +38,9 @@
             <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
             <subviews>
                 <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="Ma9-sx-4V0">
-                    <rect key="frame" x="306" y="42" width="35" height="40"/>
+                    <rect key="frame" x="301" y="42" width="40" height="40"/>
                     <constraints>
                         <constraint firstAttribute="height" constant="40" id="34N-Y7-92O"/>
-                        <constraint firstAttribute="width" constant="35" id="7TB-9l-Qrw"/>
                     </constraints>
                     <fontDescription key="fontDescription" name="Lato-Italic" family="Lato" pointSize="20"/>
                     <state key="normal" title="Skip">
@@ -52,7 +51,7 @@
                     </connections>
                 </button>
                 <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Provide Your Email" textAlignment="center" lineBreakMode="tailTruncation" numberOfLines="2" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="oYV-06-hPW">
-                    <rect key="frame" x="77.5" y="156" width="220.5" height="29"/>
+                    <rect key="frame" x="87" y="156" width="201.5" height="29"/>
                     <constraints>
                         <constraint firstAttribute="height" constant="29" id="gkc-Vb-ZV8"/>
                     </constraints>
@@ -60,7 +59,7 @@
                     <nil key="highlightedColor"/>
                 </label>
                 <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Step 3 of 3:" textAlignment="center" lineBreakMode="tailTruncation" numberOfLines="2" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="tyl-ib-w1W">
-                    <rect key="frame" x="136.5" y="116" width="102.5" height="30"/>
+                    <rect key="frame" x="141" y="116" width="93.5" height="30"/>
                     <constraints>
                         <constraint firstAttribute="height" constant="30" id="XV9-lc-d9S"/>
                     </constraints>
@@ -70,7 +69,7 @@
                 <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="9wl-zn-HCh">
                     <rect key="frame" x="48" y="205" width="279" height="60"/>
                     <subviews>
-                        <textField opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="left" contentVerticalAlignment="center" textAlignment="center" minimumFontSize="17" translatesAutoresizingMaskIntoConstraints="NO" id="fpt-it-8bC">
+                        <textField opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="left" contentVerticalAlignment="center" placeholder="email@example.com" textAlignment="center" minimumFontSize="17" translatesAutoresizingMaskIntoConstraints="NO" id="fpt-it-8bC">
                             <rect key="frame" x="10" y="10" width="259" height="40"/>
                             <constraints>
                                 <constraint firstAttribute="height" constant="40" id="U5G-BS-a2f"/>
