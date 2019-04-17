@@ -15,6 +15,7 @@ class Env {
     case appMarketingPath = "APP_MARKETING_PATH"
     case versionBuild = "CFBundleVersion"
     case versionMarketing = "CFBundleShortVersionString"
+    case amplitudeApiKey = "AMPLITUDE_API_KEY"
   }
 
   private var bundle: Bundle

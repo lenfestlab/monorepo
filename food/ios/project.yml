@@ -29,7 +29,7 @@ settings:
     TARGETED_DEVICE_FAMILY: '1' # iPhone only
     # link system frameworks - https://git.io/fAZbC
     # -ObjC required by crashlytics: https://git.io/fAQPW
-    OTHER_LDFLAGS: "$(inherited) -framework Foundation -ObjC"
+    OTHER_LDFLAGS: "$(inherited) -framework Foundation -ObjC -lsqlite3.0"
     # Override to ensure dSYm, enable forced crashes:
     # See "Adjust your project's debug settings": https://goo.gl/ZRLPwG
     # ...else build warning:
