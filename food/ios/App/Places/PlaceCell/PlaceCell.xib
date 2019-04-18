@@ -29,7 +29,7 @@
                                 </constraints>
                             </imageView>
                             <label opaque="NO" userInteractionEnabled="NO" contentMode="left" text="UNION LEAGUE OF PHILADELPHIA" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="Dz4-fv-GMQ">
-                                <rect key="frame" x="15" y="173.5" width="268" height="20.5"/>
+                                <rect key="frame" x="15" y="170" width="268" height="21"/>
                                 <fontDescription key="fontDescription" type="system" pointSize="17"/>
                                 <nil key="textColor"/>
                                 <nil key="highlightedColor"/>
@@ -57,9 +57,6 @@
                             </button>
                             <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalCompressionResistancePriority="751" verticalCompressionResistancePriority="751" text="Label" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="5jZ-OZ-Mgk">
                                 <rect key="frame" x="285" y="173" width="42" height="21"/>
-                                <constraints>
-                                    <constraint firstAttribute="height" constant="21" id="anW-an-3CB"/>
-                                </constraints>
                                 <fontDescription key="fontDescription" type="system" pointSize="17"/>
                                 <nil key="textColor"/>
                                 <nil key="highlightedColor"/>
@@ -88,7 +85,7 @@
                         <constraints>
                             <constraint firstAttribute="trailing" secondItem="bFi-MX-mUo" secondAttribute="trailing" id="1Lq-bY-8mu"/>
                             <constraint firstItem="xOb-IV-e8y" firstAttribute="top" secondItem="oW8-1A-AE3" secondAttribute="top" id="47J-du-43H"/>
-                            <constraint firstItem="5jZ-OZ-Mgk" firstAttribute="centerY" secondItem="Dz4-fv-GMQ" secondAttribute="centerY" id="Ad9-tJ-JOe"/>
+                            <constraint firstItem="5jZ-OZ-Mgk" firstAttribute="centerY" secondItem="Dz4-fv-GMQ" secondAttribute="centerY" constant="3" id="Ad9-tJ-JOe"/>
                             <constraint firstAttribute="trailing" secondItem="tNe-d0-EMl" secondAttribute="trailing" constant="10" id="BTd-Gx-8yE"/>
                             <constraint firstAttribute="bottom" secondItem="tNe-d0-EMl" secondAttribute="bottom" constant="12" id="Fu0-Ml-sNw"/>
                             <constraint firstAttribute="trailing" secondItem="vlm-0v-r0S" secondAttribute="trailing" id="GeF-tm-yKK"/>
