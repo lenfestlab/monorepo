@@ -81,7 +81,7 @@
                                     <nil key="highlightedColor"/>
                                 </label>
                             </subviews>
-                            <color key="backgroundColor" white="0.66666666666666663" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                            <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                             <constraints>
                                 <constraint firstItem="2gP-Ft-8Ip" firstAttribute="top" secondItem="vcp-GK-3Jk" secondAttribute="top" constant="20" id="Fsh-XK-mHR"/>
                                 <constraint firstAttribute="bottom" secondItem="2gP-Ft-8Ip" secondAttribute="bottom" id="Vsj-Yo-jvj"/>
@@ -128,7 +128,7 @@
                                     <nil key="highlightedColor"/>
                                 </label>
                             </subviews>
-                            <color key="backgroundColor" white="0.66666666666666663" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                            <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                             <constraints>
                                 <constraint firstItem="pdT-78-H4o" firstAttribute="top" secondItem="byn-VW-N4g" secondAttribute="top" constant="20" id="24D-7w-5gR"/>
                                 <constraint firstItem="pdT-78-H4o" firstAttribute="leading" secondItem="byn-VW-N4g" secondAttribute="leading" constant="33" id="7by-C2-3jx"/>

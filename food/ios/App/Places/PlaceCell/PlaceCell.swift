@@ -61,7 +61,8 @@ class PlaceCell: UICollectionViewCell {
     let post = place.post
 
     if let distance = place.distance {
-      let milesAway = String(format: "%0.2f miles away", (distance/1609.344))
+      let miles = (distance/1609.344)
+      let milesAway = miles >= 10 ? String(format: "%0.0f miles away", miles) : String(format: "%0.1f miles away", miles)
       self.milesAwayLabel.text = milesAway
     }
 
@@ -73,8 +74,8 @@ class PlaceCell: UICollectionViewCell {
 
     self.textLabel.attributedText = attributedTitle
     self.textLabel.lineBreakMode = .byTruncatingTail
-    
-    self.subtitleLabel.attributedText = place.attributedSubtitle(font: UIFont.mediumSmall)
+
+    self.subtitleLabel.attributedText = place.attributedSubtitle(font: UIFont.mediumSmall, capHeight: UIFont.mediumSmall.capHeight)
     self.subtitleLabel.lineBreakMode = .byTruncatingTail
 
     self.categoryLabel.attributedText = place.attributedCategories()

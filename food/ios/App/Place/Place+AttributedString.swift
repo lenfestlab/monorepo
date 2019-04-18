@@ -22,14 +22,12 @@ extension Place {
     return NSMutableAttributedString(string: name.uppercased(), font: font, fontColor: .black)
   }
 
-  func attributedSubtitle(font: UIFont) -> NSAttributedString {
+  func attributedSubtitle(font: UIFont, capHeight: CGFloat) -> NSMutableAttributedString {
     let post = self.post
 
     let blurb = NSMutableAttributedString()
 
     let space = NSMutableAttributedString(string: " ")
-
-    let text = NSMutableAttributedString(string: "")
 
     var content = [NSAttributedString]()
 
@@ -69,7 +67,16 @@ extension Place {
       blurb.append(attributedString)
     }
 
-    text.append(blurb)
+    let text = NSMutableAttributedString(string: "")
+
+    if let image = blurb.image() {
+      let attachment = NSTextAttachment()
+      attachment.image = image
+      let y = (capHeight - image.size.height).rounded() / 2
+      attachment.bounds = CGRect(x: 0, y: y - 2, width: image.size.width, height: image.size.height)
+      print(image.size)
+      text.append(NSMutableAttributedString(attachment: attachment))
+    }
 
     return text
   }

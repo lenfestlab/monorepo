@@ -167,16 +167,12 @@ class DetailViewController: UIViewController {
 
     self.extendedLayoutIncludesOpaqueBars = true
 
-    self.remainderView.backgroundColor = .greyishBlue
-    self.quoteView.backgroundColor = .greyishBlue
-
-    self.quoteLabel.font = UIFont.customFont(.large)?.boldItalic
-    self.noteLabel.font = UIFont.customFont(.large)?.bold
+    self.quoteLabel.font = .mediumItalicLarge
 
     let title = NSMutableAttributedString()
     title.append(self.place.attributedTitle(font: UIFont.mediumLarge))
     title.append(NSAttributedString.space())
-    title.append(self.place.attributedSubtitle(font: UIFont.mediumLarge))
+    title.append(self.place.attributedSubtitle(font: UIFont.mediumLarge, capHeight: UIFont.mediumLarge.capHeight))
     self.titleLabel.attributedText = title
 
     self.categoryLabel.attributedText = self.place.attributedCategories()
@@ -203,6 +199,7 @@ class DetailViewController: UIViewController {
           attributedText.addAttribute(NSAttributedString.Key.font, value:UIFont.mediumItalicLarge, range:NSMakeRange(0, attributedText.length))
           attributedText.addAttribute(NSAttributedString.Key.foregroundColor, value:UIColor.white, range:NSMakeRange(0, attributedText.length))
           self.quoteLabel.attributedText = attributedText
+          self.quoteView.backgroundColor = .greyishBlue
         }
       }
       
@@ -227,6 +224,7 @@ class DetailViewController: UIViewController {
       if let html = post.remainder {
         if let attributedText = NSMutableAttributedString(html: html, textColorHex: "white", font: UIFont.boldSmall) {
           self.remainderLabel.attributedText = attributedText
+          self.remainderView.backgroundColor = .greyishBlue
         }
       }
 
