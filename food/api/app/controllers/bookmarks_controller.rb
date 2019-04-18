@@ -7,7 +7,10 @@ class BookmarksController < ApplicationController
     place = Place.find_by! identifier: params[:place_id]
     bookmark = Bookmark.find_or_create_by! user: current_user, place: place
     bookmark.reload
-    render json: bookmark
+    render(
+      adapter: :json,
+      json: bookmark,
+    )
   end
 
   def destroy
@@ -18,9 +21,11 @@ class BookmarksController < ApplicationController
     else
       bookmark = Bookmark.find_by! user: current_user, identifier: params[:id]
     end
-    data = { identifier: bookmark.identifier }
     bookmark.destroy!
-    render json: data
+    render(
+      adapter: :json,
+      json: bookmark,
+    )
   end
 
   def index

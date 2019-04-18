@@ -31,6 +31,8 @@ class Place < ApplicationRecord
   ## PostGIS
   #
 
+  attribute :distance, :float
+
   def location
     { lat: lat, lng: lng }
   end

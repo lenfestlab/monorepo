@@ -109,7 +109,6 @@ class DetailViewController: UIViewController {
 
   @IBAction func tapBookmarkButton() {
     let identifier = self.place.identifier
-
     if loveButton.isSelected {
       loveButton.isSelected = false
       self.analytics.log(.tapsFavoriteButtonOnDetailPage(save: false, place: self.place))
@@ -122,7 +121,9 @@ class DetailViewController: UIViewController {
       loveButton.isSelected = true
       self.analytics.log(.tapsFavoriteButtonOnDetailPage(save: true, place: self.place))
       createBookmark(placeId: identifier) { (success) in
-        if !success {
+        if success {
+          UIView.flashHUD("Added to List")
+        } else {
           self.loveButton.isSelected = false
         }
       }
@@ -236,7 +237,7 @@ class DetailViewController: UIViewController {
 
   @IBAction func makeReservation() {
     self.analytics.log(.tapsReservationButton(place: self.place))
-    let app = AppDelegate.shared()
+    let _ = AppDelegate.shared()
   }
 
   @IBAction func openFullReview() {

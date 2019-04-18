@@ -146,7 +146,7 @@ class NeighborhoodViewController: UITableViewController {
 
     if let category = self.neigborhoodAtIndexPath(indexPath) {
       let categoryIds = self.selected.map { $0.identifier }
-      if let index = categoryIds.index(of: category.identifier) {
+      if let index = categoryIds.firstIndex(of: category.identifier) {
         self.selected.remove(at: index)
       }
     }

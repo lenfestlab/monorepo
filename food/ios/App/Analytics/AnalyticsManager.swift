@@ -15,6 +15,7 @@ extension UIApplication.State: CustomStringConvertible, CustomDebugStringConvert
     case .active: return "active"
     case .inactive: return "inactive"
     case .background: return "background"
+    default: return "unknown"
     }
   }
   public var debugDescription: String {

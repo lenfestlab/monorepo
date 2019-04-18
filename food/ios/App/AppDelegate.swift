@@ -175,8 +175,18 @@ extension AppDelegate: MessagingDelegate {
 }
 
 extension AppDelegate: NotificationManagerDelegate {
+
   func present(_ vc: UIViewController, animated: Bool) {
-    self.mainController.present(vc, animated: true, completion: nil)
+    guard let presentingVC = self.window?.rootViewController else {
+      return print("MIA: rootVC")
+    }
+    if let currentlyPresentedVC = presentingVC.presentedViewController  {
+      currentlyPresentedVC.dismiss(animated: animated) {
+        presentingVC.present(vc, animated: animated, completion: nil)
+      }
+    } else {
+      presentingVC.present(vc, animated: animated, completion: nil)
+    }
   }
 
   func openInSafari(url: URL) {
@@ -189,6 +199,27 @@ extension AppDelegate: NotificationManagerDelegate {
     } else {
       let svc = SFSafariViewController(url: url)
       self.tabController.present(svc, animated: true, completion: nil)
+    }
+  }
+
+  func push(_ vc: UIViewController, animated: Bool) {
+    // TODO: refactor VC routing arch, else:
+    // > Warning: Attempt to present <App.DetailViewController...> on <App.MainController...> whose view is not in the window hierarchy!
+    guard
+      let rootVC = self.window?.rootViewController
+      else { return print("MIA: root VC") }
+    if let targetVC = rootVC as? UINavigationController {
+      targetVC.pushViewController(vc, animated: animated)
+    } else if let targetVC = rootVC as? UITabBarController {
+      guard let selVC = targetVC.selectedViewController else { return print("MIA: tab selected VC") }
+      if let selVCisNavVC = selVC as? UINavigationController {
+        selVCisNavVC.pushViewController(vc, animated: animated)
+      } else {
+        guard let selNavVC = selVC.navigationController else { return print("MIA: tab selected vc nav vc") }
+        selNavVC.pushViewController(vc, animated: animated)
+      }
+    } else {
+      print("error: unknown root VC class")
     }
   }
 
