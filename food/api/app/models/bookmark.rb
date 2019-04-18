@@ -11,20 +11,6 @@ class Bookmark < ApplicationRecord
     presence: true
 
 
-  ## Serialization
-  #
-
-  def as_json(options = nil)
-    super({
-      only: [
-        :identifier,
-      ],
-      methods: %i[
-        place
-      ]
-    }.merge(options || {}))
-  end
-
   ## Admin
   #
 

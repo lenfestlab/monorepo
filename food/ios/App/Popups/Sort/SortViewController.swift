@@ -26,7 +26,7 @@ class SortViewController: UITableViewController {
 
   var sortMode : SortMode {
     willSet {
-      if let row = self.array.index(of: sortMode) {
+      if let row = self.array.firstIndex(of: sortMode) {
         let selectedIndexPath = IndexPath(row: row, section: 0)
         let cell = tableView.cellForRow(at: selectedIndexPath)
         cell?.accessoryType  = .none

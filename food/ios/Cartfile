@@ -7,10 +7,12 @@ github "ink-spot/UPCarouselFlowLayout"
 github "malcommac/SwiftDate"
 github "ReactiveX/RxSwift"
 github "SnapKit/SnapKit"
-github "brenthargrave/Schedule" "fix-project-version"
+github "jianstm/Schedule" "66e6c5"
 github "SVProgressHUD/SVProgressHUD"
 github "konkab/AlamofireNetworkActivityLogger"
 github "amplitude/Amplitude-iOS"
+github "RxSwiftCommunity/RxAlamofire"
+github "RxSwiftCommunity/RxSwiftExt"
 
 # Firebase experimental carthage support: https://git.io/fAxBS
 binary "https://dl.google.com/dl/firebase/ios/carthage/FirebaseAnalyticsBinary.json"

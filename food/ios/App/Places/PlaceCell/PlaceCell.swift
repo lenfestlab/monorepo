@@ -101,8 +101,6 @@ class PlaceCell: UICollectionViewCell {
     guard let identifier = self.place?.identifier else {
       return
     }
-
-
     if loveButton.isSelected {
       loveButton.isSelected = false
       if let place = self.place {
@@ -119,7 +117,9 @@ class PlaceCell: UICollectionViewCell {
         self.analytics?.log(.tapsFavoriteButtonOnCard(save: true, place: place, controllerIdentifierKey: self.controllerIdentifierKey))
       }
       createBookmark(placeId: identifier) { (success) in
-        if !success {
+        if success {
+          UIView.flashHUD("Added to List")
+        } else {
           self.loveButton.isSelected = false
         }
       }

@@ -38,5 +38,13 @@ class PlacesController < ApplicationController
 
   end
 
+  def show
+    place = Place.find_by! identifier: params[:id]
+    render(
+      adapter: :json,
+      json: place,
+    )
+  end
+
 end
 

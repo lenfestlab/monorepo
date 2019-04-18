@@ -17,8 +17,9 @@ struct Location: JSONDecodable, Codable {
 struct Post: JSONDecodable, Codable, Identifiable {
   
   static let idKey = \Post.identifier
-  
+
   var identifier: String
+  var url: URL?
   let title: String?
   let blurb: String?
   let imageURL: URL?
@@ -36,6 +37,7 @@ struct Post: JSONDecodable, Codable, Identifiable {
 
   init?(json: JSON) {
     self.identifier = ("identifier" <~~ json)!
+    self.url = "url" <~~ json
     self.blurb = "blurb" <~~ json
     self.title = "title" <~~ json
     self.imageURL = "image_url" <~~ json
@@ -90,7 +92,12 @@ struct Place: JSONDecodable, Codable, Identifiable {
   }
 
   var title: String? {
-    return post?.title
+    guard
+      let name = name,
+      let post = post,
+      let author = post.author
+      else { return nil }
+    return "\(name) reviewed by \(author.name)"
   }
 
   var blurb: String? {

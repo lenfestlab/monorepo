@@ -117,14 +117,17 @@ class Notification < ApplicationRecord
       notification: {
         title: title,
         body: body,
+        # http://bit.ly/2KLf8SB
+        # > Corresponds to `category` in the APNs payload
+        click_action: "announcement",
       },
       data: {
-        type: "opening",
-        url: post.url,
-        image_url: post.image_url
+        image_url: post.image_url,
+        place_id: post.places.first.identifier, # tap/save/unsave
+        post_url: post.url, # read
       },
       # required to triggers service extension:
-      # https://develkper.apple.com/documentation/usernotifications/unnotificationserviceextension
+      # https://developer.apple.com/documentation/usernotifications/unnotificationserviceextension
       mutable_content: true
     }
     ap payload

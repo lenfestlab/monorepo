@@ -16,11 +16,13 @@ targets:
       - carthage: Schedule
       - carthage: SVProgressHUD
       - carthage: Amplitude
+      - carthage: RxSwiftExt
 
       # Alamofire
       - carthage: Alamofire
       - carthage: AlamofireImage
       - carthage: AlamofireNetworkActivityLogger
+      - carthage: RxAlamofire
 
       # Firebase - https://git.io/fAxBS
       # NOTE: omit base framework, per: https://git.io/fAjxM

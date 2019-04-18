@@ -10,7 +10,6 @@ Rails.application.routes.draw do
     controller: :users
 
   %i[
-    places
     categories
     nabes
     authors
@@ -18,8 +17,11 @@ Rails.application.routes.draw do
     resources resource_name, only: :index
   end
 
+  resources :places, only: %i[ index show ]
+
   resources :bookmarks, only: %i[ create index ]
   delete '/bookmarks(/:id)', controller: :bookmarks, action: :destroy
+
 
   # static pages
   get "/privacy", to: redirect("privacy.html")

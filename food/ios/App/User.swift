@@ -17,7 +17,7 @@ extension Place {
 
   static func remove(identifier: String) {
     var array = self.identifiers()
-    if let index = array.index(of: identifier) {
+    if let index = array.firstIndex(of: identifier) {
       array.remove(at: index)
     }
     array = Array(Set(array))
