@@ -52,7 +52,9 @@ class NotificationViewController: UIViewController, UNUserNotificationCenterDele
   func requestAuthorization(_ application: UIApplication, completionHandler: @escaping (UNAuthorizationStatus, Error?) -> Void) {
     notificationManager.requestAuthorization() { (status, error) in
       completionHandler(status, error)
-      self.analytics.log(.selectsNotificationPermissions(authorizationStatus: status))
+      DispatchQueue.main.async {
+        self.analytics.log(.selectsNotificationPermissions(authorizationStatus: status))
+      }
     }
 
   }

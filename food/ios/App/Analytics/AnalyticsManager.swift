@@ -223,6 +223,12 @@ struct AnalyticsEvent {
 
   }
 
+  static func tapsWebsiteButton(place: Place) -> AnalyticsEvent {
+    return AnalyticsEvent(name: "taps-website-button", category: .detail, label: place.name, cd7: place.analyticsCuisine, cd8: place.analyticsNeighborhood, cd9: place.analyticsBells, cd10: place.analyticsPrice, cd11: place.analyticsReviewer)
+
+  }
+
+
   static func tapsCallButton(place: Place) -> AnalyticsEvent {
     return AnalyticsEvent(name: "taps-call-button", category: .detail, label: place.name, cd7: place.analyticsCuisine, cd8: place.analyticsNeighborhood, cd9: place.analyticsBells, cd10: place.analyticsPrice, cd11: place.analyticsReviewer)
   }

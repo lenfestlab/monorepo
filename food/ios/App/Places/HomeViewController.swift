@@ -69,8 +69,10 @@ extension HomeViewController : UISearchBarDelegate {
   }
 
   func clearSearch() {
-    searchBar.text = ""
-    searchBarTextDidChange(searchText: "")
+    if searchBar.text != "" {
+      searchBar.text = ""
+      searchBarTextDidChange(searchText: "")
+    }
     searchBar.resignFirstResponder()
   }
 

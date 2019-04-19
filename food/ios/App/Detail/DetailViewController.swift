@@ -246,6 +246,7 @@ class DetailViewController: UIViewController {
   }
 
   @IBAction func openWebsite() {
+    self.analytics.log(.tapsWebsiteButton(place: self.place))
     let app = AppDelegate.shared()
     if let link = self.place.website {
       app.openInSafari(url: link)
