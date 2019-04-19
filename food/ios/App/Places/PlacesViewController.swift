@@ -128,7 +128,11 @@ class PlacesViewController: UIViewController {
       let index = viewControllers.firstIndex(of: self.listViewController)
       self.selectedIndex = index ?? 0
     }
-    self.analytics.log(.switchesViewCarouselToList(page: self.path))
+    self.analytics.log(.switchesViewCarouselToList(page: self.page()))
+  }
+
+  func page() -> String {
+    return self.path
   }
 
   @IBAction func map(sender: UIButton) {

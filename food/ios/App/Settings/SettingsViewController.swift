@@ -6,13 +6,11 @@ import RxSwift
 import RxCocoa
 import SnapKit
 
-class SettingsViewController: UITableViewController, SettingsToggleCellDelegate, LocationManagerAuthorizationDelegate {
-
+class SettingsViewController: BaseSettingsViewController, LocationManagerAuthorizationDelegate {
+  
   let locationManager = LocationManager.shared
-  private var notification: NSObjectProtocol?
 
   private let analytics: AnalyticsManager
-  private let notificationManager = NotificationManager.shared
   private let env: Env
   private let disposeBag: DisposeBag
 
@@ -27,6 +25,9 @@ class SettingsViewController: UITableViewController, SettingsToggleCellDelegate,
   required init?(coder aDecoder: NSCoder) {
     fatalError("init(coder:) has not been implemented")
   }
+
+  private var notification: NSObjectProtocol?
+  private let notificationManager = NotificationManager.shared
 
   deinit {
     // make sure to remove the observer when this view controller is dismissed/deallocated
@@ -46,131 +47,38 @@ class SettingsViewController: UITableViewController, SettingsToggleCellDelegate,
     self.tableView.reloadData()
   }
 
-  func switchTriggered(sender: UISwitch) {
-    switch sender.tag {
-    case 0:
-      print("Enable Notifications")
-      analytics.log(.changeNotificationSettings(enabled: sender.isOn))
-      if notificationManager.authorizationStatus == .notDetermined {
-        notificationManager.requestAuthorization() { (success, error) in
-          self.loadSettings()
-          DispatchQueue.main.async {
-            self.tableView.reloadData()
-          }
+  @objc func notificationSwitchTriggered(sender: UISwitch) {
+    print("Enable Notifications")
+    analytics.log(.changeNotificationSettings(enabled: sender.isOn))
+    if notificationManager.authorizationStatus == .notDetermined {
+      notificationManager.requestAuthorization() { (success, error) in
+        self.loadSettings()
+        DispatchQueue.main.async {
+          self.tableView.reloadData()
         }
-      } else if let url = URL(string: UIApplication.openSettingsURLString) {
-        // If general location settings are enabled then open location settings for the app
-        UIApplication.shared.open(url, options: [:], completionHandler: nil)
       }
-
-    case 1:
-      print("Access Location")
-      analytics.log(.changeLocationSettings(enabled: sender.isOn))
-      if CLLocationManager.authorizationStatus() == .notDetermined {
-        locationManager.enableBasicLocationServices()
-      } else if let url = URL(string: UIApplication.openSettingsURLString) {
-        // If general location settings are enabled then open location settings for the app
-        UIApplication.shared.open(url, options: [:], completionHandler: nil)
-      }
-
-    case 3:
-      print("Clear History")
-      analytics.log(.clearHistory())
-      NotificationManager.shared.saveIdentifiers([:])
-
-    default:
-      print("unknown switch")
+    } else if let url = URL(string: UIApplication.openSettingsURLString) {
+      // If general location settings are enabled then open location settings for the app
+      UIApplication.shared.open(url, options: [:], completionHandler: nil)
     }
   }
 
-  func loadSettings() {
-
-    let rows = [
-      [
-        "identifier": "default",
-        "title":"About Us",
-        "path":"\(env.apiBaseUrlString)/about",
-        ],
-      [
-        "identifier": "default",
-        "title":"Privacy Policy",
-        "path":"\(env.apiBaseUrlString)/privacy",
-        ],
-      [
-        "identifier": "default",
-        "title":"Terms of Service",
-        "path":"\(env.apiBaseUrlString)/tos",
-        "inset":"zero",
-        ],
-      [
-        "identifier": "default",
-        "title":"Share Your Feedback",
-        "path": "https://goo.gl/forms/rJzeBGvAs5vDxCnP2",
-        "inset":"zero",
-        ]
-
-    ]
-
-    var toggleRows: [[String: Any]] = [
-      [
-        "identifier": "setting",
-        "title": "Enable notifications",
-        "description": "This app sends push notifications.",
-        "toggle": notificationManager.authorizationStatus == .authorized
-      ],
-      [
-        "identifier": "setting",
-        "title": "Enable location",
-        "description": "Map and notification features use your location to display and send you articles.",
-        "toggle": CLLocationManager.authorizationStatus() == .authorizedAlways
-      ]
-
-    ]
-
-    if env.isPreProduction {
-      toggleRows.append(
-        [
-          "identifier": "setting",
-          "title": "Recurring notifications",
-          "description": "We remember which notifications you receive and don’t send them again. Turn this off to receive each notification again.",
-          "toggle": true
-        ]
-      )
+  @objc func locationSwitchTriggered(sender: UISwitch) {
+    print("Access Location")
+    analytics.log(.changeLocationSettings(enabled: sender.isOn))
+    if CLLocationManager.authorizationStatus() == .notDetermined {
+      locationManager.enableBasicLocationServices()
+    } else if let url = URL(string: UIApplication.openSettingsURLString) {
+      // If general location settings are enabled then open location settings for the app
+      UIApplication.shared.open(url, options: [:], completionHandler: nil)
     }
-
-    let general = [
-      "title": "GENERAL",
-      "rows": rows
-      ] as [String : Any]
-
-    self.settings = [
-      [
-        "title": "PERMISSIONS",
-        "rows": toggleRows
-      ]
-    ]
-
-    if Installation.authToken() != nil {
-      let email = [
-        "title": "EMAIL",
-        "rows": [[
-          "identifier": "default",
-          "title": Installation.shared.email ?? "Email Address",
-          "font": UIFont.lightLarge,
-          "action": "email",
-          "description" : "Edit",
-          "inset":"zero",
-          ]]
-        ] as [String : Any]
-
-      self.settings.append(email)
-    }
-
-    self.settings.append(general)
-
   }
 
-  var settings:[[String:Any?]] = [[:]]
+  @objc func clearHistorySwitchTriggered(sender: UISwitch) {
+    print("Clear History")
+    analytics.log(.clearHistory())
+    NotificationManager.shared.saveIdentifiers([:])
+  }
 
   override func viewDidLoad() {
     super.viewDidLoad()
@@ -184,16 +92,14 @@ class SettingsViewController: UITableViewController, SettingsToggleCellDelegate,
         forName: UIApplication.willEnterForegroundNotification,
         object: nil,
         queue: .main) {
-      [unowned self] notification in
-      self.notificationManager.refreshAuthorizationStatus(completionHandler: { (status) in
-        self.loadSettings()
-        DispatchQueue.main.async {
-          self.tableView.reloadData()
-        }
-      })
+          [unowned self] notification in
+          self.notificationManager.refreshAuthorizationStatus(completionHandler: { (status) in
+            self.loadSettings()
+            DispatchQueue.main.async {
+              self.tableView.reloadData()
+            }
+          })
     }
-
-    self.title = "Settings"
 
     self.tableView.backgroundColor = UIColor.white
     self.navigationItem.backBarButtonItem  = UIBarButtonItem(title: "", style: .plain, target: nil, action: nil)
@@ -205,25 +111,131 @@ class SettingsViewController: UITableViewController, SettingsToggleCellDelegate,
     tableView.register(nib, forCellReuseIdentifier: "setting")
   }
 
-  // MARK: - Table view data source
+  override func loadData() -> [SettingsSectionManager] {
+    var data : [SettingsSectionManager] = []
 
-  override func numberOfSections(in tableView: UITableView) -> Int {
-    return settings.count
-  }
+    let apiBaseUrlString = self.env.apiBaseUrlString
 
-  override func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-    let section = settings[section]
-    let rows = section["rows"] as! [Any]
-    return rows.count
-  }
+    let aboutCell = UITableViewCell(style: UITableViewCell.CellStyle.value1, reuseIdentifier: nil)
+    aboutCell.accessoryView = UIImageView(image: UIImage(named: "disclosure-indicator"))
+    aboutCell.textLabel?.text = "About Us"
+    aboutCell.textLabel?.font = .mediumLarge
 
-  override func tableView(_ tableView: UITableView, heightForHeaderInSection section: Int) -> CGFloat {
-    return CGFloat(45);
+    let aboutManager = SettingsRowManager(tableViewCell: aboutCell) {
+      let url = URL(string: "\(apiBaseUrlString)/about")
+      let svc = SFSafariViewController(url: url!)
+      self.present(svc, animated: true)
+    }
+
+    let privacyCell = UITableViewCell(style: UITableViewCell.CellStyle.value1, reuseIdentifier: nil)
+    privacyCell.accessoryView = UIImageView(image: UIImage(named: "disclosure-indicator"))
+    privacyCell.textLabel?.text = "Privacy Policy"
+    privacyCell.textLabel?.font = .mediumLarge
+
+    let privacyManager = SettingsRowManager(tableViewCell: privacyCell) {
+      let url = URL(string: "\(apiBaseUrlString)/privacy")
+      let svc = SFSafariViewController(url: url!)
+      self.present(svc, animated: true)
+    }
+
+    let termsCell = UITableViewCell(style: UITableViewCell.CellStyle.value1, reuseIdentifier: nil)
+    termsCell.accessoryView = UIImageView(image: UIImage(named: "disclosure-indicator"))
+    termsCell.textLabel?.text = "Terms of Service"
+    termsCell.textLabel?.font = .mediumLarge
+
+    let termsManager = SettingsRowManager(tableViewCell: termsCell) { [weak self] in
+      let url = URL(string: "\(apiBaseUrlString)/tos")
+      let svc = SFSafariViewController(url: url!)
+      self?.present(svc, animated: true)
+    }
+
+    let feedbackCell = UITableViewCell(style: UITableViewCell.CellStyle.value1, reuseIdentifier: nil)
+    feedbackCell.accessoryView = UIImageView(image: UIImage(named: "disclosure-indicator"))
+    feedbackCell.textLabel?.text = " Share Your Feedback"
+    feedbackCell.textLabel?.font = .mediumLarge
+    feedbackCell.separatorInset = .zero
+
+    let feedbackManager = SettingsRowManager(tableViewCell: feedbackCell) {
+      let url = URL(string: "https://goo.gl/forms/rJzeBGvAs5vDxCnP2")
+      let svc = SFSafariViewController(url: url!)
+      self.present(svc, animated: true)
+    }
+
+    let rows = [
+      aboutManager,
+      privacyManager,
+      termsManager,
+      feedbackManager
+    ]
+
+    let notificationsCell = SettingsToggleCell.fromNib()
+    notificationsCell.titleLabel.text = "Enable notifications"
+    notificationsCell.titleLabel.font = .mediumLarge
+    notificationsCell.descriptionLabel.text = "This app sends push notifications."
+    notificationsCell.descriptionLabel.font = .lightLarge
+    notificationsCell.permissionSwitch.isOn = notificationManager.authorizationStatus == .authorized
+    notificationsCell.permissionSwitch.tag = 0
+    notificationsCell.permissionSwitch.onTintColor = .lightGreyBlue
+    notificationsCell.permissionSwitch.addTarget(self, action: #selector(notificationSwitchTriggered(sender:)), for: .valueChanged)
+    notificationsCell.selectionStyle = .none
+
+    let locationCell = SettingsToggleCell.fromNib()
+    locationCell.titleLabel.text = "Enable location"
+    locationCell.titleLabel.font = .mediumLarge
+    locationCell.descriptionLabel.text = "Map and notification features use your location to display and send you articles."
+    locationCell.descriptionLabel.font = .lightLarge
+    locationCell.permissionSwitch.isOn = CLLocationManager.authorizationStatus() == .authorizedAlways
+    locationCell.permissionSwitch.tag = 1
+    locationCell.permissionSwitch.onTintColor = .lightGreyBlue
+    locationCell.permissionSwitch.addTarget(self, action: #selector(locationSwitchTriggered(sender:)), for: .valueChanged)
+    locationCell.selectionStyle = .none
+
+    var toggleRows: [SettingsRowManager] = [
+      SettingsRowManager(tableViewCell: notificationsCell),
+      SettingsRowManager(tableViewCell: locationCell)
+    ]
+
+    if env.isPreProduction {
+      let recurringCell = SettingsToggleCell.fromNib()
+      recurringCell.titleLabel.text = "Recurring notifications"
+      recurringCell.titleLabel.font = .mediumLarge
+      recurringCell.descriptionLabel.text = "We remember which notifications you receive and don’t send them again. Turn this off to receive each notification again."
+      recurringCell.descriptionLabel.font = .lightLarge
+      recurringCell.permissionSwitch.isOn = true
+      recurringCell.permissionSwitch.tag = 2
+      recurringCell.permissionSwitch.onTintColor = .lightGreyBlue
+      recurringCell.permissionSwitch.addTarget(self, action: #selector(clearHistorySwitchTriggered(sender:)), for: .valueChanged)
+      recurringCell.selectionStyle = .none
+
+      toggleRows.append(SettingsRowManager(tableViewCell: recurringCell))
+    }
+
+    let general = SettingsSectionManager(title: "GENERAL", rows: rows)
+
+    data.append(SettingsSectionManager(title: "PERMISSIONS", rows: toggleRows))
+
+    if Installation.authToken() != nil {
+      let emailCell = UITableViewCell(style: UITableViewCell.CellStyle.value1, reuseIdentifier: nil)
+      emailCell.textLabel?.text = Installation.shared.email ?? "Email Address"
+      emailCell.textLabel?.font = .lightLarge
+      emailCell.separatorInset = .zero
+      emailCell.detailTextLabel?.text = "Edit"
+
+      let emailManager = SettingsRowManager(tableViewCell: emailCell) {
+        self.navigationController?.pushViewController(UpdateEmailViewController(analytics: self.analytics), animated: true)
+      }
+
+      data.append(SettingsSectionManager(title: "EMAIL", rows: [emailManager]))
+    }
+
+    data.append(general)
+
+    return data
   }
 
   override func tableView(_ tableView: UITableView, viewForHeaderInSection section: Int) -> UIView? {
-    let section = settings[section]
-    let title = section["title"] as! String
+    let section = self.sections[section]
+    let title = section.title
     let label = UILabel(frame: .zero)
     label.text = "    \(title)"
     label.textColor = .darkGray
@@ -231,57 +243,8 @@ class SettingsViewController: UITableViewController, SettingsToggleCellDelegate,
     return label
   }
 
-  override func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
-    let section = settings[indexPath.section]
-    let rows = section["rows"] as! [Any]
-    let row = rows[indexPath.row] as! [String:Any]
-    let identifier = row["identifier"] as! String
-
-    if identifier == "setting" {
-      let cell:SettingsToggleCell = tableView.dequeueReusableCell(withIdentifier: identifier, for: indexPath) as! SettingsToggleCell
-      cell.titleLabel.text = row["title"] as? String
-      cell.titleLabel.font = .mediumLarge
-      cell.descriptionLabel.text = row["description"] as? String
-      cell.descriptionLabel.font = .lightLarge
-      cell.permissionSwitch.isOn = row["toggle"] as? Bool == true
-      cell.permissionSwitch.tag = indexPath.row
-      cell.permissionSwitch.onTintColor = .lightGreyBlue
-      cell.delegate = self
-      cell.selectionStyle = .none
-      return cell
-    } else {
-      let cell:UITableViewCell = tableView.dequeueReusableCell(withIdentifier: identifier) ?? UITableViewCell(style: UITableViewCell.CellStyle.value1, reuseIdentifier: identifier)
-      cell.textLabel?.text = row["title"] as? String
-      let font = row["font"] as? UIFont
-      cell.textLabel?.font = font != nil ? font : .mediumLarge
-      cell.detailTextLabel?.text = row["description"] as? String
-      cell.accessoryView = UIImageView(image: UIImage(named: "disclosure-indicator"))
-      if (row["inset"] as? String) == "zero" {
-        cell.separatorInset = .zero
-      }
-
-      return cell
-    }
-  }
-
-  override func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
-    let section = settings[indexPath.section]
-    let rows = section["rows"] as! [Any]
-    let row = rows[indexPath.row] as! [String:Any]
-    if let path = row["path"] as? String {
-      let url = URL(string: path)
-      let svc = SFSafariViewController(url: url!)
-      self.present(svc, animated: true)
-      return
-    }
-
-    if let action = row["action"] as? String {
-      if action == "email"  {
-        self.navigationController?.pushViewController(UpdateEmailViewController(analytics: self.analytics), animated: true)
-        return
-      }
-    }
-
+  override func tableView(_ tableView: UITableView, heightForHeaderInSection section: Int) -> CGFloat {
+    return CGFloat(45);
   }
 
 }
