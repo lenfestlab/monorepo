@@ -2,6 +2,9 @@ import UIKit
 import CoreLocation
 import UserNotifications
 import SwiftDate
+import RxSwift
+import RxSwiftExt
+import RxCoreLocation
 
 extension Notification.Name {
   static let locationUpdated = Notification.Name("locationUpdated")
@@ -16,6 +19,7 @@ extension CLAuthorizationStatus: CustomStringConvertible, CustomDebugStringConve
     case .denied: return "denied"
     case .authorizedAlways: return "authorized-always"
     case .authorizedWhenInUse: return "authorized-when-in-use"
+    @unknown default: fatalError()
     }
   }
   public var debugDescription: String {
@@ -98,6 +102,7 @@ class LocationManager: NSObject, CLLocationManagerDelegate {
         print("ERROR: MIA: LocationManaager.authorizationDelegate")
         return }
       authDelegate.authorized(self, status: status)
+    @unknown default: fatalError()
     }
   }
 
@@ -141,8 +146,6 @@ class LocationManager: NSObject, CLLocationManagerDelegate {
     }
 
     self.latestLocation = location
-    let coordinate = location.coordinate
-    self.fetchData(coordinate: coordinate)
     self.logLocationChange(location)
   }
 
@@ -182,49 +185,29 @@ class LocationManager: NSObject, CLLocationManagerDelegate {
     print("locationManager failed with the following error: \(error)")
   }
 
+  enum RegionEvent {
+    case enter(CLCircularRegion)
+    case exit(CLCircularRegion)
+  }
+  var didReceiveRegion$: Observable<RegionEvent> {
+    return
+      locationManager.rx.didReceiveRegion
+        .observeOn(Scheduler.background)
+        .filterMap({ (manager: CLLocationManager, region: CLRegion, state: CLRegionEventState) -> FilterMap<RegionEvent> in
+          guard let region = region as? CLCircularRegion else { return .ignore }
+          switch state {
+          case .enter: return .map(.enter(region))
+          case .exit: return .map(.exit(region))
+          case .monitoring: return .ignore
+          }
+        })
+        .share()
+  }
+
   func locationManager(_ manager: CLLocationManager, didEnterRegion region: CLRegion) {
     print("locationManager:didEnterRegion \(region)")
     self.analytics!.log(.regionEntered(source: "LocationManager"))
-
-    guard let region = region as? CLCircularRegion else {
-      print("\n ERROR: MIA: region")
-      return
-    }
-
-    let identifier = region.identifier
-    var identifiers = NotificationManager.shared.identifiers
-
-    if let sendAgainAt = identifiers[identifier], sendAgainAt.isInFuture {
-      print("NOTE: notification scheduled in the future, skip")
-      return
-    }
-
-    guard let place = PlaceManager.shared.placeForIdentifier(identifier) else {
-      print("ERROR: MIA: place \(identifier)")
-      return
-    }
-
-    print("\t place \(place)")
-    identifiers[identifier] = Date(timeIntervalSinceNow: 60 * 60 * 24 * 10000)
-    NotificationManager.shared.saveIdentifiers(identifiers)
-    sendNotificationForPlace(place)
-  }
-
-  func sendNotificationForPlace(_ place: Place) {
-    PlaceManager.contentForPlace(place: place) { (content) in
-      if let content = content {
-        self.analytics!.log(.notificationShown(post: place.post, currentLocation: place.coordinate()))
-        let request = UNNotificationRequest(identifier: UUID().uuidString, content: content, trigger: nil)
-        let center = UNUserNotificationCenter.current()
-        center.add(request, withCompletionHandler: { (error) in
-          if let error = error {
-            print("\n\t ERROR: \(error)")
-          } else {
-            print("\n\t request fulfilled \(request)")
-          }
-        })
-      }
-    }
+    // NOTE: see Notification.observeLocationManager()
   }
 
   var analytics: AnalyticsManager?
@@ -239,12 +222,10 @@ class LocationManager: NSObject, CLLocationManagerDelegate {
     self.locationManager(self.locationManager, didEnterRegion: region)
   }
 
-  func fetchData(coordinate: CLLocationCoordinate2D, trackResults: Bool = true) {
-    PlaceDataStore.retrieve(path: "places.json", coordinate: coordinate, limit: 10) { [unowned self] (success, data, count) in
-      if self.authorized() && trackResults {
-        PlaceManager.shared.trackPlaces(places: data)
-      }
-    }
+  func resetRegionMonitoring(places: [Place]) {
+    let manager = locationManager
+    manager.monitoredRegions.forEach { manager.stopMonitoring(for: $0) }
+    places.forEach { manager.startMonitoring(for: $0.region) }
   }
 
 }

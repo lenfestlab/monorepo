@@ -2,6 +2,7 @@ import Alamofire
 import RxAlamofire
 import RxSwift
 import RxCocoa
+import RxSwiftExt
 import Gloss
 
 class Api {
@@ -17,7 +18,7 @@ class Api {
     self.env = env
   }
 
-  func getPlace$(_ identifier: String) -> Driver<Result<Place>> {
+  func getPlace$(_ identifier: String) -> Observable<Result<Place>> {
     return
       RxAlamofire
         .requestJSON(.get, "\(env.apiBaseUrlString)/places/\(identifier)")
@@ -29,8 +30,8 @@ class Api {
             else { return Result.failure(ApiError.parse) }
           return Result.success(place)
         })
-        .asDriver(onErrorRecover: { error in
-          return Driver.just(Result.failure(error))
+        .catchError({ error -> Observable<Result<Place>> in
+          return Observable.just(Result.failure(error))
         })
   }
 

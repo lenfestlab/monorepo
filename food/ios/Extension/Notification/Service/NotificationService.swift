@@ -34,6 +34,7 @@ class NotificationService: UNNotificationServiceExtension {
 
 }
 
+// TODO: share w/ both main app and extension using framework
 extension UNNotificationAttachment {
 
   static func create(_ imageFileName: String, data: NSData, options: [NSObject : AnyObject]?) -> UNNotificationAttachment? {

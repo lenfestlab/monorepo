@@ -4,9 +4,15 @@ import FirebaseMessaging
 import Schedule
 import SafariServices
 import AlamofireNetworkActivityLogger
+import RxSwift
 
 typealias LaunchOptions = [UIApplication.LaunchOptionsKey: Any]?
 let gcmMessageIDKey = "gcm.message_id"
+
+struct Scheduler {
+  static let main = MainScheduler.instance
+  static let background = ConcurrentDispatchQueueScheduler(qos: .background)
+}
 
 @UIApplicationMain
 class AppDelegate: UIResponder, UIApplicationDelegate {
@@ -43,7 +49,12 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
 
     self.analytics = AnalyticsManager(env)
     self.locationManager = LocationManager.sharedWith(analytics: analytics)
-    self.notificationManager = NotificationManager.sharedWith(analytics: analytics)
+
+    let api = Api(env: env)
+    self.notificationManager =
+      NotificationManager(api: api,
+                          analytics: analytics,
+                          locationManager: locationManager)
     window = UIWindow(frame: UIScreen.main.bounds)
     let onboardingCompleted = UserDefaults.standard.bool(forKey: "onboarding-completed")
 
@@ -96,12 +107,17 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
 
   func showNotifications() {
     mainController.pushViewController(
-      NotificationViewController(analytics: self.analytics),
+      NotificationViewController(
+        analytics: analytics,
+        notificationManager: notificationManager),
       animated: false)
   }
 
   func showHomeScreen() {
-    self.tabController = TabBarViewController(analytics: self.analytics)
+    self.tabController =
+      TabBarViewController(
+        analytics: analytics,
+        notificationManager: notificationManager)
     window!.rootViewController = self.tabController
   }
 

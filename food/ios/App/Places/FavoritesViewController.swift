@@ -6,9 +6,8 @@ extension Notification.Name {
 
 class FavoritesViewController : PlacesViewController {
   override func initalDataFetched() {
-    let placeIds = self.placeStore.placesFiltered.map { $0.place.identifier }
-    Place.save(identifiers: placeIds)
-    NotificationCenter.default.post(name: .favoritesUpdated, object: nil)
+    let places = self.placeStore.placesFiltered.map({ $0.place })
+    Bookmark.cacheLatest(places: places)
   }
 
   init(analytics: AnalyticsManager) {

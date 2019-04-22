@@ -11,11 +11,18 @@ class SettingsViewController: BaseSettingsViewController, LocationManagerAuthori
   let locationManager = LocationManager.shared
 
   private let analytics: AnalyticsManager
+  private let notificationManager: NotificationManager
   private let env: Env
   private let disposeBag: DisposeBag
 
-  init(analytics: AnalyticsManager) {
+  private var notification: NSObjectProtocol?
+
+  init(
+    analytics: AnalyticsManager,
+    notificationManager: NotificationManager
+    ) {
     self.analytics = analytics
+    self.notificationManager = notificationManager
     self.env = Env()
     self.disposeBag = DisposeBag()
     super.init(style: .grouped)
@@ -26,8 +33,6 @@ class SettingsViewController: BaseSettingsViewController, LocationManagerAuthori
     fatalError("init(coder:) has not been implemented")
   }
 
-  private var notification: NSObjectProtocol?
-  private let notificationManager = NotificationManager.shared
 
   deinit {
     // make sure to remove the observer when this view controller is dismissed/deallocated
@@ -75,9 +80,7 @@ class SettingsViewController: BaseSettingsViewController, LocationManagerAuthori
   }
 
   @objc func clearHistorySwitchTriggered(sender: UISwitch) {
-    print("Clear History")
-    analytics.log(.clearHistory())
-    NotificationManager.shared.saveIdentifiers([:])
+    print("Clear History [DEPRECATED]")
   }
 
   override func viewDidLoad() {

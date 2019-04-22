@@ -31,12 +31,13 @@ class BookmarksController < ApplicationController
   def index
     current_user = self.authenticate!
     data =  current_user.bookmarks
-    render json: {
-      meta: {
-        count: data.size
-      },
-      data: data
-    }
+    render(
+      adapter: :json,
+      root: :data,
+      meta: { count: data.size },
+      json: data,
+      each_serializer: BookmarkSerializer
+    )
   end
 
 end

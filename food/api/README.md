@@ -8,11 +8,22 @@ See `../README.md`, then:
 
 # enable localhost SSL
 mkcert -install
-(cd ./config/cert/ && mkcert \
+(ipaddr=$(ipconfig getifaddr en0) && \
+  cd ./config/cert/ && \
+  mkcert \
   --cert-file localhost-cert.pem \
   --key-file localhost-key.pem \
-  localhost 127.0.0.1 ::1 \
+  localhost 127.0.0.1 ::1 $ipaddr.xip.io \
   )
+
+# iOS simulator
+open "$(mkcert -CAROOT)"
+# - drag .cer file onto sim
+# - Settings > General > Profiles - install
+# - Settings > General > About > Certificate Trust Settings - "Enable full..."
+# source: # https://git.io/fj3Dc
+open ./config/cert # then drag localhost-cert.pem onto sim
+# - Settings > General > Profiles - install
 
 cp .env.dev.example .env
 heroku local:run rails db:setup
@@ -36,4 +47,3 @@ heroku git:remote -r prod -a lenfestlab-food-prod
 DISABLE_DATABASE_ENVIRONMENT_CHECK=1 heroku local:run -e .env.dev bundle exec rails db:drop && \
   heroku pg:pull DATABASE_URL lenfest_food_development -r prod
 ```
-

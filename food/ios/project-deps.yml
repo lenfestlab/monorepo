@@ -17,6 +17,7 @@ targets:
       - carthage: SVProgressHUD
       - carthage: Amplitude
       - carthage: RxSwiftExt
+      - carthage: RxCoreLocation
 
       # Alamofire
       - carthage: Alamofire

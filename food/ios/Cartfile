@@ -13,6 +13,7 @@ github "konkab/AlamofireNetworkActivityLogger"
 github "amplitude/Amplitude-iOS"
 github "RxSwiftCommunity/RxAlamofire"
 github "RxSwiftCommunity/RxSwiftExt"
+github "RxSwiftCommunity/RxCoreLocation"
 
 # Firebase experimental carthage support: https://git.io/fAxBS
 binary "https://dl.google.com/dl/firebase/ios/carthage/FirebaseAnalyticsBinary.json"
