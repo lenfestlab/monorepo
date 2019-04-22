@@ -3,6 +3,7 @@ import UIKit
 class GuideCell: UITableViewCell {
 
   @IBOutlet weak var guideLabel: UILabel?
+  @IBOutlet weak var descriptionLabel: UILabel?
   @IBOutlet weak var guideImageView: UIImageView?
   @IBOutlet weak var containerView: UIView!
 
@@ -16,6 +17,7 @@ class GuideCell: UITableViewCell {
     containerView.layer.shadowRadius = radius
 
     self.guideLabel?.font = UIFont.lightLarge
+    self.descriptionLabel?.font = UIFont.lightSmall
   }
 
   override func setSelected(_ selected: Bool, animated: Bool) {
@@ -29,6 +31,7 @@ class GuideCell: UITableViewCell {
     if let imageURL = category.imageURL {
       self.guideImageView?.af_setImage(withURL: imageURL)
     }
+    self.descriptionLabel?.text = category.description
     self.selectionStyle = .none
   }
 

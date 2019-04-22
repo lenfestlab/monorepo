@@ -203,11 +203,7 @@ class PlacesViewController: UIViewController {
     self.placeStore.refresh(completionBlock: { (places) -> (Void) in
       if showLoadingIndicator {
         DispatchQueue.main.async {
-          if places.count == 0 {
-            SVProgressHUD.showError(withStatus: "No Results Found")
-          } else {
-            SVProgressHUD.dismiss()
-          }
+          SVProgressHUD.dismiss()
         }
       }
       completionBlock?(places)
