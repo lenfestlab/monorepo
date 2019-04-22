@@ -1,10 +1,3 @@
-//
-//  EmptyView.swift
-//  App
-//
-//  Created by Ajay Chainani on 4/22/19.
-//
-
 import UIKit
 
 class EmptyView: UIView {
