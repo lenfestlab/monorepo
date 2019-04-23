@@ -87,6 +87,13 @@ extension HomeViewController : UISearchBarDelegate {
     searchBar.resignFirstResponder()
   }
 
+  override func fetchedMapData() {
+    super.fetchedMapData()
+
+    self.emptyView.isHidden = !isEmpty()
+  }
+
+
 }
 
 class HomeViewController: PlacesViewController {
@@ -150,6 +157,24 @@ class HomeViewController: PlacesViewController {
     let three = UIBarButtonItem(customView: self.cuisineButton)
 
     self.topBar.setItems([space, space, space, one, space, two, space, three, space, space, space], animated: false)
+
+    self.emptyView.isHidden = true
+    self.view.insertSubview(self.emptyView, belowSubview: self.topBar)
+  }
+
+  lazy var emptyView : EmptyView = {
+    let view = EmptyView()
+    view.emptyImageView.image = UIImage(named: "no-results")
+    view.emptyTitleLabel.text = "Try another search!"
+    view.emptySubtitleLabel.text = "We couldn’t find any results,\nbut try searching for something more general."
+    view.backgroundColor = .white
+    return view
+  }()
+
+  override func viewWillLayoutSubviews() {
+    super.viewWillLayoutSubviews()
+
+    self.emptyView.frame = self.view.bounds
   }
 
   func dismissSearch(sender: UIButton) {
