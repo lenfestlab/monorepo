@@ -7,10 +7,14 @@ class NotificationViewController: UIViewController, UNUserNotificationCenterDele
   @IBOutlet weak var stepLabel: UILabel!
 
   private let analytics: AnalyticsManager
-  let notificationManager = NotificationManager.shared
+  let notificationManager: NotificationManager
 
-  init(analytics: AnalyticsManager) {
+  init(
+    analytics: AnalyticsManager,
+    notificationManager: NotificationManager
+    ) {
     self.analytics = analytics
+    self.notificationManager = notificationManager
     super.init(nibName: nil, bundle: nil)
     navigationItem.hidesBackButton = true
   }

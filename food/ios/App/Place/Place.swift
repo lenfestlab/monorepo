@@ -77,6 +77,9 @@ struct Place: JSONDecodable, Codable, Identifiable {
   let nabes: [Neighborhood]?
   let categories: [Category]?
 
+  // local-only
+  let regionEnteredAt: Date?
+
   init?(json: JSON) {
     self.identifier = ("identifier" <~~ json)!
     self.phone = "phone" <~~ json
@@ -89,6 +92,7 @@ struct Place: JSONDecodable, Codable, Identifiable {
     self.nabes = "nabes" <~~ json
     self.categories = "categories" <~~ json
     self.website = "website" <~~ json
+    self.regionEnteredAt = nil
   }
 
   var title: String? {
@@ -110,6 +114,19 @@ struct Place: JSONDecodable, Codable, Identifiable {
 
   func coordinate() -> CLLocationCoordinate2D {
     return CLLocationCoordinate2D(latitude: (self.location?.latitude)!, longitude: (self.location?.longitude)!)
+  }
+
+  var region: CLCircularRegion {
+    let center = coordinate()
+    let radius = self.radius ?? 100
+    let region =
+      CLCircularRegion(
+        center: center,
+        radius: radius,
+        identifier: identifier)
+    region.notifyOnEntry = true
+    region.notifyOnExit = true
+    return region
   }
 
 }

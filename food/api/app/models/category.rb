@@ -123,13 +123,14 @@ class Category < ApplicationRecord
 
   def as_json(options = nil)
     super({
-      only: [
-        :identifier,
-        :is_cuisine,
-        :name,
+      only: %i[
+        identifier
+        is_cuisine
+        name
+        description
       ],
-      methods: [
-        :image_url,
+      methods: %i[
+        image_url
       ]
     }.merge(options || {}))
   end

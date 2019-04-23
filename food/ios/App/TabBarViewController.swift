@@ -12,14 +12,16 @@ class TabBarViewController: UITabBarController {
   var guideViewController: GuidesViewController!
 
   private let analytics: AnalyticsManager
+  private let notificationManager: NotificationManager
 
-  init(analytics: AnalyticsManager) {
+  init(
+    analytics: AnalyticsManager,
+    notificationManager: NotificationManager
+    ) {
     self.analytics = analytics
-
+    self.notificationManager = notificationManager
     super.init(nibName: nil, bundle: nil)
-
     self.navigationController?.isNavigationBarHidden = true
-
     navigationItem.hidesBackButton = true
   }
 
@@ -29,7 +31,10 @@ class TabBarViewController: UITabBarController {
 
   @IBAction func settings(sender: UIButton) {
     self.analytics.log(.tapsSettingsButton)
-    let settingsController = SettingsViewController(analytics: self.analytics)
+    let settingsController =
+      SettingsViewController(
+        analytics: analytics,
+        notificationManager: notificationManager)
     settingsController.hidesBottomBarWhenPushed = true
     self.placesViewController.navigationController?.pushViewController(settingsController, animated: true)
     // https://stackoverflow.com/a/23133995

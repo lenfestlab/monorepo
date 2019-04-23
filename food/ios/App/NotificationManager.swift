@@ -3,6 +3,9 @@ import CoreLocation
 import UserNotifications
 import Alamofire
 import RxSwift
+import RxSwiftExt
+import SwiftDate
+
 
 protocol NotificationManagerDelegate: class {
   func present(_ vc: UIViewController, animated: Bool)
@@ -12,22 +15,14 @@ protocol NotificationManagerDelegate: class {
 
 class NotificationManager: NSObject, UNUserNotificationCenterDelegate {
 
-  static let shared = NotificationManager()
-
   let bag: DisposeBag = DisposeBag()
-  var analytics: AnalyticsManager?
-
-  static func sharedWith(analytics: AnalyticsManager) -> NotificationManager {
-    let manager = NotificationManager.shared
-    manager.analytics = analytics
-    return manager
-  }
-
-  var identifiers:[String: Date]
+  let api: Api
+  let analytics: AnalyticsManager
+  let locationManager: LocationManager
 
   weak var delegate: NotificationManagerDelegate?
-  var notificationCenter:UNUserNotificationCenter?
-  var authorizationStatus:UNAuthorizationStatus = .notDetermined
+  var notificationCenter: UNUserNotificationCenter?
+  var authorizationStatus: UNAuthorizationStatus = .notDetermined
 
   func refreshAuthorizationStatus(completionHandler: @escaping (UNAuthorizationStatus) -> Void) {
     notificationCenter?.getNotificationSettings { (settings) in
@@ -37,17 +32,20 @@ class NotificationManager: NSObject, UNUserNotificationCenterDelegate {
     }
   }
 
-  override init() {
-    var identifiers = UserDefaults.standard.dictionary(forKey: "received-notification-identifiers") as? [String: Date]
-    if identifiers == nil {
-      identifiers = [:]
-    }
-    self.identifiers = identifiers!
+  init(
+    api: Api,
+    analytics: AnalyticsManager,
+    locationManager: LocationManager
+    ) {
+    self.api = api
+    self.analytics = analytics
+    self.locationManager = locationManager
     super.init()
     notificationCenter = UNUserNotificationCenter.current()
     notificationCenter?.delegate = self
     refreshAuthorizationStatus { (status) in }
     setCategories()
+    observeLocationManager()
   }
 
   func requestAuthorization(completionHandler: @escaping (UNAuthorizationStatus, Error?) -> Void){
@@ -70,40 +68,53 @@ class NotificationManager: NSObject, UNUserNotificationCenterDelegate {
     completionHandler([.alert, .sound])
   }
 
-  enum Category: String, CaseIterable {
-    case announcement
-  }
   enum Action: String, CaseIterable {
     case read, save, unsave, share
+    var identifier: String { return rawValue }
+    var title: String {
+      switch self {
+      case .read: return "Read Review"
+      case .save: return "Save to My List"
+      case .unsave: return "Remove from My List"
+      case .share: return "Share"
+      }
+    }
+    var options: UNNotificationActionOptions {
+      switch self {
+      case .read, .share:
+        return [.foreground]
+      default:
+        return []
+      }
+    }
+  }
+
+  enum Category: String, CaseIterable {
+    case announcement, nearby
+    var identifier: String { return rawValue }
+    var actions: Set<Action> {
+      switch self {
+      case .announcement: return [.read, .save, .share]
+      case .nearby: return [.read, .unsave, .share]
+      }
+    }
   }
 
   func setCategories(){
-    notificationCenter?.setNotificationCategories([
-
-      UNNotificationCategory(
-        identifier: Category.announcement.rawValue,
-        actions: [
-          UNNotificationAction(
-            identifier: Action.read.rawValue,
-            title: "Read Review",
-            options: [.foreground]),
-          UNNotificationAction(
-            identifier: Action.save.rawValue,
-            title: "Save to My List",
-            options: []),
-          //UNNotificationAction(
-            //identifier: Action.unsave.rawValue,
-            //title: "Remove from My List",
-            //options: []),
-          UNNotificationAction(
-            identifier: Action.share.rawValue,
-            title: "Share",
-            options: [.foreground])
-        ],
-        intentIdentifiers: [],
-        options: []),
-
-      ])
+    let categories: Set<UNNotificationCategory> =
+      Set(Category.allCases.map { category -> UNNotificationCategory in
+        return UNNotificationCategory(
+          identifier: category.identifier,
+          actions: category.actions.map({ action -> UNNotificationAction in
+            return UNNotificationAction(
+              identifier: action.identifier,
+              title: action.title,
+              options: action.options)
+          }),
+          intentIdentifiers: [],
+          options: [])
+    })
+    notificationCenter?.setNotificationCategories(categories)
   }
 
   func userNotificationCenter(
@@ -159,9 +170,9 @@ class NotificationManager: NSObject, UNUserNotificationCenterDelegate {
     _ identifier: String?,
     _ completionHandler: @escaping ()->()) {
     guard let identifier = identifier else { return completionHandler() }
-    let api = Api(env: Env()) // TODO: inject
-    api.getPlace$(identifier)
-      .drive(onNext: { [weak self] (result: Result<Place>) in
+    self.api.getPlace$(identifier)
+      // TODO: threading?
+      .subscribe(onNext: { [weak self] (result: Result<Place>) in
         switch result {
         case .success(let place):
           guard
@@ -187,9 +198,8 @@ class NotificationManager: NSObject, UNUserNotificationCenterDelegate {
       let identifier = identifier,
       let delegate = delegate
       else { return completionHandler() }
-    let api = Api(env: Env()) // TODO: inject
-    api.getPlace$(identifier)
-      .drive(onNext: { (result: Result<Place>) in
+    self.api.getPlace$(identifier)
+      .subscribe(onNext: { (result: Result<Place>) in
         switch result {
         case .success(let place):
           print("success \(place)")
@@ -225,62 +235,112 @@ class NotificationManager: NSObject, UNUserNotificationCenterDelegate {
     save: Bool,
     _ completionHandler: @escaping ()->()) {
     guard let identifier = identifier else { return completionHandler() }
-    if save {
-      createBookmark(placeId: identifier, completion: { _ in
-        completionHandler()
-      })
-    } else {
-      deleteBookmark(placeId: identifier, completion: { _ in
-        completionHandler()
-      })
-    }
+    updateBookmark(placeId: identifier, toSaved: save, completion: { _ in
+      completionHandler()
+    })
   }
 
-  func saveIdentifiers(_ identifiers: [String : Date]) {
-    UserDefaults.standard.set(identifiers, forKey: "received-notification-identifiers")
-    self.identifiers = identifiers
+  private func observeLocationManager() {
+    let region$ =
+      locationManager.didReceiveRegion$
+        .debug("didReceiveRegion$", trimOutput: false)
+
+    let regionEntry$ =
+      region$.filterMap({ regionEvent -> FilterMap<CLCircularRegion> in
+        guard case let .enter(region) = regionEvent else { return .ignore }
+        return .map(region) })
+    regionEntry$
+      /* WIP: note entry for "visit" calculation on exit
+      .do(onNext: { region -> Void in
+        let now = Date()
+        let identifier = region.identifier
+        saveEntered(identifier, at: now)
+      })
+       */
+      // fetch place, then fire its nearby notification
+      .flatMap({ [unowned self] region -> Observable<Result<Place>> in
+        let placeId = region.identifier
+        return self.api.getPlace$(placeId)
+      })
+      .subscribe(onNext: { [unowned self] (result: Result<Place>) in
+        switch result {
+        case let .failure(error):
+          print("NOOP ERROR: \(error)")
+        case let .success(place):
+          guard
+            let placeName = place.name
+            else { return print("MIA: place name") }
+          let content = UNMutableNotificationContent()
+          content.categoryIdentifier = Category.nearby.rawValue
+          content.sound = UNNotificationSound.default
+          content.title = "You're nearby \(placeName)!"
+          content.body = "You saved \(placeName) to your list of restaurants. For a reason to go, read the highlights again."
+          content.userInfo["place_id"] = place.identifier
+          if let url = place.post?.url?.absoluteString {
+            content.userInfo["post_url"] = url
+          }
+          guard // TODO: share attachment logic w/ notification service extension
+            let imageURLString = place.imageURL?.absoluteString,
+            let imageURL = URL(string: imageURLString),
+            let imageData = NSData(contentsOf: imageURL),
+            let image = UNNotificationAttachment.create("image.jpg", data: imageData, options: nil)
+            else { return print("MIA: place imageURL") }
+          content.attachments = [image]
+          let request =
+            UNNotificationRequest(
+              identifier: UUID().uuidString,
+              content: content,
+              trigger: nil)
+          guard
+            let center = self.notificationCenter
+            else { return print("MIA: notificationCenter") }
+          center.add(request, withCompletionHandler: { (error) in
+            if let error = error { print(error) }
+          })
+        }
+      }).disposed(by: bag)
+
+    /* WIP: instrument "visit" analytics event
+    let regionExit$ =
+      region$.filterMap({ regionEvent -> FilterMap<CLCircularRegion> in
+        guard case let .exit(region) = regionEvent else { return .ignore }
+        return .map(region) })
+    regionExit$
+      .subscribe(onNext: { region in
+        let identifier = region.identifier
+        guard
+          let enteredAt = self.placeManager.getEnteredAt(identifier)
+          else { return print("MIA: enteredAt \(identifier)") }
+        let now = Date()
+        let visitBeginsAt = enteredAt.adding(15.minutes)
+        guard now.isAfterDate(visitBeginsAt, granularity: .second)
+          else { return print("exited region too quickly for a visit")}
+        // TODO
+        // fire "visited" analytics event
+      }).disposed(by: bag)
+     */
   }
 
-  private func receivedNotification(response: UNNotificationResponse) {
-    print("notificationManager receivedNotification: \(response)")
-    let userInfo = response.notification.request.content.userInfo
-    if response.notification.request.content.categoryIdentifier == "POST_ENTERED" {
-      guard
-        let urlString: String = userInfo["PLACE_URL"] as? String,
-        let url: URL = URL(string: urlString) else {
-          print("MIA: share URL")
-          return
-      }
-      guard let delegate = self.delegate else {
-        print("ERROR: MIA: NotificationManager.shared.delegate")
-        return
-      }
-      let coordinate = LocationManager.shared.latestCoordinate
-      if response.actionIdentifier == "share" {
-        self.analytics!.log(.tapsShareInNotificationCTA(url: url, currentLocation: coordinate))
-        guard let data = response.notification.request.content.userInfo["SHARE_DATA"] as? [String:[UIActivity.ActivityType:String]] else {
-          print("MIA: share copy")
-          return
-        }
-        let activityItems: [Any] = [
-          ShareItemSource(data: data),
-        ]
-        let activityViewController =
-          UIActivityViewController(
-            activityItems: activityItems,
-            applicationActivities: nil)
-        delegate.present(activityViewController, animated: true)
 
-      } else if let identifier = response.notification.request.content.userInfo["identifier"] as? String {
+}
 
-        if let place = PlaceManager.shared.placeForIdentifier(identifier) {
-          self.analytics!.log(.tapsNotificationDefaultTapToClickThrough(place: place, location: coordinate))
-        } else {
-          print("WARN: MIA: place for identifier \(identifier); analytics event dropped")
-        }
-        delegate.openInSafari(url: url)
-      }
+extension UNNotificationAttachment {
+
+  static func create(_ imageFileName: String, data: NSData, options: [NSObject : AnyObject]?) -> UNNotificationAttachment? {
+    let fileManager = FileManager.default
+    let tmpSubFolderName = ProcessInfo.processInfo.globallyUniqueString
+    let tmpSubFolderURL = URL(fileURLWithPath: NSTemporaryDirectory()).appendingPathComponent(tmpSubFolderName, isDirectory: true)
+    do {
+      try fileManager.createDirectory(at: tmpSubFolderURL, withIntermediateDirectories: true, attributes: nil)
+      let imageFileIdentifier = imageFileName+".jpg"
+      let fileURL = tmpSubFolderURL.appendingPathComponent(imageFileIdentifier)
+      try data.write(to: fileURL, options: [])
+      let imageAttachment = try UNNotificationAttachment(identifier: imageFileIdentifier, url: fileURL, options: options)
+      return imageAttachment
+    } catch let error {
+      print("error \(error)")
     }
+    return nil
   }
 
 }

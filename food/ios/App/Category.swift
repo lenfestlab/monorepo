@@ -10,7 +10,7 @@ struct Category: JSONDecodable, Codable {
   init?(json: JSON) {
     self.identifier = ("identifier" <~~ json)!
     self.name = "name" <~~ json
-    self.description = "name" <~~ json
+    self.description = "description" <~~ json
     self.imageURL = "image_url" <~~ json
   }
 
