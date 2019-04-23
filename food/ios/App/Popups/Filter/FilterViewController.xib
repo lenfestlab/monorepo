@@ -1,10 +1,10 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<document type="com.apple.InterfaceBuilder3.CocoaTouch.XIB" version="3.0" toolsVersion="14460.31" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" colorMatched="YES">
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.XIB" version="3.0" toolsVersion="14490.70" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" colorMatched="YES">
     <device id="retina4_7" orientation="portrait">
         <adaptation id="fullscreen"/>
     </device>
     <dependencies>
-        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="14460.20"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="14490.49"/>
         <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
     </dependencies>
     <objects>
@@ -412,10 +412,10 @@
                                     <nil key="highlightedColor"/>
                                 </label>
                                 <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="d0J-pK-iLe">
-                                    <rect key="frame" x="16" y="40" width="470" height="60"/>
+                                    <rect key="frame" x="16" y="40" width="470" height="37"/>
                                     <subviews>
                                         <button opaque="NO" contentMode="scaleToFill" horizontalHuggingPriority="251" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="amv-Lf-7Cp">
-                                            <rect key="frame" x="0.0" y="0.0" width="156" height="60"/>
+                                            <rect key="frame" x="0.0" y="0.0" width="156" height="37"/>
                                             <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                                             <fontDescription key="fontDescription" type="system" pointSize="16"/>
                                             <color key="tintColor" red="0.39428379520000001" green="0.17486517160000001" blue="0.066610201549999998" alpha="1" colorSpace="custom" customColorSpace="displayP3"/>
@@ -431,7 +431,7 @@
                                             </connections>
                                         </button>
                                         <button opaque="NO" contentMode="scaleToFill" horizontalHuggingPriority="251" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="ONp-NU-2bQ">
-                                            <rect key="frame" x="157" y="0.0" width="156" height="60"/>
+                                            <rect key="frame" x="157" y="0.0" width="156" height="37"/>
                                             <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                                             <fontDescription key="fontDescription" type="system" pointSize="16"/>
                                             <color key="tintColor" red="0.39428379520000001" green="0.17486517160000001" blue="0.066610201549999998" alpha="1" colorSpace="custom" customColorSpace="displayP3"/>
@@ -447,7 +447,7 @@
                                             </connections>
                                         </button>
                                         <button opaque="NO" contentMode="scaleToFill" horizontalHuggingPriority="251" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="Kja-Rv-4iy">
-                                            <rect key="frame" x="314" y="0.0" width="156" height="60"/>
+                                            <rect key="frame" x="314" y="0.0" width="156" height="37"/>
                                             <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                                             <fontDescription key="fontDescription" type="system" pointSize="16"/>
                                             <color key="tintColor" red="0.39428379520000001" green="0.17486517160000001" blue="0.066610201549999998" alpha="1" colorSpace="custom" customColorSpace="displayP3"/>
@@ -469,7 +469,7 @@
                                         <constraint firstItem="ONp-NU-2bQ" firstAttribute="width" secondItem="Kja-Rv-4iy" secondAttribute="width" id="Buc-5E-xIf"/>
                                         <constraint firstAttribute="bottom" secondItem="ONp-NU-2bQ" secondAttribute="bottom" id="Fc9-K8-AUl"/>
                                         <constraint firstItem="ONp-NU-2bQ" firstAttribute="top" secondItem="d0J-pK-iLe" secondAttribute="top" id="drb-CF-guM"/>
-                                        <constraint firstAttribute="height" constant="60" id="eg6-1i-OHI"/>
+                                        <constraint firstAttribute="height" constant="37" id="eg6-1i-OHI"/>
                                         <constraint firstItem="ONp-NU-2bQ" firstAttribute="leading" secondItem="amv-Lf-7Cp" secondAttribute="trailing" constant="1" id="gzQ-HY-Ych"/>
                                         <constraint firstAttribute="bottom" secondItem="Kja-Rv-4iy" secondAttribute="bottom" id="hEC-bV-Hg2"/>
                                         <constraint firstItem="Kja-Rv-4iy" firstAttribute="top" secondItem="d0J-pK-iLe" secondAttribute="top" id="oAZ-bk-q39"/>

@@ -22,8 +22,10 @@ class PlaceCell: UICollectionViewCell {
     containerView.layer.cornerRadius = 5.0
     containerView.layer.borderColor = UIColor.lightGray.cgColor
     containerView.layer.borderWidth = 1
-    let radius = CGFloat(3)
-    containerView.layer.shadowOffset = CGSize(width: radius, height: -radius)
+    containerView.layer.shadowColor = UIColor.black.cgColor
+    containerView.layer.shadowOpacity = 0.3
+    let radius = CGFloat(6)
+    containerView.layer.shadowOffset = .zero
     containerView.layer.shadowRadius = radius
 
     imageView.layer.cornerRadius = 5.0

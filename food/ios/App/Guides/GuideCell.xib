@@ -1,10 +1,10 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<document type="com.apple.InterfaceBuilder3.CocoaTouch.XIB" version="3.0" toolsVersion="14460.31" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" useSafeAreas="YES" colorMatched="YES">
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.XIB" version="3.0" toolsVersion="14490.70" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" useSafeAreas="YES" colorMatched="YES">
     <device id="retina4_7" orientation="portrait">
         <adaptation id="fullscreen"/>
     </device>
     <dependencies>
-        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="14460.20"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="14490.49"/>
         <capability name="Safe area layout guides" minToolsVersion="9.0"/>
         <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
     </dependencies>
@@ -18,8 +18,8 @@
                 <rect key="frame" x="0.0" y="0.0" width="357" height="263.5"/>
                 <autoresizingMask key="autoresizingMask"/>
                 <subviews>
-                    <view clipsSubviews="YES" contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="zi1-aU-CWI">
-                        <rect key="frame" x="-2" y="10" width="361" height="220"/>
+                    <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="zi1-aU-CWI">
+                        <rect key="frame" x="-2" y="15" width="361" height="220"/>
                         <subviews>
                             <imageView clipsSubviews="YES" userInteractionEnabled="NO" contentMode="scaleAspectFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" translatesAutoresizingMaskIntoConstraints="NO" id="4wh-7A-r5i">
                                 <rect key="frame" x="0.0" y="40" width="361" height="140"/>
@@ -84,7 +84,7 @@
                     <constraint firstAttribute="bottom" secondItem="zi1-aU-CWI" secondAttribute="bottom" id="N3p-qS-W0x"/>
                     <constraint firstAttribute="trailing" secondItem="zi1-aU-CWI" secondAttribute="trailing" constant="-2" id="NPy-Xa-OiL"/>
                     <constraint firstItem="zi1-aU-CWI" firstAttribute="leading" secondItem="H2p-sc-9uM" secondAttribute="leading" constant="-2" id="O0o-aA-EGh"/>
-                    <constraint firstItem="zi1-aU-CWI" firstAttribute="top" secondItem="H2p-sc-9uM" secondAttribute="top" constant="10" id="jB6-aS-pnd"/>
+                    <constraint firstItem="zi1-aU-CWI" firstAttribute="top" secondItem="H2p-sc-9uM" secondAttribute="top" constant="15" id="jB6-aS-pnd"/>
                 </constraints>
             </tableViewCellContentView>
             <viewLayoutGuide key="safeArea" id="njF-e1-oar"/>
