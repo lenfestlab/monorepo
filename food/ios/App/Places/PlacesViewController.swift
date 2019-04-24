@@ -74,6 +74,8 @@ class PlacesViewController: UIViewController {
     let filterBar = UILabel(frame: CGRect(x: 0, y: 0, width: 175, height: 34))
     filterBar.backgroundColor = UIColor.grey
     filterBar.textAlignment = .center
+    filterBar.layer.borderWidth = 1
+    filterBar.layer.borderColor = UIColor.slate.withAlphaComponent(0.3).cgColor
     return filterBar
   }()
 
@@ -215,7 +217,7 @@ class PlacesViewController: UIViewController {
     let vc = viewControllers[self.selectedIndex]
     vc.view.frame = self.view.bounds
     self.topBar.frame = CGRect(x: 0, y: -12, width: self.view.frame.width, height: 54)
-    self.filterBar.frame = CGRect(x: 0, y: 40, width: self.view.frame.width, height: 34)
+    self.filterBar.frame = CGRect(x: -1, y: 42, width: self.view.frame.width+2, height: 34)
   }
 
   func isEmpty() -> Bool {
