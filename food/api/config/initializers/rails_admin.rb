@@ -43,7 +43,7 @@ RailsAdmin.config do |config|
       only [Post, Category, Place, Image, Notification]
     end
     delete do
-      only []
+      only (Rails.env.production? ? [] : [User])
     end
     show_in_app do
       only []
