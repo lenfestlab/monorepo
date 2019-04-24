@@ -117,6 +117,7 @@ class NotificationManager: NSObject, UNUserNotificationCenterDelegate {
     notificationCenter?.setNotificationCategories(categories)
   }
 
+
   func userNotificationCenter(
     _ center: UNUserNotificationCenter,
     didReceive response: UNNotificationResponse,
@@ -141,7 +142,7 @@ class NotificationManager: NSObject, UNUserNotificationCenterDelegate {
     case .some(let action):
       switch action {
       case .read:
-        attemptOpenURL(postURL, completionHandler)
+        attemptReadPlace(placeIdentifier, postURL, completionHandler)
       case .save:
         updatePlace(placeIdentifier, save: true, completionHandler)
       case .unsave:
@@ -160,7 +161,6 @@ class NotificationManager: NSObject, UNUserNotificationCenterDelegate {
       let url = URL(string: urlString),
       UIApplication.shared.canOpenURL(url)
       else { return completionHandler() }
-    //  self.delegate?.openInSafari(url: url)
     UIApplication.shared.open(url, options: [:], completionHandler: { _ in
       completionHandler()
     })
@@ -171,38 +171,63 @@ class NotificationManager: NSObject, UNUserNotificationCenterDelegate {
     _ completionHandler: @escaping ()->()) {
     guard let identifier = identifier else { return completionHandler() }
     self.api.getPlace$(identifier)
-      // TODO: threading?
       .subscribe(onNext: { [weak self] (result: Result<Place>) in
+        guard let `self` = self else { return completionHandler() }
         switch result {
         case .success(let place):
-          guard
-            let analytics = self?.analytics,
-            let delegate = self?.delegate
-            else { print("MIA: delegate"); return completionHandler() }
           print("success \(place)")
-          let vc = DetailViewController(analytics: analytics, place: place)
+          self.analytics.log(
+            .tapsNotificationDefaultTapToClickThrough(
+              place: place,
+              location: self.locationManager.latestCoordinate))
+          let vc = DetailViewController(analytics: self.analytics, place: place)
           print("success \(vc)")
-           delegate.push(vc, animated: true)
+          self.delegate?.push(vc, animated: true)
+          completionHandler()
         case .failure(let error):
           print("NOOP error \(error)")
-        }
-        }, onCompleted: {
           completionHandler()
+        }
+      }).disposed(by: self.bag)
+  }
+
+  private func attemptReadPlace(
+    _ identifier: String?,
+    _ urlString: String?,
+    _ completionHandler: @escaping ()->()) {
+    guard let identifier = identifier else { return completionHandler() }
+    self.api.getPlace$(identifier)
+      .subscribe(onNext: { [weak self] (result: Result<Place>) in
+        guard let `self` = self else { return completionHandler() }
+        switch result {
+        case .success(let place):
+          print("success \(place)")
+          self.analytics.log(
+            .tapsReadInNotificationCTA(
+              place: place,
+              location: self.locationManager.latestCoordinate))
+          self.attemptOpenURL(urlString, completionHandler)
+        case .failure(let error):
+          print("NOOP error \(error)")
+          completionHandler()
+        }
       }).disposed(by: self.bag)
   }
 
   private func attemptSharePlace(
     _ identifier: String?,
     _ completionHandler: @escaping () -> ()) {
-    guard
-      let identifier = identifier,
-      let delegate = delegate
-      else { return completionHandler() }
+    guard let identifier = identifier else { return completionHandler() }
     self.api.getPlace$(identifier)
-      .subscribe(onNext: { (result: Result<Place>) in
+      .subscribe(onNext: { [weak self] (result: Result<Place>) in
         switch result {
         case .success(let place):
           print("success \(place)")
+          guard let `self` = self else { return completionHandler() }
+          self.analytics.log(
+            .tapsShareInNotificationCTA(
+              place: place,
+              location: self.locationManager.latestCoordinate))
           let data: [String: [UIActivity.ActivityType: String]] = [
             "string":[
               UIActivity.ActivityType.message: ShareManager.messageCopyForPlace(place),
@@ -221,7 +246,7 @@ class NotificationManager: NSObject, UNUserNotificationCenterDelegate {
             UIActivityViewController(
               activityItems: activityItems,
               applicationActivities: nil)
-          delegate.present(vc, animated: true)
+          self.delegate?.present(vc, animated: true)
         case .failure(let error):
           print("NOOP error \(error)")
         }
@@ -235,9 +260,20 @@ class NotificationManager: NSObject, UNUserNotificationCenterDelegate {
     save: Bool,
     _ completionHandler: @escaping ()->()) {
     guard let identifier = identifier else { return completionHandler() }
-    updateBookmark(placeId: identifier, toSaved: save, completion: { _ in
-      completionHandler()
-    })
+    let bookmarkHandler = { [weak self] (bookmark: Bookmark) in
+      guard let `self` = self, let place = bookmark.place else { return }
+      self.analytics.log(
+        .tapsSaveInNotificationCTA(
+          toSaved: save,
+          place: place,
+          location: self.locationManager.latestCoordinate))
+    }
+    updateBookmark(
+      placeId:
+      identifier,
+      toSaved: save,
+      bookmarkHandler: bookmarkHandler,
+      completion: { _ in completionHandler() })
   }
 
   private func observeLocationManager() {
@@ -258,15 +294,17 @@ class NotificationManager: NSObject, UNUserNotificationCenterDelegate {
       })
        */
       // fetch place, then fire its nearby notification
+      .distinct()
       .flatMap({ [unowned self] region -> Observable<Result<Place>> in
         let placeId = region.identifier
         return self.api.getPlace$(placeId)
       })
-      .subscribe(onNext: { [unowned self] (result: Result<Place>) in
+      .subscribe(onNext: { [weak self] (result: Result<Place>) in
         switch result {
         case let .failure(error):
           print("NOOP ERROR: \(error)")
         case let .success(place):
+          guard let `self` = self else { return print("MIA: self") }
           guard
             let placeName = place.name
             else { return print("MIA: place name") }
@@ -297,6 +335,7 @@ class NotificationManager: NSObject, UNUserNotificationCenterDelegate {
           center.add(request, withCompletionHandler: { (error) in
             if let error = error { print(error) }
           })
+          self.analytics.log(.notificationShown(place: place, location: self.locationManager.latestCoordinate))
         }
       }).disposed(by: bag)
 

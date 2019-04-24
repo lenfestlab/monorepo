@@ -12,7 +12,11 @@ struct Bookmark: JSONDecodable, Codable {
   }
 }
 
-func updateBookmark(placeId: String, toSaved: Bool, completion: ((Bool) -> Void)?) {
+func updateBookmark(
+  placeId: String,
+  toSaved: Bool,
+  bookmarkHandler: ((Bookmark)->Void)?,
+  completion: ((Bool) -> Void)?) {
   let env = Env()
   var params: [String: Any] = ["place_id": placeId]
   if let authToken = Installation.authToken() {
@@ -22,10 +26,16 @@ func updateBookmark(placeId: String, toSaved: Bool, completion: ((Bool) -> Void)
   let method: HTTPMethod = toSaved ? .post : .delete
   Alamofire.request(url, method: method, parameters:params).responseJSON { response in
     guard
-      let _ = response.result.value as? JSON
+      let json = response.result.value as? JSON
       else {
         DispatchQueue.main.async { completion?(false) }
-        return print("MIA: parsed response") }
+        return print("MIA: parsed response")
+    }
+    if
+      let bookmarkJSON = json["bookmark"] as? JSON,
+      let bookmark = Bookmark(json: bookmarkJSON) {
+      bookmarkHandler?(bookmark)
+    }
     fetchBookmarks(completion)
   }
 }

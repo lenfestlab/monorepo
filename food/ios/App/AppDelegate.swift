@@ -1,10 +1,10 @@
 import UIKit
 import Firebase
 import FirebaseMessaging
-import Schedule
 import SafariServices
 import AlamofireNetworkActivityLogger
 import RxSwift
+import SwiftDate
 
 typealias LaunchOptions = [UIApplication.LaunchOptionsKey: Any]?
 let gcmMessageIDKey = "gcm.message_id"
@@ -134,29 +134,26 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
     fetchCompletionHandler completionHandler: @escaping (UIBackgroundFetchResult
     ) -> Void) {
     print("didReceiveRemoteNotification userInfo: \(userInfo)")
-
-    if let notificationType: String = userInfo["type"] as? String,
-      notificationType == "location" {
-      let locationManager = LocationManager.shared
-      // wait for location update
-      let _ = Plan.after(3.seconds).do {
-        if let latestLocation = locationManager.latestLocation {
-          locationManager.logLocationChange(latestLocation)
-          let _ = Plan.after(3.seconds).do { // wait for GA to fire
-            completionHandler(.newData)
-          }
-        } else {
-          print("ERROR: MIA latestLocation")
-          completionHandler(.noData)
-        }
-      }
-    } else {
-      completionHandler(.noData)
-    }
+    guard
+      let notificationType = userInfo["type"] as? String,
+      notificationType == "location" else {
+        print("MIA: 'type' or its value")
+        return completionHandler(.noData) }
+    let locationManager = LocationManager.shared
+    // NOTE: wait long enough for location update ...
+    let queue = DispatchQueue.main
+    queue.asyncAfter(deadline: 3.seconds.fromNow, execute: {
+      guard let location = locationManager.latestLocation
+        else { return completionHandler(.noData) }
+      locationManager.logLocationChange(location)
+      // NOTE: wait long enough for GA request too complete
+      queue.asyncAfter(deadline: 3.seconds.fromNow, execute: {
+        completionHandler(.newData)
+      })
+    })
   }
 
 }
-
 
 extension AppDelegate: MessagingDelegate {
 
@@ -240,3 +237,26 @@ extension AppDelegate: NotificationManagerDelegate {
   }
 
 }
+
+// https://gist.github.com/Thomvis/b378f926b6e1a48973f694419ed73aca
+extension Int {
+  var seconds: DispatchTimeInterval {
+    return DispatchTimeInterval.seconds(self)
+  }
+  var second: DispatchTimeInterval {
+    return seconds
+  }
+  var milliseconds: DispatchTimeInterval {
+    return DispatchTimeInterval.milliseconds(self)
+  }
+  var millisecond: DispatchTimeInterval {
+    return milliseconds
+  }
+}
+extension DispatchTimeInterval {
+  var fromNow: DispatchTime {
+    return DispatchTime.now() + self
+  }
+}
+
+
