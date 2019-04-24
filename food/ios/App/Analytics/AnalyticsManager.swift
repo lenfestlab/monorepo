@@ -15,7 +15,7 @@ extension UIApplication.State: CustomStringConvertible, CustomDebugStringConvert
     case .active: return "active"
     case .inactive: return "inactive"
     case .background: return "background"
-    default: return "unknown"
+    @unknown default: return "unknown"
     }
   }
   public var debugDescription: String {
@@ -128,22 +128,6 @@ struct AnalyticsEvent {
     }
 
     return AnalyticsEvent(name: "enable-location", category: .onboarding, label:label)
-  }
-
-  static func notificationShown(post: Post?, currentLocation: CLLocationCoordinate2D?) -> AnalyticsEvent {
-    return AnalyticsEvent(name: "shows", category: .notification, label:post?.link?.absoluteString, location:currentLocation)
-  }
-
-  static func tapsOpenInNotificationCTA(post: Post, currentLocation: CLLocationCoordinate2D?) -> AnalyticsEvent {
-    return AnalyticsEvent(name:  "open", category: .notification, label:post.link?.absoluteString, location:currentLocation)
-  }
-
-  static func tapsShareInNotificationCTA(url: URL, currentLocation: CLLocationCoordinate2D?) -> AnalyticsEvent {
-    return AnalyticsEvent(name:  "share", category: .notification, label:url.absoluteString, location:currentLocation)
-  }
-
-  static func tapsPingMeLaterInNotificationCTA(post: Post, currentLocation: CLLocationCoordinate2D?) -> AnalyticsEvent {
-    return AnalyticsEvent(name:  "ping-me-later", category: .notification, label:post.link?.absoluteString, location:currentLocation)
   }
 
   static func mapViewed(currentLocation: CLLocationCoordinate2D?, source url:URL?) -> AnalyticsEvent {
@@ -306,14 +290,40 @@ struct AnalyticsEvent {
 
   static let appLaunched = AnalyticsEvent(name: "launched", category: .app)
 
-  static func tapsNotificationDefaultTapToClickThrough(place: Place, location: CLLocationCoordinate2D? = nil) -> AnalyticsEvent {
-    var latlng : String? = nil
-    var meta : Meta = [:]
+  static func locationMeta(_ location: CLLocationCoordinate2D?) -> (latlng: String?, meta: Meta) {
+    var latlng: String? = nil
+    var meta: Meta = [:]
     if let location = location {
       latlng = String(format:"%f,%f", location.latitude, location.longitude)
       meta["lat-lng"] = latlng
     }
+    return (latlng, meta)
+  }
+
+  static func notificationShown(place: Place, location: CLLocationCoordinate2D?) -> AnalyticsEvent {
+    let (latlng, meta) = locationMeta(location)
+    return AnalyticsEvent(name: "shows", metadata: meta, category: .notification, label: place.name, cd2: latlng, cd7: place.analyticsCuisine, cd8: place.analyticsNeighborhood, cd9: place.analyticsBells, cd10: place.analyticsPrice, cd11: place.analyticsReviewer)
+  }
+
+  static func tapsNotificationDefaultTapToClickThrough(place: Place, location: CLLocationCoordinate2D? = nil) -> AnalyticsEvent {
+    let (latlng, meta) = locationMeta(location)
     return AnalyticsEvent(name: "taps", metadata: meta, category: .notification, label: place.name, cd2: latlng, cd7: place.analyticsCuisine, cd8: place.analyticsNeighborhood, cd9: place.analyticsBells, cd10: place.analyticsPrice, cd11: place.analyticsReviewer)
+  }
+
+  static func tapsReadInNotificationCTA(place: Place, location: CLLocationCoordinate2D?) -> AnalyticsEvent {
+    let (latlng, meta) = locationMeta(location)
+    return AnalyticsEvent(name: "read", metadata: meta, category: .notification, label: place.name, cd2: latlng, cd7: place.analyticsCuisine, cd8: place.analyticsNeighborhood, cd9: place.analyticsBells, cd10: place.analyticsPrice, cd11: place.analyticsReviewer)
+  }
+
+  static func tapsShareInNotificationCTA(place: Place, location: CLLocationCoordinate2D?) -> AnalyticsEvent {
+    let (latlng, meta) = locationMeta(location)
+    return AnalyticsEvent(name: "share", metadata: meta, category: .notification, label: place.name, cd2: latlng, cd7: place.analyticsCuisine, cd8: place.analyticsNeighborhood, cd9: place.analyticsBells, cd10: place.analyticsPrice, cd11: place.analyticsReviewer)
+  }
+
+  static func tapsSaveInNotificationCTA(toSaved: Bool, place: Place, location: CLLocationCoordinate2D?) -> AnalyticsEvent {
+    let name = toSaved ? "add" : "remove"
+    let (latlng, meta) = locationMeta(location)
+    return AnalyticsEvent(name: name, metadata: meta, category: .notification, label: place.name, cd2: latlng, cd7: place.analyticsCuisine, cd8: place.analyticsNeighborhood, cd9: place.analyticsBells, cd10: place.analyticsPrice, cd11: place.analyticsReviewer)
   }
 
 }

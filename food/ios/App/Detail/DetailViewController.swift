@@ -112,7 +112,7 @@ class DetailViewController: UIViewController {
     if loveButton.isSelected {
       loveButton.isSelected = false
       self.analytics.log(.tapsFavoriteButtonOnDetailPage(save: false, place: self.place))
-      updateBookmark(placeId: identifier, toSaved: false) { (success) in
+      updateBookmark(placeId: identifier, toSaved: false, bookmarkHandler: nil) { (success) in
         if !success {
           self.loveButton.isSelected = true
         }
@@ -120,7 +120,7 @@ class DetailViewController: UIViewController {
     } else {
       loveButton.isSelected = true
       self.analytics.log(.tapsFavoriteButtonOnDetailPage(save: true, place: self.place))
-      updateBookmark(placeId: identifier, toSaved: true) { (success) in
+      updateBookmark(placeId: identifier, toSaved: true, bookmarkHandler: nil) { (success) in
         if success {
           UIView.flashHUD("Added to List")
         } else {

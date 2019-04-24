@@ -13,7 +13,6 @@ targets:
       - carthage: RxSwift
       - carthage: RxCocoa
       - carthage: SnapKit
-      - carthage: Schedule
       - carthage: SVProgressHUD
       - carthage: Amplitude
       - carthage: RxSwiftExt
