@@ -1,6 +1,10 @@
 targets:
   App:
     dependencies:
+      - target: Shared
+        codeSign: true
+        embed: true
+        link: false
       - target: NotificationService
         codeSign: true
         embed: true
@@ -46,7 +50,3 @@ targets:
         embed: false
       - carthage: Protobuf
         embed: false
-
-  Tests:
-    dependencies:
-      - target: App

@@ -69,7 +69,6 @@ targets:
     sources:
       - path: App
         name: App
-
     settings:
       PRODUCT_NAME: $(APP_NAME)$(APP_NAME_SUFFIX)
       PRODUCT_MODULE_NAME: App
@@ -93,6 +92,25 @@ targets:
       - name: "Bump build number"
         path: scripts/update_build_number.sh
 
+  Tests:
+    platform: iOS
+    type: bundle.unit-test
+    sources:
+      - Tests/Support
+    settings:
+      TARGETED_DEVICE_FAMILY: "$(inherited)"
+      LD_RUNPATH_SEARCH_PATHS:
+        - "$(inherited)"
+        - "@executable_path/Frameworks"
+        - "@loader_path/Frameworks"
+        # additional path required for unit tests to run:
+        # https://github.com/Carthage/Carthage/issues/1002#issue-122848182
+        - "$(PROJECT_DIR)/Carthage/Build/iOS"
+      # required to test App API directly: https://git.io/fN75s
+      TEST_HOST: "$(BUILT_PRODUCTS_DIR)/$(APP_NAME) dev.app/$(APP_NAME) dev"
+    dependencies:
+      - target: App
+
   NotificationService:
     platform: iOS
     type: app-extension
@@ -111,25 +129,31 @@ targets:
       path: Extension/Notification/Service/Info.plist
       properties:
         CFBundleDisplayName: notification-service
+        CFBundleVersion: "(Set automatically in custom Build Phases script)"
         CFBundleShortVersionString: "$(APP_VERSION)"
         NSExtension:
           NSExtensionPointIdentifier: com.apple.usernotifications.service
           NSExtensionPrincipalClass: $(PRODUCT_MODULE_NAME).NotificationService
+    dependencies:
+      - target: Shared
+        codeSign: true
+        embed: true
+        link: false
 
-  Tests:
+  Shared:
     platform: iOS
-    type: bundle.unit-test
-    sources:
-      - Tests/Support
-    dependencies: [] # carthage.yml
+    type: framework
+    sources: Shared
     settings:
-      TARGETED_DEVICE_FAMILY: "$(inherited)"
-      LD_RUNPATH_SEARCH_PATHS:
-        - "$(inherited)"
-        - "@executable_path/Frameworks"
-        - "@loader_path/Frameworks"
-        # additional path required for unit tests to run:
-        # https://github.com/Carthage/Carthage/issues/1002#issue-122848182
-        - "$(PROJECT_DIR)/Carthage/Build/iOS"
-      # required to test App API directly: https://git.io/fN75s
-      TEST_HOST: "$(BUILT_PRODUCTS_DIR)/$(APP_NAME) dev.app/$(APP_NAME) dev"
+      PRODUCT_BUNDLE_IDENTIFIER: $(BUNDLE_ID_PREFIX)$(BUNDLE_ID_SUFFIX).shared
+      CODE_SIGN_IDENTITY: iPhone Developer
+      APPLICATION_EXTENSION_API_ONLY: true
+    postbuildScripts:
+      - name: "Bump build number"
+        path: scripts/update_build_number.sh
+    info:
+      path: Shared/Info.plist
+      properties:
+        CFBundleVersion: "(Set automatically in custom Build Phases script)"
+        CFBundleShortVersionString: "$(APP_VERSION)"
+
