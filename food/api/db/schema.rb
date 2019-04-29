@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2019_04_23_165955) do
+ActiveRecord::Schema.define(version: 2019_04_29_131627) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_stat_statements"
@@ -33,7 +33,17 @@ ActiveRecord::Schema.define(version: 2019_04_23_165955) do
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.bigint "place_id"
+    t.datetime "last_saved_at"
+    t.datetime "last_unsaved_at"
+    t.datetime "last_entered_at"
+    t.datetime "last_exited_at"
+    t.datetime "last_visited_at"
     t.index ["identifier"], name: "index_bookmarks_on_identifier"
+    t.index ["last_entered_at"], name: "index_bookmarks_on_last_entered_at"
+    t.index ["last_exited_at"], name: "index_bookmarks_on_last_exited_at"
+    t.index ["last_saved_at"], name: "index_bookmarks_on_last_saved_at"
+    t.index ["last_unsaved_at"], name: "index_bookmarks_on_last_unsaved_at"
+    t.index ["last_visited_at"], name: "index_bookmarks_on_last_visited_at"
     t.index ["place_id"], name: "index_bookmarks_on_place_id"
     t.index ["user_id"], name: "index_bookmarks_on_user_id"
   end
@@ -148,6 +158,7 @@ ActiveRecord::Schema.define(version: 2019_04_23_165955) do
     t.integer "post_prices", default: [], array: true
     t.jsonb "cached_categories", default: [], array: true
     t.jsonb "cached_post", default: {}
+    t.string "reservations_url"
     t.index ["author_identifiers"], name: "index_places_on_author_identifiers"
     t.index ["cached_nabes"], name: "index_places_on_cached_nabes", using: :gin
     t.index ["category_identifiers"], name: "index_places_on_category_identifiers", using: :gin

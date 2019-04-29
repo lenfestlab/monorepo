@@ -8,6 +8,8 @@ class PlaceSerializer < ActiveModel::Serializer
     phone
     distance
     location
+    visit_radius
+    reservations_url
   ])
 
   attribute :cached_nabes, key: :nabes

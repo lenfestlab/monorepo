@@ -1,5 +1,4 @@
 class Place < ApplicationRecord
-
   has_many :bookmarks
 
   has_and_belongs_to_many :posts
@@ -25,6 +24,10 @@ class Place < ApplicationRecord
         self.address_street
       ].join(" ")
     end
+  end
+
+  def visit_radius
+    ENV["DEFAULT_VISIT_RADIUS"] || 100
   end
 
 

@@ -136,9 +136,6 @@ targets:
           NSExtensionPrincipalClass: $(PRODUCT_MODULE_NAME).NotificationService
     dependencies:
       - target: Shared
-        codeSign: true
-        embed: true
-        link: false
 
   Shared:
     platform: iOS

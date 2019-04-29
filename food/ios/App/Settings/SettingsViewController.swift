@@ -193,25 +193,10 @@ class SettingsViewController: BaseSettingsViewController, LocationManagerAuthori
     locationCell.permissionSwitch.addTarget(self, action: #selector(locationSwitchTriggered(sender:)), for: .valueChanged)
     locationCell.selectionStyle = .none
 
-    var toggleRows: [SettingsRowManager] = [
+    let toggleRows: [SettingsRowManager] = [
       SettingsRowManager(tableViewCell: notificationsCell),
       SettingsRowManager(tableViewCell: locationCell)
     ]
-
-    if env.isPreProduction {
-      let recurringCell = SettingsToggleCell.fromNib()
-      recurringCell.titleLabel.text = "Recurring notifications"
-      recurringCell.titleLabel.font = .mediumLarge
-      recurringCell.descriptionLabel.text = "We remember which notifications you receive and don’t send them again. Turn this off to receive each notification again."
-      recurringCell.descriptionLabel.font = .lightLarge
-      recurringCell.permissionSwitch.isOn = true
-      recurringCell.permissionSwitch.tag = 2
-      recurringCell.permissionSwitch.onTintColor = .lightGreyBlue
-      recurringCell.permissionSwitch.addTarget(self, action: #selector(clearHistorySwitchTriggered(sender:)), for: .valueChanged)
-      recurringCell.selectionStyle = .none
-
-      toggleRows.append(SettingsRowManager(tableViewCell: recurringCell))
-    }
 
     let general = SettingsSectionManager(title: "GENERAL", rows: rows)
 

@@ -134,7 +134,7 @@ class PlacesViewController: UIViewController {
   }
 
   func page() -> String {
-    return self.path
+    return path.contains("bookmark") ? "my-list" : "all-restaurant"
   }
 
   @IBAction func map(sender: UIButton) {
@@ -142,7 +142,7 @@ class PlacesViewController: UIViewController {
       let index = viewControllers.firstIndex(of: self.mapViewController)
       self.selectedIndex = index ?? 0
     }
-    self.analytics.log(.switchesViewListToCarousel(page: self.path))
+    self.analytics.log(.switchesViewListToCarousel(page: self.page()))
   }
 
   @objc func onLocationUpdated(_ notification: Notification) {

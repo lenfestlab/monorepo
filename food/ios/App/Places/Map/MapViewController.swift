@@ -185,16 +185,7 @@ class MapViewController: UIViewController {
 
   override func viewDidAppear(_ animated: Bool) {
     super.viewDidAppear(animated)
-    let url: URL? = AppDelegate.shared().lastViewedURL
-    // Currently we send the map viewed data regardless of whether we have the coordinates yet or not
-
     updateLocationButton()
-
-    let state = UIApplication.shared.applicationState
-    if state != .background {
-      self.analytics.log(.mapViewed(currentLocation: self.lastCoordinate, source: url))
-    }
-
     AppDelegate.shared().lastViewedURL = nil
   }
 
