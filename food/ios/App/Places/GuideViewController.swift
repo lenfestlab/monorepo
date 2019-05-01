@@ -1,4 +1,5 @@
 import UIKit
+import CoreLocation
 
 class GuideViewController: PlacesViewController {
 
@@ -7,6 +8,7 @@ class GuideViewController: PlacesViewController {
   init(analytics: AnalyticsManager, category: Category) {
     super.init(path: "places.json?categories=\(category.identifier)", analytics: analytics)
     self.category = category
+    self.selectedIndex = 1 // default to list view instead of map
   }
 
   override func page() -> String {
@@ -23,5 +25,11 @@ class GuideViewController: PlacesViewController {
     self.mapViewController.controllerIdentifierKey = "guide"
   }
 
+  override func viewWillAppear(_ animated: Bool) {
+    super.viewWillAppear(animated)
+    // TODO: hotfix only, refactor - guide default map center/span
+    let coordinate = CLLocationCoordinate2D(latitude: 39.9526, longitude: -75.1652)
+    self.mapViewController.centerMap(coordinate)
+  }
 
 }
