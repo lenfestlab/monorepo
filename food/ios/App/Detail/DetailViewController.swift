@@ -143,7 +143,7 @@ class DetailViewController: UIViewController {
 
     self.websiteButton.isEnabled = self.place.website != nil
     self.callButton.isEnabled = self.place.phone != nil
-    self.reservationButton.isEnabled = false
+    self.reservationButton.isEnabled = self.place.reservationsURL != nil
 
     self.navigationItem.titleView = UIImageView(image: UIImage(named: "inquirer-logo"))
 
@@ -235,7 +235,10 @@ class DetailViewController: UIViewController {
 
   @IBAction func makeReservation() {
     self.analytics.log(.tapsReservationButton(place: self.place))
-    let _ = AppDelegate.shared()
+    let app = AppDelegate.shared()
+    if let url = self.place.reservationsURL {
+      app.openInSafari(url: url)
+    }
   }
 
   @IBAction func openFullReview() {

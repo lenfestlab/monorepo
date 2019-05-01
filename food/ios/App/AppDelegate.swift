@@ -5,7 +5,9 @@ import SafariServices
 import AlamofireNetworkActivityLogger
 import RxSwift
 import SwiftDate
+import CoreLocation
 
+typealias Result<T> = Swift.Result<T, Error>
 typealias LaunchOptions = [UIApplication.LaunchOptionsKey: Any]?
 let gcmMessageIDKey = "gcm.message_id"
 
@@ -20,17 +22,20 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
   var lastViewedURL: URL?
   var window: UIWindow?
   var analytics: AnalyticsManager!
+  var env: Env!
+  var api: Api!
   var locationManager: LocationManager!
   var notificationManager: NotificationManager!
   var mainController: MainController!
   var tabController: TabBarViewController!
+  let bag = DisposeBag()
 
   class func shared() -> AppDelegate {
     return UIApplication.shared.delegate as! AppDelegate
   }
 
   func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: LaunchOptions) -> Bool {
-    let env = Env()
+    self.env = Env()
     if !env.isRemote {
       NetworkActivityLogger.shared.level = .debug
       NetworkActivityLogger.shared.startLogging()
@@ -47,10 +52,10 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
       }
     }
 
+    self.api = Api(env: env)
     self.analytics = AnalyticsManager(env)
     self.locationManager = LocationManager.sharedWith(analytics: analytics)
 
-    let api = Api(env: env)
     self.notificationManager =
       NotificationManager(api: api,
                           analytics: analytics,
@@ -94,7 +99,19 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
       }
     }
 
-    self.analytics.log(.appLaunched)
+    guard let window = self.window else { return true }
+    let notificationResponse$ =
+      notificationManager.notificationResponse$
+    let anyTouch$ =
+      window.rx.methodInvoked(#selector(UIView.hitTest(_:with:)))
+    anyTouch$.withLatestFrom(notificationResponse$)
+      .take(1)
+      .subscribe(onNext: { [unowned self] response in
+        self.analytics.log(.appLaunched((response != nil)
+          ? .notification
+          : .direct))
+      }).disposed(by: bag)
+
 
     return true
   }
@@ -127,6 +144,18 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
       animated: false)
   }
 
+
+  enum RemoteNotificationType: String {
+    case location
+    case visitCheck = "visit_check"
+  }
+
+  enum VisitError: Error {
+    case PlaceLocationMIA
+    case TooFarAway
+    case SelfMIA
+  }
+
   func application(
     _ application: UIApplication,
     didReceiveRemoteNotification
@@ -135,22 +164,82 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
     ) -> Void) {
     print("didReceiveRemoteNotification userInfo: \(userInfo)")
     guard
-      let notificationType = userInfo["type"] as? String,
-      notificationType == "location" else {
+      let typeString  = userInfo["type"] as? String,
+      let type = RemoteNotificationType(rawValue: typeString)
+      else {
         print("MIA: 'type' or its value")
         return completionHandler(.noData) }
-    let locationManager = LocationManager.shared
-    // NOTE: wait long enough for location update ...
-    let queue = DispatchQueue.main
-    queue.asyncAfter(deadline: 3.seconds.fromNow, execute: {
-      guard let location = locationManager.latestLocation
-        else { return completionHandler(.noData) }
-      locationManager.logLocationChange(location)
-      // NOTE: wait long enough for GA request too complete
+    switch type {
+    case .location:
+      let locationManager = LocationManager.shared
+      // NOTE: wait long enough for location update ...
+      let queue = DispatchQueue.main
       queue.asyncAfter(deadline: 3.seconds.fromNow, execute: {
-        completionHandler(.newData)
+        guard let location = locationManager.latestLocation
+          else { return completionHandler(.noData) }
+        locationManager.logLocationChange(location)
+        // NOTE: wait long enough for GA request too complete
+        queue.asyncAfter(deadline: 3.seconds.fromNow, execute: {
+          completionHandler(.newData)
+        })
       })
-    })
+    case .visitCheck:
+      guard let placeId = userInfo["place_id"] as? String
+        else { print("MIA: `place_id`"); return completionHandler(.failed) }
+      let place$ = self.api.getPlace$(placeId)
+      let latestLocation$ = self.locationManager.location$
+      Observable.combineLatest(place$, latestLocation$)
+        .flatMapFirst({ [weak self] (result, currentLocation) -> Observable<Result<Bookmark>> in
+          guard let `self` = self else { throw VisitError.SelfMIA }
+          switch result {
+          case let .failure(error): throw error
+          case let .success(place):
+            guard let placeLocation = place.location?.nativeLocation
+              else { throw VisitError.PlaceLocationMIA }
+            let distance = currentLocation.distance(from: placeLocation)
+            print(distance)
+            guard distance.isLess(than: place.visitRadiusMax) else {
+              throw VisitError.TooFarAway }
+            self.analytics.log(.visited(place: place, location: currentLocation.coordinate))
+            return self.api.recordVisit$(placeId)
+          }
+        })
+        .subscribe({ [weak self] event in
+          guard let `self` = self else { return completionHandler(.failed) }
+          switch event {
+          case let .next(result):
+            // if API recorded visit, display local notification (stag only)
+            switch result {
+            case let .success(bookmark):
+              if self.env.isPreProduction,
+                let placeName = bookmark.place?.name,
+                let center = self.notificationManager.notificationCenter {
+                let content = UNMutableNotificationContent()
+                content.categoryIdentifier = "visiting"
+                content.sound = UNNotificationSound.default
+                content.title = "Visit: \(placeName)"
+                let request =
+                  UNNotificationRequest(
+                    identifier: UUID().uuidString,
+                    content: content,
+                    trigger: nil)
+                center.add(request, withCompletionHandler: { (error) in
+                  if let error = error { print(error) }
+                })
+              }
+            case let .failure(error):
+              print(error)
+            }
+          case let .error(error):
+            print(error)
+            completionHandler(.failed)
+          case .completed:
+            completionHandler(.newData)
+          }
+        })
+        .disposed(by: bag)
+
+    }
   }
 
 }

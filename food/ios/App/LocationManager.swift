@@ -173,7 +173,7 @@ class LocationManager: NSObject, CLLocationManagerDelegate {
       print("location changed outside window")
       return
     }
-    analytics.log(.locationChanged(newLocation.coordinate))
+    analytics.log(.backgroundTrackingforLocation(newLocation.coordinate))
   }
 
   func locationManager(_ manager: CLLocationManager, monitoringDidFailFor region: CLRegion?, withError error: Error) {
@@ -202,6 +202,10 @@ class LocationManager: NSObject, CLLocationManagerDelegate {
           }
         })
         .share()
+  }
+
+  var location$: Observable<CLLocation> {
+    return self.locationManager.rx.location.unwrap()
   }
 
   func locationManager(_ manager: CLLocationManager, didEnterRegion region: CLRegion) {

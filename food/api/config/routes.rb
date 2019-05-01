@@ -4,11 +4,6 @@ Rails.application.routes.draw do
 
   resources :users, only: :update
 
-  # TODO: deprecate
-  resources :installations,
-    only: :update,
-    controller: :users
-
   %i[
     categories
     nabes
@@ -19,8 +14,8 @@ Rails.application.routes.draw do
 
   resources :places, only: %i[ index show ]
 
-  resources :bookmarks, only: %i[ create index ]
-  delete '/bookmarks(/:id)', controller: :bookmarks, action: :destroy
+  resources :bookmarks, only: %i[ index show ]
+  patch '/bookmarks(/:id)', controller: :bookmarks, action: :update
 
 
   # static pages

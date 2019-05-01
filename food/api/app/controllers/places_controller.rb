@@ -12,7 +12,7 @@ class PlacesController < ApplicationController
 
     if find_bookmarked = params[:bookmarked].present?
       current_user = self.authenticate!
-      bookmarked_place_ids = current_user.bookmarks.pluck(:place_id)
+      bookmarked_place_ids = current_user.bookmarks.saved.pluck(:place_id)
     end
 
     data =

@@ -49,7 +49,8 @@ struct AnalyticsEvent {
     cd8: String? = nil,
     cd9: String? = nil,
     cd10: String? = nil,
-    cd11: String? = nil
+    cd11: String? = nil,
+    cd13: String? = nil
     ) {
     self.name = name
     self.category = category
@@ -77,7 +78,13 @@ struct AnalyticsEvent {
       self.metadata["cd11"] = cd11
     }
 
+    /* NOTE: disabling, not threadsafe
     self.metadata["cd12"] = UIApplication.shared.applicationState.description
+     */
+
+    if let cd13 = cd13 {
+      self.metadata["cd13"] = cd13
+    }
   }
 
 
@@ -128,15 +135,6 @@ struct AnalyticsEvent {
     }
 
     return AnalyticsEvent(name: "enable-location", category: .onboarding, label:label)
-  }
-
-  static func mapViewed(currentLocation: CLLocationCoordinate2D?, source url:URL?) -> AnalyticsEvent {
-    var label = "direct"
-    if url != nil {
-      label = (url?.absoluteString)!
-    }
-
-    return AnalyticsEvent(name:  "open-map", category: .app, label:label, location:currentLocation)
   }
 
   static func tapsOnPin(place: Place) -> AnalyticsEvent {
@@ -194,8 +192,8 @@ struct AnalyticsEvent {
         label: source)
   }
 
-  static func locationChanged(_ location: CLLocationCoordinate2D?) -> AnalyticsEvent {
-    return AnalyticsEvent(name: "location-changed", category: .background, location: location)
+  static func backgroundTrackingforLocation(_ location: CLLocationCoordinate2D?) -> AnalyticsEvent {
+    return AnalyticsEvent(name: "location", category: .background, location: location)
   }
 
   static func tapsFullReviewButton(place: Place) -> AnalyticsEvent {
@@ -288,7 +286,12 @@ struct AnalyticsEvent {
     return AnalyticsEvent(name: "search", category: .filter, label:mode.rawValue, cd7: cuisines, cd8: neighborhoods, cd9: bells, cd10: price, cd11: reviewer)
   }
 
-  static let appLaunched = AnalyticsEvent(name: "launched", category: .app)
+  enum LaunchSource: String {
+    case direct, notification
+  }
+  static func appLaunched(_ source: LaunchSource) -> AnalyticsEvent {
+    return AnalyticsEvent(name: "launched", category: .app, label: source.rawValue)
+  }
 
   static func locationMeta(_ location: CLLocationCoordinate2D?) -> (latlng: String?, meta: Meta) {
     var latlng: String? = nil
@@ -300,30 +303,50 @@ struct AnalyticsEvent {
     return (latlng, meta)
   }
 
-  static func notificationShown(place: Place, location: CLLocationCoordinate2D?) -> AnalyticsEvent {
+  typealias NotificationCategory = NotificationManager.Category
+
+  static func notificationShown(_ category: NotificationCategory, place: Place, location: CLLocationCoordinate2D?) -> AnalyticsEvent {
     let (latlng, meta) = locationMeta(location)
-    return AnalyticsEvent(name: "shows", metadata: meta, category: .notification, label: place.name, cd2: latlng, cd7: place.analyticsCuisine, cd8: place.analyticsNeighborhood, cd9: place.analyticsBells, cd10: place.analyticsPrice, cd11: place.analyticsReviewer)
+    return AnalyticsEvent(name: "shows", metadata: meta, category: .notification, label: place.name, cd2: latlng, cd7: place.analyticsCuisine, cd8: place.analyticsNeighborhood, cd9: place.analyticsBells, cd10: place.analyticsPrice, cd11: place.analyticsReviewer, cd13: category.rawValue)
   }
 
-  static func tapsNotificationDefaultTapToClickThrough(place: Place, location: CLLocationCoordinate2D? = nil) -> AnalyticsEvent {
+  static func tapsNotificationDefaultTapToClickThrough(_ category: NotificationCategory, place: Place, location: CLLocationCoordinate2D? = nil) -> AnalyticsEvent {
     let (latlng, meta) = locationMeta(location)
-    return AnalyticsEvent(name: "taps", metadata: meta, category: .notification, label: place.name, cd2: latlng, cd7: place.analyticsCuisine, cd8: place.analyticsNeighborhood, cd9: place.analyticsBells, cd10: place.analyticsPrice, cd11: place.analyticsReviewer)
+    return AnalyticsEvent(name: "taps", metadata: meta, category: .notification, label: place.name, cd2: latlng, cd7: place.analyticsCuisine, cd8: place.analyticsNeighborhood, cd9: place.analyticsBells, cd10: place.analyticsPrice, cd11: place.analyticsReviewer, cd13: category.rawValue)
   }
 
-  static func tapsReadInNotificationCTA(place: Place, location: CLLocationCoordinate2D?) -> AnalyticsEvent {
+  static func tapsReadInNotificationCTA(_ category: NotificationCategory, place: Place, location: CLLocationCoordinate2D?) -> AnalyticsEvent {
     let (latlng, meta) = locationMeta(location)
-    return AnalyticsEvent(name: "read", metadata: meta, category: .notification, label: place.name, cd2: latlng, cd7: place.analyticsCuisine, cd8: place.analyticsNeighborhood, cd9: place.analyticsBells, cd10: place.analyticsPrice, cd11: place.analyticsReviewer)
+    return AnalyticsEvent(name: "read", metadata: meta, category: .notification, label: place.name, cd2: latlng, cd7: place.analyticsCuisine, cd8: place.analyticsNeighborhood, cd9: place.analyticsBells, cd10: place.analyticsPrice, cd11: place.analyticsReviewer, cd13: category.rawValue)
   }
 
-  static func tapsShareInNotificationCTA(place: Place, location: CLLocationCoordinate2D?) -> AnalyticsEvent {
+  static func tapsShareInNotificationCTA(_ category: NotificationCategory, place: Place, location: CLLocationCoordinate2D?) -> AnalyticsEvent {
     let (latlng, meta) = locationMeta(location)
-    return AnalyticsEvent(name: "share", metadata: meta, category: .notification, label: place.name, cd2: latlng, cd7: place.analyticsCuisine, cd8: place.analyticsNeighborhood, cd9: place.analyticsBells, cd10: place.analyticsPrice, cd11: place.analyticsReviewer)
+    return AnalyticsEvent(name: "share", metadata: meta, category: .notification, label: place.name, cd2: latlng, cd7: place.analyticsCuisine, cd8: place.analyticsNeighborhood, cd9: place.analyticsBells, cd10: place.analyticsPrice, cd11: place.analyticsReviewer, cd13: category.rawValue)
   }
 
-  static func tapsSaveInNotificationCTA(toSaved: Bool, place: Place, location: CLLocationCoordinate2D?) -> AnalyticsEvent {
+  static func tapsSaveInNotificationCTA(_ category: NotificationCategory, toSaved: Bool, place: Place, location: CLLocationCoordinate2D?) -> AnalyticsEvent {
     let name = toSaved ? "add" : "remove"
     let (latlng, meta) = locationMeta(location)
-    return AnalyticsEvent(name: name, metadata: meta, category: .notification, label: place.name, cd2: latlng, cd7: place.analyticsCuisine, cd8: place.analyticsNeighborhood, cd9: place.analyticsBells, cd10: place.analyticsPrice, cd11: place.analyticsReviewer)
+    return AnalyticsEvent(name: name, metadata: meta, category: .notification, label: place.name, cd2: latlng, cd7: place.analyticsCuisine, cd8: place.analyticsNeighborhood, cd9: place.analyticsBells, cd10: place.analyticsPrice, cd11: place.analyticsReviewer, cd13: category.rawValue)
+  }
+
+  static func visited(
+    place: Place,
+    location: CLLocationCoordinate2D?
+    ) -> AnalyticsEvent {
+    let (latlng, meta) = locationMeta(location)
+    return AnalyticsEvent(
+      name: "visited",
+      metadata: meta,
+      category: .background,
+      label: place.name,
+      cd2: latlng,
+      cd7: place.analyticsCuisine,
+      cd8: place.analyticsNeighborhood,
+      cd9: place.analyticsBells,
+      cd10: place.analyticsPrice,
+      cd11: place.analyticsReviewer)
   }
 
 }

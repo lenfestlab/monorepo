@@ -43,7 +43,10 @@ extension HomeViewController : UISearchBarDelegate {
 
   override func didSetPlaceFiltered() {
     if (self.placeStore.placesFiltered.count == 0) {
-      self.analytics.log(.noResultsWhenSearching(searchTerm: self.searchBar.text ?? ""))
+      let searchTerm = self.searchBar.text ?? ""
+      if !searchTerm.isEmpty {
+        self.analytics.log(.noResultsWhenSearching(searchTerm: searchTerm))
+      }
     }
     super.didSetPlaceFiltered()
   }

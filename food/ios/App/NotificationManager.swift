@@ -118,11 +118,15 @@ class NotificationManager: NSObject, UNUserNotificationCenterDelegate {
   }
 
 
+  let notificationResponse$ =
+    BehaviorSubject<UNNotificationResponse?>(value: nil)
+
   func userNotificationCenter(
     _ center: UNUserNotificationCenter,
     didReceive response: UNNotificationResponse,
     withCompletionHandler completionHandler: @escaping () -> Void) {
     print("\n response"); print(response)
+    self.notificationResponse$.onNext(response)
     let categoryId = response.notification.request.content.categoryIdentifier
     let actionId = response.actionIdentifier
     let userInfo = response.notification.request.content.userInfo
@@ -130,7 +134,7 @@ class NotificationManager: NSObject, UNUserNotificationCenterDelegate {
     let postURL = userInfo["post_url"] as? String
     let placeIdentifier = userInfo["place_id"] as? String
 
-    guard let _ = Category(rawValue: categoryId) else {
+    guard let category = Category(rawValue: categoryId) else {
       print("MIA: category unspecified/unsupported")
       // if manual push from FIR w/ "url" property, open in safari
       return self.attemptOpenURL(url, completionHandler)
@@ -138,17 +142,17 @@ class NotificationManager: NSObject, UNUserNotificationCenterDelegate {
 
     switch Action(rawValue: actionId) {
     case .none: // tapped notification body, not action button
-      attemptShowPlace(placeIdentifier, completionHandler)
+      attemptShowPlace(category, placeIdentifier, completionHandler)
     case .some(let action):
       switch action {
       case .read:
-        attemptReadPlace(placeIdentifier, postURL, completionHandler)
+        attemptReadPlace(category, placeIdentifier, postURL, completionHandler)
       case .save:
-        updatePlace(placeIdentifier, save: true, completionHandler)
+        updatePlace(category, placeIdentifier, save: true, completionHandler)
       case .unsave:
-        updatePlace(placeIdentifier, save: false, completionHandler)
+        updatePlace(category, placeIdentifier, save: false, completionHandler)
       case .share:
-        attemptSharePlace(placeIdentifier, completionHandler)
+        attemptSharePlace(category, placeIdentifier, completionHandler)
       }
     }
   }
@@ -167,10 +171,12 @@ class NotificationManager: NSObject, UNUserNotificationCenterDelegate {
   }
 
   private func attemptShowPlace(
+    _ category: Category,
     _ identifier: String?,
     _ completionHandler: @escaping ()->()) {
     guard let identifier = identifier else { return completionHandler() }
     self.api.getPlace$(identifier)
+      .observeOn(Scheduler.main)
       .subscribe(onNext: { [weak self] (result: Result<Place>) in
         guard let `self` = self else { return completionHandler() }
         switch result {
@@ -178,6 +184,7 @@ class NotificationManager: NSObject, UNUserNotificationCenterDelegate {
           print("success \(place)")
           self.analytics.log(
             .tapsNotificationDefaultTapToClickThrough(
+              category,
               place: place,
               location: self.locationManager.latestCoordinate))
           let vc = DetailViewController(analytics: self.analytics, place: place)
@@ -192,11 +199,13 @@ class NotificationManager: NSObject, UNUserNotificationCenterDelegate {
   }
 
   private func attemptReadPlace(
+    _ category: Category,
     _ identifier: String?,
     _ urlString: String?,
     _ completionHandler: @escaping ()->()) {
     guard let identifier = identifier else { return completionHandler() }
     self.api.getPlace$(identifier)
+      .observeOn(Scheduler.main)
       .subscribe(onNext: { [weak self] (result: Result<Place>) in
         guard let `self` = self else { return completionHandler() }
         switch result {
@@ -204,6 +213,7 @@ class NotificationManager: NSObject, UNUserNotificationCenterDelegate {
           print("success \(place)")
           self.analytics.log(
             .tapsReadInNotificationCTA(
+              category,
               place: place,
               location: self.locationManager.latestCoordinate))
           self.attemptOpenURL(urlString, completionHandler)
@@ -215,10 +225,12 @@ class NotificationManager: NSObject, UNUserNotificationCenterDelegate {
   }
 
   private func attemptSharePlace(
+    _ category: Category,
     _ identifier: String?,
     _ completionHandler: @escaping () -> ()) {
     guard let identifier = identifier else { return completionHandler() }
     self.api.getPlace$(identifier)
+      .observeOn(Scheduler.main)
       .subscribe(onNext: { [weak self] (result: Result<Place>) in
         switch result {
         case .success(let place):
@@ -226,6 +238,7 @@ class NotificationManager: NSObject, UNUserNotificationCenterDelegate {
           guard let `self` = self else { return completionHandler() }
           self.analytics.log(
             .tapsShareInNotificationCTA(
+              category,
               place: place,
               location: self.locationManager.latestCoordinate))
           let data: [String: [UIActivity.ActivityType: String]] = [
@@ -256,6 +269,7 @@ class NotificationManager: NSObject, UNUserNotificationCenterDelegate {
   }
 
   private func updatePlace(
+    _ category: Category,
     _ identifier: String?,
     save: Bool,
     _ completionHandler: @escaping ()->()) {
@@ -264,6 +278,7 @@ class NotificationManager: NSObject, UNUserNotificationCenterDelegate {
       guard let `self` = self, let place = bookmark.place else { return }
       self.analytics.log(
         .tapsSaveInNotificationCTA(
+          category,
           toSaved: save,
           place: place,
           location: self.locationManager.latestCoordinate))
@@ -285,31 +300,28 @@ class NotificationManager: NSObject, UNUserNotificationCenterDelegate {
       region$.filterMap({ regionEvent -> FilterMap<CLCircularRegion> in
         guard case let .enter(region) = regionEvent else { return .ignore }
         return .map(region) })
+
     regionEntry$
-      /* WIP: note entry for "visit" calculation on exit
-      .do(onNext: { region -> Void in
-        let now = Date()
-        let identifier = region.identifier
-        saveEntered(identifier, at: now)
-      })
-       */
-      // fetch place, then fire its nearby notification
+      // record entry for "visit" calculations
       .distinct()
-      .flatMap({ [unowned self] region -> Observable<Result<Place>> in
+      .flatMap({ [unowned self] region -> Observable<Result<Bookmark>> in
         let placeId = region.identifier
-        return self.api.getPlace$(placeId)
+        return self.api.recordRegionChange$(placeId, isEntering: true)
       })
-      .subscribe(onNext: { [weak self] (result: Result<Place>) in
+      // fetch place, then fire its nearby notification
+      .subscribe(onNext: { [weak self] (result: Result<Bookmark>) in
+        guard let `self` = self else { return }
         switch result {
         case let .failure(error):
           print("NOOP ERROR: \(error)")
-        case let .success(place):
-          guard let `self` = self else { return print("MIA: self") }
+        case let .success(bookmark):
           guard
+            let place = bookmark.place,
             let placeName = place.name
             else { return print("MIA: place name") }
+          let category = Category.nearby
           let content = UNMutableNotificationContent()
-          content.categoryIdentifier = Category.nearby.rawValue
+          content.categoryIdentifier = category.rawValue
           content.sound = UNNotificationSound.default
           content.title = "You're nearby \(placeName)!"
           content.body = "You saved \(placeName) to your list of restaurants. For a reason to go, read the highlights again."
@@ -317,7 +329,7 @@ class NotificationManager: NSObject, UNUserNotificationCenterDelegate {
           if let url = place.post?.url?.absoluteString {
             content.userInfo["post_url"] = url
           }
-          guard // TODO: share attachment logic w/ notification service extension
+          guard
             let imageURLString = place.imageURL?.absoluteString,
             let imageURL = URL(string: imageURLString),
             let imageData = NSData(contentsOf: imageURL),
@@ -335,31 +347,35 @@ class NotificationManager: NSObject, UNUserNotificationCenterDelegate {
           center.add(request, withCompletionHandler: { (error) in
             if let error = error { print(error) }
           })
-          self.analytics.log(.notificationShown(place: place, location: self.locationManager.latestCoordinate))
+          self.analytics.log(.notificationShown(
+            category,
+            place: place,
+            location: self.locationManager.latestCoordinate))
         }
       }).disposed(by: bag)
 
-    /* WIP: instrument "visit" analytics event
     let regionExit$ =
       region$.filterMap({ regionEvent -> FilterMap<CLCircularRegion> in
         guard case let .exit(region) = regionEvent else { return .ignore }
         return .map(region) })
-    regionExit$
-      .subscribe(onNext: { region in
-        let identifier = region.identifier
-        guard
-          let enteredAt = self.placeManager.getEnteredAt(identifier)
-          else { return print("MIA: enteredAt \(identifier)") }
-        let now = Date()
-        let visitBeginsAt = enteredAt.adding(15.minutes)
-        guard now.isAfterDate(visitBeginsAt, granularity: .second)
-          else { return print("exited region too quickly for a visit")}
-        // TODO
-        // fire "visited" analytics event
-      }).disposed(by: bag)
-     */
-  }
 
+    regionExit$
+      .flatMap({ [unowned self] region -> Observable<Result<Bookmark>> in
+        let placeId = region.identifier
+        return self.api.recordRegionChange$(placeId, isEntering: false)
+      })
+      .subscribe({ event in
+        switch event {
+        case let .next(bookmark):
+          print(bookmark)
+        case let .error(error):
+          print(error)
+        default:
+          print("NOOP")
+        }
+      }).disposed(by: bag)
+
+  }
 
 }
 

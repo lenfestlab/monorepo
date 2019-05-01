@@ -5,11 +5,26 @@ import Gloss
 struct Bookmark: JSONDecodable, Codable {
   let identifier: String
   let place: Place?
+  let lastSavedAt: Date?
+  let lastUnsavedAt: Date?
+  let lastEnteredAt: Date?
+  let lastExitedAt: Date?
 
   init?(json: JSON) {
     self.identifier = ("identifier" <~~ json)!
     self.place = "place" <~~ json
+    self.lastSavedAt = Decoder.decode(dateISO8601ForKey: "last_saved_at")(json)
+    self.lastUnsavedAt = Decoder.decode(dateISO8601ForKey: "last_unsaved_at")(json)
+    self.lastEnteredAt = Decoder.decode(dateISO8601ForKey: "last_entered_at")(json)
+    self.lastExitedAt = Decoder.decode(dateISO8601ForKey: "last_exited_at")(json)
   }
+
+  var isSaved: Bool {
+    guard let savedAt = lastSavedAt else { return false }
+    if let unsavedAt = lastUnsavedAt, unsavedAt > savedAt { return false }
+    return true
+  }
+
 }
 
 func updateBookmark(
@@ -23,8 +38,8 @@ func updateBookmark(
     params["auth_token"] = authToken
   }
   let url = "\(env.apiBaseUrlString)/bookmarks"
-  let method: HTTPMethod = toSaved ? .post : .delete
-  Alamofire.request(url, method: method, parameters:params).responseJSON { response in
+  params[(toSaved ? "last_saved_at" : "last_unsaved_at")] = Date()
+  Alamofire.request(url, method: .patch, parameters:params).responseJSON { response in
     guard
       let json = response.result.value as? JSON
       else {
@@ -53,10 +68,10 @@ func fetchBookmarks(_ completion: ((Bool)->Void)?) {
       else {
         DispatchQueue.main.async { completion?(false) }
         return print("MIA: parsed bookmarks") }
-    print(bookmarks)
-    let places: [Place] = bookmarks.compactMap({$0.place})
-    print(places)
-    Bookmark.cacheLatest(places: places)
+    let savedBookmarks = bookmarks.filter({ $0.isSaved })
+    let trackablePlaces: [Place] = savedBookmarks.compactMap({$0.place})
+    print(trackablePlaces)
+    Bookmark.cacheLatest(places: trackablePlaces)
     completion?(true)
   }
 }

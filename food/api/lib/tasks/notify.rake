@@ -20,4 +20,9 @@ namespace :notify do
     ap response
   end
 
+  desc "request visit status of all eligible apps"
+  task visit_checks: :environment do
+    Bookmark.visitable.each &:visit_check
+  end
+
 end

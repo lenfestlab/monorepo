@@ -12,6 +12,12 @@ struct Location: JSONDecodable, Codable {
     self.longitude = ("lng" <~~ json)!
   }
 
+  var nativeLocation: CLLocation {
+    return CLLocation(
+      latitude: self.latitude,
+      longitude: self.longitude)
+  }
+
 }
 
 struct Post: JSONDecodable, Codable, Identifiable {
@@ -76,9 +82,8 @@ struct Place: JSONDecodable, Codable, Identifiable {
   let distance: Double?
   let nabes: [Neighborhood]?
   let categories: [Category]?
-
-  // local-only
-  let regionEnteredAt: Date?
+  let visitRadius: Double?
+  var reservationsURL: URL?
 
   init?(json: JSON) {
     self.identifier = ("identifier" <~~ json)!
@@ -92,7 +97,12 @@ struct Place: JSONDecodable, Codable, Identifiable {
     self.nabes = "nabes" <~~ json
     self.categories = "categories" <~~ json
     self.website = "website" <~~ json
-    self.regionEnteredAt = nil
+    self.visitRadius = "visit_radius" <~~ json
+    self.reservationsURL = "reservations_url" <~~ json
+  }
+
+  var visitRadiusMax: Double {
+    return visitRadius ?? Place.defaultRadius
   }
 
   var title: String? {
@@ -116,9 +126,11 @@ struct Place: JSONDecodable, Codable, Identifiable {
     return CLLocationCoordinate2D(latitude: (self.location?.latitude)!, longitude: (self.location?.longitude)!)
   }
 
+  static let defaultRadius: Double = 100
+
   var region: CLCircularRegion {
     let center = coordinate()
-    let radius = self.radius ?? 100
+    let radius = self.radius ?? Place.defaultRadius
     let region =
       CLCircularRegion(
         center: center,
