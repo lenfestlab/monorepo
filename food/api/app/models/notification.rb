@@ -102,6 +102,17 @@ class Notification < ApplicationRecord
       end
     end
 
+    configure :post do
+      # ensure visible in-app
+      associated_collection_cache_all false
+      associated_collection_scope do
+        Proc.new { |scope|
+          scope = scope.visible
+        }
+      end
+    end
+
+
   end
 
   def admin_name
