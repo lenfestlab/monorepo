@@ -145,3 +145,11 @@ module RailsAdmin
     end
   end
 end
+
+# https://github.com/sferik/rails_admin/issues/2502#issuecomment-338268746
+RailsAdmin::Config::Fields::Types::Json.inspect # Load before override.
+class RailsAdmin::Config::Fields::Types::Json
+  def queryable?
+    false
+  end
+end
