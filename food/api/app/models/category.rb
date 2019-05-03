@@ -20,7 +20,9 @@ class Category < ApplicationRecord
     super(ids)
   end
 
-  validates :photos, presence: true
+  validates :photos,
+    presence: true,
+    unless: Proc.new { |r| r.is_cuisine }
 
   # save associated places to update cached category_ids
   after_save :update_places
