@@ -1,5 +1,7 @@
 import UIKit
 import UPCarouselFlowLayout
+import RxSwift
+import RxCocoa
 
 let imageIdentifier = "ImageViewCell"
 
@@ -24,7 +26,7 @@ extension DetailViewController: UICollectionViewDataSource {
     if let images = self.place.post?.images {
       let image:Img = images[indexPath.row]
       if let url = image.url {
-        cell.imageView.af_setImage(withURL: url)
+        cell.imageView.kf.setImage(with: url)
       }
     }
 
@@ -88,11 +90,20 @@ class DetailViewController: UIViewController {
   @IBOutlet weak var loveButton: UIButton!
 
   private let analytics: AnalyticsManager
+  private let cache: Cache
+  private let bag = DisposeBag()
 
-  init(analytics: AnalyticsManager, place: Place) {
+  init(analytics: AnalyticsManager, cache: Cache, place: Place) {
     self.analytics = analytics
+    self.cache = cache
     self.place = place
     super.init(nibName: nil, bundle: nil)
+    // eager load carousel images
+    if let images = self.place.post?.images {
+      self.cache.loadImages$(images.compactMap({$0.url}))
+        .subscribe()
+        .disposed(by: bag)
+    }
   }
 
   required init?(coder aDecoder: NSCoder) {
@@ -111,7 +122,7 @@ class DetailViewController: UIViewController {
     let identifier = self.place.identifier
     if loveButton.isSelected {
       loveButton.isSelected = false
-      self.analytics.log(.tapsFavoriteButtonOnDetailPage(save: false, place: self.place))
+      analytics.log(.tapsFavoriteButtonOnDetailPage(save: false, place: self.place))
       updateBookmark(placeId: identifier, toSaved: false, bookmarkHandler: nil) { (success) in
         if !success {
           self.loveButton.isSelected = true
@@ -119,7 +130,7 @@ class DetailViewController: UIViewController {
       }
     } else {
       loveButton.isSelected = true
-      self.analytics.log(.tapsFavoriteButtonOnDetailPage(save: true, place: self.place))
+      analytics.log(.tapsFavoriteButtonOnDetailPage(save: true, place: self.place))
       updateBookmark(placeId: identifier, toSaved: true, bookmarkHandler: nil) { (success) in
         if success {
           UIView.flashHUD("Added to List")
@@ -165,6 +176,7 @@ class DetailViewController: UIViewController {
     self.pageControl.numberOfPages = self.place.post?.images?.count ?? 0
     self.pageControl.pageIndicatorTintColor = UIColor.white.withAlphaComponent(0.5)
     self.pageControl.currentPageIndicatorTintColor = UIColor.oceanBlue
+    self.pageControl.hidesForSinglePage = true
 
     self.extendedLayoutIncludesOpaqueBars = true
 
@@ -234,7 +246,7 @@ class DetailViewController: UIViewController {
   }
 
   @IBAction func makeReservation() {
-    self.analytics.log(.tapsReservationButton(place: self.place))
+    analytics.log(.tapsReservationButton(place: self.place))
     let app = AppDelegate.shared()
     if let url = self.place.reservationsURL {
       app.openInSafari(url: url)
@@ -242,7 +254,7 @@ class DetailViewController: UIViewController {
   }
 
   @IBAction func openFullReview() {
-    self.analytics.log(.tapsFullReviewButton(place: self.place))
+    analytics.log(.tapsFullReviewButton(place: self.place))
     let app = AppDelegate.shared()
     if let link = self.place.post?.link {
       app.openInSafari(url: link)
@@ -250,7 +262,7 @@ class DetailViewController: UIViewController {
   }
 
   @IBAction func openWebsite() {
-    self.analytics.log(.tapsWebsiteButton(place: self.place))
+    analytics.log(.tapsWebsiteButton(place: self.place))
     let app = AppDelegate.shared()
     if let link = self.place.website {
       app.openInSafari(url: link)
@@ -258,7 +270,7 @@ class DetailViewController: UIViewController {
   }
 
   @IBAction func call() {
-    self.analytics.log(.tapsCallButton(place: self.place))
+    analytics.log(.tapsCallButton(place: self.place))
     if let phone = self.place.phone {
       guard let number = URL(string: "tel://" + phone) else { return }
       UIApplication.shared.open(number)

@@ -10,8 +10,8 @@ class FavoritesViewController : PlacesViewController {
     Bookmark.cacheLatest(places: places)
   }
 
-  init(analytics: AnalyticsManager) {
-    super.init(path: "places.json?bookmarked=1", analytics: analytics)
+  init(context: Context) {
+    super.init(path: "places.json?bookmarked=1", context: context)
   }
 
   required init?(coder aDecoder: NSCoder) {

@@ -32,7 +32,7 @@ class GuideCell: UITableViewCell {
   func setCategory(category: Category){
     self.guideLabel?.text = category.name
     if let imageURL = category.imageURL {
-      self.guideImageView?.af_setImage(withURL: imageURL)
+      self.guideImageView?.kf.setImage(with: imageURL)
     }
     self.descriptionLabel?.text = category.description
     self.selectionStyle = .none

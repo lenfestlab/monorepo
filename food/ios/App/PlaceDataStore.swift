@@ -41,7 +41,9 @@ class PlaceDataStore: NSObject {
 
     let env = Env()
     let url = "\(env.apiBaseUrlString)/\(path)"
-    Alamofire.request(url, method: .get, parameters: params, encoding: URLEncoding.default, headers: nil).responseJSON { response in
+    Alamofire
+      .request(url, method: .get, parameters: params, encoding: URLEncoding.default, headers: nil)
+      .responseJSON(queue: concurrentPlaceQueue) { response in
       let json = response.result.value as? JSON
       if (json == nil) {
         DispatchQueue.main.async { completion(false, [], 0) }

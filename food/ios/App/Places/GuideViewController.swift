@@ -5,8 +5,8 @@ class GuideViewController: PlacesViewController {
 
   var category : Category!
 
-  init(analytics: AnalyticsManager, category: Category) {
-    super.init(path: "places.json?categories=\(category.identifier)", analytics: analytics)
+  init(context: Context, category: Category) {
+    super.init(path: "places.json?categories=\(category.identifier)", context: context)
     self.category = category
     self.selectedIndex = 1 // default to list view instead of map
   }

@@ -1,16 +1,30 @@
 import UIKit
+import RxSwift
+import RxCocoa
 
 class GuidesViewController: UITableViewController {
 
-  var categories = [Category]()
-  private let analytics: AnalyticsManager
-  var isCuisine = false
+  private let context: Context
+  private let bag = DisposeBag()
+  private var categories$ = BehaviorRelay<[Category]>(value: [])
+  private var categories: [Category] {
+    return categories$.value
+  }
+  typealias Guide = Category
+  private let guides$: Driver<[Guide]>
 
-  init(analytics: AnalyticsManager, isCuisine: Bool) {
-    self.isCuisine = isCuisine
-    self.analytics = analytics
+  init(context: Context) {
+    self.context = context
+    self.guides$ =
+      self.context.cache.guides$
+        .asDriver(onErrorJustReturn: [])
+
     super.init(nibName: nil, bundle: nil)
     navigationItem.hidesBackButton = true
+    // kick off fetch immediately
+    self.context.api.refreshCategories$.subscribe().disposed(by: bag)
+    // bind to cache
+    guides$.drive(categories$).disposed(by: bag)
   }
 
   required init?(coder aDecoder: NSCoder) {
@@ -27,12 +41,11 @@ class GuidesViewController: UITableViewController {
     self.tableView.separatorStyle = .none
     self.tableView.contentInset = UIEdgeInsets(top: 0, left: 0, bottom: 15, right: 0);
 
-    CategoryDataStore.retrieve(isCuisine: self.isCuisine) { (success, categories, count) in
-      if let categories = categories {
-        self.categories = categories
-      }
-      self.tableView.reloadData()
-    }
+    // reload table on cache changes
+    self.guides$.drive(onNext: { [weak self] _ in
+        self?.tableView.reloadData()
+      })
+      .disposed(by: bag)
   }
 
   // MARK: - Table view data source
@@ -57,8 +70,8 @@ class GuidesViewController: UITableViewController {
 
   override func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
     let category = self.categories[indexPath.row]
-    self.analytics.log(.tapsOnGuideCell(category: category))
-    let placeController = GuideViewController(analytics: self.analytics, category: category)
+    context.analytics.log(.tapsOnGuideCell(category: category))
+    let placeController = GuideViewController(context: context, category: category)
     placeController.additionalSafeAreaInsets.bottom = 49
     placeController.title = category.name
     placeController.topBarIsHidden = true

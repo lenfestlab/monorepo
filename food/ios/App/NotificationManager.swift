@@ -18,6 +18,7 @@ class NotificationManager: NSObject, UNUserNotificationCenterDelegate {
   let bag: DisposeBag = DisposeBag()
   let api: Api
   let analytics: AnalyticsManager
+  let cache: Cache
   let locationManager: LocationManager
 
   weak var delegate: NotificationManagerDelegate?
@@ -35,10 +36,12 @@ class NotificationManager: NSObject, UNUserNotificationCenterDelegate {
   init(
     api: Api,
     analytics: AnalyticsManager,
+    cache: Cache,
     locationManager: LocationManager
     ) {
     self.api = api
     self.analytics = analytics
+    self.cache = cache
     self.locationManager = locationManager
     super.init()
     notificationCenter = UNUserNotificationCenter.current()
@@ -187,7 +190,11 @@ class NotificationManager: NSObject, UNUserNotificationCenterDelegate {
               category,
               place: place,
               location: self.locationManager.latestCoordinate))
-          let vc = DetailViewController(analytics: self.analytics, place: place)
+          let vc =
+            DetailViewController(
+              analytics: self.analytics,
+              cache: self.cache,
+              place: place)
           print("success \(vc)")
           self.delegate?.push(vc, animated: true)
           completionHandler()

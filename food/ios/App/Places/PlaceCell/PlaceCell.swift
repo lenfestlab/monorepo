@@ -85,7 +85,7 @@ class PlaceCell: UICollectionViewCell {
     self.categoryLabel.textColor = .greyishBlue
 
     if let url = post?.imageURL {
-      self.imageView.af_setImage(withURL: url)
+      self.imageView.kf.setImage(with: url)
     }
 
     self.loveButton.isHidden = Installation.authToken() == nil
