@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2019_05_06_130935) do
+ActiveRecord::Schema.define(version: 2019_05_06_135003) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_stat_statements"
@@ -194,7 +194,6 @@ ActiveRecord::Schema.define(version: 2019_05_06_130935) do
     t.text "md_parking"
     t.text "md_price"
     t.bigint "author_id"
-    t.jsonb "images_data", default: []
     t.jsonb "cached_images", default: [], array: true
     t.date "display_starts"
     t.date "display_ends"
@@ -204,7 +203,6 @@ ActiveRecord::Schema.define(version: 2019_05_06_130935) do
     t.index ["display_ends"], name: "index_posts_on_display_ends"
     t.index ["display_starts"], name: "index_posts_on_display_starts"
     t.index ["identifier"], name: "index_posts_on_identifier"
-    t.index ["images_data"], name: "index_posts_on_images_data", using: :gin
     t.index ["live"], name: "index_posts_on_live"
     t.index ["prices"], name: "index_posts_on_prices", using: :gin
     t.index ["rating"], name: "index_posts_on_rating"
