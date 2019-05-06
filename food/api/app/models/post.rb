@@ -56,8 +56,6 @@ class Post < ApplicationRecord
       .where(live: true)
   }
 
-  # TODO: drop #images_data
-
   # TODO: deprecate
   def image_url
     if (image = images.first) && (url = image['url'])
@@ -66,9 +64,28 @@ class Post < ApplicationRecord
   end
 
   def url
-    Post.ensure_https read_attribute(:url)
+    secure_url = Post.ensure_https read_attribute(:url)
+    append_analytics_params secure_url
   end
 
+  def append_analytics_params url_string
+    return nil unless url_string
+    return url_string unless url_string.include?("philly.com") # PMN only
+    # NOTE: assumes all post's places are of same name (eg, a chain)
+    place_name = places.first.try :name
+    params = {
+      utm_source: ENV["UTM_SOURCE"],
+      utm_medium: ENV["UTM_MEDIUM"],
+      utm_campaign: ENV["UTM_CAMPAIGN"],
+      utm_term: place_name # ENV["UTM_TERM"]
+    }
+    uri = URI(url_string)
+    if (query = uri.query) && (old_params = CGI.parse(query))
+      params = old_params.merge!(params)
+    end
+    uri.query = URI.encode_www_form(params)
+    uri.to_s
+  end
 
   def self.md_fields
     %i{
