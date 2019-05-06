@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2019_04_29_131627) do
+ActiveRecord::Schema.define(version: 2019_05_06_130935) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_stat_statements"
@@ -55,7 +55,6 @@ ActiveRecord::Schema.define(version: 2019_04_29_131627) do
     t.string "name", null: false
     t.string "key"
     t.boolean "is_cuisine", default: false
-    t.text "image_urls", default: [], array: true
     t.jsonb "cached_images", default: [], array: true
     t.date "display_starts"
     t.date "display_ends"
