@@ -41,7 +41,7 @@ class Category < ApplicationRecord
   end
 
   def image_url
-    if url = images.first["url"]
+    if (image = images.first) && (url = image["url"])
       Post.ensure_https url
     end
   end
@@ -58,7 +58,6 @@ class Category < ApplicationRecord
       created_at
       updated_at
       categorizations
-      image_urls
       image_url
       key
     }.each do |hidden_attr|
