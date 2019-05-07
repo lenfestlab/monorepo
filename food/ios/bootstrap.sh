@@ -11,12 +11,5 @@ mint bootstrap
 # Carthage for iOS deps
 carthage bootstrap --platform ios --cache-builds --verbose
 
-# Deployment tools (fastlane) use Ruby
-asdf install
-command -v ruby >/dev/null 2>&1 || { asdf plugin-add ruby; }
-
-gem install bundler --conservative
-bundle install
-
 # ignore local changes to Firebase config: https://stackoverflow.com/a/4633776
 git update-index --assume-unchanged ./App/Resources/GoogleService-Info.plist
