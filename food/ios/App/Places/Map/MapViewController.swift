@@ -48,7 +48,11 @@ extension MapViewController: UICollectionViewDelegate {
   }
 
   func openPlace(_ place: Place) {
-    let detailViewController = DetailViewController(analytics: self.analytics, place: place)
+    let detailViewController =
+      DetailViewController(
+        analytics: analytics,
+        cache: context.cache,
+        place: place)
     self.navigationController?.pushViewController(detailViewController, animated: true)
   }
 }
@@ -164,12 +168,14 @@ class MapViewController: UIViewController {
   @IBOutlet weak var mapView:MKMapView!
   @IBOutlet weak var locationButton:UIButton!
 
+  private let context: Context
   private let analytics: AnalyticsManager
   @IBOutlet weak var settingsButton:UIButton!
 
-  init(analytics: AnalyticsManager, placeStore: PlaceStore) {
+  init(context: Context, placeStore: PlaceStore) {
     env = Env()
-    self.analytics = analytics
+    self.context = context
+    self.analytics = context.analytics
     self.placeStore = placeStore
     super.init(nibName: nil, bundle: nil)
   }

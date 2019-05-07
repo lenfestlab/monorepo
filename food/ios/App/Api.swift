@@ -4,6 +4,7 @@ import RxSwift
 import RxCocoa
 import RxSwiftExt
 import Gloss
+import ObjectMapper
 
 class Api {
 
@@ -15,9 +16,11 @@ class Api {
   }
 
   let env: Env
+  let cache: Cache
 
-  init(env: Env) {
+  init(env: Env, cache: Cache) {
     self.env = env
+    self.cache = cache
   }
 
   func getPlace$(_ identifier: String) -> Observable<Result<Place>> {
@@ -85,6 +88,30 @@ class Api {
         .catchError({ error -> Observable<Result<Bookmark>> in
           return Observable.just(Result.failure(error))
         })
+  }
+
+  var refreshCategories$: Observable<[UIImage]> {
+    let url = "\(env.apiBaseUrlString)/categories"
+    return
+      RxAlamofire
+        .requestJSON(.get, url)
+        .observeOn(Scheduler.background)
+        .map({ [weak self] _response, json -> [Category] in
+          guard
+            let json = json as? JSON,
+            let data = json["data"] as? [JSON]
+            else { throw ApiError.parse }
+          let objects = [CategoryObject].init(JSONArray: data)
+          // write to cache
+          try self?.cache.replaceCategories(objects)
+          return objects.map({Category($0) })
+        })
+        .flatMapLatest({ [weak self] categories -> Observable<[UIImage]> in
+          guard let `self` = self else { return Observable.just([]) }
+          let urls = categories.compactMap({ $0.imageURL })
+          return self.cache.loadImages$(urls)
+        })
+        .debug("refreshCategories$")
   }
 
 }

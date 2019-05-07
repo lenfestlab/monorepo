@@ -1,8 +1,10 @@
 import Foundation
 import UIKit
 import CoreLocation
+import RxSwift
+import RxRelay
 
-private let concurrentPlaceQueue = DispatchQueue(label: "org.lenfestlab.food.placeQueue", attributes: .concurrent)
+let concurrentPlaceQueue = DispatchQueue(label: "org.lenfestlab.food.placeQueue", attributes: .concurrent)
 
 @objc protocol PlaceStoreDelegate: class {
   func didSetPlaceFiltered()
@@ -13,6 +15,25 @@ private let concurrentPlaceQueue = DispatchQueue(label: "org.lenfestlab.food.pla
 let reuseIdentifier = "PlaceCell"
 
 class PlaceStore: NSObject {
+
+  private let context: Context
+  private let bag = DisposeBag()
+  private let places$ = BehaviorRelay<[Place]>(value: [])
+
+  init(context: Context) {
+    self.context = context
+    super.init()
+    /* TODO: eager load map/list carousel images
+    places$
+      .observeOn(Scheduler.background)
+      .flatMapLatest({ [unowned self] places -> Observable<[UIImage]> in
+        let urls = places.compactMap({ $0.post?.imageURL })
+        return self.context.cache.loadImages$(urls)
+      })
+      .subscribe()
+      .disposed(by: bag)
+     */
+  }
 
   var lastCoordinateUsed : CLLocationCoordinate2D?
   var path : String?
@@ -94,11 +115,15 @@ class PlaceStore: NSObject {
       authors: self.filterModule.authors,
       sort: self.filterModule.sortMode,
       limit: 1000) { (success, data, count) in
+
+        self.places$.accept(data)
+
       var places = [MapPlace]()
       for place in data {
         places.append(MapPlace(place: place))
       }
       self.places = places
+
 
       self.loading = false
 

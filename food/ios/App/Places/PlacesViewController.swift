@@ -99,19 +99,21 @@ class PlacesViewController: UIViewController {
 
   let placeStore : PlaceStore!
 
+  private let context: Context
   let analytics: AnalyticsManager
 
   let path : String!
 
-  init(path: String = "places.json", analytics: AnalyticsManager, categories: [Category] = []) {
+  init(path: String = "places.json", context: Context, categories: [Category] = []) {
     self.path = path
-    self.analytics = analytics
+    self.context = context
+    self.analytics = context.analytics
 
-    self.placeStore = PlaceStore()
+    self.placeStore = PlaceStore(context: context)
     self.placeStore.filterModule.categories = categories
 
-    self.mapViewController = MapViewController(analytics: self.analytics, placeStore: self.placeStore)
-    self.listViewController = ListViewController(analytics: self.analytics, placeStore: self.placeStore)
+    self.mapViewController = MapViewController(context: context, placeStore: self.placeStore)
+    self.listViewController = ListViewController(context: context, placeStore: self.placeStore)
 
     self.viewControllers = [self.mapViewController, self.listViewController]
 

@@ -37,6 +37,7 @@ struct AnalyticsEvent {
   var category: AnalyticsCategory
   var label: String? = ""
   var metadata: Meta = [:]
+  let env = Env()
 
   init(
     name: String,
@@ -85,6 +86,11 @@ struct AnalyticsEvent {
     if let cd13 = cd13 {
       self.metadata["cd13"] = cd13
     }
+
+    let buildVersion = env.buildVersion
+    self.metadata["cd14"] = buildVersion
+    self.metadata["build-version"] = buildVersion
+
   }
 
 

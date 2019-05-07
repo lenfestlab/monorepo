@@ -11,14 +11,14 @@ class TabBarViewController: UITabBarController {
   var listViewController: ListViewController!
   var guideViewController: GuidesViewController!
 
-  private let analytics: AnalyticsManager
+  private let context: Context
   private let notificationManager: NotificationManager
 
   init(
-    analytics: AnalyticsManager,
+    context: Context,
     notificationManager: NotificationManager
     ) {
-    self.analytics = analytics
+    self.context = context
     self.notificationManager = notificationManager
     super.init(nibName: nil, bundle: nil)
     self.navigationController?.isNavigationBarHidden = true
@@ -30,10 +30,10 @@ class TabBarViewController: UITabBarController {
   }
 
   @IBAction func settings(sender: UIButton) {
-    self.analytics.log(.tapsSettingsButton)
+    self.context.analytics.log(.tapsSettingsButton)
     let settingsController =
       SettingsViewController(
-        analytics: analytics,
+        analytics: context.analytics,
         notificationManager: notificationManager)
     settingsController.hidesBottomBarWhenPushed = true
     self.placesViewController.navigationController?.pushViewController(settingsController, animated: true)
@@ -48,7 +48,7 @@ class TabBarViewController: UITabBarController {
 
     var controllers : [UIViewController] = []
 
-    self.placesViewController = HomeViewController(analytics: self.analytics)
+    self.placesViewController = HomeViewController(context: context)
     let mapNavigationController = UINavigationController(rootViewController: self.placesViewController)
     mapNavigationController.styleController()
     mapNavigationController.tabBarItem.title = restaurantsTitle
@@ -56,7 +56,7 @@ class TabBarViewController: UITabBarController {
     mapNavigationController.tabBarItem.selectedImage = UIImage(named: "tab-restaurant-icon-selected")
     controllers.append(mapNavigationController)
 
-    self.guideViewController = GuidesViewController(analytics: self.analytics, isCuisine: false)
+    self.guideViewController = GuidesViewController(context: context)
     let guideNavigationController = UINavigationController(rootViewController: self.guideViewController)
     guideNavigationController.tabBarItem.title = "Guides"
     guideNavigationController.tabBarItem.image = UIImage(named: "tab-guides-icon")
@@ -64,7 +64,7 @@ class TabBarViewController: UITabBarController {
     controllers.append(guideNavigationController)
 
     if Installation.authToken() != nil {
-      self.favoritesViewController = FavoritesViewController(analytics: self.analytics)
+      self.favoritesViewController = FavoritesViewController(context: context)
       self.favoritesViewController.selectedIndex = 1
       let favoritesNavigationController = UINavigationController(rootViewController: self.favoritesViewController)
       favoritesNavigationController.styleController()
@@ -88,15 +88,15 @@ class TabBarViewController: UITabBarController {
 
   override func tabBar(_ tabBar: UITabBar, didSelect item: UITabBarItem) {
     if item.title == restaurantsTitle {
-      self.analytics.log(.tapsAllRestaurant)
+      context.analytics.log(.tapsAllRestaurant)
       return
     }
     if item.title == guidesTitle {
-      self.analytics.log(.tapsGuides)
+      context.analytics.log(.tapsGuides)
       return
     }
     if item.title == myListTitle {
-      self.analytics.log(.tapsMyList)
+      context.analytics.log(.tapsMyList)
       return
     }
 

@@ -16,8 +16,17 @@ struct Scheduler {
   static let background = ConcurrentDispatchQueueScheduler(qos: .background)
 }
 
+struct Context {
+  let api: Api
+  let analytics: AnalyticsManager
+  let cache: Cache
+  let env: Env
+}
+
 @UIApplicationMain
 class AppDelegate: UIResponder, UIApplicationDelegate {
+
+  var context: Context!
 
   var lastViewedURL: URL?
   var window: UIWindow?
@@ -52,13 +61,17 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
       }
     }
 
-    self.api = Api(env: env)
+    let cache = Cache()
+    self.api = Api(env: env, cache: cache)
     self.analytics = AnalyticsManager(env)
+    self.context = Context(api: api, analytics: analytics, cache: cache, env: env)
+
     self.locationManager = LocationManager.sharedWith(analytics: analytics)
 
     self.notificationManager =
       NotificationManager(api: api,
                           analytics: analytics,
+                          cache: cache,
                           locationManager: locationManager)
     window = UIWindow(frame: UIScreen.main.bounds)
     let onboardingCompleted = UserDefaults.standard.bool(forKey: "onboarding-completed")
@@ -133,7 +146,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
   func showHomeScreen() {
     self.tabController =
       TabBarViewController(
-        analytics: analytics,
+        context: context,
         notificationManager: notificationManager)
     window!.rootViewController = self.tabController
   }

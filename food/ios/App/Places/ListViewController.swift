@@ -38,7 +38,11 @@ extension ListViewController { // UICollectionViewDelegate
   }
 
   func openPlace(_ place: Place) {
-    let detailViewController = DetailViewController(analytics: self.analytics, place: place)
+    let detailViewController =
+      DetailViewController(
+        analytics: self.analytics,
+        cache: context.cache,
+        place: place)
     self.navigationController?.pushViewController(detailViewController, animated: true)
   }
 
@@ -69,11 +73,13 @@ class ListViewController: UICollectionViewController {
     }
   }
 
+  private let context: Context
   private let analytics: AnalyticsManager
   @IBOutlet weak var settingsButton:UIButton!
 
-  init(analytics: AnalyticsManager, placeStore: PlaceStore, categories: [Category] = []) {
-    self.analytics = analytics
+  init(context: Context, placeStore: PlaceStore, categories: [Category] = []) {
+    self.context = context
+    self.analytics = context.analytics
     self.placeStore = placeStore
 
     let layout = UICollectionViewFlowLayout()
