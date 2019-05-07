@@ -62,7 +62,13 @@ class PlaceCell: UICollectionViewCell {
     self.place = place
     let post = place.post
 
-    if let distance = place.distance {
+    // default to API-provided distance if not locally calculable
+    var distance: Double? = place.distance
+    if let placeLocation = place.location?.nativeLocation,
+      let currentLocation = LocationManager.shared.latestLocation {
+      distance = currentLocation.distance(from: placeLocation)
+    }
+    if let distance = distance {
       let miles = (distance/1609.344)
       let milesAway = miles >= 10 ? String(format: "%0.0f miles away", miles) : String(format: "%0.1f miles away", miles)
       self.milesAwayLabel.text = milesAway
