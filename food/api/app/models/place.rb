@@ -1,3 +1,6 @@
+DEFAULT_TRIGGER_RADIUS = (Integer(ENV["DEFAULT_TRIGGER_RADIUS"] || 50)).freeze
+DEFAULT_VISIT_RADIUS = (Integer(ENV["DEFAULT_VISIT_RADIUS"] || 50)).freeze
+
 class Place < ApplicationRecord
   has_many :bookmarks
 
@@ -27,7 +30,11 @@ class Place < ApplicationRecord
   end
 
   def visit_radius
-    ENV["DEFAULT_VISIT_RADIUS"] || 100
+    DEFAULT_VISIT_RADIUS
+  end
+
+  def trigger_radius_with_default
+    read_attribute(:trigger_radius) || DEFAULT_TRIGGER_RADIUS
   end
 
 
@@ -189,6 +196,10 @@ class Place < ApplicationRecord
           hide
         end
       end
+    end
+
+    configure :trigger_radius do
+      help "Meters. Optional, if blank defaults to #{DEFAULT_TRIGGER_RADIUS}"
     end
 
   end

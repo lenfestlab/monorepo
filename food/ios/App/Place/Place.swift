@@ -78,7 +78,7 @@ struct Place: JSONDecodable, Codable, Identifiable {
   let location: Location?
   let post: Post?
   let website: URL?
-  let radius: Double?
+  let triggerRadius: Double?
   let distance: Double?
   let nabes: [Neighborhood]?
   let categories: [Category]?
@@ -91,7 +91,7 @@ struct Place: JSONDecodable, Codable, Identifiable {
     self.address = "address" <~~ json
     self.location = "location" <~~ json
     self.post = "post" <~~ json
-    self.radius = "radius" <~~ json
+    self.triggerRadius = "trigger_radius" <~~ json
     self.distance = "distance" <~~ json
     self.name = "name" <~~ json
     self.nabes = "nabes" <~~ json
@@ -130,7 +130,7 @@ struct Place: JSONDecodable, Codable, Identifiable {
 
   var region: CLCircularRegion {
     let center = coordinate()
-    let radius = self.radius ?? Place.defaultRadius
+    let radius = self.triggerRadius ?? Place.defaultRadius
     let region =
       CLCircularRegion(
         center: center,

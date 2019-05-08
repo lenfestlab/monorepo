@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2019_05_06_135003) do
+ActiveRecord::Schema.define(version: 2019_05_08_191559) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_stat_statements"
@@ -158,6 +158,7 @@ ActiveRecord::Schema.define(version: 2019_05_06_135003) do
     t.jsonb "cached_categories", default: [], array: true
     t.jsonb "cached_post", default: {}
     t.string "reservations_url"
+    t.integer "trigger_radius"
     t.index ["author_identifiers"], name: "index_places_on_author_identifiers"
     t.index ["cached_nabes"], name: "index_places_on_cached_nabes", using: :gin
     t.index ["category_identifiers"], name: "index_places_on_category_identifiers", using: :gin
