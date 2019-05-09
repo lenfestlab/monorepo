@@ -30,20 +30,21 @@ RailsAdmin.config do |config|
   ## To disable Gravatar integration in Navigation Bar set to false
   # config.show_gravatar = true
 
+  # models names (strings), not constants - https://git.io/fjCcY
   config.actions do
     dashboard                     # mandatory
     index                         # mandatory
     new do
-      only [Post, Category, Place, Image, Notification]
+      only %w[ Post Category Place Image Notification ]
     end
     export
     bulk_delete
     show
     edit do
-      only [Post, Category, Place, Image, Notification]
+      only %w[ Post Category Place Image Notification ]
     end
     delete do
-      only (Rails.env.production? ? [] : [User])
+      only (Rails.env.production? ? [] : %w[ User ])
     end
     show_in_app do
       only []

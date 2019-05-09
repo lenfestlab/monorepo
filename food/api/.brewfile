@@ -1,5 +1,6 @@
 brew 'asdf'
 brew 'heroku/brew/heroku'
+brew 'imagemagick'
 brew 'pgweb'
 brew 'postgis'
 brew 'postgresql'

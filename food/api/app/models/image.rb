@@ -3,6 +3,8 @@ class Image < ApplicationRecord
   has_and_belongs_to_many :posts, touch: true
   has_and_belongs_to_many :categories, touch: true
 
+  has_one_attached :cached_image
+
   validates(*%i[
     url
   ], presence: true)
@@ -19,6 +21,20 @@ class Image < ApplicationRecord
   def update_associations
     self.posts.map &:save!
     self.categories.map &:save!
+  end
+
+  after_save :fetch_image
+  def fetch_image
+    begin
+      Rails.logger.info(self.url)
+      tempfile = Down.download(self.url, { open_timeout: 2 })
+      self.cached_image.attach(
+        io: tempfile,
+        filename: tempfile.original_filename,
+        content_type: tempfile.content_type)
+    rescue => ex
+      Rails.logger.error(ex)
+    end
   end
 
 
@@ -57,19 +73,14 @@ class Image < ApplicationRecord
     url
   end
 
+  def cached_url
+    cached_image.attached? \
+      ? Rails.application.routes.url_helpers.url_for(cached_image) \
+      : url
+  end
 
-
-  ## Serialization
-  #
-
-  def as_json(options = nil)
-    super({
-      only: %i[
-        url
-        credit
-        caption
-      ]
-    }.merge(options || {}))
+  def as_json
+    ActiveModelSerializers::SerializableResource.new(self, {}).as_json
   end
 
 end
