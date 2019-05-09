@@ -13,13 +13,10 @@ protocol NotificationManagerDelegate: class {
   func openInSafari(url: URL)
 }
 
-class NotificationManager: NSObject, UNUserNotificationCenterDelegate {
+class NotificationManager: NSObject, UNUserNotificationCenterDelegate, Contextual {
 
   let bag: DisposeBag = DisposeBag()
-  let api: Api
-  let analytics: AnalyticsManager
-  let cache: Cache
-  let locationManager: LocationManager
+  var context: Context
 
   weak var delegate: NotificationManagerDelegate?
   var notificationCenter: UNUserNotificationCenter?
@@ -33,16 +30,8 @@ class NotificationManager: NSObject, UNUserNotificationCenterDelegate {
     }
   }
 
-  init(
-    api: Api,
-    analytics: AnalyticsManager,
-    cache: Cache,
-    locationManager: LocationManager
-    ) {
-    self.api = api
-    self.analytics = analytics
-    self.cache = cache
-    self.locationManager = locationManager
+  init(context: Context) {
+    self.context = context
     super.init()
     notificationCenter = UNUserNotificationCenter.current()
     notificationCenter?.delegate = self
@@ -178,7 +167,7 @@ class NotificationManager: NSObject, UNUserNotificationCenterDelegate {
     _ identifier: String?,
     _ completionHandler: @escaping ()->()) {
     guard let identifier = identifier else { return completionHandler() }
-    self.api.getPlace$(identifier)
+    api.getPlace$(identifier)
       .observeOn(Scheduler.main)
       .subscribe(onNext: { [weak self] (result: Result<Place>) in
         guard let `self` = self else { return completionHandler() }
@@ -211,7 +200,7 @@ class NotificationManager: NSObject, UNUserNotificationCenterDelegate {
     _ urlString: String?,
     _ completionHandler: @escaping ()->()) {
     guard let identifier = identifier else { return completionHandler() }
-    self.api.getPlace$(identifier)
+    api.getPlace$(identifier)
       .observeOn(Scheduler.main)
       .subscribe(onNext: { [weak self] (result: Result<Place>) in
         guard let `self` = self else { return completionHandler() }
@@ -236,7 +225,7 @@ class NotificationManager: NSObject, UNUserNotificationCenterDelegate {
     _ identifier: String?,
     _ completionHandler: @escaping () -> ()) {
     guard let identifier = identifier else { return completionHandler() }
-    self.api.getPlace$(identifier)
+    api.getPlace$(identifier)
       .observeOn(Scheduler.main)
       .subscribe(onNext: { [weak self] (result: Result<Place>) in
         switch result {
@@ -298,40 +287,43 @@ class NotificationManager: NSObject, UNUserNotificationCenterDelegate {
       completion: { _ in completionHandler() })
   }
 
+  enum Exception: Error {
+    case missingSelf
+    case missingPlaceName
+    case missingPlaceImage
+    case missingNotificationCenter
+  }
+
   private func observeLocationManager() {
-    let region$ =
-      locationManager.didReceiveRegion$
-        .debug("didReceiveRegion$", trimOutput: false)
-
-    let regionEntry$ =
-      region$.filterMap({ regionEvent -> FilterMap<CLCircularRegion> in
-        guard case let .enter(region) = regionEvent else { return .ignore }
-        return .map(region) })
-
-    regionEntry$
+    locationManager.regionEntry$
       // record entry for "visit" calculations
-      .distinct()
       .flatMap({ [unowned self] region -> Observable<Result<Bookmark>> in
         let placeId = region.identifier
         return self.api.recordRegionChange$(placeId, isEntering: true)
       })
-      // fetch place, then fire its nearby notification
-      .subscribe(onNext: { [weak self] (result: Result<Bookmark>) in
-        guard let `self` = self else { return }
+      // throttle nearby notifications for each place
+      .filter({ result -> Bool in
+        if self.env.isPreProduction { return true } // ...only in prod
+        guard case .success(let bookmark) = result else { return false }
+        guard let lastNotifiedAt = bookmark.lastNotifiedAt else { return true }
+        return lastNotifiedAt.isBeforeDate(7.days.ago, granularity: .second)
+      })
+      .flatMap({ [weak self] result -> Observable<Result<Bookmark>> in
+        guard let `self` = self else { throw Exception.missingSelf }
         switch result {
         case let .failure(error):
-          print("NOOP ERROR: \(error)")
+          throw error
         case let .success(bookmark):
           guard
             let place = bookmark.place,
             let placeName = place.name
-            else { return print("MIA: place name") }
+            else { throw Exception.missingPlaceName }
           let category = Category.nearby
           let content = UNMutableNotificationContent()
           content.categoryIdentifier = category.rawValue
           content.sound = UNNotificationSound.default
           content.title = "You're nearby \(placeName)!"
-          content.body = "You saved \(placeName) to your list of restaurants. For a reason to go, read the highlights again."
+          content.body = "You saved \(placeName) to your list of restaurants."
           content.userInfo["place_id"] = place.identifier
           if let url = place.post?.url?.absoluteString {
             content.userInfo["post_url"] = url
@@ -341,7 +333,7 @@ class NotificationManager: NSObject, UNUserNotificationCenterDelegate {
             let imageURL = URL(string: imageURLString),
             let imageData = NSData(contentsOf: imageURL),
             let image = UNNotificationAttachment.create("image.jpg", data: imageData, options: nil)
-            else { return print("MIA: place imageURL") }
+            else { throw Exception.missingPlaceImage }
           content.attachments = [image]
           let request =
             UNNotificationRequest(
@@ -350,7 +342,7 @@ class NotificationManager: NSObject, UNUserNotificationCenterDelegate {
               trigger: nil)
           guard
             let center = self.notificationCenter
-            else { return print("MIA: notificationCenter") }
+            else { throw Exception.missingNotificationCenter }
           center.add(request, withCompletionHandler: { (error) in
             if let error = error { print(error) }
           })
@@ -358,30 +350,19 @@ class NotificationManager: NSObject, UNUserNotificationCenterDelegate {
             category,
             place: place,
             location: self.locationManager.latestCoordinate))
+          return self.api.recordNotification$(place.identifier)
         }
-      }).disposed(by: bag)
+      })
+      .subscribe()
+      .disposed(by: bag)
 
-    let regionExit$ =
-      region$.filterMap({ regionEvent -> FilterMap<CLCircularRegion> in
-        guard case let .exit(region) = regionEvent else { return .ignore }
-        return .map(region) })
-
-    regionExit$
+    locationManager.regionExit$
       .flatMap({ [unowned self] region -> Observable<Result<Bookmark>> in
         let placeId = region.identifier
         return self.api.recordRegionChange$(placeId, isEntering: false)
       })
-      .subscribe({ event in
-        switch event {
-        case let .next(bookmark):
-          print(bookmark)
-        case let .error(error):
-          print(error)
-        default:
-          print("NOOP")
-        }
-      }).disposed(by: bag)
-
+      .subscribe()
+      .disposed(by: bag)
   }
 
 }

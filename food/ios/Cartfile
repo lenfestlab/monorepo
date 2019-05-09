@@ -14,7 +14,7 @@ github "RxSwiftCommunity/RxAlamofire"
 github "RxSwiftCommunity/RxSwiftExt"
 github "RxSwiftCommunity/RxCoreLocation"
 github "realm/realm-cocoa"
-github "RxSwiftCommunity/RxRealm" "swift-5.0" # https://git.io/fjnM9
+github "RxSwiftCommunity/RxRealm"
 github "tristanhimmelman/ObjectMapper"
 github "onevcat/Kingfisher"
 github "RxSwiftCommunity/RxKingfisher"

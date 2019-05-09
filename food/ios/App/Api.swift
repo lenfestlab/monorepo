@@ -41,14 +41,14 @@ class Api {
         })
   }
 
-  func recordRegionChange$(
+  private func patchBookmark(
     _ identifier: String,
-    isEntering: Bool
+    _ params: [String: Any]
     ) -> Observable<Result<Bookmark>> {
     let url = "\(env.apiBaseUrlString)/bookmarks"
-    var params: [String: Any] = [ "place_id" : identifier ]
+    var params = params
+    params["place_id"] = identifier
     if let authToken = Installation.authToken() { params["auth_token"] = authToken }
-    params[(isEntering ? "last_entered_at" : "last_exited_at")] = Date()
     return
       RxAlamofire
         .requestJSON(.patch, url, parameters: params)
@@ -67,27 +67,22 @@ class Api {
         })
   }
 
+  func recordRegionChange$(
+    _ identifier: String,
+    isEntering: Bool
+    ) -> Observable<Result<Bookmark>> {
+    let key = isEntering ? "last_entered_at" : "last_exited_at"
+    return patchBookmark(identifier, [key : Date() ])
+  }
+
+  func recordNotification$(
+    _ identifier: String
+    ) -> Observable<Result<Bookmark>> {
+    return patchBookmark(identifier, ["last_notified_at": Date()])
+  }
+
   func recordVisit$(_ identifier: String) -> Observable<Result<Bookmark>> {
-    let url = "\(env.apiBaseUrlString)/bookmarks"
-    var params: [String: Any] = [ "place_id" : identifier ]
-    if let authToken = Installation.authToken() { params["auth_token"] = authToken }
-    params["last_visited_at"] = Date()
-    return
-      RxAlamofire
-        .requestJSON(.patch, url, parameters: params)
-        .observeOn(Scheduler.background)
-        .map({ _response, json -> Result<Bookmark> in
-          guard
-            let json = json as? JSON,
-            let oJSON = json["bookmark"] as? JSON,
-            let bookmark = Bookmark(json: oJSON)
-            else { return Result.failure(ApiError.parse) }
-          return Result.success(bookmark)
-        })
-        .retry(3)
-        .catchError({ error -> Observable<Result<Bookmark>> in
-          return Observable.just(Result.failure(error))
-        })
+    return patchBookmark(identifier, ["last_visited_at": Date()])
   }
 
   var refreshCategories$: Observable<[UIImage]> {

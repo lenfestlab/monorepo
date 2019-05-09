@@ -35,6 +35,7 @@ class BookmarksController < ApplicationController
         last_entered_at
         last_exited_at
         last_visited_at
+        last_notified_at
       ]).to_hash.compact)
     bookmark.reload # load db-set fields
     render(
