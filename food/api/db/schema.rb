@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2019_05_08_191559) do
+ActiveRecord::Schema.define(version: 2019_05_09_172240) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_stat_statements"
@@ -38,9 +38,11 @@ ActiveRecord::Schema.define(version: 2019_05_08_191559) do
     t.datetime "last_entered_at"
     t.datetime "last_exited_at"
     t.datetime "last_visited_at"
+    t.datetime "last_notified_at"
     t.index ["identifier"], name: "index_bookmarks_on_identifier"
     t.index ["last_entered_at"], name: "index_bookmarks_on_last_entered_at"
     t.index ["last_exited_at"], name: "index_bookmarks_on_last_exited_at"
+    t.index ["last_notified_at"], name: "index_bookmarks_on_last_notified_at"
     t.index ["last_saved_at"], name: "index_bookmarks_on_last_saved_at"
     t.index ["last_unsaved_at"], name: "index_bookmarks_on_last_unsaved_at"
     t.index ["last_visited_at"], name: "index_bookmarks_on_last_visited_at"

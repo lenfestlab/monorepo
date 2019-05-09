@@ -204,8 +204,26 @@ class LocationManager: NSObject, CLLocationManagerDelegate {
         .share()
   }
 
+  var regionEntry$: Observable<CLCircularRegion> {
+    return
+      didReceiveRegion$
+        .filterMap({ regionEvent -> FilterMap<CLCircularRegion> in
+          guard case let .enter(region) = regionEvent else { return .ignore }
+          return .map(region) })
+        .share()
+  }
+
+  var regionExit$: Observable<CLCircularRegion> {
+    return
+      self.didReceiveRegion$
+        .filterMap({ regionEvent -> FilterMap<CLCircularRegion> in
+          guard case let .exit(region) = regionEvent else { return .ignore }
+          return .map(region) })
+        .share()
+  }
+
   var location$: Observable<CLLocation> {
-    return self.locationManager.rx.location.unwrap()
+    return self.locationManager.rx.location.unwrap().share()
   }
 
   func locationManager(_ manager: CLLocationManager, didEnterRegion region: CLRegion) {

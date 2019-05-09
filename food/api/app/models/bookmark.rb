@@ -54,6 +54,7 @@ class Bookmark < ApplicationRecord
       last_entered_at
       last_exited_at
       last_visited_at
+      last_notified_at
     ].each do |attr|
       configure attr do
         read_only true

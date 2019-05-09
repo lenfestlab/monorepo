@@ -9,6 +9,7 @@ struct Bookmark: JSONDecodable, Codable {
   let lastUnsavedAt: Date?
   let lastEnteredAt: Date?
   let lastExitedAt: Date?
+  let lastNotifiedAt: Date?
 
   init?(json: JSON) {
     self.identifier = ("identifier" <~~ json)!
@@ -17,6 +18,7 @@ struct Bookmark: JSONDecodable, Codable {
     self.lastUnsavedAt = Decoder.decode(dateISO8601ForKey: "last_unsaved_at")(json)
     self.lastEnteredAt = Decoder.decode(dateISO8601ForKey: "last_entered_at")(json)
     self.lastExitedAt = Decoder.decode(dateISO8601ForKey: "last_exited_at")(json)
+    self.lastNotifiedAt = Decoder.decode(dateISO8601ForKey: "last_notified_at")(json)
   }
 
   var isSaved: Bool {

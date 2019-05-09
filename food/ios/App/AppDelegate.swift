@@ -11,18 +11,6 @@ typealias Result<T> = Swift.Result<T, Error>
 typealias LaunchOptions = [UIApplication.LaunchOptionsKey: Any]?
 let gcmMessageIDKey = "gcm.message_id"
 
-struct Scheduler {
-  static let main = MainScheduler.instance
-  static let background = ConcurrentDispatchQueueScheduler(qos: .background)
-}
-
-struct Context {
-  let api: Api
-  let analytics: AnalyticsManager
-  let cache: Cache
-  let env: Env
-}
-
 @UIApplicationMain
 class AppDelegate: UIResponder, UIApplicationDelegate {
 
@@ -64,15 +52,16 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
     let cache = Cache()
     self.api = Api(env: env, cache: cache)
     self.analytics = AnalyticsManager(env)
-    self.context = Context(api: api, analytics: analytics, cache: cache, env: env)
-
     self.locationManager = LocationManager.sharedWith(analytics: analytics)
+    self.context =
+      Context(
+        api: api,
+        analytics: analytics,
+        cache: cache,
+        env: env,
+        locationManager: locationManager)
 
-    self.notificationManager =
-      NotificationManager(api: api,
-                          analytics: analytics,
-                          cache: cache,
-                          locationManager: locationManager)
+    self.notificationManager = NotificationManager(context: context)
     window = UIWindow(frame: UIScreen.main.bounds)
     let onboardingCompleted = UserDefaults.standard.bool(forKey: "onboarding-completed")
 

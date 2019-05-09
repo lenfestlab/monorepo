@@ -7,6 +7,7 @@ class BookmarkSerializer < ActiveModel::Serializer
     last_entered_at
     last_exited_at
     last_visited_at
+    last_notified_at
   ])
 
   belongs_to :place
