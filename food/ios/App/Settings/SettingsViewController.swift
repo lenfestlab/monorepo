@@ -13,7 +13,6 @@ class SettingsViewController: BaseSettingsViewController, LocationManagerAuthori
   private let analytics: AnalyticsManager
   private let notificationManager: NotificationManager
   private let env: Env
-  private let disposeBag: DisposeBag
 
   private var notification: NSObjectProtocol?
 
@@ -24,7 +23,6 @@ class SettingsViewController: BaseSettingsViewController, LocationManagerAuthori
     self.analytics = analytics
     self.notificationManager = notificationManager
     self.env = Env()
-    self.disposeBag = DisposeBag()
     super.init(style: .grouped)
     locationManager.authorizationDelegate = self
   }

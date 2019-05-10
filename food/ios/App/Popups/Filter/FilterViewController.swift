@@ -26,7 +26,7 @@ extension FilterViewController : AuthorViewControllerDelegate {
 }
 
 
-class FilterViewController: UIViewController {
+class FilterViewController: UIViewController, Contextual {
 
   weak var filterDelegate: FilterModuleDelegate?
 
@@ -62,7 +62,7 @@ class FilterViewController: UIViewController {
 
   @IBOutlet weak var divider : UIView!
 
-  private let analytics: AnalyticsManager
+  var context: Context
   private let filterModule: FilterModule
 
   func updateReviewerButton() {
@@ -158,9 +158,9 @@ class FilterViewController: UIViewController {
     self.distanceButton.isSelected = self.filterModule.sortMode == .distance
   }
 
-  init(analytics: AnalyticsManager, filter: FilterModule) {
+  init(context: Context, filter: FilterModule) {
     self.filterModule = filter
-    self.analytics = analytics
+    self.context = context
     super.init(nibName: nil, bundle: nil)
   }
 
@@ -309,7 +309,7 @@ class FilterViewController: UIViewController {
   }
 
   @IBAction func showCuisines() {
-    let vc = CuisinesViewController(analytics: self.analytics, filter: self.filterModule)
+    let vc = CuisinesViewController(context: self.context, filter: self.filterModule)
     vc.delegate = self
     let navigationController = PopupViewController(rootViewController: vc)
     let screenHeight = AppDelegate.shared().window?.frame.size.height ?? 568
@@ -320,7 +320,7 @@ class FilterViewController: UIViewController {
   }
 
   @IBAction func showNeighborhoods() {
-    let vc = NeighborhoodViewController(analytics: self.analytics, selected: self.filterModule.nabes)
+    let vc = NeighborhoodViewController(context: context, selected: self.filterModule.nabes)
     vc.delegate = self
     let navigationController = PopupViewController(rootViewController: vc)
     let screenHeight = AppDelegate.shared().window?.frame.size.height ?? 568
@@ -331,7 +331,7 @@ class FilterViewController: UIViewController {
   }
 
   @IBAction func showReviewers() {
-    let vc = AuthorViewController(analytics: self.analytics, selected: self.filterModule.authors)
+    let vc = AuthorViewController(context: context, selected: self.filterModule.authors)
     vc.delegate = self
     let navigationController = PopupViewController(rootViewController: vc)
     navigationController.popUpHeight = 282

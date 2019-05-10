@@ -1,4 +1,4 @@
-github "Alamofire/Alamofire" == 4.8.2 # 5.x still in beta, undocumented
+github "Alamofire/Alamofire" ~> 4.8 # 5.x still in beta, undocumented
 github "hkellaway/Gloss"
 github "Alamofire/AlamofireImage"
 github "omaralbeik/UserDefaultsStore"
@@ -16,8 +16,8 @@ github "RxSwiftCommunity/RxCoreLocation"
 github "realm/realm-cocoa"
 github "RxSwiftCommunity/RxRealm"
 github "tristanhimmelman/ObjectMapper"
-github "onevcat/Kingfisher"
-github "RxSwiftCommunity/RxKingfisher"
+github "APUtils/ObjectMapperAdditions"
+github "RxSwiftCommunity/NSObject-Rx"
 
 # Firebase experimental carthage support: https://git.io/fAxBS
 binary "https://dl.google.com/dl/firebase/ios/carthage/FirebaseAnalyticsBinary.json"

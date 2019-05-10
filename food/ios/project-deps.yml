@@ -19,6 +19,7 @@ targets:
       - carthage: Amplitude
       - carthage: RxSwiftExt
       - carthage: RxCoreLocation
+      - carthage: NSObject_Rx
       # network
       - carthage: Alamofire
       - carthage: AlamofireImage
@@ -28,9 +29,9 @@ targets:
       - carthage: Realm
       - carthage: RealmSwift
       - carthage: ObjectMapper
+      - carthage: ObjectMapperAdditions
+      - carthage: ObjectMapperAdditionsRealm
       - carthage: RxRealm
-      - carthage: Kingfisher
-      - carthage: RxKingfisher
 
       # Firebase - https://git.io/fAxBS
       # NOTE: omit base framework, per: https://git.io/fAjxM

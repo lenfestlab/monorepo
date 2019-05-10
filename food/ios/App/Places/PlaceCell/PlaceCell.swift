@@ -1,4 +1,5 @@
 import UIKit
+import RxSwift
 import AlamofireImage
 
 class PlaceCell: UICollectionViewCell {
@@ -15,6 +16,8 @@ class PlaceCell: UICollectionViewCell {
   weak var analytics: AnalyticsManager?
   var controllerIdentifierKey : String = "unknown"
   var place : Place?
+  var context: Context?
+  var bag = DisposeBag()
 
   override func awakeFromNib() {
     super.awakeFromNib()
@@ -30,8 +33,6 @@ class PlaceCell: UICollectionViewCell {
 
     imageView.layer.cornerRadius = 5.0
     imageView.clipsToBounds = true
-
-    NotificationCenter.default.addObserver(self, selector: #selector(onFavoritesUpdated(_:)), name: .favoritesUpdated, object: nil)
   }
 
   func attributedText(text: String, font: UIFont) -> NSMutableAttributedString {
@@ -48,17 +49,8 @@ class PlaceCell: UICollectionViewCell {
     return attributedString
   }
 
-  @objc func onFavoritesUpdated(_ notification: Notification) {
-    self.refresh()
-  }
-
-  func refresh() {
-    if let identifier = self.place?.identifier {
-      self.loveButton.isSelected = Place.contains(identifier: identifier)
-    }
-  }
-
-  func setPlace(place: Place, index:Int, showIndex: Bool) {
+  func setPlace(context: Context, place: Place, index:Int, showIndex: Bool) {
+    self.context = context
     self.place = place
     let post = place.post
 
@@ -91,47 +83,40 @@ class PlaceCell: UICollectionViewCell {
     self.categoryLabel.textColor = .greyishBlue
 
     if let url = post?.imageURL {
-      self.imageView.kf.setImage(with: url)
+      self.imageView.af_setImage(withURL: url)
     }
 
     self.loveButton.isHidden = Installation.authToken() == nil
 
-    refresh()
+    self.context?.cache.isSaved$(place.identifier)
+      .bind(to: loveButton.rx.isSelected)
+      .disposed(by: bag)
   }
 
   override func prepareForReuse() {
     super.prepareForReuse()
+    self.bag = DisposeBag()
     self.textLabel.text = nil
     self.imageView.image = nil
   }
 
   @IBAction func tapBookmarkButton() {
-    guard let identifier = self.place?.identifier else {
-      return
-    }
-    if loveButton.isSelected {
-      loveButton.isSelected = false
-      if let place = self.place {
-        self.analytics?.log(.tapsFavoriteButtonOnCard(save: false, place: place, controllerIdentifierKey: self.controllerIdentifierKey))
-      }
-      updateBookmark(placeId: identifier, toSaved: false, bookmarkHandler: nil) { (success) in
-        if !success {
-          self.loveButton.isSelected = true
-        }
-      }
-    } else {
-      loveButton.isSelected = true
-      if let place = self.place {
-        self.analytics?.log(.tapsFavoriteButtonOnCard(save: true, place: place, controllerIdentifierKey: self.controllerIdentifierKey))
-      }
-      updateBookmark(placeId: identifier, toSaved: true, bookmarkHandler: nil) { (success) in
-        if success {
-          UIView.flashHUD("Added to List")
-        } else {
-          self.loveButton.isSelected = false
-        }
-      }
-    }
+    guard
+      let context = self.context,
+      let place = self.place else { return }
+    let placeId = place.identifier
+    let isSaved = loveButton.isSelected
+    let toSaved = !isSaved
+    loveButton.isSelected = toSaved
+    context.analytics.log(.tapsFavoriteButtonOnCard(save: toSaved, place: place, controllerIdentifierKey: self.controllerIdentifierKey))
+    context.api.updateBookmark$(placeId, toSaved: toSaved)
+      .subscribe(
+        onNext: { bookmark in
+          if toSaved {
+            UIView.flashHUD("Added to List")
+          }
+      })
+      .disposed(by: rx.disposeBag)
   }
 
 }

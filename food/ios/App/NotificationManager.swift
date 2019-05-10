@@ -15,7 +15,6 @@ protocol NotificationManagerDelegate: class {
 
 class NotificationManager: NSObject, UNUserNotificationCenterDelegate, Contextual {
 
-  let bag: DisposeBag = DisposeBag()
   var context: Context
 
   weak var delegate: NotificationManagerDelegate?
@@ -181,8 +180,7 @@ class NotificationManager: NSObject, UNUserNotificationCenterDelegate, Contextua
               location: self.locationManager.latestCoordinate))
           let vc =
             DetailViewController(
-              analytics: self.analytics,
-              cache: self.cache,
+              context: self.context,
               place: place)
           print("success \(vc)")
           self.delegate?.push(vc, animated: true)
@@ -191,7 +189,7 @@ class NotificationManager: NSObject, UNUserNotificationCenterDelegate, Contextua
           print("NOOP error \(error)")
           completionHandler()
         }
-      }).disposed(by: self.bag)
+      }).disposed(by: rx.disposeBag)
   }
 
   private func attemptReadPlace(
@@ -217,7 +215,7 @@ class NotificationManager: NSObject, UNUserNotificationCenterDelegate, Contextua
           print("NOOP error \(error)")
           completionHandler()
         }
-      }).disposed(by: self.bag)
+      }).disposed(by: rx.disposeBag)
   }
 
   private func attemptSharePlace(
@@ -261,30 +259,31 @@ class NotificationManager: NSObject, UNUserNotificationCenterDelegate, Contextua
         }
         }, onCompleted: {
           completionHandler()
-      }).disposed(by: self.bag)
+      }).disposed(by: rx.disposeBag)
   }
 
   private func updatePlace(
     _ category: Category,
-    _ identifier: String?,
+    _ placeId: String?,
     save: Bool,
     _ completionHandler: @escaping ()->()) {
-    guard let identifier = identifier else { return completionHandler() }
-    let bookmarkHandler = { [weak self] (bookmark: Bookmark) in
-      guard let `self` = self, let place = bookmark.place else { return }
-      self.analytics.log(
-        .tapsSaveInNotificationCTA(
-          category,
-          toSaved: save,
-          place: place,
-          location: self.locationManager.latestCoordinate))
-    }
-    updateBookmark(
-      placeId:
-      identifier,
-      toSaved: save,
-      bookmarkHandler: bookmarkHandler,
-      completion: { _ in completionHandler() })
+    guard let placeId = placeId else { return completionHandler() }
+    self.api.updateBookmark$(placeId, toSaved: save)
+      .subscribe(onNext: { [weak self] bookmark in
+        guard
+          let `self` = self,
+          let place = bookmark.place
+          else { return }
+        self.analytics.log(
+          .tapsSaveInNotificationCTA(
+            category,
+            toSaved: save,
+            place: place,
+            location: self.locationManager.latestCoordinate))
+      }, onCompleted: {
+        completionHandler()
+      })
+      .disposed(by: rx.disposeBag)
   }
 
   enum Exception: Error {
@@ -297,72 +296,66 @@ class NotificationManager: NSObject, UNUserNotificationCenterDelegate, Contextua
   private func observeLocationManager() {
     locationManager.regionEntry$
       // record entry for "visit" calculations
-      .flatMap({ [unowned self] region -> Observable<Result<Bookmark>> in
+      .flatMap({ [unowned self] region -> Observable<Bookmark> in
         let placeId = region.identifier
         return self.api.recordRegionChange$(placeId, isEntering: true)
       })
       // throttle nearby notifications for each place
-      .filter({ result -> Bool in
+      .filter({ bookmark in
         if self.env.isPreProduction { return true } // ...only in prod
-        guard case .success(let bookmark) = result else { return false }
         guard let lastNotifiedAt = bookmark.lastNotifiedAt else { return true }
         return lastNotifiedAt.isBeforeDate(7.days.ago, granularity: .second)
       })
-      .flatMap({ [weak self] result -> Observable<Result<Bookmark>> in
+      .flatMap({ [weak self] bookmark -> Observable<Bookmark> in
         guard let `self` = self else { throw Exception.missingSelf }
-        switch result {
-        case let .failure(error):
-          throw error
-        case let .success(bookmark):
-          guard
-            let place = bookmark.place,
-            let placeName = place.name
-            else { throw Exception.missingPlaceName }
-          let category = Category.nearby
-          let content = UNMutableNotificationContent()
-          content.categoryIdentifier = category.rawValue
-          content.sound = UNNotificationSound.default
-          content.title = "You're nearby \(placeName)!"
-          content.body = "You saved \(placeName) to your list of restaurants."
-          content.userInfo["place_id"] = place.identifier
-          if let url = place.post?.url?.absoluteString {
-            content.userInfo["post_url"] = url
-          }
-          guard
-            let imageURLString = place.imageURL?.absoluteString,
-            let imageURL = URL(string: imageURLString),
-            let imageData = NSData(contentsOf: imageURL),
-            let image = UNNotificationAttachment.create("image.jpg", data: imageData, options: nil)
-            else { throw Exception.missingPlaceImage }
-          content.attachments = [image]
-          let request =
-            UNNotificationRequest(
-              identifier: UUID().uuidString,
-              content: content,
-              trigger: nil)
-          guard
-            let center = self.notificationCenter
-            else { throw Exception.missingNotificationCenter }
-          center.add(request, withCompletionHandler: { (error) in
-            if let error = error { print(error) }
-          })
-          self.analytics.log(.notificationShown(
-            category,
-            place: place,
-            location: self.locationManager.latestCoordinate))
-          return self.api.recordNotification$(place.identifier)
+        guard
+          let place = bookmark.place,
+          let placeName = place.name
+          else { throw Exception.missingPlaceName }
+        let category = Category.nearby
+        let content = UNMutableNotificationContent()
+        content.categoryIdentifier = category.rawValue
+        content.sound = UNNotificationSound.default
+        content.title = "You're nearby \(placeName)!"
+        content.body = "You saved \(placeName) to your list of restaurants."
+        content.userInfo["place_id"] = place.identifier
+        if let url = place.post?.url?.absoluteString {
+          content.userInfo["post_url"] = url
         }
+        guard
+          let imageURLString = place.imageURL?.absoluteString,
+          let imageURL = URL(string: imageURLString),
+          let imageData = NSData(contentsOf: imageURL),
+          let image = UNNotificationAttachment.create("image.jpg", data: imageData, options: nil)
+          else { throw Exception.missingPlaceImage }
+        content.attachments = [image]
+        let request =
+          UNNotificationRequest(
+            identifier: UUID().uuidString,
+            content: content,
+            trigger: nil)
+        guard
+          let center = self.notificationCenter
+          else { throw Exception.missingNotificationCenter }
+        center.add(request, withCompletionHandler: { (error) in
+          if let error = error { print(error) }
+        })
+        self.analytics.log(.notificationShown(
+          category,
+          place: place,
+          location: self.locationManager.latestCoordinate))
+        return self.api.recordNotification$(place.identifier)
       })
       .subscribe()
-      .disposed(by: bag)
+      .disposed(by: rx.disposeBag)
 
     locationManager.regionExit$
-      .flatMap({ [unowned self] region -> Observable<Result<Bookmark>> in
+      .flatMap({ [unowned self] region -> Observable<Bookmark> in
         let placeId = region.identifier
         return self.api.recordRegionChange$(placeId, isEntering: false)
       })
       .subscribe()
-      .disposed(by: bag)
+      .disposed(by: rx.disposeBag)
   }
 
 }

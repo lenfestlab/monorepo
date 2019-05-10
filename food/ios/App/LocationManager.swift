@@ -43,6 +43,10 @@ class LocationManager: NSObject, CLLocationManagerDelegate {
     }
   }
 
+  let defaultCoordinate =
+    CLLocationCoordinate2D(
+      latitude: 39.9526,
+      longitude: -75.1652)
 
   weak var authorizationDelegate: LocationManagerAuthorizationDelegate?
   var locationManager:CLLocationManager

@@ -6,6 +6,7 @@ import AlamofireNetworkActivityLogger
 import RxSwift
 import SwiftDate
 import CoreLocation
+import NSObject_Rx
 
 typealias Result<T> = Swift.Result<T, Error>
 typealias LaunchOptions = [UIApplication.LaunchOptionsKey: Any]?
@@ -21,11 +22,11 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
   var analytics: AnalyticsManager!
   var env: Env!
   var api: Api!
+  var cache: Cache!
   var locationManager: LocationManager!
   var notificationManager: NotificationManager!
   var mainController: MainController!
   var tabController: TabBarViewController!
-  let bag = DisposeBag()
 
   class func shared() -> AppDelegate {
     return UIApplication.shared.delegate as! AppDelegate
@@ -34,7 +35,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
   func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: LaunchOptions) -> Bool {
     self.env = Env()
     if !env.isRemote {
-      NetworkActivityLogger.shared.level = .debug
+      NetworkActivityLogger.shared.level = .info
       NetworkActivityLogger.shared.startLogging()
     }
 
@@ -49,10 +50,14 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
       }
     }
 
-    let cache = Cache()
-    self.api = Api(env: env, cache: cache)
+    self.cache = Cache()
     self.analytics = AnalyticsManager(env)
     self.locationManager = LocationManager.sharedWith(analytics: analytics)
+    self.api =
+      Api(
+        env: env,
+        cache: cache,
+        locationManager: locationManager)
     self.context =
       Context(
         api: api,
@@ -60,14 +65,17 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         cache: cache,
         env: env,
         locationManager: locationManager)
-
     self.notificationManager = NotificationManager(context: context)
+
     window = UIWindow(frame: UIScreen.main.bounds)
     let onboardingCompleted = UserDefaults.standard.bool(forKey: "onboarding-completed")
 
     let introController = IntroViewController(analytics: self.analytics)
     self.mainController = MainController(rootViewController: introController)
     self.notificationManager.delegate = self
+
+    self.syncData()
+    self.observeFirstTouch()
 
     if !onboardingCompleted {
       window!.rootViewController = self.mainController
@@ -100,20 +108,6 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         }
       }
     }
-
-    guard let window = self.window else { return true }
-    let notificationResponse$ =
-      notificationManager.notificationResponse$
-    let anyTouch$ =
-      window.rx.methodInvoked(#selector(UIView.hitTest(_:with:)))
-    anyTouch$.withLatestFrom(notificationResponse$)
-      .take(1)
-      .subscribe(onNext: { [unowned self] response in
-        self.analytics.log(.appLaunched((response != nil)
-          ? .notification
-          : .direct))
-      }).disposed(by: bag)
-
 
     return true
   }
@@ -191,7 +185,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
       let place$ = self.api.getPlace$(placeId)
       let latestLocation$ = self.locationManager.location$
       Observable.combineLatest(place$, latestLocation$)
-        .flatMapFirst({ [weak self] (result, currentLocation) -> Observable<Result<Bookmark>> in
+        .flatMapFirst({ [weak self] (result, currentLocation) -> Observable<Bookmark> in
           guard let `self` = self else { throw VisitError.SelfMIA }
           switch result {
           case let .failure(error): throw error
@@ -207,31 +201,27 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
           }
         })
         .subscribe({ [weak self] event in
-          guard let `self` = self else { return completionHandler(.failed) }
+          guard let `self` = self
+            else { return completionHandler(.failed) }
           switch event {
-          case let .next(result):
+          case .next(let bookmark):
             // if API recorded visit, display local notification (stag only)
-            switch result {
-            case let .success(bookmark):
-              if self.env.isPreProduction,
-                let placeName = bookmark.place?.name,
-                let center = self.notificationManager.notificationCenter {
-                let content = UNMutableNotificationContent()
-                content.categoryIdentifier = "visiting"
-                content.sound = UNNotificationSound.default
-                content.title = "Visit: \(placeName)"
-                let request =
-                  UNNotificationRequest(
-                    identifier: UUID().uuidString,
-                    content: content,
-                    trigger: nil)
-                center.add(request, withCompletionHandler: { (error) in
-                  if let error = error { print(error) }
-                })
-              }
-            case let .failure(error):
-              print(error)
-            }
+            guard self.env.isPreProduction,
+              let placeName = bookmark.place?.name,
+              let center = self.notificationManager.notificationCenter
+              else { return }
+            let content = UNMutableNotificationContent()
+            content.categoryIdentifier = "visiting"
+            content.sound = UNNotificationSound.default
+            content.title = "Visit: \(placeName)"
+            let request =
+              UNNotificationRequest(
+                identifier: UUID().uuidString,
+                content: content,
+                trigger: nil)
+            center.add(request, withCompletionHandler: { (error) in
+              if let error = error { print(error) }
+            })
           case let .error(error):
             print(error)
             completionHandler(.failed)
@@ -239,12 +229,48 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
             completionHandler(.newData)
           }
         })
-        .disposed(by: bag)
+        .disposed(by: rx.disposeBag)
 
     }
   }
 
+  private func syncData() -> Void {
+    let updateDefaultPlaces$ =
+      api.updateDefaultPlaces$()
+        .mapTo(true)
+    let updateBookmarks$ =
+      authToken$ // wait for auth token
+        .filter({ [unowned self] _ -> Bool in
+          return self.cache.bookmarks.isEmpty
+        })
+        .flatMapFirst({ [unowned self] token in
+          return self.api.updateBookmarks$(authToken: token)
+        })
+        .mapTo(true)
+    // warm cache in order of appearance
+    Observable.concat([
+      updateDefaultPlaces$,
+      updateBookmarks$,
+      ])
+      .subscribe()
+      .disposed(by: rx.disposeBag)
+  }
+
+  private func observeFirstTouch() -> Void {
+    guard let window = self.window else { return }
+    let notificationResponse$ = notificationManager.notificationResponse$
+    let anyTouch$ = window.rx.methodInvoked(#selector(UIView.hitTest(_:with:)))
+    anyTouch$.withLatestFrom(notificationResponse$)
+      .take(1)
+      .subscribe(onNext: { [unowned self] response in
+        self.analytics.log(.appLaunched((response != nil)
+          ? .notification
+          : .direct))
+      }).disposed(by: rx.disposeBag)
+  }
+
 }
+
 
 extension AppDelegate: MessagingDelegate {
 

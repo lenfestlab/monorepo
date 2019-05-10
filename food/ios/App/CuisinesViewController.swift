@@ -1,6 +1,8 @@
 import UIKit
+import RxSwift
+import RxCocoa
 
-class CuisinesViewController: UITableViewController {
+class CuisinesViewController: UITableViewController, Contextual {
 
   weak var delegate: FilterModuleDelegate?
 
@@ -24,14 +26,14 @@ class CuisinesViewController: UITableViewController {
   var sorted = [Character : [Category]]()
   private let filterModule: FilterModule
   var selected = [Category]()
-  private let analytics: AnalyticsManager
-  var isCuisine = false
+  var context: Context
+  private let cuisines$: Driver<[Category]>
 
-  init(analytics: AnalyticsManager, filter: FilterModule) {
-    self.isCuisine = true
-    self.analytics = analytics
+  init(context: Context, filter: FilterModule) {
+    self.context = context
     self.filterModule = filter
     self.selected = filter.categories
+    self.cuisines$ = context.cache.cuisines$.asDriver(onErrorJustReturn: [])
     super.init(nibName: nil, bundle: nil)
     navigationItem.hidesBackButton = true
   }
@@ -63,18 +65,19 @@ class CuisinesViewController: UITableViewController {
       }
     }
 
-    CategoryDataStore.retrieve(isCuisine: self.isCuisine) { (success, categories, count) in
-      if let categories = categories {
+    self.cuisines$
+      .drive(onNext: { [weak self] categories in
+        guard let `self` = self else { return }
         for category in categories {
           if let name = category.name {
             if let character = name.uppercased().first {
               self.sorted[character]?.append(category)
             }
           }
+        self.tableView.reloadData()
         }
-      }
-      self.tableView.reloadData()
-    }
+      })
+      .disposed(by: rx.disposeBag)
   }
 
   // MARK: - Table view data source

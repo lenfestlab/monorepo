@@ -2,6 +2,7 @@ import UIKit
 import UPCarouselFlowLayout
 import RxSwift
 import RxCocoa
+import AlamofireImage
 
 let imageIdentifier = "ImageViewCell"
 
@@ -26,7 +27,7 @@ extension DetailViewController: UICollectionViewDataSource {
     if let images = self.place.post?.images {
       let image:Img = images[indexPath.row]
       if let url = image.url {
-        cell.imageView.kf.setImage(with: url)
+        cell.imageView.af_setImage(withURL: url)
       }
     }
 
@@ -60,7 +61,7 @@ extension DetailViewController: UIScrollViewDelegate {
 }
 
 
-class DetailViewController: UIViewController {
+class DetailViewController: UIViewController, Contextual {
 
   var place : Place
   
@@ -88,56 +89,50 @@ class DetailViewController: UIViewController {
 
   @IBOutlet weak var loveButton: UIButton!
 
-  private let analytics: AnalyticsManager
-  private let cache: Cache
-  private let bag = DisposeBag()
+  var context: Context
+  var isSaved$: Observable<Bool>
 
-  init(analytics: AnalyticsManager, cache: Cache, place: Place) {
-    self.analytics = analytics
-    self.cache = cache
+  init(context: Context, place: Place) {
+    self.context = context
     self.place = place
+    self.isSaved$ = context.cache.isSaved$(place.identifier)
     super.init(nibName: nil, bundle: nil)
-    // eager load carousel images
-    if let images = self.place.post?.images {
-      self.cache.loadImages$(images.compactMap({$0.url}))
-        .subscribe()
-        .disposed(by: bag)
-    }
+    eagerLoadCarouselImages$()
+  }
+
+  private func eagerLoadCarouselImages$() -> Void {
+    guard let post = place.post else { return }
+    let willAppear$ = rx.methodInvoked(#selector(UIViewController.viewWillAppear(_:)))
+    let willDisappear$ = rx.methodInvoked(#selector(UIViewController.viewWillDisappear(_:)))
+    willAppear$
+      .flatMapLatest { [unowned self] _ -> Observable<[Image]> in
+        let urls = post.images.compactMap({ $0.url })
+        let loader = UIImageView.af_sharedImageDownloader
+        return self.cache.loadImages$(Array(urls), withLoader: loader)
+      }
+      .takeUntil(willDisappear$)
+      .subscribe()
+      .disposed(by: rx.disposeBag)
   }
 
   required init?(coder aDecoder: NSCoder) {
     fatalError("init(coder:) has not been implemented")
   }
 
-  @objc func onFavoritesUpdated(_ notification: Notification) {
-    self.refresh()
-  }
-
-  func refresh() {
-    self.loveButton.isSelected = Place.contains(identifier: self.place.identifier)
-  }
-
   @IBAction func tapBookmarkButton() {
-    let identifier = self.place.identifier
-    if loveButton.isSelected {
-      loveButton.isSelected = false
-      analytics.log(.tapsFavoriteButtonOnDetailPage(save: false, place: self.place))
-      updateBookmark(placeId: identifier, toSaved: false, bookmarkHandler: nil) { (success) in
-        if !success {
-          self.loveButton.isSelected = true
-        }
-      }
-    } else {
-      loveButton.isSelected = true
-      analytics.log(.tapsFavoriteButtonOnDetailPage(save: true, place: self.place))
-      updateBookmark(placeId: identifier, toSaved: true, bookmarkHandler: nil) { (success) in
-        if success {
-          UIView.flashHUD("Added to List")
-        } else {
-          self.loveButton.isSelected = false
-        }
-      }
-    }
+    let placeId = place.identifier
+    let isSaved = cache.isSaved(placeId)
+    let toSaved = !isSaved
+    loveButton.isSelected = toSaved
+    analytics.log(.tapsFavoriteButtonOnDetailPage(save: toSaved, place: place))
+    api.updateBookmark$(placeId, toSaved: toSaved)
+      .subscribe(
+        onNext: { bookmark in
+          if toSaved {
+            UIView.flashHUD("Added to List")
+          }
+      })
+      .disposed(by: rx.disposeBag)
   }
 
   override func viewDidLoad() {
@@ -145,9 +140,9 @@ class DetailViewController: UIViewController {
 
     self.loveButton.isHidden = Installation.authToken() == nil
 
-    refresh()
-
-    NotificationCenter.default.addObserver(self, selector: #selector(onFavoritesUpdated(_:)), name: .favoritesUpdated, object: nil)
+    isSaved$
+      .bind(to: loveButton.rx.isSelected)
+      .disposed(by: rx.disposeBag)
 
     self.websiteButton.isEnabled = self.place.website != nil
     self.callButton.isEnabled = self.place.phone != nil
@@ -170,7 +165,7 @@ class DetailViewController: UIViewController {
 
     self.collectionView.collectionViewLayout = layout
 
-    self.pageControl.numberOfPages = self.place.post?.images?.count ?? 0
+    self.pageControl.numberOfPages = self.place.post?.images.count ?? 0
     self.pageControl.pageIndicatorTintColor = UIColor.white.withAlphaComponent(0.5)
     self.pageControl.currentPageIndicatorTintColor = UIColor.oceanBlue
     self.pageControl.hidesForSinglePage = true
@@ -248,7 +243,7 @@ class DetailViewController: UIViewController {
   @IBAction func openFullReview() {
     analytics.log(.tapsFullReviewButton(place: self.place))
     let app = AppDelegate.shared()
-    if let link = self.place.post?.link {
+    if let link = self.place.post?.url {
       app.openInSafari(url: link)
     }
   }

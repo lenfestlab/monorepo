@@ -3,6 +3,7 @@ import UIKit
 import CoreLocation
 import RxSwift
 import RxRelay
+import RxRealm
 
 let concurrentPlaceQueue = DispatchQueue(label: "org.lenfestlab.food.placeQueue", attributes: .concurrent)
 
@@ -14,29 +15,35 @@ let concurrentPlaceQueue = DispatchQueue(label: "org.lenfestlab.food.placeQueue"
 
 let reuseIdentifier = "PlaceCell"
 
-class PlaceStore: NSObject {
+class PlaceStore: NSObject, Contextual {
 
-  private let context: Context
-  private let bag = DisposeBag()
-  private let places$ = BehaviorRelay<[Place]>(value: [])
+  var context: Context
+  let target: Api.Target
 
-  init(context: Context) {
+  private let mapPlaces$ = BehaviorRelay<[MapPlace]>(value: [])
+  private var mapPlaces: [MapPlace] {
+    return mapPlaces$.value
+  }
+
+  init(target: Api.Target, context: Context) {
     self.context = context
+    self.target = target
     super.init()
-    /* TODO: eager load map/list carousel images
-    places$
-      .observeOn(Scheduler.background)
-      .flatMapLatest({ [unowned self] places -> Observable<[UIImage]> in
-        let urls = places.compactMap({ $0.post?.imageURL })
-        return self.context.cache.loadImages$(urls)
+  }
+
+  func beginObservingCache() {
+    guard case .placesBookmarked = target else { return }
+    cache.observePlaces$(.bookmarked)
+      .map({ $0.map { MapPlace(place: $0) } })
+      .subscribe(onNext: { [unowned self] mapPlaces in
+        self.mapPlaces$.accept(mapPlaces)
+        self.updateFilter(searchText: self.delegate?.filterText())
+        self.delegate?.fetchedMapData()
       })
-      .subscribe()
-      .disposed(by: bag)
-     */
+      .disposed(by: rx.disposeBag)
   }
 
   var lastCoordinateUsed : CLLocationCoordinate2D?
-  var path : String?
 
   var loading = false
 
@@ -45,14 +52,6 @@ class PlaceStore: NSObject {
   weak var delegate: PlaceStoreDelegate?
 
   private var unsafePlaces = [MapPlace]()
-
-  private var places:[MapPlace] = [MapPlace]()
-  {
-    didSet
-    {
-      self.updateFilter(searchText: self.delegate?.filterText())
-    }
-  }
 
   var placesFiltered: [MapPlace] {
     var placesFilteredCopy: [MapPlace]!
@@ -69,7 +68,7 @@ class PlaceStore: NSObject {
       }
 
       if let searchText = searchText, searchText.count > 0{
-        self.unsafePlaces = self.places.filter {
+        self.unsafePlaces = self.mapPlaces.filter {
           if let title = $0.place.name?.lowercased() {
             if title.contains(searchText.lowercased()) {
               return true
@@ -78,7 +77,7 @@ class PlaceStore: NSObject {
           return false
         }
       } else {
-        self.unsafePlaces = self.places
+        self.unsafePlaces = self.mapPlaces
       }
 
       DispatchQueue.main.async { [weak self] in
@@ -93,11 +92,6 @@ class PlaceStore: NSObject {
       return
     }
 
-    guard let path = self.path else {
-      completionBlock?([])
-      return
-    }
-
     guard let coordinate = self.lastCoordinateUsed else {
       completionBlock?([])
       return
@@ -105,31 +99,28 @@ class PlaceStore: NSObject {
 
     self.loading = true
 
-    PlaceDataStore.retrieve(
-      path: path,
-      coordinate: coordinate,
+    self.api.getPlaces$(
+      target: self.target,
+      lat: coordinate.latitude,
+      lng: coordinate.longitude,
       prices: self.filterModule.prices,
       ratings: self.filterModule.ratings,
       categories: self.filterModule.categories,
       neigborhoods: self.filterModule.nabes,
       authors: self.filterModule.authors,
       sort: self.filterModule.sortMode,
-      limit: 1000) { (success, data, count) in
-
-        self.places$.accept(data)
-
-      var places = [MapPlace]()
-      for place in data {
-        places.append(MapPlace(place: place))
-      }
-      self.places = places
-
-
-      self.loading = false
-
-      self.delegate?.fetchedMapData()
-      completionBlock?(places)
-    }
+      limit: 1000)
+      .observeOn(Scheduler.main)
+      .map({ $0.map { MapPlace(place: $0) } })
+      .subscribe(onNext: { [weak self] mapPlaces in
+        guard let `self` = self else { return }
+        self.mapPlaces$.accept(mapPlaces)
+        self.updateFilter(searchText: self.delegate?.filterText())
+        self.delegate?.fetchedMapData()
+        self.loading = false
+        completionBlock?(mapPlaces)
+      })
+      .disposed(by: rx.disposeBag)
   }
 
 }

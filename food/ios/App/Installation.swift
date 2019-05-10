@@ -1,6 +1,19 @@
 import Alamofire
 import Gloss
 import CloudKit
+import RxSwift
+
+typealias AuthToken = String
+let authToken$$ = BehaviorSubject<AuthToken?>(value: nil)
+let authToken$ = { () -> Observable<AuthToken> in
+  let cached = Installation.authToken()
+  return authToken$$
+    .asObservable()
+    .startWith(cached)
+    .unwrap()
+    .distinctUntilChanged()
+    .share(replay: 1, scope: .whileConnected)
+}()
 
 /// async gets iCloud ID object of logged-in iCloud user
 func iCloudUserIDAsync(complete: @escaping (String?, Error?) -> ()) {
@@ -26,6 +39,7 @@ class Installation: NSObject {
   static let shared = Installation()
 
   class func save(authToken: String) {
+    authToken$$.onNext(authToken)
     let defaults = UserDefaults.standard
     defaults.set(authToken, forKey: authTokenKey)
     defaults.synchronize()
@@ -33,7 +47,9 @@ class Installation: NSObject {
 
   class func authToken() -> String? {
     let defaults = UserDefaults.standard
-    return defaults.string(forKey: authTokenKey)
+    let authToken = defaults.string(forKey: authTokenKey)
+    authToken$$.onNext(authToken)
+    return authToken
   }
 
   class func register(cloudId: String, completion: @escaping (Bool, String?) -> Void) {
@@ -43,10 +59,6 @@ class Installation: NSObject {
   class func update(cloudId: String, emailAddress: String, completion: @escaping (Bool, String?) -> Void) {
     let params = ["email" : emailAddress]
     patch(cloudId: cloudId, params: params, completion: completion)
-  }
-
-  class func updateToken(cloudId: String, gcmToken: String, completion: @escaping (Bool, String?) -> Void) {
-    patch(cloudId: cloudId, params: ["gcm_token" : gcmToken], completion: completion)
   }
 
   class func patch(cloudId: String, params: [String: Any]? = nil, completion: @escaping (Bool, String?) -> Void) {

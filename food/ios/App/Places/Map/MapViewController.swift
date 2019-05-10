@@ -52,7 +52,7 @@ extension MapViewController: UICollectionViewDataSource {
     // Configure the cell
     let mapPlace:MapPlace = self.placeStore.placesFiltered[indexPath.row]
     let place = mapPlace.place
-    cell.setPlace(place: place, index: indexPath.row, showIndex: self.showIndex)
+    cell.setPlace(context: context, place: place, index: indexPath.row, showIndex: self.showIndex)
     return cell
   }
 }
@@ -76,8 +76,7 @@ extension MapViewController: UICollectionViewDelegate {
   func openPlace(_ place: Place) {
     let detailViewController =
       DetailViewController(
-        analytics: analytics,
-        cache: context.cache,
+        context: context,
         place: place)
     self.navigationController?.pushViewController(detailViewController, animated: true)
   }
@@ -259,8 +258,7 @@ class MapViewController: UIViewController {
 
 //    self.navigationItem.rightBarButtonItem = UIBarButtonItem(title: "Filter", style: .plain, target: self, action: #selector(showFilter))
 
-    let defaultCoordinate = CLLocationCoordinate2D(latitude: 39.9526, longitude: -75.1652)
-    self.mapView?.center(defaultCoordinate)
+    self.mapView?.center(locationManager.defaultCoordinate)
     self.reloadMap()
   }
 
