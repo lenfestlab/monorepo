@@ -84,7 +84,6 @@ class DetailViewController: UIViewController {
   @IBOutlet weak var remainderView: UIView!
   @IBOutlet weak var remainderLabel: UILabel!
 
-  @IBOutlet weak var reviewButton: UIButton!
   @IBOutlet weak var reviewLabel: UILabel!
 
   @IBOutlet weak var loveButton: UIButton!
@@ -144,8 +143,6 @@ class DetailViewController: UIViewController {
   override func viewDidLoad() {
     super.viewDidLoad()
 
-    self.reviewButton.isHidden = self.place.post?.link == nil
-
     self.loveButton.isHidden = Installation.authToken() == nil
 
     refresh()
@@ -194,20 +191,15 @@ class DetailViewController: UIViewController {
     let address = self.place.address ?? ""
     self.addressLabel.attributedText = NSMutableAttributedString(string: address, font: UIFont.italicSmall, fontColor: nil)
 
-    self.reviewButton.titleLabel?.font = UIFont.lightLarge
-    self.reviewButton.setBackgroundImage(UIColor.lightGreyBlue.pixelImage(), for: .normal)
-    self.reviewButton.layer.cornerRadius = 5.0
-    self.reviewButton.clipsToBounds = true
-
     if let authorName = self.place.post?.author?.name {
       self.reviewLabel.text = "By \(authorName)"
     } else {
-      self.reviewLabel.text = "Unknown Reviewer"
+      self.reviewLabel.text = "Unknown Author"
     }
     self.reviewLabel.font = UIFont.lightLarge
 
     if let post = self.place.post {
-      if let html = post.placeSummary {
+      if var html = post.placeSummary {
         if let attributedText = NSMutableAttributedString(html: html, textColorHex: "white", font: UIFont.mediumItalicLarge, alignment: .center) {
           attributedText.addAttribute(NSAttributedString.Key.font, value:UIFont.mediumItalicLarge, range:NSMakeRange(0, attributedText.length))
           attributedText.addAttribute(NSAttributedString.Key.foregroundColor, value:UIColor.white, range:NSMakeRange(0, attributedText.length))

@@ -4,7 +4,10 @@ import UserNotifications
 class NotificationViewController: UIViewController, UNUserNotificationCenterDelegate {
 
   @IBOutlet weak var doneButton: UIButton!
+  @IBOutlet weak var skipButton: UIButton!
   @IBOutlet weak var stepLabel: UILabel!
+  @IBOutlet weak var headerLabel: UILabel!
+  @IBOutlet weak var descriptionLabel: UILabel!
 
   private let analytics: AnalyticsManager
   let notificationManager: NotificationManager
@@ -33,6 +36,12 @@ class NotificationViewController: UIViewController, UNUserNotificationCenterDele
     doneButton.setBackgroundImage(UIColor.lightGreyBlue.pixelImage(), for: .normal)
     doneButton.layer.cornerRadius = 5.0
     doneButton.clipsToBounds = true
+
+    stepLabel.font = .headerBook
+    headerLabel.font = .headerMedium
+    descriptionLabel.font = .onboardingLight
+    doneButton.titleLabel?.font = .onboardingLight
+    skipButton.titleLabel?.font = .skipFont
   }
 
   @IBAction func skip(sender: UIButton) {

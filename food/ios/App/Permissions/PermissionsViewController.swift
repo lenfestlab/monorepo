@@ -6,7 +6,10 @@ class PermissionsViewController: UIViewController, LocationManagerAuthorizationD
   var locationManager = LocationManager.shared
 
   @IBOutlet weak var doneButton: UIButton!
+  @IBOutlet weak var skipButton: UIButton!
   @IBOutlet weak var stepLabel: UILabel!
+  @IBOutlet weak var headerLabel: UILabel!
+  @IBOutlet weak var descriptionLabel: UILabel!
 
   private let analytics: AnalyticsManager
 
@@ -37,6 +40,12 @@ class PermissionsViewController: UIViewController, LocationManagerAuthorizationD
     doneButton.layer.cornerRadius = 5.0
     doneButton.clipsToBounds = true
     doneButton.setBackgroundImage(UIColor.lightGreyBlue.pixelImage(), for: .normal)
+
+    stepLabel.font = .headerBook
+    headerLabel.font = .headerMedium
+    descriptionLabel.font = .onboardingLight
+    doneButton.titleLabel?.font = .onboardingLight
+    skipButton.titleLabel?.font = .skipFont
   }
 
   func authorized(_ locationManager: LocationManager, status: CLAuthorizationStatus) {

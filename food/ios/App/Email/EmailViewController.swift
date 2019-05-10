@@ -14,6 +14,12 @@ class EmailViewController: UIViewController, UITextFieldDelegate {
   @IBOutlet weak var textField : UITextField!
   @IBOutlet weak var textView : UIView!
   @IBOutlet weak var errorLabel : UILabel!
+
+  @IBOutlet weak var skipButton: UIButton!
+  @IBOutlet weak var stepLabel: UILabel!
+  @IBOutlet weak var headerLabel: UILabel!
+
+
   var cloudId : String
 
   init(analytics: AnalyticsManager, cloudId: String) {
@@ -37,7 +43,19 @@ class EmailViewController: UIViewController, UITextFieldDelegate {
     self.textView.layer.borderWidth = 1
     self.textView.layer.cornerRadius = 10
     self.textView.clipsToBounds = true
-    self.textField.becomeFirstResponder()
+    self.textField.font = .textFieldFont
+//    self.textField.becomeFirstResponder()
+
+    stepLabel.font = .headerBook
+    headerLabel.font = .headerMedium
+    errorLabel.font = .onboardingLight
+    submitButton.titleLabel?.font = .onboardingLight
+    skipButton.titleLabel?.font = .skipFont
+
+    submitButton.layer.cornerRadius = 5.0
+    submitButton.clipsToBounds = true
+    submitButton.setBackgroundImage(UIColor.lightGreyBlue.pixelImage(), for: .normal)
+
   }
 
   @IBAction func skip(sender: UIButton) {

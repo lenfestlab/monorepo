@@ -1,10 +1,10 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<document type="com.apple.InterfaceBuilder3.CocoaTouch.XIB" version="3.0" toolsVersion="14460.31" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" useSafeAreas="YES" colorMatched="YES">
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.XIB" version="3.0" toolsVersion="14490.70" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" useSafeAreas="YES" colorMatched="YES">
     <device id="retina5_9" orientation="portrait">
         <adaptation id="fullscreen"/>
     </device>
     <dependencies>
-        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="14460.20"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="14490.49"/>
         <capability name="Safe area layout guides" minToolsVersion="9.0"/>
         <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
     </dependencies>
@@ -28,7 +28,10 @@
     <objects>
         <placeholder placeholderIdentifier="IBFilesOwner" id="-1" userLabel="File's Owner" customClass="NotificationViewController" customModule="App" customModuleProvider="target">
             <connections>
+                <outlet property="descriptionLabel" destination="Kau-OB-wCo" id="iJ8-9b-ZGF"/>
                 <outlet property="doneButton" destination="evs-it-d6M" id="gnt-74-TXN"/>
+                <outlet property="headerLabel" destination="8jS-Ui-kq5" id="Q7C-1l-e1o"/>
+                <outlet property="skipButton" destination="rsY-Bx-Exu" id="1Nc-rr-kpc"/>
                 <outlet property="stepLabel" destination="w9t-Yb-HD8" id="A6q-4c-grm"/>
                 <outlet property="view" destination="6jR-jh-3Ib" id="b2k-9k-ymg"/>
             </connections>
@@ -67,13 +70,15 @@
                         <action selector="doneWithSender:" destination="-1" eventType="touchUpInside" id="yQw-0v-Vqm"/>
                     </connections>
                 </button>
-                <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Receive food and drink notifications. " textAlignment="center" lineBreakMode="tailTruncation" numberOfLines="6" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="Kau-OB-wCo">
+                <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" textAlignment="center" lineBreakMode="tailTruncation" numberOfLines="6" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="Kau-OB-wCo">
                     <rect key="frame" x="34" y="434" width="307" height="46.666666666666686"/>
+                    <string key="text">To new reataurant openings 
+and nearby favorites.</string>
                     <fontDescription key="fontDescription" name="Lato-Regular" family="Lato" pointSize="20"/>
                     <nil key="highlightedColor"/>
                 </label>
                 <imageView opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" insetsLayoutMarginsFromSafeArea="NO" image="notifications-image" translatesAutoresizingMaskIntoConstraints="NO" id="AzU-YX-dCv">
-                    <rect key="frame" x="27.666666666666657" y="283" width="322" height="116"/>
+                    <rect key="frame" x="180.66666666666666" y="283" width="16" height="116"/>
                     <constraints>
                         <constraint firstAttribute="height" constant="116" id="tVf-ts-LTp"/>
                     </constraints>
