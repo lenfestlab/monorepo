@@ -199,7 +199,7 @@ class DetailViewController: UIViewController {
     self.reviewLabel.font = UIFont.lightLarge
 
     if let post = self.place.post {
-      if var html = post.placeSummary {
+      if let html = post.placeSummary {
         if let attributedText = NSMutableAttributedString(html: html, textColorHex: "white", font: UIFont.mediumItalicLarge, alignment: .center) {
           attributedText.addAttribute(NSAttributedString.Key.font, value:UIFont.mediumItalicLarge, range:NSMakeRange(0, attributedText.length))
           attributedText.addAttribute(NSAttributedString.Key.foregroundColor, value:UIColor.white, range:NSMakeRange(0, attributedText.length))
