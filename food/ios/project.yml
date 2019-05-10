@@ -24,7 +24,7 @@ configs:
 
 settings:
   base:
-    APP_NAME: FOOD
+    APP_NAME: Philly Eats
     APP_MARKETING_PATH: food
     TARGETED_DEVICE_FAMILY: '1' # iPhone only
     # link system frameworks - https://git.io/fAZbC
