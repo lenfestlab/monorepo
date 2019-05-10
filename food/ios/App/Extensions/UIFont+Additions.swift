@@ -55,4 +55,7 @@ extension UIFont {
   class var textFieldFont: UIFont {
     return UIFont(name: "GothamNarrowSSm-XLight", size: 20.0)!
   }
+  class var welcomeFont: UIFont {
+    return UIFont(name: "GothamNarrowSSm-Medium", size: 36.0)!
+  }
 }

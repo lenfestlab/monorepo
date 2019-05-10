@@ -1,10 +1,10 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<document type="com.apple.InterfaceBuilder3.CocoaTouch.XIB" version="3.0" toolsVersion="14313.18" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" useSafeAreas="YES" colorMatched="YES">
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.XIB" version="3.0" toolsVersion="14490.70" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" useSafeAreas="YES" colorMatched="YES">
     <device id="retina4_7" orientation="portrait">
         <adaptation id="fullscreen"/>
     </device>
     <dependencies>
-        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="14283.14"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="14490.49"/>
         <capability name="Safe area layout guides" minToolsVersion="9.0"/>
         <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
     </dependencies>
@@ -22,7 +22,9 @@
     <objects>
         <placeholder placeholderIdentifier="IBFilesOwner" id="-1" userLabel="File's Owner" customClass="IntroViewController" customModule="App" customModuleProvider="target">
             <connections>
+                <outlet property="descriptionLabel" destination="YHF-1K-Vww" id="9tI-UM-v5F"/>
                 <outlet property="doneButton" destination="hUG-bU-8Yv" id="yuf-jI-fN3"/>
+                <outlet property="titleLabel" destination="1No-Eb-hoY" id="edJ-Fg-0Ig"/>
                 <outlet property="view" destination="i5M-Pr-FkT" id="sfx-zR-JGt"/>
             </connections>
         </placeholder>
@@ -45,29 +47,32 @@
                         <action selector="doneWithSender:" destination="-1" eventType="touchUpInside" id="Uwu-HJ-cCw"/>
                     </connections>
                 </button>
-                <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="We're happy you're here!" textAlignment="center" lineBreakMode="tailTruncation" numberOfLines="2" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="1No-Eb-hoY">
-                    <rect key="frame" x="20" y="70" width="335" height="84.5"/>
+                <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Welcome!" textAlignment="center" lineBreakMode="tailTruncation" numberOfLines="2" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="1No-Eb-hoY">
+                    <rect key="frame" x="20" y="113" width="335" height="42"/>
                     <fontDescription key="fontDescription" name="WorkSans-Medium" family="Work Sans" pointSize="36"/>
                     <nil key="highlightedColor"/>
                 </label>
-                <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="HERE sends notifications about local arts, architecture and real estate news near you." textAlignment="center" lineBreakMode="tailTruncation" numberOfLines="6" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="YHF-1K-Vww">
-                    <rect key="frame" x="34" y="339.5" width="307" height="72"/>
+                <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="We want to help you find the best food in Philadelphia." textAlignment="center" lineBreakMode="tailTruncation" numberOfLines="6" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="YHF-1K-Vww">
+                    <rect key="frame" x="34" y="191" width="307" height="70"/>
+                    <constraints>
+                        <constraint firstAttribute="height" constant="70" id="haJ-zt-GV2"/>
+                    </constraints>
                     <fontDescription key="fontDescription" name="Lato-Regular" family="Lato" pointSize="20"/>
                     <nil key="highlightedColor"/>
                 </label>
                 <imageView opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" insetsLayoutMarginsFromSafeArea="NO" image="intro-image" translatesAutoresizingMaskIntoConstraints="NO" id="LoI-jC-Rhf">
-                    <rect key="frame" x="116" y="196.5" width="143" height="100"/>
+                    <rect key="frame" x="116" y="321" width="143" height="100"/>
                 </imageView>
             </subviews>
             <color key="backgroundColor" red="1" green="1" blue="1" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
             <constraints>
                 <constraint firstItem="1No-Eb-hoY" firstAttribute="centerX" secondItem="fnl-2z-Ty3" secondAttribute="centerX" id="B4R-2w-ZpB"/>
-                <constraint firstItem="LoI-jC-Rhf" firstAttribute="centerY" secondItem="fnl-2z-Ty3" secondAttribute="centerY" constant="-55" id="E8l-TF-OWF"/>
+                <constraint firstItem="YHF-1K-Vww" firstAttribute="top" secondItem="1No-Eb-hoY" secondAttribute="bottom" constant="36" id="IoS-Hc-JIQ"/>
                 <constraint firstItem="fnl-2z-Ty3" firstAttribute="trailing" secondItem="YHF-1K-Vww" secondAttribute="trailing" constant="34" id="K1M-iK-oh2"/>
-                <constraint firstItem="LoI-jC-Rhf" firstAttribute="top" secondItem="1No-Eb-hoY" secondAttribute="bottom" constant="42" id="MRW-Qa-vdu"/>
                 <constraint firstItem="YHF-1K-Vww" firstAttribute="leading" secondItem="fnl-2z-Ty3" secondAttribute="leading" constant="34" id="SR9-FH-bN3"/>
                 <constraint firstItem="fnl-2z-Ty3" firstAttribute="bottom" secondItem="hUG-bU-8Yv" secondAttribute="bottom" constant="40" id="Sj5-Ai-7fl"/>
-                <constraint firstItem="YHF-1K-Vww" firstAttribute="top" secondItem="LoI-jC-Rhf" secondAttribute="bottom" constant="43" id="Zck-ZO-6dn"/>
+                <constraint firstItem="LoI-jC-Rhf" firstAttribute="top" secondItem="YHF-1K-Vww" secondAttribute="bottom" constant="60" id="YZ8-ql-3Dk"/>
+                <constraint firstItem="1No-Eb-hoY" firstAttribute="top" secondItem="fnl-2z-Ty3" secondAttribute="top" constant="113" id="g9J-hg-2Td"/>
                 <constraint firstItem="hUG-bU-8Yv" firstAttribute="centerX" secondItem="fnl-2z-Ty3" secondAttribute="centerX" id="gbO-8B-Kzt"/>
                 <constraint firstItem="LoI-jC-Rhf" firstAttribute="centerX" secondItem="1No-Eb-hoY" secondAttribute="centerX" id="iSl-za-ifn"/>
                 <constraint firstItem="YHF-1K-Vww" firstAttribute="centerX" secondItem="fnl-2z-Ty3" secondAttribute="centerX" id="pNO-TZ-FP7"/>
@@ -75,7 +80,7 @@
             </constraints>
             <simulatedNavigationBarMetrics key="simulatedTopBarMetrics" translucent="NO" prompted="NO"/>
             <viewLayoutGuide key="safeArea" id="fnl-2z-Ty3"/>
-            <point key="canvasLocation" x="-151.5" y="-223"/>
+            <point key="canvasLocation" x="450" y="-654"/>
         </view>
     </objects>
     <resources>
