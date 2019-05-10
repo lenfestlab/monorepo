@@ -1,4 +1,14 @@
 Rails.application.routes.draw do
+  if Rails.env.development?
+    default_url_options({
+      protocol: 'https',
+      host: ENV["HOST"],
+      port: ENV["PORT"] })
+  else
+    default_url_options({
+      protocol: 'https',
+      host: ENV["HOST"]})
+  end
 
   mount RailsAdmin::Engine => '/admin', as: 'rails_admin'
 

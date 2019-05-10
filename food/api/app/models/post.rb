@@ -251,28 +251,8 @@ class Post < ApplicationRecord
     end
   end
 
-  # TODO: deprecate
-  def price
-    prices
-  end
-
-  def as_json(options = nil)
-    super({
-      only: %i[
-        identifier
-        blurb
-        price
-        prices
-        rating
-      ],
-      methods: %i[
-        image_url
-        images
-        url
-        author
-        details
-      ]
-    }.merge(options || {}))
+  def as_json
+    ActiveModelSerializers::SerializableResource.new(self, {}).as_json
   end
 
 end
