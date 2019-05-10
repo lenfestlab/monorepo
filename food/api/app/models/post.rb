@@ -118,7 +118,7 @@ class Post < ApplicationRecord
         md = %{"#{md.strip}"}
       end
       field_name = attr.to_s.gsub('md_', '')
-      if %w{ places_summary menu drinks notes }.include?(field_name)
+      if %w{ menu drinks notes }.include?(field_name)
          md.prepend("# #{I18n.t(attr)} \n")
       end
       result = Kramdown::Document.new(md, MD_OPTIONS).to_html.html_safe
@@ -239,6 +239,9 @@ class Post < ApplicationRecord
     self.class.html_fields.inject({}) do |agg, attr|
       field_name = attr.to_s.gsub('html_', '')
       field_html = self.send(attr)
+      if field_name == "place_summary"
+        field_html = ActionController::Base.helpers.strip_tags(field_html)
+      end
       if remainder_field_names.include?(field_name)
         remainder = agg["remainder"]
         agg["remainder"] = remainder.present? \
