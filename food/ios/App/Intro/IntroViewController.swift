@@ -2,6 +2,8 @@ import UIKit
 
 class IntroViewController: UIViewController {
 
+  @IBOutlet weak var titleLabel: UILabel!
+  @IBOutlet weak var descriptionLabel: UILabel!
   @IBOutlet weak var doneButton: UIButton!
 
   private let analytics: AnalyticsManager
@@ -21,8 +23,14 @@ class IntroViewController: UIViewController {
 
     self.navigationController?.styleController()
 
+    titleLabel.font = .welcomeFont
+    descriptionLabel.font = .onboardingLight
+
+    doneButton.setBackgroundImage(UIColor.lightGreyBlue.pixelImage(), for: .normal)
     doneButton.layer.cornerRadius = 5.0
     doneButton.clipsToBounds = true
+    doneButton.titleLabel?.font = .onboardingLight
+
     self.view.backgroundColor = UIColor.white
   }
 

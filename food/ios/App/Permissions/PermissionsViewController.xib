@@ -1,10 +1,10 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<document type="com.apple.InterfaceBuilder3.CocoaTouch.XIB" version="3.0" toolsVersion="14460.31" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" useSafeAreas="YES" colorMatched="YES">
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.XIB" version="3.0" toolsVersion="14490.70" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" useSafeAreas="YES" colorMatched="YES">
     <device id="retina5_9" orientation="portrait">
         <adaptation id="fullscreen"/>
     </device>
     <dependencies>
-        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="14460.20"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="14490.49"/>
         <capability name="Safe area layout guides" minToolsVersion="9.0"/>
         <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
     </dependencies>
@@ -28,7 +28,10 @@
     <objects>
         <placeholder placeholderIdentifier="IBFilesOwner" id="-1" userLabel="File's Owner" customClass="PermissionsViewController" customModule="App" customModuleProvider="target">
             <connections>
+                <outlet property="descriptionLabel" destination="RRk-QL-q0P" id="Ol8-HJ-Tyh"/>
                 <outlet property="doneButton" destination="hUG-bU-8Yv" id="yuf-jI-fN3"/>
+                <outlet property="headerLabel" destination="amA-yx-rke" id="JUB-h0-Blv"/>
+                <outlet property="skipButton" destination="qIi-4s-8BE" id="7g9-Zg-uQs"/>
                 <outlet property="stepLabel" destination="ZnV-KD-aIL" id="tbo-si-ddt"/>
                 <outlet property="view" destination="i5M-Pr-FkT" id="sfx-zR-JGt"/>
             </connections>
@@ -80,13 +83,13 @@
                     <fontDescription key="fontDescription" name="WorkSans-Medium" family="Work Sans" pointSize="18"/>
                     <nil key="highlightedColor"/>
                 </label>
-                <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="We gather location a few times a day so news can find you based on where you are." textAlignment="center" lineBreakMode="tailTruncation" numberOfLines="6" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="RRk-QL-q0P">
-                    <rect key="frame" x="33" y="481" width="309" height="70"/>
+                <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="See the best restaurants nearby." textAlignment="center" lineBreakMode="tailTruncation" numberOfLines="6" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="RRk-QL-q0P">
+                    <rect key="frame" x="33" y="481" width="309" height="23.333333333333314"/>
                     <fontDescription key="fontDescription" name="Lato-Regular" family="Lato" pointSize="20"/>
                     <nil key="highlightedColor"/>
                 </label>
                 <imageView opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" insetsLayoutMarginsFromSafeArea="NO" image="map" translatesAutoresizingMaskIntoConstraints="NO" id="6Pu-Ho-1ri">
-                    <rect key="frame" x="26.666666666666657" y="283" width="322" height="163"/>
+                    <rect key="frame" x="179.66666666666666" y="283" width="16" height="163"/>
                     <constraints>
                         <constraint firstAttribute="height" constant="163" id="cE1-Wc-ERe"/>
                     </constraints>
