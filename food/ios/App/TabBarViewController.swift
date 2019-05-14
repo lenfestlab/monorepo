@@ -49,6 +49,7 @@ class TabBarViewController: UITabBarController {
     var controllers : [UIViewController] = []
 
     self.placesViewController = HomeViewController(context: context)
+    self.placesViewController.selectedIndex = 0
     let mapNavigationController = UINavigationController(rootViewController: self.placesViewController)
     mapNavigationController.styleController()
     mapNavigationController.tabBarItem.title = restaurantsTitle

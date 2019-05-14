@@ -29,7 +29,7 @@ class GuideViewController: PlacesViewController {
     super.viewWillAppear(animated)
     // TODO: hotfix only, refactor - guide default map center/span
     let coordinate = CLLocationCoordinate2D(latitude: 39.9526, longitude: -75.1652)
-    self.mapViewController.centerMap(coordinate)
+    self.mapViewController.mapView?.center(coordinate)
   }
 
 }

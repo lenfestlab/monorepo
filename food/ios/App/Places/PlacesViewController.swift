@@ -48,8 +48,10 @@ class PlacesViewController: UIViewController {
   private var _selectedIndex: Int = 0
   var selectedIndex: Int {
     set {
-      hideContentController(self.viewControllers[selectedIndex])
-      displayContentController(self.viewControllers[newValue])
+      if self.isViewLoaded {
+        hideContentController(self.viewControllers[selectedIndex])
+        displayContentController(self.viewControllers[newValue])
+      }
       _selectedIndex = newValue
       if selectedIndex == 1 {
         self.navigationItem.rightBarButtonItem = UIBarButtonItem(image: UIImage(named: "map-view"), style: .plain, target: self, action: #selector(map))
@@ -118,7 +120,6 @@ class PlacesViewController: UIViewController {
     self.viewControllers = [self.mapViewController, self.listViewController]
 
     super.init(nibName: nil, bundle: nil)
-    self.selectedIndex = 0
 
     self.placeStore.delegate = self
   }
@@ -157,6 +158,8 @@ class PlacesViewController: UIViewController {
 
   override func viewDidLoad() {
     super.viewDidLoad()
+    // Trigger adding required children views
+    self.selectedIndex = _selectedIndex
 
     NotificationCenter.default.addObserver(self, selector: #selector(onLocationUpdated(_:)), name: .locationUpdated, object: nil)
 
@@ -166,14 +169,12 @@ class PlacesViewController: UIViewController {
     self.view.addSubview(self.topBar)
     self.view.addSubview(self.filterBar)
 
-    self.navigationItem.rightBarButtonItem = UIBarButtonItem(title: "List", style: .plain, target: self, action: #selector(list))
+    let defaultCoordinate = CLLocationCoordinate2D(latitude: 39.9526, longitude: -75.1652)
 
     if let location = self.locationManager.latestLocation {
       initialMapDataFetch(coordinate: location.coordinate)
     } else {
-      let coordinate = CLLocationCoordinate2D(latitude: 39.9526, longitude: -75.1652)
-      self.mapViewController.centerMap(coordinate)
-      self.refresh(coordinate: coordinate)
+      self.refresh(coordinate: defaultCoordinate)
     }
 
   }

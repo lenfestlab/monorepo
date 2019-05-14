@@ -6,6 +6,32 @@ import CoreMotion
 import RxSwift
 import RxCocoa
 
+extension MKMapView {
+  func center(_ center: CLLocationCoordinate2D,
+                 span: MKCoordinateSpan = MKCoordinateSpan(latitudeDelta: 0.04, longitudeDelta: 0.04)) {
+    let region:MKCoordinateRegion = MKCoordinateRegion(center: center, span: span)
+    self.setRegion(region, animated: true)
+  }
+}
+
+extension UICollectionView {
+
+  var collectionViewFlowLayout: UICollectionViewFlowLayout {
+    return self.collectionViewLayout as! UICollectionViewFlowLayout
+  }
+
+  func indexOfMajorCell() -> Int {
+    let itemWidth = self.collectionViewFlowLayout.itemSize.width
+    let offset = self.collectionViewFlowLayout.collectionView!.contentOffset.x
+    let proportionalOffset = offset / itemWidth
+    let index = Int(round(proportionalOffset))
+    let numberOfItems = self.numberOfItems(inSection: 0)
+    let safeIndex = max(0, min(numberOfItems - 1, index))
+    return safeIndex
+  }
+
+}
+
 private let mapPinIdentifier = "pin"
 
 fileprivate let sectionInsets = UIEdgeInsets(top: 0, left: 0, bottom: 0, right: 0)
@@ -34,7 +60,7 @@ extension MapViewController: UICollectionViewDataSource {
 extension MapViewController: UICollectionViewDelegate {
 
   func collectionView(_ collectionView: UICollectionView, shouldSelectItemAt indexPath: IndexPath) -> Bool {
-    if indexOfMajorCell() == indexPath.row {
+    if collectionView.indexOfMajorCell() == indexPath.row {
       let mapPlace:MapPlace = self.placeStore.placesFiltered[indexPath.row]
       let place:Place = mapPlace.place
       analytics.log(.tapsOnCard(place: place, controllerIdentifierKey: self.controllerIdentifierKey))
@@ -122,7 +148,7 @@ class MapViewController: UIViewController {
 
   var showIndex = false {
     didSet {
-      self.collectionView.reloadData()
+      self.collectionView?.reloadData()
       self.reloadMap()
     }
   }
@@ -147,10 +173,10 @@ class MapViewController: UIViewController {
 
   var currentPlace:MapPlace? {
     set {
-      if let annotation = currentPlace?.annotation, let view = mapView.view(for: annotation) as? ABAnnotationView {
+      if let annotation = currentPlace?.annotation, let view = mapView?.view(for: annotation) as? ABAnnotationView {
         view.isSelected = false
       }
-      if let annotation = newValue?.annotation, let view = mapView.view(for: annotation) as? ABAnnotationView {
+      if let annotation = newValue?.annotation, let view = mapView?.view(for: annotation) as? ABAnnotationView {
         view.isSelected = true
       }
       _currentPlace = newValue
@@ -164,8 +190,8 @@ class MapViewController: UIViewController {
     return locationManager.latestCoordinate
   }
 
-  @IBOutlet weak var collectionView:UICollectionView!
-  @IBOutlet weak var mapView:MKMapView!
+  @IBOutlet weak var collectionView:UICollectionView?
+  @IBOutlet weak var mapView:MKMapView?
   @IBOutlet weak var locationButton:UIButton!
 
   private let context: Context
@@ -186,7 +212,7 @@ class MapViewController: UIViewController {
 
   @objc func updateLocationButton() {
     self.locationButton.isSelected = self.locationManager.authorized()
-    self.mapView.showsUserLocation = self.locationManager.authorized()
+    self.mapView?.showsUserLocation = self.locationManager.authorized()
   }
 
   override func viewDidAppear(_ animated: Bool) {
@@ -201,8 +227,11 @@ class MapViewController: UIViewController {
       self.currentPlace = mapPlace
     }
 
-    self.collectionView.contentOffset = CGPoint.zero
-    self.collectionView.reloadData()
+    if let view = self.collectionView {
+      view.contentOffset = CGPoint.zero
+      view.reloadData()
+    }
+
   }
 
   override func viewDidLoad() {
@@ -210,27 +239,29 @@ class MapViewController: UIViewController {
 
     NotificationCenter.default.addObserver(self, selector: #selector(updateLocationButton), name: .locationAuthorizationUpdated, object: nil)
 
-    self.collectionView.delegate = self
-    self.collectionView.dataSource = self
+    if let view = self.collectionView {
+      let layout = UPCarouselFlowLayout()
+      layout.scrollDirection = .horizontal
+      let width = view.frame.size.width - 2*padding
+      layout.spacingMode = .fixed(spacing: 0)
+      layout.sideItemScale = 1.0
+      layout.itemSize = CGSize(width: width, height: view.frame.size.height)
+      view.collectionViewLayout = layout
 
-    let layout = UPCarouselFlowLayout()
-    layout.scrollDirection = .horizontal
-    let width = collectionView.frame.size.width - 2*padding
-    layout.spacingMode = .fixed(spacing: 0)
-    layout.sideItemScale = 1.0
-    layout.itemSize = CGSize(width: width, height: collectionView.frame.size.height)
+      // Register cell classes
+      let nib = UINib(nibName: "PlaceCell", bundle:nil)
+      view.register(nib, forCellWithReuseIdentifier: reuseIdentifier)
+    }
 
-    self.collectionView.collectionViewLayout = layout
 
-    // Register cell classes
-
-    let nib = UINib(nibName: "PlaceCell", bundle:nil)
-    self.collectionView.register(nib, forCellWithReuseIdentifier: reuseIdentifier)
 
     self.navigationController?.styleController()
 
 //    self.navigationItem.rightBarButtonItem = UIBarButtonItem(title: "Filter", style: .plain, target: self, action: #selector(showFilter))
 
+    let defaultCoordinate = CLLocationCoordinate2D(latitude: 39.9526, longitude: -75.1652)
+    self.mapView?.center(defaultCoordinate)
+    self.reloadMap()
   }
 
   @IBAction func centerCurrentLocation() {
@@ -264,8 +295,8 @@ class MapViewController: UIViewController {
 
     if self.locationManager.authorized() {
       let showsUserLocation = locationButton.isSelected
-      if showsUserLocation {
-        mapView.setCenter(self.mapView.userLocation.coordinate, animated: true)
+      if showsUserLocation, let map = self.mapView {
+        map.setCenter(map.userLocation.coordinate, animated: true)
       }
     }
   }
@@ -279,12 +310,10 @@ class MapViewController: UIViewController {
   }
 
   func reloadMap() {
-    self.mapView.removeAnnotations(self.mapView.annotations)
-    self.mapView.addAnnotations(self.annotations)
-  }
-
-  private var collectionViewFlowLayout: UICollectionViewFlowLayout {
-    return self.collectionView.collectionViewLayout as! UICollectionViewFlowLayout
+    if let map = self.mapView {
+      map.removeAnnotations(map.annotations)
+      map.addAnnotations(self.annotations)
+    }
   }
 
   override func viewDidLayoutSubviews() {
@@ -293,24 +322,16 @@ class MapViewController: UIViewController {
   }
 
   private func configureCollectionViewLayoutItemSize() {
-    collectionViewFlowLayout.sectionInset = UIEdgeInsets(top: 0, left: padding, bottom: 0, right: padding)
-    let width = collectionView.frame.size.width - 2*padding
-    collectionViewFlowLayout.itemSize = CGSize(width: width, height: collectionView.frame.size.height)
-  }
-
-  private func indexOfMajorCell() -> Int {
-    let itemWidth = collectionViewFlowLayout.itemSize.width
-    let offset = collectionViewFlowLayout.collectionView!.contentOffset.x
-    let proportionalOffset = offset / itemWidth
-    let index = Int(round(proportionalOffset))
-    let numberOfItems = collectionView.numberOfItems(inSection: 0)
-    let safeIndex = max(0, min(numberOfItems - 1, index))
-    return safeIndex
+    if let view = collectionView {
+      view.collectionViewFlowLayout.sectionInset = UIEdgeInsets(top: 0, left: padding, bottom: 0, right: padding)
+      let width = view.frame.size.width - 2*padding
+      view.collectionViewFlowLayout.itemSize = CGSize(width: width, height: view.frame.size.height)
+    }
   }
 
   func scrollViewDidEndDecelerating(_ scrollView: UIScrollView) {
     var mapPlace:MapPlace
-    let snapToIndex = indexOfMajorCell()
+    let snapToIndex = self.collectionView?.indexOfMajorCell() ?? 0
     mapPlace = self.placeStore.placesFiltered[snapToIndex]
     let place = mapPlace.place
 
@@ -319,20 +340,24 @@ class MapViewController: UIViewController {
   }
 
   func scrollToItem(at indexPath:IndexPath) {
-    collectionViewFlowLayout.collectionView!.scrollToItem(at: indexPath, at: .centeredHorizontally, animated: true)
+    self.collectionView?.collectionViewFlowLayout.collectionView!.scrollToItem(at: indexPath, at: .centeredHorizontally, animated: true)
   }
 
   @objc func centerToCurrentPlaceIfNotVisible() {
+    guard let map = self.mapView else {
+      return
+    }
     DispatchQueue.main.async {
       if let coordinate = self.currentPlace?.place.coordinate() {
-        let visibleMapRect = self.mapView.visibleMapRect
-        let scale = visibleMapRect.width / Double(self.mapView.frame.width)
+        let visibleMapRect = map.visibleMapRect
+        let scale = visibleMapRect.width / Double(map.frame.width)
         let downBy = 250 + self.topPadding
         let x = visibleMapRect.origin.x + 0 * scale
         let y = visibleMapRect.origin.y + Double(downBy) * scale
         let pixelWidth = self.locationButton.frame.minX
         let width = scale * Double(pixelWidth)
-        let pixelHeight = self.mapView.frame.height - self.collectionView.frame.height - downBy - self.view.safeAreaInsets.bottom
+        let collectionViewFrameHeight = self.collectionView?.frame.height ?? 0
+        let pixelHeight = map.frame.height - collectionViewFrameHeight - downBy - self.view.safeAreaInsets.bottom
         let height = scale * Double(pixelHeight)
         let remainderRect = MKMapRect(x: x, y: y, width: width, height: height)
 
@@ -345,16 +370,10 @@ class MapViewController: UIViewController {
 //        self.mapView.addOverlay(remPoly)
 
         if(!remainderRect.contains(MKMapPoint(coordinate))){
-          self.centerMap(coordinate, span: self.mapView.region.span)
+          self.mapView?.center(coordinate, span: map.region.span)
         }
       }
     }
-  }
-
-  func centerMap(_ center: CLLocationCoordinate2D,
-                 span: MKCoordinateSpan = MKCoordinateSpan(latitudeDelta: 0.04, longitudeDelta: 0.04)) {
-    let region:MKCoordinateRegion = MKCoordinateRegion(center: center, span: span)
-    self.mapView.setRegion(region, animated: true)
   }
 
   override func viewWillAppear(_ animated: Bool) {
