@@ -194,7 +194,7 @@ class PlacesViewController: UIViewController {
   }
 
   func refresh(coordinate: CLLocationCoordinate2D? = nil, completionBlock: (([MapPlace]) -> (Void))? = nil) {
-    let showLoadingIndicator = true // self.viewIfLoaded?.window != nil
+    let showLoadingIndicator = self.viewIfLoaded?.window != nil
 
     if showLoadingIndicator {
       SVProgressHUD.show()
