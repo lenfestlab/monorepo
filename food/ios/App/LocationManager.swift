@@ -237,12 +237,25 @@ class LocationManager: NSObject, CLLocationManagerDelegate {
   }
 
   var analytics: AnalyticsManager?
-  static func sharedWith(analytics: AnalyticsManager) -> LocationManager {
+  var cache: Cache?
+  static func sharedWith(
+    analytics: AnalyticsManager,
+    cache: Cache
+    ) -> LocationManager {
     let manager = LocationManager.shared
     manager.analytics = analytics
+    manager.cache = cache
+    manager.observeBookmarks(from: cache)
     return manager
   }
 
+  private func observeBookmarks(from cache: Cache) -> Void {
+    cache.observePlaces$(.bookmarked)
+      .subscribe(onNext: { [weak self] objects in
+        self?.resetRegionMonitoring(places: objects)
+      })
+      .disposed(by: rx.disposeBag)
+  }
 
   func simulate(enteredRegion region: CLRegion) {
     self.locationManager(self.locationManager, didEnterRegion: region)

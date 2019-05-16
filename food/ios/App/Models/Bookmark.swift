@@ -16,8 +16,8 @@ class Bookmark: RealmSwift.Object, Mappable {
   }
 
   @objc dynamic var identifier = "" // server-set
+  @objc dynamic var placeId = "" // non-optional for #primaryKey()
   @objc dynamic var place: Place?
-  @objc dynamic var placeId: String? // ease queries
   @objc dynamic var lastSavedAt: Date?
   @objc dynamic var lastUnsavedAt: Date?
   @objc dynamic var lastEnteredAt: Date?
@@ -29,7 +29,8 @@ class Bookmark: RealmSwift.Object, Mappable {
       map["identifier"]
     place <-
       map["place"]
-    placeId = place?.identifier
+    placeId =
+      place!.identifier // place validated by API
     lastSavedAt <-
       (map["last_saved_at"], ISO8601DateTransform())
     lastUnsavedAt <-

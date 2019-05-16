@@ -139,9 +139,9 @@ class NotificationManager: NSObject, UNUserNotificationCenterDelegate, Contextua
       case .read:
         attemptReadPlace(category, placeIdentifier, postURL, completionHandler)
       case .save:
-        updatePlace(category, placeIdentifier, save: true, completionHandler)
+        attemptUpdatePlace(category, placeIdentifier, save: true, completionHandler)
       case .unsave:
-        updatePlace(category, placeIdentifier, save: false, completionHandler)
+        attemptUpdatePlace(category, placeIdentifier, save: false, completionHandler)
       case .share:
         attemptSharePlace(category, placeIdentifier, completionHandler)
       }
@@ -172,7 +172,6 @@ class NotificationManager: NSObject, UNUserNotificationCenterDelegate, Contextua
         guard let `self` = self else { return completionHandler() }
         switch result {
         case .success(let place):
-          print("success \(place)")
           self.analytics.log(
             .tapsNotificationDefaultTapToClickThrough(
               category,
@@ -182,7 +181,6 @@ class NotificationManager: NSObject, UNUserNotificationCenterDelegate, Contextua
             DetailViewController(
               context: self.context,
               place: place)
-          print("success \(vc)")
           self.delegate?.push(vc, animated: true)
           completionHandler()
         case .failure(let error):
@@ -215,7 +213,8 @@ class NotificationManager: NSObject, UNUserNotificationCenterDelegate, Contextua
           print("NOOP error \(error)")
           completionHandler()
         }
-      }).disposed(by: rx.disposeBag)
+      })
+      .disposed(by: rx.disposeBag)
   }
 
   private func attemptSharePlace(
@@ -262,13 +261,13 @@ class NotificationManager: NSObject, UNUserNotificationCenterDelegate, Contextua
       }).disposed(by: rx.disposeBag)
   }
 
-  private func updatePlace(
+  private func attemptUpdatePlace(
     _ category: Category,
     _ placeId: String?,
     save: Bool,
     _ completionHandler: @escaping ()->()) {
     guard let placeId = placeId else { return completionHandler() }
-    self.api.updateBookmark$(placeId, toSaved: save)
+    api.updateBookmark$(placeId, toSaved: save)
       .subscribe(onNext: { [weak self] bookmark in
         guard
           let `self` = self,

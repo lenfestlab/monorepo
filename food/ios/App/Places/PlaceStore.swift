@@ -32,8 +32,17 @@ class PlaceStore: NSObject, Contextual {
   }
 
   func beginObservingCache() {
+    // NOTE: only bookmarks VC currently bound to cache
     guard case .placesBookmarked = target else { return }
+    // TODO: until favs VC supports incremental batch updates, restrict
+    // updates to just those that add/remove items.
+    let mapIds = { (places: [Place]) -> Set<String> in
+      return Set(places.compactMap({$0.identifier })) }
     cache.observePlaces$(.bookmarked)
+      .distinctUntilChanged({ (oldPlaces, newPlaces) -> Bool in
+        let (oldIds, newIds) = (mapIds(oldPlaces), mapIds(newPlaces))
+        return oldIds == newIds
+      })
       .map({ $0.map { MapPlace(place: $0) } })
       .subscribe(onNext: { [unowned self] mapPlaces in
         self.mapPlaces$.accept(mapPlaces)

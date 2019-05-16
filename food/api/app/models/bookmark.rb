@@ -25,8 +25,8 @@ class Bookmark < ApplicationRecord
     now = Time.zone.now
     duration = Integer(ENV["DEFAULT_VISIT_DURATION"] || 10)
     before = duration.minutes.ago now
-    where("last_entered_at > last_visited_at") # no visit recorded yet
-      .where("last_entered_at > last_exited_at")  # hasn't yet exited
+    where("last_entered_at > COALESCE(last_exited_at, 'epoch')")  # hasn't yet exited
+      .where("last_entered_at > COALESCE(last_visited_at, 'epoch')") # no visit recorded yet
       .where("last_entered_at < ?", before) # entered 15+ min ago
       .where("last_entered_at > ?", 1.hour.ago(now)) # check window is 1h
   }
@@ -62,7 +62,7 @@ class Bookmark < ApplicationRecord
     end
 
     list do
-      scopes([nil, :saved, :unsaved])
+      scopes([nil, :saved, :unsaved, :visitable])
     end
 
   end

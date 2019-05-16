@@ -140,10 +140,6 @@ class Api {
               return refs.compactMap(realm.resolve)
             })
         })
-        .do(onNext: { [weak self] bookmarks in
-          let places = bookmarks.compactMap({ $0.place })
-          self?.locationManager.resetRegionMonitoring(places: places)
-        })
   }
 
   func updateCategories$() -> Observable<[Category]> {
