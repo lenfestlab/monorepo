@@ -52,7 +52,10 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
 
     self.cache = Cache()
     self.analytics = AnalyticsManager(env)
-    self.locationManager = LocationManager.sharedWith(analytics: analytics)
+    self.locationManager =
+      LocationManager.sharedWith(
+        analytics: analytics,
+        cache: cache)
     self.api =
       Api(
         env: env,
@@ -240,9 +243,6 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         .mapTo(true)
     let updateBookmarks$ =
       authToken$ // wait for auth token
-        .filter({ [unowned self] _ -> Bool in
-          return self.cache.bookmarks.isEmpty
-        })
         .flatMapFirst({ [unowned self] token in
           return self.api.updateBookmarks$(authToken: token)
         })

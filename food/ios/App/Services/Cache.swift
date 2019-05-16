@@ -40,6 +40,13 @@ class Cache {
         .share()
   }()
 
+  lazy var bookmarks$: Observable<[Bookmark]> = {
+    var query = realm.objects(Bookmark.self)
+    return
+      Observable.array(from: query, synchronousStart: true)
+        .share()
+  }()
+
   func replace<T: RealmSwift.Object>(_ newObjects: [T]) throws -> Void {
     let realm = self.realm
     try realm.write {
@@ -139,9 +146,9 @@ class Cache {
         bookmark.lastSavedAt = Date()
       } else {
         let bookmark = Bookmark()
-        bookmark.place = realm.object(ofType: Place.self, forPrimaryKey: placeId)
-        bookmark.lastUnsavedAt = Date()
         bookmark.placeId = placeId
+        bookmark.lastUnsavedAt = Date()
+        bookmark.place = realm.object(ofType: Place.self, forPrimaryKey: placeId)
         realm.add(bookmark, update: true)
       }
     }
