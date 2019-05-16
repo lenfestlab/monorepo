@@ -1,4 +1,5 @@
 import UIKit
+import RxRelay
 
 protocol AuthorViewControllerDelegate: class {
   func authorsUpdated(_ viewController: AuthorViewController, authors: [Author])
@@ -20,14 +21,19 @@ class AuthorViewController: UITableViewController {
 
   var sorted = [Character : [Author]]()
   var selected = [Author]()
-  private let analytics: AnalyticsManager
-  var isCuisine = false
+  var context: Context
+  private var authors$ = BehaviorRelay<[Author]>(value: [])
+  private var authors: [Author] {
+    return authors$.value
+  }
 
-  init(analytics: AnalyticsManager, selected: [Author]) {
-    self.analytics = analytics
+
+  init(context: Context, selected: [Author]) {
+    self.context = context
     self.selected = selected
     super.init(nibName: nil, bundle: nil)
     navigationItem.hidesBackButton = true
+    context.cache.authors$.bind(to: authors$).disposed(by: self.rx.disposeBag)
   }
 
   required init?(coder aDecoder: NSCoder) {
@@ -58,16 +64,15 @@ class AuthorViewController: UITableViewController {
       }
     }
 
-    AuthorDataStore.retrieve { (success, authors, count) in
-      if let authors = authors {
-        for author in authors {
-          if let character = author.name.uppercased().first {
-            self.sorted[character]?.append(author)
+    self.authors$.asDriver()
+      .drive(onNext: { [unowned self] objects in
+        objects.forEach({ object in
+          if let character = object.name.uppercased().first {
+            self.sorted[character]?.append(object)
           }
-        }
-      }
-      self.tableView.reloadData()
-    }
+        })
+        self.tableView.reloadData()
+      }).disposed(by: self.rx.disposeBag)
 
   }
 

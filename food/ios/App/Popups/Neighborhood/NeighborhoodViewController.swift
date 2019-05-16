@@ -1,10 +1,11 @@
 import UIKit
+import RxRelay
 
 protocol NeighborhoodViewControllerDelegate: class {
   func neighborhoodsUpdated(_ viewController: NeighborhoodViewController, neighborhoods: [Neighborhood])
 }
 
-class NeighborhoodViewController: UITableViewController {
+class NeighborhoodViewController: UITableViewController, Contextual {
 
   weak var delegate: NeighborhoodViewControllerDelegate?
 
@@ -23,17 +24,20 @@ class NeighborhoodViewController: UITableViewController {
     self.delegate?.neighborhoodsUpdated(self, neighborhoods: [])
   }
 
-
   var sorted = [Character : [Neighborhood]]()
   var selected = [Neighborhood]()
-  private let analytics: AnalyticsManager
-  var isCuisine = false
+  var context: Context
+  private var nabes$ = BehaviorRelay<[Neighborhood]>(value: [])
+  private var nabes: [Neighborhood] {
+    return nabes$.value
+  }
 
-  init(analytics: AnalyticsManager, selected: [Neighborhood]) {
-    self.analytics = analytics
+  init(context: Context, selected: [Neighborhood]) {
+    self.context = context
     self.selected = selected
     super.init(nibName: nil, bundle: nil)
     navigationItem.hidesBackButton = true
+    context.cache.nabes$.bind(to: nabes$).disposed(by: self.rx.disposeBag)
   }
 
   required init?(coder aDecoder: NSCoder) {
@@ -62,16 +66,15 @@ class NeighborhoodViewController: UITableViewController {
       }
     }
 
-    NeighborhoodDataStore.retrieve { (success, neighborhoods, count) in
-      if let neighborhoods = neighborhoods {
-        for nabe in neighborhoods {
-          if let character = nabe.name.uppercased().first {
-            self.sorted[character]?.append(nabe)
+    self.nabes$.asDriver()
+      .drive(onNext: { [unowned self] objects in
+        objects.forEach({ object in
+          if let character = object.name?.uppercased().first {
+            self.sorted[character]?.append(object)
           }
-        }
-      }
-      self.tableView.reloadData()
-    }
+        })
+        self.tableView.reloadData()
+      }).disposed(by: self.rx.disposeBag)
 
   }
 

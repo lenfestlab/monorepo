@@ -9,7 +9,7 @@ brew bundle -v --file=.brewfile --no-upgrade
 mint bootstrap
 
 # Carthage for iOS deps
-carthage bootstrap --platform ios --cache-builds --verbose
+carthage bootstrap --platform iOS --cache-builds --verbose
 
 # ignore local changes to Firebase config: https://stackoverflow.com/a/4633776
 git update-index --assume-unchanged ./App/Resources/GoogleService-Info.plist

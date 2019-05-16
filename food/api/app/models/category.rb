@@ -129,6 +129,8 @@ class Category < ApplicationRecord
         is_cuisine
         name
         description
+        display_starts
+        display_ends
       ],
       methods: %i[
         image_url

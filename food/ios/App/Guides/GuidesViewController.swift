@@ -1,30 +1,40 @@
 import UIKit
 import RxSwift
 import RxCocoa
+import AlamofireImage
+import RxRealm
 
-class GuidesViewController: UITableViewController {
+class GuidesViewController: UITableViewController, Contextual {
 
-  private let context: Context
-  private let bag = DisposeBag()
+  var context: Context
+
   private var categories$ = BehaviorRelay<[Category]>(value: [])
   private var categories: [Category] {
     return categories$.value
   }
   typealias Guide = Category
-  private let guides$: Driver<[Guide]>
+  private let guides$: Observable<[Guide]>
 
   init(context: Context) {
     self.context = context
-    self.guides$ =
-      self.context.cache.guides$
-        .asDriver(onErrorJustReturn: [])
+    self.guides$ = context.cache.categories$(filter: .guide)
 
     super.init(nibName: nil, bundle: nil)
     navigationItem.hidesBackButton = true
-    // kick off fetch immediately
-    self.context.api.refreshCategories$.subscribe().disposed(by: bag)
+
     // bind to cache
-    guides$.drive(categories$).disposed(by: bag)
+    guides$
+      .bind(to: categories$)
+      .disposed(by: rx.disposeBag)
+
+    guides$
+      .flatMapFirst({ [unowned self] guides -> Observable<[Image]> in
+        let urls = guides.compactMap({ $0.imageURL })
+        let loader = UIImageView.af_sharedImageDownloader
+        return self.cache.loadImages$(Array(urls), withLoader: loader)
+      })
+      .subscribe()
+      .disposed(by: rx.disposeBag)
   }
 
   required init?(coder aDecoder: NSCoder) {
@@ -41,12 +51,26 @@ class GuidesViewController: UITableViewController {
     self.tableView.separatorStyle = .none
     self.tableView.contentInset = UIEdgeInsets(top: 0, left: 0, bottom: 15, right: 0);
 
-    // reload table on cache changes
-    self.guides$.drive(onNext: { [weak self] _ in
+    // NOTE: buffer tableView updates while view visible to avoid thrashing
+    let outOfFocus$ =
+      Observable.merge([
+        rx.methodInvoked(#selector(UIViewController.viewWillAppear(_:))).mapTo(true),
+        rx.methodInvoked(#selector(UIViewController.viewDidDisappear(_:))).mapTo(false)
+        ])
+        .startWith(false)
+        .not()
+        .share()
+
+    guides$
+      .pausableBuffered(outOfFocus$, limit: nil, flushOnCompleted: true, flushOnError: true)
+      .do(onNext: { [weak self] _ in
         self?.tableView.reloadData()
       })
-      .disposed(by: bag)
+      .subscribe()
+      .disposed(by: rx.disposeBag)
+
   }
+
 
   // MARK: - Table view data source
 

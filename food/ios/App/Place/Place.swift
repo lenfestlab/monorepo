@@ -1,104 +1,81 @@
-import UIKit
-import Gloss
 import CoreLocation
-import UserDefaultsStore
+import ObjectMapper
+import ObjectMapperAdditions
+import ObjectMapperAdditionsRealm
+import RealmSwift
 
-struct Location: JSONDecodable, Codable {
-  let latitude: CLLocationDegrees
-  let longitude: CLLocationDegrees
-  
-  init?(json: JSON) {
-    self.latitude = ("lat" <~~ json)!
-    self.longitude = ("lng" <~~ json)!
+class Place: RealmSwift.Object, Mappable {
+  required convenience init?(map: Map) {
+    self.init()
   }
 
-  var nativeLocation: CLLocation {
-    return CLLocation(
-      latitude: self.latitude,
-      longitude: self.longitude)
+  override static func primaryKey() -> String? {
+    return "identifier"
   }
 
-}
+  @objc dynamic var identifier = ""
+  @objc dynamic var name: String?
+  @objc dynamic var phone: String?
+  @objc dynamic var address: String?
+  @objc dynamic var websiteURLString: String?
+  @objc dynamic var reservationsURLString: String?
+  @objc dynamic var location: Location?
+  var triggerRadiusOpt = RealmOptional<Double>()
+  var distanceOpt = RealmOptional<Double>()
+  var visitRadiusOpt = RealmOptional<Double>()
+  var categories = List<Category>()
+  var nabes = List<Neighborhood>()
+  @objc dynamic var post: PostObject?
 
-struct Post: JSONDecodable, Codable, Identifiable {
-  
-  static let idKey = \Post.identifier
+  let bookmarks = LinkingObjects(fromType: Bookmark.self, property: "place")
 
-  var identifier: String
-  var url: URL?
-  let title: String?
-  let blurb: String?
-  let imageURL: URL?
-  let prices: Array<Int>?
-  let rating: Int?
-  var link: URL?
-  var linkShort: URL?
-  var placeSummary: String?
-  var menu: String?
-  var notes: String?
-  var drinks: String?
-  var remainder: String?
-  var author: Author?
-  var images: [Img]?
-
-  init?(json: JSON) {
-    self.identifier = ("identifier" <~~ json)!
-    self.url = "url" <~~ json
-    self.blurb = "blurb" <~~ json
-    self.title = "title" <~~ json
-    self.imageURL = "image_url" <~~ json
-    self.link = "url" <~~ json
-    self.prices = "prices" <~~ json
-    self.rating = "rating" <~~ json
-    self.placeSummary = "details.place_summary" <~~ json
-    self.menu = "details.menu" <~~ json
-    self.notes = "details.notes" <~~ json
-    self.drinks = "details.drinks" <~~ json
-    self.remainder = "details.remainder" <~~ json
-    self.author = "author" <~~ json
-    self.images = "images" <~~ json
+  func mapping(map: Map) {
+    identifier <-
+      (map["identifier"], StringTransform())
+    name <-
+      (map["name"], StringTransform())
+    phone <-
+      (map["phone"], StringTransform())
+    address <-
+      (map["address"], StringTransform())
+    location <-
+      map["location"]
+    websiteURLString <-
+      (map["website"], StringTransform())
+    reservationsURLString <-
+      (map["website"], StringTransform())
+    triggerRadiusOpt <-
+      (map["trigger_radius"], RealmOptionalTransform())
+    visitRadiusOpt <-
+      (map["visist_radius"], RealmOptionalTransform())
+    distanceOpt <-
+      (map["distance"], RealmOptionalTransform())
+    categories <-
+      (map["categories"], ListTransform<Category>())
+    nabes <-
+      (map["nabes"], ListTransform<Neighborhood>())
+    post <-
+      map["post"]
   }
 
-  var publicationName: String? { return "" }
-  var publicationTwitter: String? { return "" }
+  var triggerRadius: Double? {
+    return triggerRadiusOpt.value
+  }
+  var distance: Double? {
+    return distanceOpt.value
+  }
+  var visitRadius: Double? {
+    return visitRadiusOpt.value
+  }
 
-}
+  var website: URL? {
+    guard let websiteURLString = websiteURLString else { return nil }
+    return URL(string: websiteURLString)
+  }
 
-
-struct Place: JSONDecodable, Codable, Identifiable {
-
-  static let key = "saved-place-identifiers"
-
-  static let idKey = \Place.identifier
-
-  var name: String?
-  var phone: String?
-  var identifier: String
-  var address: String?
-  let location: Location?
-  let post: Post?
-  let website: URL?
-  let triggerRadius: Double?
-  let distance: Double?
-  let nabes: [Neighborhood]?
-  let categories: [Category]?
-  let visitRadius: Double?
-  var reservationsURL: URL?
-
-  init?(json: JSON) {
-    self.identifier = ("identifier" <~~ json)!
-    self.phone = "phone" <~~ json
-    self.address = "address" <~~ json
-    self.location = "location" <~~ json
-    self.post = "post" <~~ json
-    self.triggerRadius = "trigger_radius" <~~ json
-    self.distance = "distance" <~~ json
-    self.name = "name" <~~ json
-    self.nabes = "nabes" <~~ json
-    self.categories = "categories" <~~ json
-    self.website = "website" <~~ json
-    self.visitRadius = "visit_radius" <~~ json
-    self.reservationsURL = "reservations_url" <~~ json
+  var reservationsURL: URL? {
+    guard let reservationsURLString = reservationsURLString else { return nil }
+    return URL(string: reservationsURLString)
   }
 
   var visitRadiusMax: Double {
@@ -139,21 +116,6 @@ struct Place: JSONDecodable, Codable, Identifiable {
     region.notifyOnEntry = true
     region.notifyOnExit = true
     return region
-  }
-
-}
-
-
-struct Img: JSONDecodable, Codable {
-
-  var url: URL?
-  var credit: String?
-  var caption: String?
-
-  init?(json: JSON) {
-    self.url = "url" <~~ json
-    self.credit = "credit" <~~ json
-    self.caption = "caption" <~~ json
   }
 
 }

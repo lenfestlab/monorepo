@@ -28,8 +28,7 @@ extension HomeViewController : FilterModuleDelegate {
     self.mapViewController.controllerIdentifierKey = active ? "filtered-results" : "home"
     self.listViewController.controllerIdentifierKey = active ? "filtered-results" : "home"
 
-    let defaultCoordinate = CLLocationCoordinate2D(latitude: 39.9526, longitude: -75.1652)
-    let coordinate = LocationManager.shared.latestLocation?.coordinate ?? defaultCoordinate
+    let coordinate = locationManager.latestLocation?.coordinate ?? locationManager.defaultCoordinate
     self.refresh(coordinate: coordinate) { (places) -> (Void) in
       if places.count == 0 {
         self.analytics.log(.noResultsWhenFiltering(filterModule: filter))
@@ -187,7 +186,7 @@ class HomeViewController: PlacesViewController {
   @objc func showCategories() {
     clearSearch()
     self.analytics.log(.tapsCuisineButton)
-    let cuisineFilter = CuisinesViewController(analytics: self.analytics, filter: self.placeStore.filterModule)
+    let cuisineFilter = CuisinesViewController(context: self.context, filter: self.placeStore.filterModule)
     cuisineFilter.delegate = self
     let navigationController = PopupViewController(rootViewController: cuisineFilter)
     let screenHeight = AppDelegate.shared().window?.frame.size.height ?? 568
@@ -200,7 +199,7 @@ class HomeViewController: PlacesViewController {
   @objc func showFilter() {
     clearSearch()
     self.analytics.log(.tapsFilterButton)
-    let filter = FilterViewController(analytics: self.analytics, filter: self.placeStore.filterModule)
+    let filter = FilterViewController(context: self.context, filter: self.placeStore.filterModule)
     filter.filterDelegate = self
     let navigationController = PopupViewController(rootViewController: filter)
     let screenHeight = AppDelegate.shared().window?.frame.size.height ?? 568

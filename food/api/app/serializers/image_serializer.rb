@@ -1,6 +1,7 @@
 class ImageSerializer < ActiveModel::Serializer
 
   attributes(*%i[
+    identifier
     credit
     caption
   ])

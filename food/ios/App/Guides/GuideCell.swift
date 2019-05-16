@@ -1,4 +1,5 @@
 import UIKit
+import AlamofireImage
 
 class GuideCell: UITableViewCell {
 
@@ -6,6 +7,7 @@ class GuideCell: UITableViewCell {
   @IBOutlet weak var descriptionLabel: UILabel?
   @IBOutlet weak var guideImageView: UIImageView?
   @IBOutlet weak var containerView: UIView!
+
 
   override func awakeFromNib() {
     super.awakeFromNib()
@@ -31,11 +33,13 @@ class GuideCell: UITableViewCell {
 
   func setCategory(category: Category){
     self.guideLabel?.text = category.name
-    if let imageURL = category.imageURL {
-      self.guideImageView?.kf.setImage(with: imageURL)
-    }
-    self.descriptionLabel?.text = category.description
+    self.descriptionLabel?.text = category.desc
     self.selectionStyle = .none
+    if
+      let imageView = guideImageView,
+      let url = category.imageURL {
+      imageView.af_setImage(withURL: url)
+    }
   }
 
   override func prepareForReuse() {

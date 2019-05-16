@@ -1,6 +1,7 @@
 import UIKit
 import CoreLocation
 import SVProgressHUD
+import RxRealm
 
 extension PlacesViewController : PlaceStoreDelegate {
   func fetchedMapData() {
@@ -19,6 +20,7 @@ extension PlacesViewController : PlaceStoreDelegate {
   func filterText() -> String? {
     return nil
   }
+
 }
 
 class PlacesViewController: UIViewController {
@@ -101,17 +103,17 @@ class PlacesViewController: UIViewController {
 
   let placeStore : PlaceStore!
 
-  private let context: Context
+  var context: Context
   let analytics: AnalyticsManager
 
-  let path : String!
+  let target: Api.Target
 
-  init(path: String = "places.json", context: Context, categories: [Category] = []) {
-    self.path = path
+  init(target: Api.Target = .placesAll, context: Context, categories: [Category] = []) {
+    self.target = target
     self.context = context
     self.analytics = context.analytics
 
-    self.placeStore = PlaceStore(context: context)
+    self.placeStore = PlaceStore(target: target, context: context)
     self.placeStore.filterModule.categories = categories
 
     self.mapViewController = MapViewController(context: context, placeStore: self.placeStore)
@@ -122,6 +124,7 @@ class PlacesViewController: UIViewController {
     super.init(nibName: nil, bundle: nil)
 
     self.placeStore.delegate = self
+    self.placeStore.beginObservingCache() // must be called after delegate set
   }
 
   required init?(coder aDecoder: NSCoder) {
@@ -137,7 +140,7 @@ class PlacesViewController: UIViewController {
   }
 
   func page() -> String {
-    return path.contains("bookmark") ? "my-list" : "all-restaurant"
+    return target.path.contains("bookmark") ? "my-list" : "all-restaurant"
   }
 
   @IBAction func map(sender: UIButton) {
@@ -169,12 +172,10 @@ class PlacesViewController: UIViewController {
     self.view.addSubview(self.topBar)
     self.view.addSubview(self.filterBar)
 
-    let defaultCoordinate = CLLocationCoordinate2D(latitude: 39.9526, longitude: -75.1652)
-
     if let location = self.locationManager.latestLocation {
       initialMapDataFetch(coordinate: location.coordinate)
     } else {
-      self.refresh(coordinate: defaultCoordinate)
+      self.refresh(coordinate: locationManager.defaultCoordinate)
     }
 
   }
@@ -188,20 +189,18 @@ class PlacesViewController: UIViewController {
     if self.placeStore.loading {
       return
     }
-    print(self.placeStore.loading)
 //    self.mapViewController.centerMap(coordinate)
     self.refresh(coordinate: coordinate)
   }
 
   func refresh(coordinate: CLLocationCoordinate2D? = nil, completionBlock: (([MapPlace]) -> (Void))? = nil) {
-    let showLoadingIndicator = self.viewIfLoaded?.window != nil
+    let showLoadingIndicator = true // self.viewIfLoaded?.window != nil
 
     if showLoadingIndicator {
       SVProgressHUD.show()
       SVProgressHUD.setForegroundColor(UIColor.slate)
     }
 
-    self.placeStore.path = self.path
     if let coordinate = coordinate {
       self.placeStore.lastCoordinateUsed = coordinate
     }
@@ -224,7 +223,7 @@ class PlacesViewController: UIViewController {
   }
 
   func isEmpty() -> Bool {
-    return self.placeStore.placesFiltered.count == 0
+    return self.placeStore.placesFiltered.isEmpty
   }
 
 }

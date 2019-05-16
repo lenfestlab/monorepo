@@ -1,7 +1,6 @@
 import UIKit
 import UserNotifications
 import CoreLocation
-import Gloss
 import GoogleReporter
 import CoreMotion
 import Firebase
@@ -253,8 +252,14 @@ struct AnalyticsEvent {
   }
 
   static func noResultsWhenFiltering(filterModule: FilterModule) -> AnalyticsEvent {
-    let cuisines = filterModule.categories.map { $0.name ?? "" }.joined(separator: ",")
-    let neighborhoods = filterModule.nabes.map { $0.name }.joined(separator: ",")
+    let cuisines =
+      filterModule.categories
+        .compactMap({ $0.name })
+        .joined(separator: ",")
+    let neighborhoods =
+      filterModule.nabes
+        .compactMap({ $0.name })
+        .joined(separator: ",")
     let bells = filterModule.ratings.map { "\($0)" }.joined(separator: ",")
     let price = filterModule.prices.map { "\($0)" }.joined(separator: ",")
     let reviewer = filterModule.authors.map { $0.name }.joined(separator: ",")
@@ -276,7 +281,8 @@ struct AnalyticsEvent {
   }
 
   static func clicksNeighborhoodApplyButton(nabes: [Neighborhood]) -> AnalyticsEvent {
-    return AnalyticsEvent(name: "apply-neighborhood", category: .filter, cd8: nabes.map{ $0.name }.joined(separator: ","))
+    let nabeNames = nabes.map({ $0.name }).compactMap({$0})
+    return AnalyticsEvent(name: "apply-neighborhood", category: .filter, cd8: nabeNames.joined(separator: ","))
   }
 
   static func selectsSortFromFilter(mode: SortMode, category: AnalyticsCategory) -> AnalyticsEvent {
@@ -284,8 +290,8 @@ struct AnalyticsEvent {
   }
 
   static func selectsMultipleCriteriaToFilterBy(filterModule: FilterModule, mode: SortMode) -> AnalyticsEvent {
-    let cuisines = filterModule.categories.map { $0.name ?? "" }.joined(separator: ",")
-    let neighborhoods = filterModule.nabes.map { $0.name }.joined(separator: ",")
+    let cuisines = filterModule.categories.map({ $0.name }).compactMap({$0}).joined(separator: ",")
+    let neighborhoods = filterModule.nabes.map({ $0.name }).compactMap({$0}).joined(separator: ",")
     let bells = filterModule.ratings.map { "\($0)" }.joined(separator: ",")
     let price = filterModule.prices.map { "\($0)" }.joined(separator: ",")
     let reviewer = filterModule.authors.map { $0.name }.joined(separator: ",")
@@ -362,6 +368,8 @@ class AnalyticsManager {
   private let env: Env
   private var ga: GoogleReporter
   private let amplitude: Amplitude
+
+  static let separator = ","
 
   init(_ env: Env) {
     self.env = env

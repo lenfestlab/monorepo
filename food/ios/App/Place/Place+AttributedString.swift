@@ -3,18 +3,10 @@ import UIKit
 extension Place {
 
   func attributedCategories() -> NSAttributedString {
-    var names : [String] = []
-    for category in self.categories ?? [] {
-      if let name = category.name {
-        names.append(name)
-      }
-    }
-    for nabe in self.nabes ?? [] {
-      names.append(nabe.name)
-    }
-    let categories = names.joined(separator: " | ")
-
-    return NSAttributedString(string: categories)
+    var names: [String] = []
+    names.append(contentsOf: categories.map({ $0.name }).compactMap({$0}))
+    names.append(contentsOf: nabes.map({ $0.name }).compactMap({$0}))
+    return NSAttributedString(string: names.joined(separator: " | "))
   }
 
   func attributedTitle(font: UIFont) -> NSAttributedString {

@@ -19,7 +19,7 @@ extension ListViewController { // UICollectionViewDataSource
     // Configure the cell
     let mapPlace:MapPlace = self.placeStore.placesFiltered[indexPath.row]
     let place = mapPlace.place
-    cell.setPlace(place: place, index: indexPath.row, showIndex: self.showIndex)
+    cell.setPlace(context: context, place: place, index: indexPath.row, showIndex: self.showIndex)
     cell.analytics = self.analytics
     cell.controllerIdentifierKey = self.controllerIdentifierKey
     return cell
@@ -40,8 +40,7 @@ extension ListViewController { // UICollectionViewDelegate
   func openPlace(_ place: Place) {
     let detailViewController =
       DetailViewController(
-        analytics: self.analytics,
-        cache: context.cache,
+        context: context,
         place: place)
     self.navigationController?.pushViewController(detailViewController, animated: true)
   }

@@ -6,7 +6,7 @@ class GuideViewController: PlacesViewController {
   var category : Category!
 
   init(context: Context, category: Category) {
-    super.init(path: "places.json?categories=\(category.identifier)", context: context)
+    super.init(target: .placesCategorizedIn(category.identifier), context: context)
     self.category = category
     self.selectedIndex = 1 // default to list view instead of map
   }
@@ -28,7 +28,7 @@ class GuideViewController: PlacesViewController {
   override func viewWillAppear(_ animated: Bool) {
     super.viewWillAppear(animated)
     // TODO: hotfix only, refactor - guide default map center/span
-    let coordinate = CLLocationCoordinate2D(latitude: 39.9526, longitude: -75.1652)
+    let coordinate = locationManager.defaultCoordinate
     self.mapViewController.mapView?.center(coordinate)
   }
 
