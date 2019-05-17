@@ -18,8 +18,8 @@ class Category: RealmSwift.Object, Mappable {
   @objc dynamic var desc: String?
   @objc dynamic var imageURLString: String?
   @objc dynamic var isCuisine: Bool = false
-  @objc dynamic var displayStartsAt: Date?
-  @objc dynamic var displayEndsAt: Date?
+  @objc dynamic var displayStarts: Date?
+  @objc dynamic var displayEnds: Date?
 
   let places = LinkingObjects(fromType: Place.self, property: "categories")
 
@@ -34,10 +34,10 @@ class Category: RealmSwift.Object, Mappable {
       (map["image_url"], StringTransform())
     isCuisine <-
       (map["is_cuisine"], BoolTransform())
-    displayStartsAt <-
-      (map["display_starts"], ISO8601DateTransform())
-    displayEndsAt <-
-      (map["display_ends"], ISO8601DateTransform())
+    displayStarts <-
+      (map["display_starts"], ISO8601JustDateTransform())
+    displayEnds <-
+      (map["display_ends"], ISO8601JustDateTransform())
   }
 
   var imageURL: URL? {

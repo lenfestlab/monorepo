@@ -49,6 +49,7 @@ class Image < ApplicationRecord
       created_at
       posts
       categories
+      cached_image
     ].each do |attr|
       configure attr do
         hide

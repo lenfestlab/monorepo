@@ -83,6 +83,7 @@ class Cache {
       query = query.filter("isCuisine = true")
     case .guide:
       query = query.filter("isCuisine = false")
+        .sorted(byKeyPath: "displayStarts", ascending: false)
     }
     return
       Observable.array(from: query, synchronousStart: true)

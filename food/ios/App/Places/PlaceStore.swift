@@ -5,8 +5,6 @@ import RxSwift
 import RxRelay
 import RxRealm
 
-let concurrentPlaceQueue = DispatchQueue(label: "org.lenfestlab.food.placeQueue", attributes: .concurrent)
-
 @objc protocol PlaceStoreDelegate: class {
   func didSetPlaceFiltered()
   func filterText() -> String?
@@ -63,36 +61,23 @@ class PlaceStore: NSObject, Contextual {
   private var unsafePlaces = [MapPlace]()
 
   var placesFiltered: [MapPlace] {
-    var placesFilteredCopy: [MapPlace]!
-    concurrentPlaceQueue.sync {
-      placesFilteredCopy = self.unsafePlaces
-    }
-    return placesFilteredCopy
+    return unsafePlaces
   }
 
   func updateFilter(searchText: String?) {
-    concurrentPlaceQueue.async(flags: .barrier) { [weak self] in
-      guard let self = self else {
-        return
-      }
-
-      if let searchText = searchText, searchText.count > 0{
-        self.unsafePlaces = self.mapPlaces.filter {
-          if let title = $0.place.name?.lowercased() {
-            if title.contains(searchText.lowercased()) {
-              return true
-            }
+    if let searchText = searchText, searchText.count > 0 {
+      self.unsafePlaces = self.mapPlaces.filter {
+        if let title = $0.place.name?.lowercased() {
+          if title.contains(searchText.lowercased()) {
+            return true
           }
-          return false
         }
-      } else {
-        self.unsafePlaces = self.mapPlaces
+        return false
       }
-
-      DispatchQueue.main.async { [weak self] in
-        self?.delegate?.didSetPlaceFiltered()
-      }
+    } else {
+      self.unsafePlaces = self.mapPlaces
     }
+    self.delegate?.didSetPlaceFiltered()
   }
 
   func refresh(completionBlock: (([MapPlace]) -> (Void))? = nil) {
