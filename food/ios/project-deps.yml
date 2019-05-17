@@ -20,6 +20,7 @@ targets:
       - carthage: RxSwiftExt
       - carthage: RxCoreLocation
       - carthage: NSObject_Rx
+      - carthage: Sentry
       # network
       - carthage: Alamofire
       - carthage: AlamofireImage

@@ -7,10 +7,12 @@ import RxSwift
 import SwiftDate
 import CoreLocation
 import NSObject_Rx
+import Sentry
 
 typealias Result<T> = Swift.Result<T, Error>
 typealias LaunchOptions = [UIApplication.LaunchOptionsKey: Any]?
 let gcmMessageIDKey = "gcm.message_id"
+
 
 @UIApplicationMain
 class AppDelegate: UIResponder, UIApplicationDelegate {
@@ -38,6 +40,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
       NetworkActivityLogger.shared.level = .info
       NetworkActivityLogger.shared.startLogging()
     }
+    self.addCrashReporting(env: env)
 
     FirebaseApp.configure()
     Messaging.messaging().delegate = self
@@ -234,6 +237,16 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         })
         .disposed(by: rx.disposeBag)
 
+    }
+  }
+
+  private func addCrashReporting(env: Env) -> Void {
+    do {
+      Client.shared = try Client(dsn: env.get(.sentryDSN))
+      Client.shared?.environment =  env.name.full
+      try Client.shared?.startCrashHandler()
+    } catch let error {
+      print("\(error)")
     }
   }
 

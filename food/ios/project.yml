@@ -15,12 +15,12 @@ configs:
   test-debug: debug
   stag-debug: debug
   prod-debug: debug
+  stag-release: release
   prod-release: release
   # NOTE: configs required for all permutations of configVariants, else:
   # https://gist.github.com/brenthargrave/ce351b24aa3fdee31d127f1c95b7470a
   x-dev-release: release
   x-test-release: release
-  x-stag-release: release
 
 settings:
   base:
