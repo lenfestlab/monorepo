@@ -6,17 +6,35 @@ before_all do
   ensure_git_status_clean
 end
 
-desc "Push a new beta build to TestFlight"
-lane :beta do
+%i[ stag prod ].each do |env_name|
+  lane env_name do
+    build_app(
+      scheme: "App #{env_name}",
+      output_directory: "fastlane/releases",
+      configuration: "#{env_name}-release",
+      output_name: "#{Time.now.to_i}"
+    )
 
-  build_app(
-    scheme: "App prod",
-    output_directory: "fastlane/releases",
-    output_name: "#{ENV["FASTLANE_APP_ID"]}-#{Time.now.to_i}",
-  )
+    upload_to_testflight(
+      changelog: File.read("metadata/changelog.txt"),
+      username: ENV["FASTLANE_USER"],
+      skip_submission: true,
+      distribute_external: false,
+      notify_external_testers: false,
+    )
 
-  upload_to_testflight(
-    changelog: File.read("metadata/changelog.txt"),
-  )
-
+    sync_dsyms(env_name: env_name)
+  end
 end
+
+lane :sync_dsyms do |opts|
+  raise "MIA: env" unless (env_name = opts[:env_name] || :stag)
+  raise "MIA: bundle id" unless (app_id_prefix = ENV["APP_BUNDLE_ID_PREFIX"])
+  download_dsyms(
+    version: 'latest',
+    output_directory: "fastlane/releases/dsyms",
+    app_identifier: "#{app_id_prefix}.#{env_name}",
+  )
+  sentry_upload_dsym
+end
+

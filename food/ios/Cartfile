@@ -18,6 +18,7 @@ github "RxSwiftCommunity/RxRealm"
 github "tristanhimmelman/ObjectMapper"
 github "APUtils/ObjectMapperAdditions"
 github "RxSwiftCommunity/NSObject-Rx"
+github "getsentry/sentry-cocoa"
 
 # Firebase experimental carthage support: https://git.io/fAxBS
 binary "https://dl.google.com/dl/firebase/ios/carthage/FirebaseAnalyticsBinary.json"

@@ -1,3 +1,6 @@
 brew "asdf"
 brew "git-lfs"
 brew "mint"
+
+tap "getsentry/tools"
+brew "getsentry/tools/sentry-cli"

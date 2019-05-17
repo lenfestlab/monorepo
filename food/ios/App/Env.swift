@@ -4,6 +4,15 @@ class Env {
 
   enum Name: String {
     case dev, test, stag, prod
+    var full: String {
+      switch self {
+      case .dev: return "development"
+      case .test: return "test"
+      case .stag: return "staging"
+      case .prod: return "production"
+      }
+    }
+
   }
 
   enum VariableKey: String {
@@ -16,6 +25,7 @@ class Env {
     case versionBuild = "CFBundleVersion"
     case versionMarketing = "CFBundleShortVersionString"
     case amplitudeApiKey = "AMPLITUDE_API_KEY"
+    case sentryDSN = "SENTRY_DSN"
   }
 
   private var bundle: Bundle

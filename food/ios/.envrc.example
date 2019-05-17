@@ -1,0 +1,27 @@
+source_up
+
+# required by fastlane - http://bit.ly/2JLjze4
+export LC_ALL=en_US.UTF-8
+export LANG=en_US.UTF-8
+
+# App Store Connect account credentials
+export FASTLANE_USER=
+export FASTLANE_PASSWORD=
+
+# App Store Connect team
+export FASTLANE_ITC_TEAM_ID=
+
+# Generate an app-specific password if your account has 2FA enabled, else...
+# > [Transporter Error Output]: Please sign in with an app-specific password.
+# > You can create one at appleid.apple.com. (-22910)
+# > Transporter transfer failed.
+export FASTLANE_APPLE_APPLICATION_SPECIFIC_PASSWORD=
+
+# download dsyms
+export APP_BUNDLE_ID_PREFIX=
+
+# sentry - https://docs.fastlane.tools/actions/upload_symbols_to_sentry/
+export SENTRY_ORG_SLUG=
+export SENTRY_PROJECT_SLUG=
+# for required token auth scopes, see: https://git.io/fj8c4
+export SENTRY_AUTH_TOKEN=
