@@ -24,6 +24,15 @@ class Category < ApplicationRecord
     presence: true,
     unless: Proc.new { |r| r.is_cuisine }
 
+  validates :display_starts,
+    presence: true
+
+  after_initialize do
+    if new_record?
+      self.display_starts ||= Time.zone.now
+    end
+  end
+
   # save associated places to update cached category_ids
   after_save :update_places
   after_destroy :update_places
@@ -77,6 +86,7 @@ class Category < ApplicationRecord
     end
 
     list do
+      scopes([nil, :cuisines, :guides])
       configure :photos do
         hide
       end
@@ -88,13 +98,11 @@ class Category < ApplicationRecord
       end
     end
 
-    %i[
-      display_starts
-      display_ends
-    ].each do |attr|
-      configure attr do
-        help "Leave 'display' fields blank to display shortly after saving."
-      end
+    configure :display_starts do
+      help "Required. Set to a future date to postpone/embargo display."
+    end
+    configure :display_ends do
+      help "Optional. Leave blank to display indefinitely."
     end
 
   end
@@ -111,6 +119,14 @@ class Category < ApplicationRecord
     if value.present?
       where(is_cuisine: value)
     end
+  }
+
+  scope :cuisines, -> {
+    where(is_cuisine: true)
+  }
+
+  scope :guides, -> {
+    where(is_cuisine: false)
   }
 
   scope :visible, -> {
