@@ -43,11 +43,11 @@ class Place: RealmSwift.Object, Mappable {
     websiteURLString <-
       (map["website"], StringTransform())
     reservationsURLString <-
-      (map["reservationsURLString"], StringTransform())
+      (map["reservations_url"], StringTransform())
     triggerRadiusOpt <-
       (map["trigger_radius"], RealmOptionalTransform())
     visitRadiusOpt <-
-      (map["visist_radius"], RealmOptionalTransform())
+      (map["visit_radius"], RealmOptionalTransform())
     distanceOpt <-
       (map["distance"], RealmOptionalTransform())
     categories <-
