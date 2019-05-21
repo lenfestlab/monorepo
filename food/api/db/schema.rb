@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2019_05_21_215032) do
+ActiveRecord::Schema.define(version: 2019_05_22_010712) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_stat_statements"
@@ -137,6 +137,7 @@ ActiveRecord::Schema.define(version: 2019_05_21_215032) do
     t.geography "geog", limit: {:srid=>4326, :type=>"geometry", :geographic=>true}
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.integer "places_count"
     t.index ["geog"], name: "index_nabes_on_geog", using: :gist
     t.index ["identifier"], name: "index_nabes_on_identifier"
     t.index ["key"], name: "index_nabes_on_key"
@@ -188,11 +189,15 @@ ActiveRecord::Schema.define(version: 2019_05_21_215032) do
     t.jsonb "cached_post", default: {}
     t.string "reservations_url"
     t.integer "trigger_radius"
+    t.bigint "nabe_id"
+    t.string "cached_nabe_identifiers", array: true
     t.index ["author_identifiers"], name: "index_places_on_author_identifiers"
+    t.index ["cached_nabe_identifiers"], name: "index_places_on_cached_nabe_identifiers", using: :gin
     t.index ["cached_nabes"], name: "index_places_on_cached_nabes", using: :gin
     t.index ["category_identifiers"], name: "index_places_on_category_identifiers", using: :gin
     t.index ["identifier"], name: "index_places_on_identifier"
     t.index ["lonlat"], name: "index_places_on_lonlat", using: :gist
+    t.index ["nabe_id"], name: "index_places_on_nabe_id"
     t.index ["name"], name: "index_places_on_name"
     t.index ["post_prices"], name: "index_places_on_post_prices", using: :gin
     t.index ["post_published_at"], name: "index_places_on_post_published_at"

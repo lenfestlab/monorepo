@@ -47,9 +47,19 @@ class Place < ApplicationRecord
     { lat: lat, lng: lng }
   end
 
-  def find_nabes
-    Nabe.covering self.lat, self.lng
+  def cache_nabes!
+    # match nabe on city name, but only if lat/lng match fails
+    if nabe = Nabe.covering(self.lat, self.lng).first
+      self.nabe = nabe
+    else
+      self.nabe = Nabe.find_by name: address_city
+    end
+    self.cached_nabe_identifiers = [self.nabe.identifier].compact
+    self.cached_nabes = [self.nabe.try(:as_json)].compact
   end
+
+  belongs_to :nabe,
+    counter_cache: :places_count
 
   def self.format lng, lat
     "POINT(#{lng} #{lat})"
@@ -81,12 +91,10 @@ class Place < ApplicationRecord
       .order(order_sql)
   }
 
-  scope :located_in, -> (nabe_uuids) {
-    return unless nabe_uuids.present?
-    # https://postgis.net/docs/ST_Union.html
-    # https://gis.stackexchange.com/a/704
-    subquery = Nabe.union_geog_of(nabe_uuids).to_sql
-    where("ST_Covers((#{subquery}), lonlat)", nabe_uuids)
+  scope :located_in, -> (uuids) {
+    if uuids.present?
+      where("places.cached_nabe_identifiers && ARRAY[?]::varchar[]", uuids)
+    end
   }
 
 
@@ -106,7 +114,7 @@ class Place < ApplicationRecord
     self.author_identifiers = [
       latest_post.try(:author).try(:identifier)
     ].compact
-    self.cached_nabes = find_nabes.as_json
+    self.cache_nabes!
     self.cached_post = latest_post.as_json
   end
   before_save :update_cache
@@ -172,6 +180,7 @@ class Place < ApplicationRecord
       author_identifiers
       posts
       cached_post
+      cached_nabe_identifiers
     ].concat(%i[
       address_number
       address_street

@@ -1,13 +1,20 @@
 class Nabe < ApplicationRecord
 
-  validates :key, :name, :geog,
+  validates :name,
     presence: true
-  validates :key, uniqueness: true
+
+  validates :key,
+    uniqueness: true,
+    if: -> { key.present? }
+
+  validates :name,
+    uniqueness: true
 
   after_save :update_places
   def update_places
     Place.all.each &:save!
   end
+
 
   ## PostGIS
   #
@@ -33,6 +40,8 @@ class Nabe < ApplicationRecord
     lat, lng = place.lat, place.lng
     Nabe.covering lat, lng
   end
+
+  has_many :places
 
   ## Serialization
   #
