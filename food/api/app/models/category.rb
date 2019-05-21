@@ -25,7 +25,8 @@ class Category < ApplicationRecord
     unless: Proc.new { |r| r.is_cuisine }
 
   validates :display_starts,
-    presence: true
+    presence: true,
+    unless: Proc.new { |c| c.is_cuisine }
 
   after_initialize do
     if new_record?
