@@ -40,6 +40,7 @@ class Post < ApplicationRecord
   before_save :update_cache
   def update_cache
     self.cached_images = photos.as_json
+    self.cached_place_names = places.map(&:name).join(" / ")
   end
 
   # save associated places to update cached association values
@@ -143,6 +144,7 @@ class Post < ApplicationRecord
       images
       url
       notifications
+      cached_place_names
     ].each do |attr|
       configure attr do
         hide
@@ -160,7 +162,14 @@ class Post < ApplicationRecord
         blurb
         rating
       ].concat(Post.md_fields))
+
       scopes([nil, :live, :wip])
+
+      field :cached_place_names do
+        queryable true
+        hide
+      end
+
     end
 
     configure :blurb do

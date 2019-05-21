@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2019_05_09_231422) do
+ActiveRecord::Schema.define(version: 2019_05_21_215032) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_stat_statements"
@@ -228,8 +228,10 @@ ActiveRecord::Schema.define(version: 2019_05_09_231422) do
     t.date "display_starts"
     t.date "display_ends"
     t.boolean "live", default: true, null: false
+    t.text "cached_place_names"
     t.index ["author_id"], name: "index_posts_on_author_id"
     t.index ["cached_images"], name: "index_posts_on_cached_images", using: :gin
+    t.index ["cached_place_names"], name: "index_posts_on_cached_place_names"
     t.index ["display_ends"], name: "index_posts_on_display_ends"
     t.index ["display_starts"], name: "index_posts_on_display_starts"
     t.index ["identifier"], name: "index_posts_on_identifier"
