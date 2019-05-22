@@ -101,10 +101,8 @@ class FilterModule : NSObject {
     }
 
     for category in self.categories {
-      if let name = category.name {
-        let string = NSMutableAttributedString(string: name, font: .lightSmall, fontColor: .black)
-        content.append(string)
-      }
+      let string = NSMutableAttributedString(string: category.name, font: .lightSmall, fontColor: .black)
+      content.append(string)
     }
 
     for nabe in self.nabes {
