@@ -75,9 +75,11 @@ class Image < ApplicationRecord
   end
 
   def cached_url
-    cached_image.attached? \
-      ? Rails.application.routes.url_helpers.url_for(cached_image) \
-      : url
+    if cached_image.attached?
+      Rails.application.routes.url_helpers.url_for(cached_image)
+    else
+      url
+    end
   end
 
   def as_json
