@@ -74,12 +74,23 @@ class Image < ApplicationRecord
     url
   end
 
+  def cached?
+    cached_image.attached? && \
+      # NOTE: PMN images may return 200 status without image data; #variable?
+      # validates data present and correct.
+      cached_image.variable?
+  end
+
   def cached_url
-    if cached_image.attached?
-      Rails.application.routes.url_helpers.url_for(cached_image)
-    else
-      url
-    end
+    return url unless cached?
+    # share routing config w/ ActiveStorage
+    ActiveStorage::Current.host =
+      Addressable::URI.parse(
+        Rails.application.routes.url_helpers.url_for(:root)).site
+    # imagemagick '-strip' removes useless meta from image
+    #variant = cached_image.variant(strip: true)
+    #variant.service_url
+    cached_image.service_url
   end
 
   def as_json
