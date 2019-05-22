@@ -64,6 +64,7 @@ extension MapViewController: UICollectionViewDelegate {
       let mapPlace:MapPlace = self.placeStore.placesFiltered[indexPath.row]
       let place:Place = mapPlace.place
       analytics.log(.tapsOnCard(place: place, controllerIdentifierKey: self.controllerIdentifierKey))
+      collectionView.isUserInteractionEnabled = false;
       openPlace(place)
     } else {
       scrollToItem(at: indexPath)
@@ -218,6 +219,7 @@ class MapViewController: UIViewController {
     super.viewDidAppear(animated)
     updateLocationButton()
     AppDelegate.shared().lastViewedURL = nil
+    self.collectionView?.isUserInteractionEnabled = true;
   }
 
   func fetchedMapData() {
