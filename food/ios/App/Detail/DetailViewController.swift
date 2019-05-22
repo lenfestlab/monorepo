@@ -85,6 +85,7 @@ class DetailViewController: UIViewController, Contextual {
   @IBOutlet weak var remainderView: UIView!
   @IBOutlet weak var remainderLabel: UILabel!
 
+  @IBOutlet weak var reviewButton: UIButton!
   @IBOutlet weak var reviewLabel: UILabel!
 
   @IBOutlet weak var loveButton: UIButton!
@@ -138,6 +139,8 @@ class DetailViewController: UIViewController, Contextual {
   override func viewDidLoad() {
     super.viewDidLoad()
 
+    self.reviewButton.isHidden = self.place.post?.url == nil
+
     self.loveButton.isHidden = Installation.authToken() == nil
 
     isSaved$
@@ -185,6 +188,11 @@ class DetailViewController: UIViewController, Contextual {
 
     let address = self.place.address ?? ""
     self.addressLabel.attributedText = NSMutableAttributedString(string: address, font: UIFont.italicSmall, fontColor: nil)
+
+    self.reviewButton.titleLabel?.font = UIFont.lightLarge
+    self.reviewButton.setBackgroundImage(UIColor.lightGreyBlue.pixelImage(), for: .normal)
+    self.reviewButton.layer.cornerRadius = 5.0
+    self.reviewButton.clipsToBounds = true
 
     if let authorName = self.place.post?.author?.name {
       self.reviewLabel.text = "By \(authorName)"

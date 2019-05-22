@@ -26,6 +26,7 @@
                 <outlet property="remainderLabel" destination="pdT-78-H4o" id="fm6-S8-dkG"/>
                 <outlet property="remainderView" destination="byn-VW-N4g" id="5F4-Lz-n7W"/>
                 <outlet property="reservationButton" destination="pui-dp-0Vm" id="iI1-gC-WVc"/>
+                <outlet property="reviewButton" destination="z9m-jC-tax" id="EIk-cW-Jzo"/>
                 <outlet property="reviewLabel" destination="yWd-kx-huO" id="mIk-CG-dQG"/>
                 <outlet property="titleLabel" destination="0Du-xu-VxK" id="IaV-oO-cpm"/>
                 <outlet property="view" destination="i5M-Pr-FkT" id="sfx-zR-JGt"/>
@@ -135,6 +136,19 @@
                                 <constraint firstAttribute="bottom" secondItem="pdT-78-H4o" secondAttribute="bottom" id="zfM-Bt-SbI"/>
                             </constraints>
                         </view>
+                        <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" adjustsImageWhenDisabled="NO" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="z9m-jC-tax">
+                            <rect key="frame" x="163" y="504.5" width="180" height="40"/>
+                            <constraints>
+                                <constraint firstAttribute="width" constant="180" id="UUL-ao-1eY"/>
+                                <constraint firstAttribute="height" constant="40" id="pSL-pm-JGW"/>
+                            </constraints>
+                            <state key="normal" title="View Full Review">
+                                <color key="titleColor" white="0.0" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                            </state>
+                            <connections>
+                                <action selector="openFullReview" destination="-1" eventType="touchUpInside" id="sru-mV-rRx"/>
+                            </connections>
+                        </button>
                         <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="pui-dp-0Vm">
                             <rect key="frame" x="193" y="307.5" width="120" height="35"/>
                             <constraints>
@@ -242,7 +256,6 @@
                         <constraint firstItem="OXe-E2-GTQ" firstAttribute="leading" secondItem="EKL-wW-4DM" secondAttribute="leading" constant="33" id="5Lj-jj-8TL"/>
                         <constraint firstItem="pui-dp-0Vm" firstAttribute="centerY" secondItem="vgv-FZ-W1H" secondAttribute="centerY" id="7mA-1d-q9b"/>
                         <constraint firstAttribute="trailing" secondItem="CMQ-mE-znW" secondAttribute="trailing" id="AN2-Yh-bDP"/>
-                        <constraint firstAttribute="bottom" secondItem="byn-VW-N4g" secondAttribute="bottom" constant="20" id="DXV-UR-s6H"/>
                         <constraint firstItem="yWd-kx-huO" firstAttribute="top" secondItem="pui-dp-0Vm" secondAttribute="bottom" constant="21" id="EQO-yu-I46"/>
                         <constraint firstAttribute="trailing" secondItem="vcp-GK-3Jk" secondAttribute="trailing" id="GMu-Nl-2Ah"/>
                         <constraint firstItem="yWd-kx-huO" firstAttribute="leading" secondItem="LOB-WE-66E" secondAttribute="trailing" constant="14" id="GWQ-Qq-Eke"/>
@@ -263,13 +276,16 @@
                         <constraint firstItem="vcp-GK-3Jk" firstAttribute="leading" secondItem="EKL-wW-4DM" secondAttribute="leading" id="fBr-df-Klb"/>
                         <constraint firstItem="0Du-xu-VxK" firstAttribute="leading" secondItem="EKL-wW-4DM" secondAttribute="leading" constant="32" id="gcK-Yv-gWA"/>
                         <constraint firstAttribute="trailing" secondItem="B2F-q3-8JB" secondAttribute="trailing" constant="33" id="ged-fI-wjk"/>
+                        <constraint firstItem="z9m-jC-tax" firstAttribute="top" secondItem="byn-VW-N4g" secondAttribute="bottom" constant="20" id="grx-ZZ-nO7"/>
                         <constraint firstItem="hJ8-4L-VGF" firstAttribute="centerY" secondItem="yWd-kx-huO" secondAttribute="centerY" id="hTz-rz-3v9"/>
                         <constraint firstItem="CMQ-mE-znW" firstAttribute="top" secondItem="EKL-wW-4DM" secondAttribute="top" id="jbl-FB-Z7E"/>
                         <constraint firstItem="MuZ-q0-Xj6" firstAttribute="centerY" secondItem="vgv-FZ-W1H" secondAttribute="centerY" id="kHg-Ej-Xui"/>
                         <constraint firstAttribute="trailing" secondItem="EIw-Hk-sJl" secondAttribute="trailing" id="lAd-S3-htq"/>
+                        <constraint firstAttribute="bottom" secondItem="z9m-jC-tax" secondAttribute="bottom" constant="20" id="o0p-lL-6Ed"/>
                         <constraint firstItem="vgv-FZ-W1H" firstAttribute="leading" secondItem="pui-dp-0Vm" secondAttribute="trailing" constant="10" id="sYS-9u-ea8"/>
                         <constraint firstItem="CMQ-mE-znW" firstAttribute="centerX" secondItem="EKL-wW-4DM" secondAttribute="centerX" id="ti2-Bj-Bhm"/>
                         <constraint firstItem="LOB-WE-66E" firstAttribute="centerY" secondItem="yWd-kx-huO" secondAttribute="centerY" id="wlj-bo-fZ0"/>
+                        <constraint firstItem="z9m-jC-tax" firstAttribute="centerX" secondItem="EKL-wW-4DM" secondAttribute="centerX" id="wuB-85-AwR"/>
                         <constraint firstAttribute="trailing" secondItem="VxG-Fb-Rao" secondAttribute="trailing" constant="20" id="xyx-kd-tOz"/>
                     </constraints>
                 </scrollView>
