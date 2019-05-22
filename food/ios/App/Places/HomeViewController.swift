@@ -78,6 +78,12 @@ extension HomeViewController : UISearchBarDelegate {
     searchBar.resignFirstResponder()
   }
 
+  func searchBar(_ searchBar: UISearchBar, textDidChange searchText: String) {
+    if searchText == "" {
+      searchBarTextDidChange(searchText: "")
+    }
+  }
+
   func searchBarCancelButtonClicked(_ searchBar: UISearchBar) {
     self.analytics.log(.searchForRestaurant(searchTerm: searchBar.text ?? ""))
     clearSearch()
