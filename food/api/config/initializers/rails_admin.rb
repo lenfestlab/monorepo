@@ -35,13 +35,13 @@ RailsAdmin.config do |config|
     dashboard                     # mandatory
     index                         # mandatory
     new do
-      only %w[ Post Category Place Image Notification ]
+      only %w[ Post Category Place Image Notification Nabe ]
     end
     export
     bulk_delete
     show
     edit do
-      only %w[ Post Category Place Image Notification ]
+      only %w[ Post Category Place Image Notification Nabe ]
     end
     delete do
       only (Rails.env.production? ? [] : %w[ User ])
