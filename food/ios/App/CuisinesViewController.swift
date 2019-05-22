@@ -68,11 +68,10 @@ class CuisinesViewController: UITableViewController, Contextual {
     self.cuisines$
       .drive(onNext: { [weak self] categories in
         guard let `self` = self else { return }
-        for category in categories {
-          if let name = category.name {
-            if let character = name.uppercased().first {
-              self.sorted[character]?.append(category)
-            }
+        let sortedCategories = categories.sorted(by: { $0.name < $1.name })
+        for category in sortedCategories {
+          if let character = category.name.uppercased().first {
+            self.sorted[character]?.append(category)
           }
         self.tableView.reloadData()
         }

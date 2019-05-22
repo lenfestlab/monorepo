@@ -14,7 +14,7 @@ class Category: RealmSwift.Object, Mappable {
   }
 
   @objc dynamic var identifier = ""
-  @objc dynamic var name: String?
+  @objc dynamic var name: String = ""
   @objc dynamic var desc: String?
   @objc dynamic var imageURLString: String?
   @objc dynamic var isCuisine: Bool = false
