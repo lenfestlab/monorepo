@@ -30,7 +30,6 @@ class Post < ApplicationRecord
   validates(*%i[
     published_at
     blurb
-    url
     rating
     author
   ], presence: true )
@@ -145,6 +144,7 @@ class Post < ApplicationRecord
       url
       notifications
       cached_place_names
+      url_archived
     ].each do |attr|
       configure attr do
         hide
