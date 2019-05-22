@@ -59,22 +59,19 @@ class CuisinesViewController: UITableViewController, Contextual {
     self.tableView.register(UITableViewCell.self, forCellReuseIdentifier: "reuseIdentifier")
     self.navigationController?.styleController()
 
-    for string in self.alphabet {
-      if let character = string.first {
-        self.sorted[character] = [Category]()
-      }
-    }
-
     self.cuisines$
       .drive(onNext: { [weak self] categories in
         guard let `self` = self else { return }
+        var newSorted = [Character : [Category]]()
+        self.alphabet.forEach({ str in newSorted[str.first!] = [Category]() })
         let sortedCategories = categories.sorted(by: { $0.name < $1.name })
         for category in sortedCategories {
           if let character = category.name.uppercased().first {
-            self.sorted[character]?.append(category)
+            newSorted[character]?.append(category)
           }
-        self.tableView.reloadData()
         }
+        self.sorted = newSorted
+        self.tableView.reloadData()
       })
       .disposed(by: rx.disposeBag)
   }
