@@ -2,13 +2,6 @@ import UIKit
 
 extension Place {
 
-  func attributedCategories() -> NSAttributedString {
-    var names: [String] = []
-    names.append(contentsOf: categories.map({ $0.name }).compactMap({$0}))
-    names.append(contentsOf: nabes.map({ $0.name }).compactMap({$0}))
-    return NSAttributedString(string: names.joined(separator: " | "))
-  }
-
   func attributedTitle(font: UIFont) -> NSAttributedString {
     let name = self.name ?? ""
     return NSMutableAttributedString(string: name.uppercased(), font: font, fontColor: .black)
