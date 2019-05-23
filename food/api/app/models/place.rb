@@ -10,9 +10,7 @@ class Place < ApplicationRecord
   has_many :categories, through: :categorizations
 
   def category_names
-    names = self.categories.pluck(:name)
-    names = names | [self.nabe.try(:name)]
-    names = names.compact
+    names = self.cached_categories.pluck("name") | self.cached_nabes.pluck("name")
     names.join(" | ")
   end
 
