@@ -3,7 +3,7 @@ import ObjectMapperAdditions
 import ObjectMapperAdditionsRealm
 import RealmSwift
 
-class PostObject: RealmSwift.Object, Mappable {
+class Post: RealmSwift.Object, Mappable {
 
   required convenience init?(map: Map) {
     self.init()

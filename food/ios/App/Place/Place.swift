@@ -3,6 +3,9 @@ import ObjectMapper
 import ObjectMapperAdditions
 import ObjectMapperAdditionsRealm
 import RealmSwift
+import DifferenceKit
+
+extension Place: Differentiable {}
 
 class Place: RealmSwift.Object, Mappable {
   required convenience init?(map: Map) {
@@ -21,11 +24,14 @@ class Place: RealmSwift.Object, Mappable {
   @objc dynamic var reservationsURLString: String?
   @objc dynamic var location: Location?
   var triggerRadiusOpt = RealmOptional<Double>()
-  var distanceOpt = RealmOptional<Double>()
   var visitRadiusOpt = RealmOptional<Double>()
   var categories = List<Category>()
   var nabes = List<Neighborhood>()
-  @objc dynamic var post: PostObject?
+  @objc dynamic var post: Post?
+  // distance from current location
+  var distanceOpt = RealmOptional<Double>()
+  // distance from Philly central, for sorting Guides centered there by default
+  @objc dynamic var distanceDefault: Double = Double.infinity
 
   let bookmarks = LinkingObjects(fromType: Bookmark.self, property: "place")
 
@@ -44,12 +50,12 @@ class Place: RealmSwift.Object, Mappable {
       (map["website"], StringTransform())
     reservationsURLString <-
       (map["reservations_url"], StringTransform())
+    distanceOpt <-
+      (map["distance"], RealmOptionalTransform())
     triggerRadiusOpt <-
       (map["trigger_radius"], RealmOptionalTransform())
     visitRadiusOpt <-
       (map["visit_radius"], RealmOptionalTransform())
-    distanceOpt <-
-      (map["distance"], RealmOptionalTransform())
     categories <-
       (map["categories"], ListTransform<Category>())
     nabes <-
@@ -58,12 +64,19 @@ class Place: RealmSwift.Object, Mappable {
       map["post"]
   }
 
+  var distance: Double? {
+    set {
+      distanceOpt.value = newValue
+    }
+    get {
+      return distanceOpt.value
+    }
+  }
+
   var triggerRadius: Double? {
     return triggerRadiusOpt.value
   }
-  var distance: Double? {
-    return distanceOpt.value
-  }
+
   var visitRadius: Double? {
     return visitRadiusOpt.value
   }
@@ -116,6 +129,26 @@ class Place: RealmSwift.Object, Mappable {
     region.notifyOnEntry = true
     region.notifyOnExit = true
     return region
+  }
+
+  func distance(from other: Place) -> Double? {
+    guard
+      let location = self.location?.nativeLocation,
+      let otherLocation = other.location?.nativeLocation
+      else { return nil }
+    return location.distance(from: otherLocation)
+  }
+  func distance(from otherLocation: CLLocation) -> Double? {
+    guard let location = self.location?.nativeLocation else { return nil }
+    return location.distance(from: otherLocation)
+  }
+
+  override var description: String {
+    guard let name = self.name else { return "???" }
+    return name
+  }
+  override var debugDescription: String {
+    return description
   }
 
 }

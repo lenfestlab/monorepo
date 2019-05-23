@@ -33,6 +33,7 @@ targets:
       - carthage: ObjectMapperAdditions
       - carthage: ObjectMapperAdditionsRealm
       - carthage: RxRealm
+      - carthage: DifferenceKit
 
       # Firebase - https://git.io/fAxBS
       # NOTE: omit base framework, per: https://git.io/fAjxM

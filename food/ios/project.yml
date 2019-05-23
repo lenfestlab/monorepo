@@ -25,6 +25,7 @@ configs:
 settings:
   base:
     APP_NAME: Philly Eats
+    APP_VERSION: 1.0.3
     APP_MARKETING_PATH: food
     TARGETED_DEVICE_FAMILY: '1' # iPhone only
     # link system frameworks - https://git.io/fAZbC
@@ -39,7 +40,6 @@ settings:
     # > scripts have moved the dSYM from the location Xcode generated it.
     # > Unable to process Here.app.dSYM at path...
     DEBUG_INFORMATION_FORMAT: "dwarf-with-dsym"
-    APP_VERSION: 1.0.2
   configs:
     # > Each key will be matched to any configs that contain the key and
     # > is case insensitive. So if you had Staging Debug and Staging Release,

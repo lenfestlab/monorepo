@@ -14,6 +14,9 @@ class Bookmark: RealmSwift.Object, Mappable {
   override static func primaryKey() -> String? {
     return "placeId"
   }
+  override static func indexedProperties() -> [String] {
+    return ["placeId", "lastSavedAt", "lastUnsavedAt"]
+  }
 
   @objc dynamic var identifier = "" // server-set
   @objc dynamic var placeId = "" // non-optional for #primaryKey()

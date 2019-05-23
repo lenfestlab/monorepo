@@ -18,35 +18,6 @@ class Cache {
     return try! Realm()
   }
 
-  lazy var cuisines$: Observable<[Category]> = {
-    return categories$(filter: .cuisine)
-  }()
-
-  lazy var guides$: Observable<[Category]> = {
-    return categories$(filter: .guide)
-  }()
-
-  lazy var nabes$: Observable<[Neighborhood]> = {
-    var query = realm.objects(Neighborhood.self)
-    return
-      Observable.array(from: query, synchronousStart: true)
-        .share()
-  }()
-
-  lazy var authors$: Observable<[Author]> = {
-    var query = realm.objects(Author.self)
-    return
-      Observable.array(from: query, synchronousStart: true)
-        .share()
-  }()
-
-  lazy var bookmarks$: Observable<[Bookmark]> = {
-    var query = realm.objects(Bookmark.self)
-    return
-      Observable.array(from: query, synchronousStart: true)
-        .share()
-  }()
-
   func replace<T: RealmSwift.Object>(_ newObjects: [T]) throws -> Void {
     let realm = self.realm
     try realm.write {
@@ -69,44 +40,60 @@ class Cache {
     }
   }
 
+  private func asArray$<T: Object>(_ results: Results<T>) -> Observable<[T]> {
+    return
+      Observable.array(from: results, synchronousStart: false)
+        .startWith(results.toArray())
+        .share(replay: 1, scope: .whileConnected)
+  }
+
+  private func allObjects$<T: Object>() -> Observable<[T]> {
+    return asArray$(realm.objects(T.self))
+  }
+
+  lazy var nabes$: Observable<[Neighborhood]> = {
+    return allObjects$()
+  }()
+
+  lazy var authors$: Observable<[Author]> = {
+    return allObjects$()
+  }()
+
+  var bookmarks: Results<Bookmark> {
+    return realm.objects(Bookmark.self)
+      .sorted(byKeyPath: "lastSavedAt", ascending: false)
+      .filter("lastSavedAt != nil AND ((lastUnsavedAt == nil) OR (lastUnsavedAt < lastSavedAt))")
+  }
+
+  lazy var bookmarks$: Observable<[Bookmark]> = {
+    return asArray$(bookmarks)
+  }()
+
   enum CategoryFilter {
-    case none
     case guide
     case cuisine
   }
   func categories$(filter: CategoryFilter) -> Observable<[Category]> {
-    var query = realm.objects(Category.self)
+    var results = realm.objects(Category.self)
     switch filter {
-    case .none:
-      print("NOOP")
     case .cuisine:
-      query = query.filter("isCuisine = true")
+      results = results
+        .filter("isCuisine = true")
     case .guide:
-      query = query.filter("isCuisine = false")
+      results = results
+        .filter("isCuisine = false")
         .sorted(byKeyPath: "displayStarts", ascending: false)
     }
-    return
-      Observable.array(from: query, synchronousStart: true)
-        .share()
+    return asArray$(results)
   }
-  func categoryChanges$(_ filter: CategoryFilter) -> Observable<RealmChangeset> {
-    var query = realm.objects(Category.self)
-    switch filter {
-    case .none:
-      print("NOOP")
-    case .cuisine:
-      query = query.filter("isCuisine = true")
-    case .guide:
-      query = query.filter("isCuisine = false")
-    }
-    return
-      Observable.arrayWithChangeset(from: query, synchronousStart: true)
-        .map({ (categories: [Category], changeset: RealmChangeset?) -> RealmChangeset? in
-          return changeset
-        })
-        .unwrap()
-        .share()
-  }
+
+  lazy var cuisines$: Observable<[Category]> = {
+    return categories$(filter: .cuisine)
+  }()
+
+  lazy var guides$: Observable<[Category]> = {
+    return categories$(filter: .guide)
+  }()
 
   enum PlaceFilter {
     case all
@@ -114,27 +101,58 @@ class Cache {
     case category(_ identifier: String)
   }
   func observePlaces$(_ filter: PlaceFilter = .all) -> Observable<[Place]> {
-    guard case .bookmarked = filter else { return Observable.just([]) }
-    let query =
-      realm.objects(Bookmark.self)
-        .sorted(byKeyPath: "lastSavedAt", ascending: false)
-        .filter("lastSavedAt != nil AND ((lastUnsavedAt == nil) OR (lastUnsavedAt < lastSavedAt))")
-    return
-      Observable.array(from: query, synchronousStart: true)
-        .map({ $0.compactMap({ $0.place }) })
-        .share(replay: 1, scope: .whileConnected)
-  }
-  var bookmarks: [Bookmark] {
-    return realm.objects(Bookmark.self).toArray()
+    switch filter {
+    case .all:
+      return allObjects$()
+    case .bookmarked:
+      return
+        bookmarks$
+          .map({ $0.compactMap({ $0.place }) })
+          .share(replay: 1, scope: .whileConnected)
+    case .category(let identifier):
+      guard let category = realm.object(ofType: Category.self, forPrimaryKey: identifier)
+        else { return Observable.just([]) }
+      let places = self.places(in: category)
+      return
+        Observable.array(from: places, synchronousStart: false)
+          .startWith(places.toArray())
+          .share()
+    }
   }
 
   lazy var defaultPlaces$: Observable<[Place]> = {
-    return observePlaces$()
+    return observePlaces$(.all)
   }()
 
-  lazy var bookmarked$: Observable<[Place]> = {
+  lazy var bookmarkedPlaces$: Observable<[Place]> = {
     return observePlaces$(.bookmarked)
   }()
+
+  private var places: Results<Place> {
+    return realm.objects(Place.self)
+  }
+
+  private func places(in category: Category) -> Results<Place> {
+    return places.filter("%@ IN categories", category)
+  }
+
+  var isEmpty: Bool {
+    return places.isEmpty
+  }
+
+  var isEmpty$: Observable<Bool> {
+    return observePlaces$()
+      .map({ places in
+        return places.isEmpty
+      })
+      .distinctUntilChanged()
+      .share()
+  }
+
+
+  func observePlace$(_ place: Place) -> Observable<Place> {
+    return Observable.from(object: place)
+  }
 
   func patchBookmark(
     _ placeId: String,
@@ -143,14 +161,17 @@ class Cache {
     let realm = self.realm
     let existing = realm.object(ofType: Bookmark.self, forPrimaryKey: placeId)
     try? realm.write {
-      if let bookmark = existing {
-        bookmark.lastSavedAt = Date()
-      } else {
+      let bookmark = existing ?? { () -> Bookmark in
         let bookmark = Bookmark()
         bookmark.placeId = placeId
-        bookmark.lastUnsavedAt = Date()
         bookmark.place = realm.object(ofType: Place.self, forPrimaryKey: placeId)
         realm.add(bookmark, update: true)
+        return bookmark
+      }()
+      if toSaved {
+        bookmark.lastSavedAt = Date()
+      } else {
+        bookmark.lastUnsavedAt = Date()
       }
     }
   }
@@ -166,6 +187,7 @@ class Cache {
     let query = realm.objects(Bookmark.self).filter("placeId = %@", placeId)
     return Observable.array(from: query).map({ $0.first })
   }
+
   func isSaved$(_ placeId: String) -> Observable<Bool> {
     return bookmark$(placeId)
       .unwrap()

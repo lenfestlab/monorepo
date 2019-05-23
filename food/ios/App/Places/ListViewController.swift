@@ -10,17 +10,13 @@ extension ListViewController { // UICollectionViewDataSource
   }
 
   override func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
-    return self.placeStore.placesFiltered.count
+    return self.placeStore.places.count
   }
 
   override func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
-    let cell = collectionView.dequeueReusableCell(withReuseIdentifier: reuseIdentifier, for: indexPath) as! PlaceCell
-
-    // Configure the cell
-    let mapPlace:MapPlace = self.placeStore.placesFiltered[indexPath.row]
-    let place = mapPlace.place
+    let cell = collectionView.dequeueReusableCell(withReuseIdentifier: PlaceCell.reuseIdentifier, for: indexPath) as! PlaceCell
+    let place = self.placeStore.places[indexPath.row]
     cell.setPlace(context: context, place: place, index: indexPath.row, showIndex: self.showIndex)
-    cell.analytics = self.analytics
     cell.controllerIdentifierKey = self.controllerIdentifierKey
     return cell
   }
@@ -30,8 +26,7 @@ extension ListViewController { // UICollectionViewDataSource
 extension ListViewController { // UICollectionViewDelegate
 
   override func collectionView(_ collectionView: UICollectionView, shouldSelectItemAt indexPath: IndexPath) -> Bool {
-    let mapPlace:MapPlace = self.placeStore.placesFiltered[indexPath.row]
-    let place:Place = mapPlace.place
+    let place = self.placeStore.places[indexPath.row]
     analytics.log(.tapsOnCard(place: place, controllerIdentifierKey: self.controllerIdentifierKey))
     openPlace(place)
     return true
@@ -58,12 +53,11 @@ extension ListViewController: UICollectionViewDelegateFlowLayout {
 
 }
 
-class ListViewController: UICollectionViewController {
+class ListViewController: UICollectionViewController, Contextual {
 
   var controllerIdentifierKey = "unknown"
 
   let placeStore : PlaceStore!
-  let locationManager = LocationManager.shared
   var topPadding = CGFloat(64)
 
   var showIndex = false {
@@ -72,15 +66,12 @@ class ListViewController: UICollectionViewController {
     }
   }
 
-  private let context: Context
-  private let analytics: AnalyticsManager
+  var context: Context
   @IBOutlet weak var settingsButton:UIButton!
 
   init(context: Context, placeStore: PlaceStore, categories: [Category] = []) {
     self.context = context
-    self.analytics = context.analytics
     self.placeStore = placeStore
-
     let layout = UICollectionViewFlowLayout()
     super.init(collectionViewLayout: layout)
   }
@@ -91,21 +82,18 @@ class ListViewController: UICollectionViewController {
 
   override func viewDidLoad() {
     super.viewDidLoad()
-
     self.navigationController?.styleController()
-
     let nib = UINib(nibName: "PlaceCell", bundle:nil)
-    self.collectionView.register(nib, forCellWithReuseIdentifier: reuseIdentifier)
+    self.collectionView.register(nib, forCellWithReuseIdentifier: PlaceCell.reuseIdentifier)
     self.collectionView.backgroundColor = UIColor.white
-  }
-
-  func fetchedMapData() {
-    self.collectionView.contentOffset = CGPoint.zero
-    self.collectionView.reloadData()
   }
 
   func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, insetForSectionAt section: Int) -> UIEdgeInsets {
     return UIEdgeInsets(top: self.topPadding, left: 0, bottom: 0, right: 0)
+  }
+
+  func fetchedData(_ changeset: PlacesChangeset, _ setData: PlacesChangesetClosure) {
+    collectionView.reload(using: changeset, setData: setData)
   }
 
 }

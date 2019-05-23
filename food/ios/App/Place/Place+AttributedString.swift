@@ -66,7 +66,6 @@ extension Place {
       attachment.image = image
       let y = (capHeight - image.size.height).rounded() / 2
       attachment.bounds = CGRect(x: 0, y: y - 2, width: image.size.width, height: image.size.height)
-      print(image.size)
       text.append(NSMutableAttributedString(attachment: attachment))
     }
 

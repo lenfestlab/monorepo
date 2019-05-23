@@ -1,6 +1,6 @@
 import UIKit
 
-class FavoritesViewController: PlacesViewController, Contextual {
+class FavoritesViewController: PlacesViewController {
 
   init(context: Context) {
     super.init(target: .placesBookmarked, context: context)
@@ -36,9 +36,8 @@ class FavoritesViewController: PlacesViewController, Contextual {
     self.emptyView.frame = self.view.bounds
   }
 
-  override func fetchedMapData() {
-    super.fetchedMapData()
-
+  override func fetchedData(_ changeset: PlacesChangeset, _ setData: PlacesChangesetClosure) {
+    super.fetchedData(changeset, setData)
     self.emptyView.isHidden = !isEmpty()
   }
 

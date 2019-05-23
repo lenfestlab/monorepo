@@ -2,7 +2,6 @@ github "Alamofire/Alamofire" ~> 4.8 # 5.x still in beta, undocumented
 github "hkellaway/Gloss"
 github "Alamofire/AlamofireImage"
 github "omaralbeik/UserDefaultsStore"
-github "ksmandersen/GoogleReporter"
 github "ink-spot/UPCarouselFlowLayout"
 github "malcommac/SwiftDate"
 github "ReactiveX/RxSwift"
@@ -19,6 +18,8 @@ github "tristanhimmelman/ObjectMapper"
 github "APUtils/ObjectMapperAdditions"
 github "RxSwiftCommunity/NSObject-Rx"
 github "getsentry/sentry-cocoa"
+github "brenthargrave/DifferenceKit" "drop-window-presence-guard"
+github "brenthargrave/GoogleReporter" "drop-uiwebview-invocation"
 
 # Firebase experimental carthage support: https://git.io/fAxBS
 binary "https://dl.google.com/dl/firebase/ios/carthage/FirebaseAnalyticsBinary.json"

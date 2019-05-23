@@ -43,14 +43,14 @@ extension MapViewController: UICollectionViewDataSource {
   }
 
   func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
-    return self.placeStore.placesFiltered.count
+    return mapPlaces.count
   }
 
   func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
-    let cell = collectionView.dequeueReusableCell(withReuseIdentifier: reuseIdentifier, for: indexPath) as! PlaceCell
+    let cell = collectionView.dequeueReusableCell(withReuseIdentifier: PlaceCell.reuseIdentifier, for: indexPath) as! PlaceCell
 
     // Configure the cell
-    let mapPlace:MapPlace = self.placeStore.placesFiltered[indexPath.row]
+    let mapPlace:MapPlace = mapPlaces[indexPath.row]
     let place = mapPlace.place
     cell.setPlace(context: context, place: place, index: indexPath.row, showIndex: self.showIndex)
     return cell
@@ -61,14 +61,14 @@ extension MapViewController: UICollectionViewDelegate {
 
   func collectionView(_ collectionView: UICollectionView, shouldSelectItemAt indexPath: IndexPath) -> Bool {
     if collectionView.indexOfMajorCell() == indexPath.row {
-      let mapPlace:MapPlace = self.placeStore.placesFiltered[indexPath.row]
-      let place:Place = mapPlace.place
+      let mapPlace = mapPlaces[indexPath.row]
+      let place = mapPlace.place
       analytics.log(.tapsOnCard(place: place, controllerIdentifierKey: self.controllerIdentifierKey))
       collectionView.isUserInteractionEnabled = false;
       openPlace(place)
     } else {
       scrollToItem(at: indexPath)
-      let mapPlace:MapPlace = self.placeStore.placesFiltered[indexPath.row]
+      let mapPlace = mapPlaces[indexPath.row]
       self.currentPlace = mapPlace
     }
     return true
@@ -119,11 +119,10 @@ extension MapViewController : MKMapViewDelegate {
 
   func mapView(_ mapView: MKMapView, didSelect view: MKAnnotationView) {
     let indexPath = IndexPath(row: view.tag, section: 0)
-    let mapPlace:MapPlace = self.placeStore.placesFiltered[indexPath.row]
+    let mapPlace = mapPlaces[indexPath.row]
     let place = mapPlace.place
     analytics.log(.tapsOnPin(place: place))
     scrollToItem(at: indexPath)
-
     self.currentPlace = mapPlace
   }
 
@@ -137,12 +136,10 @@ extension MapViewController: UIGestureRecognizerDelegate {
 
 }
 
-class MapViewController: UIViewController {
+class MapViewController: UIViewController, Contextual {
 
   var controllerIdentifierKey = "unknown"
   let padding = placeCellPadding
-  let env: Env
-  let locationManager = LocationManager.shared
   let placeStore : PlaceStore!
   var topPadding = CGFloat(64)
 
@@ -154,8 +151,8 @@ class MapViewController: UIViewController {
   }
 
   func updateAnnotations() {
-    var annotations:[MKAnnotation] = []
-    for (index, place) in self.placeStore.placesFiltered.enumerated() {
+    var annotations: [MKAnnotation] = []
+    for (index, place) in mapPlaces.enumerated() {
       if let annotation = place.annotation {
         annotation.index = index
         annotations.append(annotation)
@@ -164,14 +161,14 @@ class MapViewController: UIViewController {
     self.annotations = annotations
   }
 
-  private var _currentPlace:MapPlace? {
+  private var _currentPlace: MapPlace? {
     didSet {
       NSObject.cancelPreviousPerformRequests(withTarget: self, selector: #selector(centerToCurrentPlaceIfNotVisible), object: nil)
       self.perform(#selector(centerToCurrentPlaceIfNotVisible), with: nil, afterDelay: 0.5)
     }
   }
 
-  var currentPlace:MapPlace? {
+  var currentPlace: MapPlace? {
     set {
       if let annotation = currentPlace?.annotation, let view = mapView?.view(for: annotation) as? ABAnnotationView {
         view.isSelected = false
@@ -190,18 +187,15 @@ class MapViewController: UIViewController {
     return locationManager.latestCoordinate
   }
 
-  @IBOutlet weak var collectionView:UICollectionView?
+  @IBOutlet weak var collectionView:UICollectionView!
   @IBOutlet weak var mapView:MKMapView?
   @IBOutlet weak var locationButton:UIButton!
 
-  private let context: Context
-  private let analytics: AnalyticsManager
+  var context: Context
   @IBOutlet weak var settingsButton:UIButton!
 
   init(context: Context, placeStore: PlaceStore) {
-    env = Env()
     self.context = context
-    self.analytics = context.analytics
     self.placeStore = placeStore
     super.init(nibName: nil, bundle: nil)
   }
@@ -222,17 +216,26 @@ class MapViewController: UIViewController {
     self.collectionView?.isUserInteractionEnabled = true;
   }
 
-  func fetchedMapData() {
-    if (self.placeStore.placesFiltered.count > 0) {
-      let mapPlace = self.placeStore.placesFiltered.first
-      self.currentPlace = mapPlace
-    }
+  var mapPlaces: [MapPlace] = []
 
-    if let view = self.collectionView {
-      view.contentOffset = CGPoint.zero
-      view.reloadData()
-    }
+  let mapPlacesChangeset$$ = ReplaySubject<PlacesChangeset>.create(bufferSize: 4)
+  lazy var mapPlacesChangeset$ = { () -> Observable<PlacesChangeset> in
+    // NOTE: fetchedData can be called before collectionView is ready,
+    // so we buffer changesets until the view is ready for data.
+    let collectionViewReady$ =
+      rx.methodInvoked(#selector(UIViewController.viewDidAppear(_:)))
+        .mapTo(true)
+        .startWith(false)
+        .distinctUntilChanged()
+        .share()
+    return mapPlacesChangeset$$
+      .pausableBuffered(collectionViewReady$, limit: nil, flushOnCompleted: true, flushOnError: true)
+      .distinctUntilChanged() // skip redundant empty changeset events
+      .share()
+  }()
 
+  func fetchedData(_ changeset: PlacesChangeset, _ _: PlacesChangesetClosure) {
+    mapPlacesChangeset$$.onNext(changeset)
   }
 
   override func viewDidLoad() {
@@ -240,6 +243,7 @@ class MapViewController: UIViewController {
 
     NotificationCenter.default.addObserver(self, selector: #selector(updateLocationButton), name: .locationAuthorizationUpdated, object: nil)
 
+    // collectionView layout
     if let view = self.collectionView {
       let layout = UPCarouselFlowLayout()
       layout.scrollDirection = .horizontal
@@ -248,18 +252,28 @@ class MapViewController: UIViewController {
       layout.sideItemScale = 1.0
       layout.itemSize = CGSize(width: width, height: view.frame.size.height)
       view.collectionViewLayout = layout
-
       // Register cell classes
       let nib = UINib(nibName: "PlaceCell", bundle:nil)
-      view.register(nib, forCellWithReuseIdentifier: reuseIdentifier)
+      view.register(nib, forCellWithReuseIdentifier: PlaceCell.reuseIdentifier)
     }
 
-
+    // render buffered changesets
+    mapPlacesChangeset$
+      .subscribe(onNext: { [weak self] changeset in
+        guard let view = self?.collectionView else { return }
+        view.reload(using: changeset, setData: { [weak self] latestPlaces in
+          guard let `self` = self else { return }
+          let mapPlaces = latestPlaces.map({ MapPlace(place: $0) })
+          self.mapPlaces = mapPlaces
+          self.updateAnnotations()
+          if mapPlaces.isNotEmpty {
+            self.currentPlace = self.mapPlaces.first
+          }
+        })
+      })
+      .disposed(by: rx.disposeBag)
 
     self.navigationController?.styleController()
-
-//    self.navigationItem.rightBarButtonItem = UIBarButtonItem(title: "Filter", style: .plain, target: self, action: #selector(showFilter))
-
     self.mapView?.center(locationManager.defaultCoordinate)
     self.reloadMap()
   }
@@ -271,6 +285,7 @@ class MapViewController: UIViewController {
         title: "Want to Enable Location?",
         message: "This app uses your location to recommend restaurants around you.\nPlease select \"Always\" in Settings.",
         preferredStyle: .alert)
+
 
       let cancel = UIAlertAction(title: "Nevermind", style: .default) { (action:UIAlertAction) in
       }
@@ -330,11 +345,9 @@ class MapViewController: UIViewController {
   }
 
   func scrollViewDidEndDecelerating(_ scrollView: UIScrollView) {
-    var mapPlace:MapPlace
     let snapToIndex = self.collectionView?.indexOfMajorCell() ?? 0
-    mapPlace = self.placeStore.placesFiltered[snapToIndex]
+    let mapPlace = mapPlaces[snapToIndex]
     let place = mapPlace.place
-
     analytics.log(.swipesCarousel(place: place, currentLocation: self.lastCoordinate))
     self.currentPlace = mapPlace
   }

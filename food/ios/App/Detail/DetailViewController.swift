@@ -17,20 +17,16 @@ extension DetailViewController: UICollectionViewDataSource {
       return images.count
     }
     return 0
-
   }
 
   func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
     let cell = collectionView.dequeueReusableCell(withReuseIdentifier: imageIdentifier, for: indexPath) as! ImageViewCell
-
-    // Configure the cell
-    if let images = self.place.post?.images {
-      let image:Img = images[indexPath.row]
-      if let url = image.url {
-        cell.imageView.af_setImage(withURL: url)
-      }
+    if
+      let images = self.place.post?.images,
+      let imageView = cell.imageView {
+      let image: Img = images[indexPath.row]
+      imageView.set(image.url)
     }
-
     return cell
   }
 }
@@ -126,13 +122,9 @@ class DetailViewController: UIViewController, Contextual {
     let toSaved = !isSaved
     loveButton.isSelected = toSaved
     analytics.log(.tapsFavoriteButtonOnDetailPage(save: toSaved, place: place))
+    if toSaved { UIView.flashHUD("Added to List") }
     api.updateBookmark$(placeId, toSaved: toSaved)
-      .subscribe(
-        onNext: { bookmark in
-          if toSaved {
-            UIView.flashHUD("Added to List")
-          }
-      })
+      .subscribe()
       .disposed(by: rx.disposeBag)
   }
 

@@ -40,20 +40,6 @@ extension HomeViewController : FilterModuleDelegate {
 
 extension HomeViewController : UISearchBarDelegate {
 
-  override func didSetPlaceFiltered() {
-    if (self.placeStore.placesFiltered.count == 0) {
-      let searchTerm = self.searchBar.text ?? ""
-      if !searchTerm.isEmpty {
-        self.analytics.log(.noResultsWhenSearching(searchTerm: searchTerm))
-      }
-    }
-    super.didSetPlaceFiltered()
-  }
-
-  override func filterText() -> String? {
-    return self.searchBar.text
-  }
-
   func searchBarTextDidBeginEditing(_ searchBar: UISearchBar) {
     searchBar.showsCancelButton = true
   }
@@ -65,9 +51,6 @@ extension HomeViewController : UISearchBarDelegate {
 
   func searchBarTextDidChange(searchText: String) {
     self.placeStore.updateFilter(searchText: searchText)
-    self.mapViewController.reloadMap()
-
-    fetchedMapData()
   }
 
   func clearSearch() {
@@ -94,13 +77,6 @@ extension HomeViewController : UISearchBarDelegate {
     searchBarTextDidChange(searchText: searchBar.text ?? "")
     searchBar.resignFirstResponder()
   }
-
-  override func fetchedMapData() {
-    super.fetchedMapData()
-
-    self.emptyView.isHidden = !isEmpty()
-  }
-
 
 }
 
@@ -168,6 +144,19 @@ class HomeViewController: PlacesViewController {
 
     self.emptyView.isHidden = true
     self.view.insertSubview(self.emptyView, belowSubview: self.topBar)
+
+    // Cache is empty on first load and after Realm schema changes
+    // In latter case, indicate fetching underway w/ spinner.
+    cache.isEmpty$
+      .bind(onNext: { [weak self] isEmpty in
+        if isEmpty {
+          self?.spinner(.show)
+        } else {
+          self?.spinner(.hide)
+        }
+      })
+      .disposed(by: rx.disposeBag)
+
   }
 
   lazy var emptyView : EmptyView = {
@@ -226,6 +215,27 @@ class HomeViewController: PlacesViewController {
     navigationController.modalPresentationStyle = .overFullScreen
     navigationController.modalTransitionStyle = .crossDissolve
     self.navigationController?.present(navigationController, animated: true, completion: nil)
+  }
+
+
+  // PlaceStoreDelegate
+
+  override func filterText() -> String? {
+    return self.searchBar.text
+  }
+
+  override func didSetPlaceFiltered() {
+    if self.placeStore.places.isEmpty {
+      let searchTerm = self.searchBar.text ?? ""
+      if searchTerm.isNotEmpty {
+        self.analytics.log(.noResultsWhenSearching(searchTerm: searchTerm))
+      }
+    }
+  }
+
+  override func fetchedData(_ changeset: PlacesChangeset, _ setData: PlacesChangesetClosure) {
+    super.fetchedData(changeset, setData)
+    self.emptyView.isHidden = !isEmpty()
   }
 
 }

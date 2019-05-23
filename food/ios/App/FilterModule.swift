@@ -131,7 +131,6 @@ class FilterModule : NSObject {
       text.append(comma)
       text.append(space)
       let rect = text.boundingRect(with: CGSize(width: CGFloat.greatestFiniteMagnitude, height: CGFloat.greatestFiniteMagnitude), options: [], context: nil)
-      print(rect.size.width)
       if rect.size.width < screenWidth - 30 {
         labelText.append(attributedString)
         if index != content.count - 1 {

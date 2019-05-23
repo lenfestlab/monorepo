@@ -277,7 +277,7 @@ struct AnalyticsEvent {
   }
 
   static func clicksCuisineApplyButton(cuisines: [Category]) -> AnalyticsEvent {
-    return AnalyticsEvent(name: "apply-cuisine", category: .filter, cd7: cuisines.map{ $0.name ?? ""}.joined(separator: ","))
+    return AnalyticsEvent(name: "apply-cuisine", category: .filter, cd7: cuisines.map{ $0.name }.joined(separator: ","))
   }
 
   static func clicksNeighborhoodApplyButton(nabes: [Neighborhood]) -> AnalyticsEvent {
@@ -366,55 +366,57 @@ struct AnalyticsEvent {
 class AnalyticsManager {
 
   private let env: Env
-  private var ga: GoogleReporter
   private let amplitude: Amplitude
+  private let backgroundQueue = DispatchQueue.global(qos: .background)
 
   static let separator = ","
 
   init(_ env: Env) {
     self.env = env
-    self.ga = GoogleReporter.shared // NOTE: init private, must use `.shared`
     self.amplitude = Amplitude.instance()
-
-    ga.configure(withTrackerId: env.get(.googleAnalyticsTrackingId))
-    amplitude.initializeApiKey(env.get(.amplitudeApiKey))
-
-    ga.anonymizeIP = false // pending GDPR compliance - https://git.io/fxuUt
-
-    ga.quietMode = env.isNamed(.prod)
-
-    // "Client ID" - "cid" param - https://goo.gl/gexXmE
-    // > This field is required if User ID (uid) is not specified in the request.
-    // > This anonymously identifies a particular user, device, or browser instance.
-    // > ...For mobile apps, this is randomly generated for each particular instance
-    // > of an application install. The value of this field should be a random
-    // > UUID (version 4)...
-    // GoogleReporter defaults to `UIDevice().identifierForVendor`: https://git.io/fxuMc
-    // > The value of this property is the same for apps that come from the same
-    // > vendor running on the same device. A different value is returned for
-    // > apps on the same device that come from different vendors, and for
-    // > apps on different devices regardless of vendor.
-    // NOTE: the value is reset if our app is deleted/reinstalled.
-    ga.usesVendorIdentifier = true
-
     let installationId = env.installationId
-    ga.customDimensionArguments = [
-      // "t" (hit type) defaults to "event" - https://git.io/fxuMm
-      "ds": "app", // "Data source" - https://goo.gl/BNTRMF
 
-      //"installation-id"
-      "cd1": installationId // same value as "cid" param above
+    let gaId = env.get(.googleAnalyticsTrackingId)
+    backgroundQueue.sync {
+      let ga = GoogleReporter.shared // NOTE: init private, must use `.shared`
+      ga.configure(withTrackerId: gaId)
+      ga.anonymizeIP = false // pending GDPR compliance - https://git.io/fxuUt
+      ga.quietMode = true
 
-      // "User ID" - https://goo.gl/ZXsk6q
-      // > This is intended to be a known identifier for a user provided by the
-      // > site owner/tracking library user. It must not itself be PII
-      // > (personally identifiable information). The value should never be
-      // > persisted in GA cookies or other Analytics provided storage.
-      // NOTE: deliberately omitted; to persist id across deletes/installs,
-      // fetch the iCloud ID (async), set as the "uid" custom dimension, per:
-      // https://goo.gl/5QFvkb
-      // "uid": env.userId,
-    ]
+      // "Client ID" - "cid" param - https://goo.gl/gexXmE
+      // > This field is required if User ID (uid) is not specified in the request.
+      // > This anonymously identifies a particular user, device, or browser instance.
+      // > ...For mobile apps, this is randomly generated for each particular instance
+      // > of an application install. The value of this field should be a random
+      // > UUID (version 4)...
+      // GoogleReporter defaults to `UIDevice().identifierForVendor`: https://git.io/fxuMc
+      // > The value of this property is the same for apps that come from the same
+      // > vendor running on the same device. A different value is returned for
+      // > apps on the same device that come from different vendors, and for
+      // > apps on different devices regardless of vendor.
+      // NOTE: the value is reset if our app is deleted/reinstalled.
+      ga.usesVendorIdentifier = true
+
+      ga.customDimensionArguments = [
+        // "t" (hit type) defaults to "event" - https://git.io/fxuMm
+        "ds": "app", // "Data source" - https://goo.gl/BNTRMF
+
+        //"installation-id"
+        "cd1": installationId // same value as "cid" param above
+
+        // "User ID" - https://goo.gl/ZXsk6q
+        // > This is intended to be a known identifier for a user provided by the
+        // > site owner/tracking library user. It must not itself be PII
+        // > (personally identifiable information). The value should never be
+        // > persisted in GA cookies or other Analytics provided storage.
+        // NOTE: deliberately omitted; to persist id across deletes/installs,
+        // fetch the iCloud ID (async), set as the "uid" custom dimension, per:
+        // https://goo.gl/5QFvkb
+        // "uid": env.userId,
+      ]
+    }
+
+    amplitude.initializeApiKey(env.get(.amplitudeApiKey))
 
     // Firebase, Amplitude
     ["installation_id", "cd1"].forEach { propName in
@@ -434,7 +436,8 @@ class AnalyticsManager {
 
     // NOTE: workaround iOS 12 networking bug that drops requests prematurely
     // GH discussion: https://git.io/fpY6S
-    DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
+
+    backgroundQueue.asyncAfter(deadline: .now() + 0.1) {
       // > The handler is called synchronously on the main thread, blocking
       // > the app’s suspension momentarily while the app is notified.
       // - https://goo.gl/yRgxEG
@@ -480,9 +483,11 @@ class AnalyticsManager {
   }
 
   func mergeCustomDimensions(cds: Dictionary<String, String>) -> Void {
-    ga.customDimensionArguments?.merge(cds, uniquingKeysWith: { (_, new) -> String in
-      return new
-    })
+    backgroundQueue.sync {
+      GoogleReporter.shared.customDimensionArguments?.merge(cds, uniquingKeysWith: { (_, new) -> String in
+        return new
+      })
+    }
   }
 
 }

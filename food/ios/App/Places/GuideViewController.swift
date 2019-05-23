@@ -12,7 +12,7 @@ class GuideViewController: PlacesViewController {
   }
 
   override func page() -> String {
-    return "guides / \(category.name ?? "unknown")"
+    return "guides / \(category.name)"
   }
 
   required init?(coder aDecoder: NSCoder) {

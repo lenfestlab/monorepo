@@ -291,9 +291,6 @@ class FilterViewController: UIViewController, Contextual {
       prices.append(4)
     }
 
-    print(ratings)
-    print(prices)
-
     self.filterModule.ratings = ratings
     self.filterModule.prices = prices
 
