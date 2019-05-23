@@ -9,6 +9,11 @@ class Place < ApplicationRecord
   has_many :categorizations, dependent: :destroy
   has_many :categories, through: :categorizations
 
+  def category_names
+    names = self.categories.pluck(:name) | [self.nabe.name]
+    names.join(" | ")
+  end
+
   def visible_categories
     self.categories.visible
   end
