@@ -78,7 +78,7 @@ class PlaceCell: UICollectionViewCell {
     self.subtitleLabel.attributedText = place.attributedSubtitle(font: UIFont.mediumSmall, capHeight: UIFont.mediumSmall.capHeight)
     self.subtitleLabel.lineBreakMode = .byTruncatingTail
 
-    self.categoryLabel.attributedText = place.attributedCategories()
+    self.categoryLabel.text = place.categoryNames
     self.categoryLabel.lineBreakMode = .byTruncatingTail
     self.categoryLabel.textColor = .greyishBlue
 

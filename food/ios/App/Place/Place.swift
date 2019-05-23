@@ -17,6 +17,7 @@ class Place: RealmSwift.Object, Mappable {
   @objc dynamic var name: String?
   @objc dynamic var phone: String?
   @objc dynamic var address: String?
+  @objc dynamic var categoryNames: String?
   @objc dynamic var websiteURLString: String?
   @objc dynamic var reservationsURLString: String?
   @objc dynamic var location: Location?
@@ -34,6 +35,8 @@ class Place: RealmSwift.Object, Mappable {
       (map["identifier"], StringTransform())
     name <-
       (map["name"], StringTransform())
+    categoryNames <-
+      (map["category_names"], StringTransform())
     phone <-
       (map["phone"], StringTransform())
     address <-
