@@ -10,6 +10,7 @@ class PlaceSerializer < ActiveModel::Serializer
     location
     visit_radius
     reservations_url
+    category_names
   ])
 
   attribute :cached_nabes, key: :nabes
