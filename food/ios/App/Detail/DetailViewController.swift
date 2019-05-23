@@ -183,7 +183,7 @@ class DetailViewController: UIViewController, Contextual {
     title.append(self.place.attributedSubtitle(font: UIFont.mediumLarge, capHeight: UIFont.mediumLarge.capHeight))
     self.titleLabel.attributedText = title
 
-    self.categoryLabel.attributedText = self.place.attributedCategories()
+    self.categoryLabel.text = self.place.categoryNames
     self.categoryLabel.font = UIFont.lightSmall
 
     let address = self.place.address ?? ""
