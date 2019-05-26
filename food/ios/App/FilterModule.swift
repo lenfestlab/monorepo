@@ -106,7 +106,7 @@ class FilterModule : NSObject {
     }
 
     for nabe in self.nabes {
-      let string = NSMutableAttributedString(string: "\(nabe.name ?? "")", font: .lightSmall, fontColor: .black)
+      let string = NSMutableAttributedString(string: "\(nabe.name)", font: .lightSmall, fontColor: .black)
       content.append(string)
     }
 
