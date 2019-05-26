@@ -5,7 +5,7 @@ class GuideCell: UITableViewCell {
 
   @IBOutlet weak var guideLabel: UILabel?
   @IBOutlet weak var descriptionLabel: UILabel?
-  @IBOutlet weak var guideImageView: UIImageView?
+  @IBOutlet weak var guideImageView: RemoteImageView?
   @IBOutlet weak var containerView: UIView!
 
 
@@ -38,7 +38,9 @@ class GuideCell: UITableViewCell {
     if
       let imageView = guideImageView,
       let url = category.imageURL {
-      imageView.af_setImage(withURL: url)
+      let size = imageView.frame.size
+      let filter = AspectScaledToFillSizeFilter(size: size)
+      imageView.set(url, filter: filter)
     }
   }
 

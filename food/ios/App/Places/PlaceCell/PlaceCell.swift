@@ -8,12 +8,13 @@ class PlaceCell: UICollectionViewCell {
   @IBOutlet weak var subtitleLabel: UILabel!
   @IBOutlet weak var categoryLabel: UILabel!
   @IBOutlet weak var milesAwayLabel: UILabel!
-  @IBOutlet weak var imageView: UIImageView!
+  @IBOutlet weak var imageView: RemoteImageView!
   @IBOutlet weak var containerView: UIView!
   @IBOutlet weak var articleButton: UIButton!
   @IBOutlet weak var loveButton: UIButton!
 
-  weak var analytics: AnalyticsManager?
+  static let reuseIdentifier = "PlaceCell"
+
   var controllerIdentifierKey : String = "unknown"
   var place : Place?
   var context: Context?
@@ -54,17 +55,18 @@ class PlaceCell: UICollectionViewCell {
     self.place = place
     let post = place.post
 
-    // default to API-provided distance if not locally calculable
-    var distance: Double? = place.distance
-    if let placeLocation = place.location?.nativeLocation,
-      let currentLocation = LocationManager.shared.latestLocation {
-      distance = currentLocation.distance(from: placeLocation)
-    }
-    if let distance = distance {
-      let miles = (distance/1609.344)
-      let milesAway = miles >= 10 ? String(format: "%0.0f miles away", miles) : String(format: "%0.1f miles away", miles)
-      self.milesAwayLabel.text = milesAway
-    }
+    context.locationManager.location$
+      .map({ [weak self] latestLocation -> Double? in
+        return self?.place?.distance(from: latestLocation)
+      })
+      .unwrap()
+      .bind(onNext: { [weak self] distance in
+        let miles = (distance / 1609.344)
+        let format = (miles >= 10) ? "%0.0f" : "%0.1f"
+        let milesAway = String(format: "\(format) miles away", miles)
+        self?.milesAwayLabel.text = milesAway
+      })
+      .disposed(by: bag)
 
     let attributedTitle = NSMutableAttributedString()
     if showIndex {
@@ -83,7 +85,10 @@ class PlaceCell: UICollectionViewCell {
     self.categoryLabel.textColor = .greyishBlue
 
     if let url = post?.imageURL {
-      self.imageView.af_setImage(withURL: url)
+      let size = imageView.frame.size
+      let radius = imageView.layer.cornerRadius
+      let filter = AspectScaledToFillSizeWithRoundedCornersFilter(size: size, radius: radius)
+      imageView.set(url, filter: filter)
     }
 
     self.loveButton.isHidden = Installation.authToken() == nil
@@ -109,13 +114,9 @@ class PlaceCell: UICollectionViewCell {
     let toSaved = !isSaved
     loveButton.isSelected = toSaved
     context.analytics.log(.tapsFavoriteButtonOnCard(save: toSaved, place: place, controllerIdentifierKey: self.controllerIdentifierKey))
+    if toSaved { UIView.flashHUD("Added to List") }
     context.api.updateBookmark$(placeId, toSaved: toSaved)
-      .subscribe(
-        onNext: { bookmark in
-          if toSaved {
-            UIView.flashHUD("Added to List")
-          }
-      })
+      .subscribe()
       .disposed(by: rx.disposeBag)
   }
 

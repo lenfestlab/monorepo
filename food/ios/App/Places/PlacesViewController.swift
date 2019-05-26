@@ -3,29 +3,12 @@ import CoreLocation
 import SVProgressHUD
 import RxRealm
 
-extension PlacesViewController : PlaceStoreDelegate {
-  func fetchedMapData() {
-    if !_initalDataFetched {
-      _initalDataFetched = true
-      self.initalDataFetched()
-    }
-    self.mapViewController.fetchedMapData()
-    self.listViewController.fetchedMapData()
-  }
-
-  func didSetPlaceFiltered() {
-    self.mapViewController.updateAnnotations()
-  }
-
-  func filterText() -> String? {
-    return nil
-  }
-
+extension PlacesViewController: PlaceStoreDelegate {
+  // functions defined in class, else compiler error:
+  // > Overriding declarations in extensions is not supported.
 }
 
-class PlacesViewController: UIViewController {
-
-  let locationManager = LocationManager.shared
+class PlacesViewController: UIViewController, Contextual {
 
   func initalDataFetched() {
 
@@ -124,7 +107,7 @@ class PlacesViewController: UIViewController {
     super.init(nibName: nil, bundle: nil)
 
     self.placeStore.delegate = self
-    self.placeStore.beginObservingCache() // must be called after delegate set
+    self.placeStore.beginObservingPlaces() // MUST be called after delegate set
   }
 
   required init?(coder aDecoder: NSCoder) {
@@ -174,10 +157,7 @@ class PlacesViewController: UIViewController {
 
     if let location = self.locationManager.latestLocation {
       initialMapDataFetch(coordinate: location.coordinate)
-    } else {
-      self.refresh(coordinate: locationManager.defaultCoordinate)
     }
-
   }
 
   var _initalDataFetched = false
@@ -193,12 +173,14 @@ class PlacesViewController: UIViewController {
     self.refresh(coordinate: coordinate)
   }
 
-  func refresh(coordinate: CLLocationCoordinate2D? = nil, completionBlock: (([MapPlace]) -> (Void))? = nil) {
-    let showLoadingIndicator = self.viewIfLoaded?.window != nil
+  func refresh(coordinate: CLLocationCoordinate2D? = nil, completionBlock: (([Place]) -> (Void))? = nil) {
+    // restrict post-launch data fetches to Home view; rest observe cache only.
+    guard case .placesAll = target else { return }
+
+    let showLoadingIndicator = viewIfLoaded?.window != nil
 
     if showLoadingIndicator {
-      SVProgressHUD.show()
-      SVProgressHUD.setForegroundColor(UIColor.slate)
+      self.spinner(.show)
     }
 
     if let coordinate = coordinate {
@@ -206,8 +188,8 @@ class PlacesViewController: UIViewController {
     }
     self.placeStore.refresh(completionBlock: { (places) -> (Void) in
       if showLoadingIndicator {
-        DispatchQueue.main.async {
-          SVProgressHUD.dismiss()
+        DispatchQueue.main.async { [weak self] in
+          self?.spinner(.hide)
         }
       }
       completionBlock?(places)
@@ -223,7 +205,29 @@ class PlacesViewController: UIViewController {
   }
 
   func isEmpty() -> Bool {
-    return self.placeStore.placesFiltered.isEmpty
+    return self.placeStore.places.isEmpty
+  }
+
+
+  // PlaceStoreDelegate
+  //
+
+  func fetchedData(_ changeset: PlacesChangeset, _ setData: PlacesChangesetClosure) {
+    if !_initalDataFetched {
+      _initalDataFetched = true
+      self.initalDataFetched()
+    }
+    self.mapViewController.fetchedData(changeset, setData)
+    self.listViewController.fetchedData(changeset, setData)
+  }
+
+  func didSetPlaceFiltered() {
+    // NO-OP
+  }
+
+  func filterText() -> String? {
+    return nil
   }
 
 }
+

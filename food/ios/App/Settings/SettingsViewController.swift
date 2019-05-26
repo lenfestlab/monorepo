@@ -6,23 +6,19 @@ import RxSwift
 import RxCocoa
 import SnapKit
 
-class SettingsViewController: BaseSettingsViewController, LocationManagerAuthorizationDelegate {
+class SettingsViewController: BaseSettingsViewController, LocationManagerAuthorizationDelegate, Contextual {
   
-  let locationManager = LocationManager.shared
-
-  private let analytics: AnalyticsManager
+  var context: Context
   private let notificationManager: NotificationManager
-  private let env: Env
 
   private var notification: NSObjectProtocol?
 
   init(
-    analytics: AnalyticsManager,
+    context: Context,
     notificationManager: NotificationManager
     ) {
-    self.analytics = analytics
+    self.context = context
     self.notificationManager = notificationManager
-    self.env = Env()
     super.init(style: .grouped)
     locationManager.authorizationDelegate = self
   }

@@ -58,7 +58,6 @@ class Api {
         .requestJSON(.patch, url, parameters: params)
         .observeOn(Scheduler.background)
         .map({ _response, json in
-          print(json)
           guard
             let json = json as? JSON,
             let data = json["bookmark"] as? JSON,
@@ -142,63 +141,6 @@ class Api {
         })
   }
 
-  func updateCategories$() -> Observable<[Category]> {
-    return
-      RxAlamofire
-        .requestJSON(.get, "\(env.apiBaseUrlString)/categories")
-        .observeOn(Scheduler.background)
-        .map({ _response, json in
-          guard
-            let json = json as? JSON,
-            let data = json["data"] as? [JSON]
-            else { throw ApiError.parse }
-          let objects = [Category](JSONArray: data)
-          return objects
-        })
-        .do(onNext: { [weak self] objects in
-          try self?.cache.replace(objects)
-        })
-        .share()
-  }
-
-  func updateNabes$() -> Observable<[Neighborhood]> {
-    let url = "\(env.apiBaseUrlString)/nabes"
-    return
-      RxAlamofire
-        .requestJSON(.get, url)
-        .observeOn(Scheduler.background)
-        .map({ _response, json in
-          guard
-            let json = json as? JSON,
-            let data = json["data"] as? [JSON]
-            else { throw ApiError.parse }
-          return [Neighborhood](JSONArray: data)
-        })
-        .do(onNext: { [weak self] objects in
-          try self?.cache.replace(objects)
-        })
-        .share()
-  }
-
-  func updateAuthors$() -> Observable<[Author]> {
-    let url = "\(env.apiBaseUrlString)/authors"
-    return
-      RxAlamofire
-        .requestJSON(.get, url)
-        .observeOn(Scheduler.background)
-        .map({ _response, json in
-          guard
-            let json = json as? JSON,
-            let data = json["data"] as? [JSON]
-            else { throw ApiError.parse }
-          return [Author](JSONArray: data)
-        })
-        .do(onNext: { [weak self] objects in
-          try self?.cache.replace(objects)
-        })
-        .share()
-  }
-
   enum Target {
     case placesAll
     case placesBookmarked
@@ -260,7 +202,18 @@ class Api {
           return [Place](JSONArray: data)
         })
         .do(onNext: { [weak self] places in
-          try self?.cache.put(places)
+          guard let `self` = self else { return }
+          // set distance/distanceDefault before caching else clobbered by nils
+          let defaultLocation = self.locationManager.defaultLocation
+          places.forEach({ place in
+            if let placeLocation = place.location?.nativeLocation {
+              place.distanceDefault = placeLocation.distance(from: defaultLocation)
+              if let currentLocation = self.locationManager.latestLocation {
+                place.distance = currentLocation.distance(from: placeLocation)
+              }
+            }
+          })
+          try self.cache.put(places)
         })
         // map thread-unsafe realm objects back to main thread
         .flatMap({ (objects: [Place]) -> Observable<[Place]> in

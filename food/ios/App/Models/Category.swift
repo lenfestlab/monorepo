@@ -2,6 +2,9 @@ import ObjectMapper
 import ObjectMapperAdditions
 import ObjectMapperAdditionsRealm
 import RealmSwift
+import DifferenceKit
+
+extension Category: Differentiable {}
 
 class Category: RealmSwift.Object, Mappable {
 
@@ -11,6 +14,9 @@ class Category: RealmSwift.Object, Mappable {
 
   override static func primaryKey() -> String? {
     return "identifier"
+  }
+  override static func indexedProperties() -> [String] {
+    return ["isCuisine", "displayStarts", "displayEnds"]
   }
 
   @objc dynamic var identifier = ""

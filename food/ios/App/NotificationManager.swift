@@ -23,7 +23,6 @@ class NotificationManager: NSObject, UNUserNotificationCenterDelegate, Contextua
 
   func refreshAuthorizationStatus(completionHandler: @escaping (UNAuthorizationStatus) -> Void) {
     notificationCenter?.getNotificationSettings { (settings) in
-      print("Checking notification status")
       self.authorizationStatus = settings.authorizationStatus
       completionHandler(settings.authorizationStatus)
     }

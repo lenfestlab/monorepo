@@ -1,12 +1,9 @@
 import UIKit
+import SnapKit
 
 class ImageViewCell: UICollectionViewCell {
 
-  @IBOutlet weak var imageView: UIImageView!
-
-  override func awakeFromNib() {
-    super.awakeFromNib()
-  }
+  @IBOutlet weak var imageView: RemoteImageView!
 
   override func prepareForReuse() {
     self.imageView.image = nil

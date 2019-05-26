@@ -72,7 +72,7 @@
                 </button>
                 <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" textAlignment="center" lineBreakMode="tailTruncation" numberOfLines="6" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="Kau-OB-wCo">
                     <rect key="frame" x="34" y="434" width="307" height="46.666666666666686"/>
-                    <string key="text">To new reataurant openings 
+                    <string key="text">To new resataurant openings 
 and nearby favorites.</string>
                     <fontDescription key="fontDescription" name="Lato-Regular" family="Lato" pointSize="20"/>
                     <nil key="highlightedColor"/>

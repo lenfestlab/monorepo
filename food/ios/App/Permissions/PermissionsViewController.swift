@@ -1,20 +1,18 @@
 import UIKit
 import CoreLocation
 
-class PermissionsViewController: UIViewController, LocationManagerAuthorizationDelegate {
+class PermissionsViewController: UIViewController, LocationManagerAuthorizationDelegate, Contextual {
   
-  var locationManager = LocationManager.shared
-
   @IBOutlet weak var doneButton: UIButton!
   @IBOutlet weak var skipButton: UIButton!
   @IBOutlet weak var stepLabel: UILabel!
   @IBOutlet weak var headerLabel: UILabel!
   @IBOutlet weak var descriptionLabel: UILabel!
 
-  private let analytics: AnalyticsManager
+  var context: Context
 
-  init(analytics: AnalyticsManager) {
-    self.analytics = analytics
+  init(context: Context) {
+    self.context = context
     super.init(nibName: nil, bundle: nil)
     navigationItem.hidesBackButton = true
     locationManager.authorizationDelegate = self

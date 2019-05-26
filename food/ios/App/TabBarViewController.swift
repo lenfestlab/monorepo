@@ -9,7 +9,7 @@ class TabBarViewController: UITabBarController {
   var placesViewController: HomeViewController!
   var favoritesViewController: FavoritesViewController!
   var listViewController: ListViewController!
-  var guideViewController: GuidesViewController!
+  var guidesViewController: GuidesViewController!
 
   private let context: Context
   private let notificationManager: NotificationManager
@@ -33,7 +33,7 @@ class TabBarViewController: UITabBarController {
     self.context.analytics.log(.tapsSettingsButton)
     let settingsController =
       SettingsViewController(
-        analytics: context.analytics,
+        context: context,
         notificationManager: notificationManager)
     settingsController.hidesBottomBarWhenPushed = true
     self.placesViewController.navigationController?.pushViewController(settingsController, animated: true)
@@ -57,12 +57,15 @@ class TabBarViewController: UITabBarController {
     mapNavigationController.tabBarItem.selectedImage = UIImage(named: "tab-restaurant-icon-selected")
     controllers.append(mapNavigationController)
 
-    self.guideViewController = GuidesViewController(context: context)
-    let guideNavigationController = UINavigationController(rootViewController: self.guideViewController)
+    self.guidesViewController = GuidesViewController(context: context)
+    let guideNavigationController =
+      UINavigationController(rootViewController: self.guidesViewController)
     guideNavigationController.tabBarItem.title = "Guides"
     guideNavigationController.tabBarItem.image = UIImage(named: "tab-guides-icon")
     guideNavigationController.tabBarItem.selectedImage = UIImage(named: "tab-guides-icon-selected")
     controllers.append(guideNavigationController)
+    // load Guides view before display to ensure its tableView is populated
+    assert(self.guidesViewController?.view != nil)
 
     if Installation.authToken() != nil {
       self.favoritesViewController = FavoritesViewController(context: context)

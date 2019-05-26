@@ -34,9 +34,6 @@ extension CLAuthorizationStatus: CustomStringConvertible, CustomDebugStringConve
 
 class LocationManager: NSObject, CLLocationManagerDelegate {
 
-  static let shared = LocationManager()
-
-  let env: Env
   var authorizationStatus: CLAuthorizationStatus = .notDetermined {
     didSet {
       NotificationCenter.default.post(name: .locationAuthorizationUpdated, object: nil)
@@ -48,21 +45,29 @@ class LocationManager: NSObject, CLLocationManagerDelegate {
       latitude: 39.9526,
       longitude: -75.1652)
 
+  lazy var defaultLocation = {() -> CLLocation in
+    return
+      CLLocation(
+        latitude: defaultCoordinate.latitude,
+        longitude:defaultCoordinate.longitude)
+  }()
+
   weak var authorizationDelegate: LocationManagerAuthorizationDelegate?
   var locationManager:CLLocationManager
 
   func startMonitoringSignificantLocationChanges() {
-    print("locationManager startMonitoringSignificantLocationChanges")
     locationManager.startMonitoringSignificantLocationChanges()
   }
 
   func startUpdatingLocation() {
-    print("locationManager startUpdatingLocation")
     locationManager.startUpdatingLocation()
   }
 
-  override init() {
-    env = Env()
+  let env: Env
+  let analytics: AnalyticsManager?
+  init(env: Env, analytics: AnalyticsManager) {
+    self.env = env
+    self.analytics = analytics
     locationManager = CLLocationManager()
     locationManager.desiredAccuracy = kCLLocationAccuracyHundredMeters
     locationManager.pausesLocationUpdatesAutomatically = false
@@ -82,13 +87,11 @@ class LocationManager: NSObject, CLLocationManagerDelegate {
   }
 
   func enableBasicLocationServices() {
-    print("locationManager enableBasicLocationServices")
     let status = CLLocationManager.authorizationStatus()
     authorizationStatusUpdated(status: status)
   }
 
   func authorizationStatusUpdated(status: CLAuthorizationStatus) {
-    print("locationManager authorizationStatusUpdated: \(status.rawValue)")
     self.authorizationStatus = status
 
     switch status {
@@ -96,22 +99,17 @@ class LocationManager: NSObject, CLLocationManagerDelegate {
       // Request when-in-use authorization initially
       locationManager.requestAlwaysAuthorization()
     case .restricted, .denied:
-      guard let authDelegate = authorizationDelegate else {
-        print("ERROR: MIA: LocationManaager.authorizationDelegate")
-        return }
+      guard let authDelegate = authorizationDelegate else { return }
       authDelegate.notAuthorized(self, status: status)
     case .authorizedWhenInUse, .authorizedAlways:
       self.startMonitoringSignificantLocationChanges()
-      guard let authDelegate = authorizationDelegate else {
-        print("ERROR: MIA: LocationManaager.authorizationDelegate")
-        return }
+      guard let authDelegate = authorizationDelegate else { return }
       authDelegate.authorized(self, status: status)
     @unknown default: fatalError()
     }
   }
 
   func locationManager(_ manager: CLLocationManager, didChangeAuthorization status: CLAuthorizationStatus) {
-    print("locationManager didChangeAuthorization: \(status)")
     if status != .notDetermined {
       authorizationStatusUpdated(status: status)
     }
@@ -125,15 +123,11 @@ class LocationManager: NSObject, CLLocationManagerDelegate {
     }
   }
   public var latestCoordinate: CLLocationCoordinate2D? {
-    return self.latestLocation?.coordinate
-  }
-  static var latestCoordinate: CLLocationCoordinate2D? {
-    return self.shared.latestCoordinate
+    return latestLocation?.coordinate
   }
 
   func locationManager(_ manager: CLLocationManager,
                        didUpdateLocations locations: [CLLocation]) {
-    print("locationManager:didUpdateLocations \(locations)")
     guard let location = locations.last else {
       print("ERROR: MIA: locations.last")
       return
@@ -144,18 +138,13 @@ class LocationManager: NSObject, CLLocationManagerDelegate {
         locale: Locale.autoupdatingCurrent)
     let now = Date().in(region: region)
     let timestamp = location.timestamp.in(region: region)
-    guard timestamp.isInside(date: now, granularity: .minute) else {
-      print("\t skip stale location")
-      return
-    }
-
+    guard timestamp.isInside(date: now, granularity: .minute) else { return }
     self.latestLocation = location
     self.logLocationChange(location)
   }
 
   // analyze location in hours beginning: 8am, 4pm and midnight
   func logLocationChange(_ newLocation: CLLocation) {
-    print("logLocationChange newLocation: \(newLocation)")
     guard let analytics = self.analytics else { return }
     let region =
       Region(calendar: Calendars.gregorian,
@@ -164,8 +153,7 @@ class LocationManager: NSObject, CLLocationManagerDelegate {
     let now = Date().in(region: region)
     let timestamp = newLocation.timestamp.in(region: region)
     guard timestamp.isInside(date: now, granularity: .minute) else {
-      print("\t skip stale location")
-      return
+      return print("\t skip stale location")
     }
     let windowHourStarts = env.isPreProduction ? Array(0..<23) : [0, 8, 16]
     let windowHours = windowHourStarts.map { now.dateBySet(hour: $0, min: 0, secs: 0)! }
@@ -174,8 +162,7 @@ class LocationManager: NSObject, CLLocationManagerDelegate {
       return now.isInRange(date: beginsAt, and: endsAt)
     }
     guard isInWindow else {
-      print("location changed outside window")
-      return
+      return print("location changed outside window")
     }
     analytics.log(.backgroundTrackingforLocation(newLocation.coordinate))
   }
@@ -227,44 +214,25 @@ class LocationManager: NSObject, CLLocationManagerDelegate {
   }
 
   var location$: Observable<CLLocation> {
-    return self.locationManager.rx.location.unwrap().share()
+    return self.locationManager.rx.location
+      .unwrap()
+      .distinctUntilChanged()
+      .share()
   }
 
   func locationManager(_ manager: CLLocationManager, didEnterRegion region: CLRegion) {
-    print("locationManager:didEnterRegion \(region)")
     self.analytics!.log(.regionEntered(source: "LocationManager"))
     // NOTE: see Notification.observeLocationManager()
-  }
-
-  var analytics: AnalyticsManager?
-  var cache: Cache?
-  static func sharedWith(
-    analytics: AnalyticsManager,
-    cache: Cache
-    ) -> LocationManager {
-    let manager = LocationManager.shared
-    manager.analytics = analytics
-    manager.cache = cache
-    manager.observeBookmarks(from: cache)
-    return manager
-  }
-
-  private func observeBookmarks(from cache: Cache) -> Void {
-    cache.observePlaces$(.bookmarked)
-      .subscribe(onNext: { [weak self] objects in
-        self?.resetRegionMonitoring(places: objects)
-      })
-      .disposed(by: rx.disposeBag)
   }
 
   func simulate(enteredRegion region: CLRegion) {
     self.locationManager(self.locationManager, didEnterRegion: region)
   }
 
-  func resetRegionMonitoring(places: [Place]) {
+  func resetRegionMonitoring(latestRegions regions: [CLCircularRegion]) {
     let manager = locationManager
     manager.monitoredRegions.forEach { manager.stopMonitoring(for: $0) }
-    places.forEach { manager.startMonitoring(for: $0.region) }
+    regions.forEach { manager.startMonitoring(for: $0) }
   }
 
 }

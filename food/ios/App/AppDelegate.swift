@@ -11,8 +11,6 @@ import Sentry
 
 typealias Result<T> = Swift.Result<T, Error>
 typealias LaunchOptions = [UIApplication.LaunchOptionsKey: Any]?
-let gcmMessageIDKey = "gcm.message_id"
-
 
 @UIApplicationMain
 class AppDelegate: UIResponder, UIApplicationDelegate {
@@ -37,7 +35,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
   func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: LaunchOptions) -> Bool {
     self.env = Env()
     if !env.isRemote {
-      NetworkActivityLogger.shared.level = .info
+      NetworkActivityLogger.shared.level = .off
       NetworkActivityLogger.shared.startLogging()
     }
     self.addCrashReporting(env: env)
@@ -48,17 +46,12 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
     InstanceID.instanceID().instanceID { (result, error) in
       if let error = error {
         print("gcm: Error fetching remote instange ID: \(error)")
-      } else if let result = result {
-        print("gcm: Remote instance ID token: \(result.token)")
       }
     }
 
     self.cache = Cache()
     self.analytics = AnalyticsManager(env)
-    self.locationManager =
-      LocationManager.sharedWith(
-        analytics: analytics,
-        cache: cache)
+    self.locationManager = LocationManager(env: env, analytics: analytics)
     self.api =
       Api(
         env: env,
@@ -82,6 +75,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
 
     self.syncData()
     self.observeFirstTouch()
+    self.observeBookmarkedPlaces()
 
     if !onboardingCompleted {
       window!.rootViewController = self.mainController
@@ -118,9 +112,19 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
     return true
   }
 
+  private func observeBookmarkedPlaces() -> Void {
+    // sync bookmaked places with monitored regions for nearby alerts
+    self.cache.bookmarkedPlaces$
+      .subscribe(onNext: { [weak self] objects in
+        let regions = objects.compactMap({ $0.region })
+        self?.locationManager.resetRegionMonitoring(latestRegions: regions)
+      })
+      .disposed(by: rx.disposeBag)
+  }
+
   func showPermissions() {
     mainController.pushViewController(
-      PermissionsViewController(analytics: self.analytics),
+      PermissionsViewController(context: context),
       animated: false)
   }
 
@@ -173,13 +177,14 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         return completionHandler(.noData) }
     switch type {
     case .location:
-      let locationManager = LocationManager.shared
       // NOTE: wait long enough for location update ...
       let queue = DispatchQueue.main
-      queue.asyncAfter(deadline: 3.seconds.fromNow, execute: {
-        guard let location = locationManager.latestLocation
+      queue.asyncAfter(deadline: 3.seconds.fromNow, execute: { [weak self] in
+        guard
+          let locationManager = self?.locationManager,
+          let latestLocation = locationManager.latestLocation
           else { return completionHandler(.noData) }
-        locationManager.logLocationChange(location)
+        locationManager.logLocationChange(latestLocation)
         // NOTE: wait long enough for GA request too complete
         queue.asyncAfter(deadline: 3.seconds.fromNow, execute: {
           completionHandler(.newData)
@@ -288,16 +293,13 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
 extension AppDelegate: MessagingDelegate {
 
   func messaging(_ messaging: Messaging, didReceiveRegistrationToken gcmToken: String) {
-    print("gcm: registration token: \(gcmToken)")
 
     // sync latest GCM token w/ server
     iCloudUserIDAsync() { cloudId, error in
       guard let id = cloudId else { return }
       let params = ["gcm_token": gcmToken]
       Installation.patch(cloudId: id, params: params, completion: { (success, _) in
-        if success {
-          print("synced GCM token")
-        } else {
+        if !success {
           print("FAIL: sync GCM token")
         }
       })
@@ -308,8 +310,6 @@ extension AppDelegate: MessagingDelegate {
     Messaging.messaging().subscribe(toTopic: topic) { error in
       if let errorDesc: String = error?.localizedDescription {
         print("ERROR: gcm: failed to subscribe to topic \(topic) - \(errorDesc)")
-      } else {
-        print("gcm: subscribed to topic: \(topic)")
       }
     }
 

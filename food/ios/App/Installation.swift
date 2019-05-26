@@ -24,7 +24,6 @@ func iCloudUserIDAsync(complete: @escaping (String?, Error?) -> ()) {
       print(error!.localizedDescription)
       complete(nil, error)
     } else {
-      print("fetched ID \(String(describing: recordID?.recordName))")
       complete(recordID?.recordName, nil)
     }
   }
