@@ -68,11 +68,14 @@ class NeighborhoodViewController: UITableViewController, Contextual {
 
     self.nabes$.asDriver()
       .drive(onNext: { [unowned self] objects in
-        objects.forEach({ object in
-          if let character = object.name?.uppercased().first {
-            self.sorted[character]?.append(object)
+        var newSorted = [Character : [Neighborhood]]()
+        self.alphabet.forEach({ str in newSorted[str.first!] = [Neighborhood]() })
+        objects.sorted(by: { $0.name < $1.name }).forEach({ object in
+          if let character = object.name.uppercased().first {
+            newSorted[character]?.append(object)
           }
         })
+        self.sorted = newSorted
         self.tableView.reloadData()
       }).disposed(by: self.rx.disposeBag)
 

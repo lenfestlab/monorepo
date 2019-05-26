@@ -66,11 +66,14 @@ class AuthorViewController: UITableViewController {
 
     self.authors$.asDriver()
       .drive(onNext: { [unowned self] objects in
-        objects.forEach({ object in
+        var newSorted = [Character : [Author]]()
+        self.alphabet.forEach({ str in newSorted[str.first!] = [Author]() })
+        objects.sorted(by: { $0.name < $1.name }).forEach({ object in
           if let character = object.name.uppercased().first {
-            self.sorted[character]?.append(object)
+            newSorted[character]?.append(object)
           }
         })
+        self.sorted = newSorted
         self.tableView.reloadData()
       }).disposed(by: self.rx.disposeBag)
 

@@ -14,7 +14,7 @@ class Neighborhood: RealmSwift.Object, Mappable {
   }
 
   @objc dynamic var identifier: String = ""
-  @objc dynamic var name: String?
+  @objc dynamic var name: String = ""
 
   func mapping(map: Map) {
     identifier <-
