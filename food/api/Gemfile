@@ -13,16 +13,19 @@ gem 'sentry-raven'
 gem 'geocoder'
 gem 'awesome_print'
 gem 'bitly'
-gem 'activerecord-postgis-adapter'
+gem "activerecord-postgis-adapter"
 gem 'rgeo-geojson'
 gem 'kramdown'
 gem 'slim-rails'
 gem 'active_model_serializers'
 gem 'aasm'
 gem 'fcm'
-gem 'active_storage-postgresql'
+gem 'active_storage-postgresql',
+  github: 'brenthargrave/active_storage-postgresql',
+  branch: 'enable-cache-control'
 gem 'down'
 gem 'image_processing'
+
 
 group :development, :test do
   gem 'byebug', platforms: [:mri, :mingw, :x64_mingw]

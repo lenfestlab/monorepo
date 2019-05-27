@@ -1,4 +1,6 @@
 Rails.application.routes.draw do
+  root to: redirect('/about')
+
   if Rails.env.development?
     default_url_options({
       protocol: 'https',
@@ -26,7 +28,6 @@ Rails.application.routes.draw do
 
   resources :bookmarks, only: %i[ index show ]
   patch '/bookmarks(/:id)', controller: :bookmarks, action: :update
-
 
   # static pages
   get "/privacy", to: redirect("privacy.html")
