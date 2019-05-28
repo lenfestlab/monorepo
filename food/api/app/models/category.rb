@@ -41,7 +41,6 @@ class Category < ApplicationRecord
     self.places.map &:save!
   end
 
-  # TODO: drop legacy cache column #images_data
   before_save :update_cache
   def update_cache
     self.cached_images = self.photos.as_json

@@ -139,7 +139,6 @@ class Post < ApplicationRecord
       identifier
       created_at
       source_key
-      images_data
       images
       url
       notifications
