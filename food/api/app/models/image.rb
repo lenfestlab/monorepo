@@ -82,6 +82,7 @@ class Image < ApplicationRecord
   end
 
   def cached_url
+    return url unless ENV["DEFAULT_SEND_FILE_CACHE_CONTROL_MAX_AGE"]
     return url unless cached?
     # share routing config w/ ActiveStorage
     ActiveStorage::Current.host =
