@@ -17,7 +17,6 @@ class Post: RealmSwift.Object, Mappable {
   @objc dynamic var urlString: String?
   @objc dynamic var title: String?
   @objc dynamic var blurb: String?
-  @objc dynamic var imageURLString: String?
   var prices = List<Int>()
   var ratingOpt = RealmOptional<Int>()
   @objc dynamic var placeSummary: String?
@@ -37,8 +36,6 @@ class Post: RealmSwift.Object, Mappable {
       (map["title"], StringTransform())
     blurb <-
       (map["blurb"], StringTransform())
-    imageURLString <-
-      (map["image_url"], StringTransform())
     prices <-
       (map["prices"], RealmTransform())
     ratingOpt <-
@@ -65,8 +62,7 @@ class Post: RealmSwift.Object, Mappable {
   }
 
   var imageURL: URL? {
-    guard let imageURLString = imageURLString else { return nil }
-    return URL(string: imageURLString)
+    return images.first?.url
   }
 
   var rating: Int? {
