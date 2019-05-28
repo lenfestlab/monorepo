@@ -48,7 +48,6 @@ module Lenfest
     config.time_zone = (ENV["DEFAULT_TZ"] || 'Eastern Time (US & Canada)')
     config.active_record.default_timezone = :utc
 
-    # TODO: restore default value (ms precision == 3)
     ActiveSupport::JSON::Encoding.time_precision = 0
 
   end
