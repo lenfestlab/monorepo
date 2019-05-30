@@ -13,10 +13,10 @@ class PlaceSerializer < ActiveModel::Serializer
     category_names
   ])
 
-  attribute :cached_nabes, key: :nabes		
+  attribute :cached_nabes, key: :nabes
 
   attribute :cached_categories, key: :categories
-  
+
   attribute :cached_post, key: :post
 
   attribute :trigger_radius_with_default, key: :trigger_radius
