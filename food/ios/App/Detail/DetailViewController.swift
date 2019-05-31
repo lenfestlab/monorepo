@@ -179,7 +179,10 @@ class DetailViewController: UIViewController, Contextual {
     self.categoryLabel.font = UIFont.lightSmall
 
     let address = self.place.address ?? ""
-    self.addressLabel.attributedText = NSMutableAttributedString(string: address, font: UIFont.italicSmall, fontColor: nil)
+    let addressString = NSMutableAttributedString(string: address, font: UIFont.bookSmall, fontColor: .oceanBlue)
+    addressString.addAttribute(.underlineStyle, value: NSUnderlineStyle.single.rawValue, range: NSMakeRange(0, addressString.length))
+    self.addressLabel.attributedText = addressString
+
     let tapGesture = UITapGestureRecognizer(target: self, action: #selector(openInMap))
     tapGesture.numberOfTapsRequired = 1
     self.addressLabel.addGestureRecognizer(tapGesture)
