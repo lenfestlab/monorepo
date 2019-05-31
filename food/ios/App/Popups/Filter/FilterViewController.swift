@@ -28,6 +28,7 @@ extension FilterViewController : AuthorViewControllerDelegate {
 
 class FilterViewController: UIViewController, Contextual {
 
+
   weak var filterDelegate: FilterModuleDelegate?
 
   @IBOutlet weak var starView : UIView!
@@ -61,6 +62,7 @@ class FilterViewController: UIViewController, Contextual {
   @IBOutlet weak var sortTitle : UILabel!
 
   @IBOutlet weak var divider : UIView!
+  @IBOutlet weak var scrollView : UIScrollView!
 
   var context: Context
   private let filterModule: FilterModule
@@ -254,6 +256,15 @@ class FilterViewController: UIViewController, Contextual {
     updatePriceButton()
     updateNeighborhoodButton()
     updateReviewerButton()
+
+    // flash scrollbar to show content exists below the fold.
+    self.rx.methodInvoked(#selector(UIViewController.viewDidAppear(_:)))
+      .debug("didAppear$")
+      .subscribe({ [weak self] _ in
+        self?.scrollView.flashScrollIndicators()
+      })
+      .disposed(by: rx.disposeBag)
+
   }
 
   func styleDollarButton(_ button: UIButton, count: Int) {

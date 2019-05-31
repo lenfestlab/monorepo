@@ -28,6 +28,7 @@
                 <outlet property="ratingButton" destination="ONp-NU-2bQ" id="arM-Dt-OZZ"/>
                 <outlet property="reviewerButton" destination="Lvo-Gr-bS9" id="1Me-Pz-Hu0"/>
                 <outlet property="reviewerTitle" destination="XbX-nr-Mz4" id="RhE-NT-CY8"/>
+                <outlet property="scrollView" destination="kSw-zj-tkS" id="Nku-XV-ug4"/>
                 <outlet property="searchButton" destination="3YM-8A-f5Y" id="hzs-1T-ulF"/>
                 <outlet property="sortTitle" destination="bUQ-5c-qX0" id="Tu4-pF-3Lg"/>
                 <outlet property="sortView" destination="d0J-pK-iLe" id="RdE-eQ-zYk"/>
