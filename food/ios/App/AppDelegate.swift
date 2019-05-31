@@ -332,7 +332,7 @@ extension AppDelegate: NotificationManagerDelegate {
     }
   }
 
-  func openInSafari(url: URL) {
+  func openInlineBrowser(url: URL) {
     self.lastViewedURL = url
     if let presented = self.mainController.presentedViewController {
       presented.dismiss(animated: false, completion: { [unowned self] in
