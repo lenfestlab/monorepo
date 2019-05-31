@@ -50,7 +50,7 @@ class PlacesViewController: UIViewController, Contextual {
   }
 
   var topBar : UIToolbar! = {
-    let topBar = UIToolbar(frame: CGRect(x: 0, y: 0, width: 175, height: 44))
+    let topBar = UIToolbar(frame: CGRect(x: 0, y: 0, width: 175, height: 64))
     topBar.isTranslucent = false
     topBar.barTintColor = UIColor.navigationColor()
     topBar.tintColor =  UIColor.iconColor()
@@ -196,11 +196,17 @@ class PlacesViewController: UIViewController, Contextual {
     })
   }
 
+  override func viewDidAppear(_ animated: Bool) {
+    super.viewWillAppear(animated)
+    self.navigationController?.view.setNeedsLayout() // force update layout
+    self.navigationController?.view.layoutIfNeeded() // to fix height of the navigation bar
+  }
+
   override func viewWillLayoutSubviews() {
     super.viewWillLayoutSubviews()
     let vc = viewControllers[self.selectedIndex]
     vc.view.frame = self.view.bounds
-    self.topBar.frame = CGRect(x: 0, y: -12, width: self.view.frame.width, height: 54)
+    self.topBar.frame = CGRect(x: 0, y: -5, width: self.view.frame.width, height: 54)
     self.filterBar.frame = CGRect(x: -1, y: 42, width: self.view.frame.width+2, height: 34)
   }
 

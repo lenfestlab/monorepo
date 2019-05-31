@@ -111,6 +111,7 @@ class HomeViewController: PlacesViewController {
 
   lazy var searchBar: UISearchBar! = {
     let searchBar = UISearchBar(frame: CGRect(x: 0, y: 0, width: 600, height: 60))
+    searchBar.heightAnchor.constraint(equalToConstant: 44).isActive = true
     searchBar.setSearchFieldBackgroundImage(UIImage(named: "search-bar"), for: .normal)
 
     let placeholderAppearance = UILabel.appearance(whenContainedInInstancesOf: [UISearchBar.self])
@@ -141,6 +142,7 @@ class HomeViewController: PlacesViewController {
     let three = UIBarButtonItem(customView: self.cuisineButton)
 
     self.topBar.setItems([space, space, space, one, space, two, space, three, space, space, space], animated: false)
+
 
     self.emptyView.isHidden = true
     self.view.insertSubview(self.emptyView, belowSubview: self.topBar)
