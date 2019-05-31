@@ -272,13 +272,15 @@ class DetailViewController: UIViewController, Contextual {
   }
 
   @IBAction func openInMap() {
-    let app = AppDelegate.shared()
-    if let link = self.place.appleMapURL {
-      app.openInSafari(url: link)
+    // prefer Google Maps if installed, else default to Apple Maps.
+    let app = UIApplication.shared
+    if app.canOpenURL(URL(string:"comgooglemaps://")!),
+      let url = place.mapsURL(.google) {
+      app.open(url, options: [:], completionHandler: nil)
+    } else if let url = place.mapsURL(.apple) {
+      app.open(url, options: [:], completionHandler: nil)
     }
   }
-
-
 
 }
 

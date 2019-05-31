@@ -4,8 +4,6 @@
 <dict>
 	<key>AMPLITUDE_API_KEY</key>
 	<string>$(AMPLITUDE_API_KEY)</string>
-	<key>SENTRY_DSN</key>
-	<string>$(SENTRY_DSN)</string>
 	<key>API_HOST</key>
 	<string>$(API_HOST)</string>
 	<key>API_PROT</key>
@@ -36,6 +34,11 @@
 	<string>$(ENV_NAME)</string>
 	<key>GOOGLE_ANALYTICS_TID</key>
 	<string>$(GOOGLE_ANALYTICS_TID)</string>
+	<key>LSApplicationQueriesSchemes</key>
+	<array>
+		<string>comgooglemaps</string>
+		<string>comgooglemapsurl</string>
+	</array>
 	<key>LSRequiresIPhoneOS</key>
 	<true/>
 	<key>NSAppTransportSecurity</key>
@@ -49,6 +52,8 @@
 	<string>This app uses your location to show you restaurants around you. Please Always Allow access.</string>
 	<key>NSLocationWhenInUseUsageDescription</key>
 	<string>This app uses your location to recommend restaurants around you. Please Always Allow access.</string>
+	<key>SENTRY_DSN</key>
+	<string>$(SENTRY_DSN)</string>
 	<key>UIAppFonts</key>
 	<array>
 		<string>GothamNarrowSSm-Black.otf</string>
