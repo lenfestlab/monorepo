@@ -241,9 +241,8 @@ class DetailViewController: UIViewController, Contextual {
 
   @IBAction func makeReservation() {
     analytics.log(.tapsReservationButton(place: self.place))
-    let app = AppDelegate.shared()
     if let url = self.place.reservationsURL {
-      app.openInSafari(url: url)
+      UIApplication.shared.open(url, options: [:], completionHandler: nil)
     }
   }
 
@@ -251,7 +250,7 @@ class DetailViewController: UIViewController, Contextual {
     analytics.log(.tapsFullReviewButton(place: self.place))
     let app = AppDelegate.shared()
     if let link = self.place.post?.url {
-      app.openInSafari(url: link)
+      app.openInlineBrowser(url: link)
     }
   }
 
@@ -259,7 +258,7 @@ class DetailViewController: UIViewController, Contextual {
     analytics.log(.tapsWebsiteButton(place: self.place))
     let app = AppDelegate.shared()
     if let link = self.place.website {
-      app.openInSafari(url: link)
+      app.openInlineBrowser(url: link)
     }
   }
 

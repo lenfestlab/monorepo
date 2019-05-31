@@ -10,7 +10,7 @@ import Shared
 protocol NotificationManagerDelegate: class {
   func present(_ vc: UIViewController, animated: Bool)
   func push(_ vc: UIViewController, animated: Bool)
-  func openInSafari(url: URL)
+  func openInlineBrowser(url: URL)
 }
 
 class NotificationManager: NSObject, UNUserNotificationCenterDelegate, Contextual {
