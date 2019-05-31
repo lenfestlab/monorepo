@@ -177,6 +177,8 @@ class DetailViewController: UIViewController, Contextual {
 
     self.categoryLabel.attributedText = self.place.attributedCategories()
     self.categoryLabel.font = UIFont.lightSmall
+    categoryLabel.lineBreakMode = .byWordWrapping
+    categoryLabel.numberOfLines = 0
 
     let address = self.place.address ?? ""
     let addressString = NSMutableAttributedString(string: address, font: UIFont.bookSmall, fontColor: .oceanBlue)
