@@ -80,8 +80,6 @@ class SettingsViewController: BaseSettingsViewController, LocationManagerAuthori
   override func viewDidLoad() {
     super.viewDidLoad()
 
-    self.navigationController?.interactivePopGestureRecognizer?.isEnabled = false
-
     self.navigationController?.styleController()
     self.tableView.separatorColor = UIColor.slate.withAlphaComponent(0.3)
 
