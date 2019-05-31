@@ -81,6 +81,29 @@ class Place: RealmSwift.Object, Mappable {
     return visitRadiusOpt.value
   }
 
+  enum MapsService { case google, apple }
+  func mapsURL(_ service: MapsService) -> URL? {
+    guard
+      let name = name,
+      let address = address,
+      let q = "\(name) \(address)".addingPercentEncoding(withAllowedCharacters: NSCharacterSet.urlQueryAllowed)
+      else { print("MIA: name or addres"); return nil }
+    switch service {
+    case .google: // http://bit.ly/2EIa6Ri
+      return URL(string: "https://maps.google.com/?q=\(q)")
+    case .apple: // https://apple.co/2EKhImo
+      return URL(string: "https://maps.apple.com/?q=\(q)")
+    }
+  }
+
+  var hasMapsURL: Bool {
+    if let _ = self.mapsURL(.apple) {
+      return true
+    } else {
+      return false
+    }
+  }
+
   var website: URL? {
     guard let websiteURLString = websiteURLString else { return nil }
     return URL(string: websiteURLString)

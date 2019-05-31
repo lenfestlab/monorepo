@@ -179,7 +179,14 @@ class DetailViewController: UIViewController, Contextual {
     self.categoryLabel.font = UIFont.lightSmall
 
     let address = self.place.address ?? ""
-    self.addressLabel.attributedText = NSMutableAttributedString(string: address, font: UIFont.italicSmall, fontColor: nil)
+    let addressString = NSMutableAttributedString(string: address, font: UIFont.bookSmall, fontColor: .oceanBlue)
+    addressString.addAttribute(.underlineStyle, value: NSUnderlineStyle.single.rawValue, range: NSMakeRange(0, addressString.length))
+    self.addressLabel.attributedText = addressString
+
+    let tapGesture = UITapGestureRecognizer(target: self, action: #selector(openInMap))
+    tapGesture.numberOfTapsRequired = 1
+    self.addressLabel.addGestureRecognizer(tapGesture)
+    self.addressLabel.isUserInteractionEnabled = true
 
     self.reviewButton.titleLabel?.font = UIFont.lightLarge
     self.reviewButton.setBackgroundImage(UIColor.lightGreyBlue.pixelImage(), for: .normal)
@@ -264,7 +271,16 @@ class DetailViewController: UIViewController, Contextual {
     }
   }
 
-
+  @IBAction func openInMap() {
+    // prefer Google Maps if installed, else default to Apple Maps.
+    let app = UIApplication.shared
+    if app.canOpenURL(URL(string:"comgooglemaps://")!),
+      let url = place.mapsURL(.google) {
+      app.open(url, options: [:], completionHandler: nil)
+    } else if let url = place.mapsURL(.apple) {
+      app.open(url, options: [:], completionHandler: nil)
+    }
+  }
 
 }
 
