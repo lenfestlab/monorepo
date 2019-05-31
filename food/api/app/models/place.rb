@@ -84,7 +84,7 @@ class Place < ApplicationRecord
     }[sort.to_sym]
     order_sql =
       [chosen_sort_sql].flatten.compact
-      .concat([distance_sql])
+      .concat(["distance"])
       .join(", ")
     select("*", %{ #{distance_sql} as distance })
       .where(%{ #{distance_sql} < #{kilometers * 1000.0} })
