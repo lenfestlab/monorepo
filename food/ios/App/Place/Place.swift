@@ -81,6 +81,23 @@ class Place: RealmSwift.Object, Mappable {
     return visitRadiusOpt.value
   }
 
+  var appleMapURL: URL? {
+    guard let location = self.location else {
+      return nil
+    }
+    guard let latitude = location.latitude else {
+      return nil
+    }
+    guard let longitude = location.longitude else {
+      return nil
+    }
+    guard let name = self.name else {
+      return nil
+    }
+    let string = "http://maps.apple.com/?ll=\(String(format:"%f", latitude)),\(String(format:"%f", longitude))&q=\(name.replacingOccurrences(of: " ", with: "+"))"
+    return URL(string: string)
+  }
+
   var website: URL? {
     guard let websiteURLString = websiteURLString else { return nil }
     return URL(string: websiteURLString)

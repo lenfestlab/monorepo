@@ -180,6 +180,10 @@ class DetailViewController: UIViewController, Contextual {
 
     let address = self.place.address ?? ""
     self.addressLabel.attributedText = NSMutableAttributedString(string: address, font: UIFont.italicSmall, fontColor: nil)
+    let tapGesture = UITapGestureRecognizer(target: self, action: #selector(openInMap))
+    tapGesture.numberOfTapsRequired = 1
+    self.addressLabel.addGestureRecognizer(tapGesture)
+    self.addressLabel.isUserInteractionEnabled = true
 
     self.reviewButton.titleLabel?.font = UIFont.lightLarge
     self.reviewButton.setBackgroundImage(UIColor.lightGreyBlue.pixelImage(), for: .normal)
@@ -261,6 +265,13 @@ class DetailViewController: UIViewController, Contextual {
     if let phone = self.place.phone {
       guard let number = URL(string: "tel://" + phone) else { return }
       UIApplication.shared.open(number)
+    }
+  }
+
+  @IBAction func openInMap() {
+    let app = AppDelegate.shared()
+    if let link = self.place.appleMapURL {
+      app.openInSafari(url: link)
     }
   }
 
