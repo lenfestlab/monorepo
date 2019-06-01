@@ -21,6 +21,9 @@ targets:
       - carthage: RxCoreLocation
       - carthage: NSObject_Rx
       - carthage: Sentry
+      - carthage: Lightbox
+      - carthage: Cache
+      - carthage: Imaginary
       # network
       - carthage: Alamofire
       - carthage: AlamofireImage

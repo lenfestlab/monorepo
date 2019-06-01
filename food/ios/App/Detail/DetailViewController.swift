@@ -3,6 +3,7 @@ import UPCarouselFlowLayout
 import RxSwift
 import RxCocoa
 import AlamofireImage
+import Lightbox
 
 let imageIdentifier = "ImageViewCell"
 
