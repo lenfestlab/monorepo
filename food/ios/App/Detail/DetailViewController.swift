@@ -46,9 +46,10 @@ extension DetailViewController: UICollectionViewDelegate {
     guard let post = place.post else { return }
 
     let images : [LightboxImage] = post.images.map {
-      LightboxImage(
+      let text = [$0.caption, $0.credit].compactMap({$0}).joined(separator: " \n")
+      return LightboxImage(
         imageURL: $0.url!,
-        text: $0.caption!
+        text: text
       )
     }
 
