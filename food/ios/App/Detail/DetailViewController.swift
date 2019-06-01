@@ -3,6 +3,7 @@ import UPCarouselFlowLayout
 import RxSwift
 import RxCocoa
 import AlamofireImage
+import Lightbox
 
 let imageIdentifier = "ImageViewCell"
 
@@ -31,9 +32,33 @@ extension DetailViewController: UICollectionViewDataSource {
   }
 }
 
+extension DetailViewController: LightboxControllerDismissalDelegate {
+  func lightboxControllerWillDismiss(_ controller: LightboxController) {
+    self.collectionView.scrollToItem(at: IndexPath(item: controller.currentPage, section: 0),
+                                     at: .centeredHorizontally,
+                                     animated: false)
+  }
+}
+
 extension DetailViewController: UICollectionViewDelegate {
 
   func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
+    guard let post = place.post else { return }
+
+    let images : [LightboxImage] = post.images.map {
+      let text = [$0.caption, $0.credit].compactMap({$0}).joined(separator: " \n")
+      return LightboxImage(
+        imageURL: $0.url!,
+        text: text
+      )
+    }
+
+    guard let indexPath = self.collectionView.indexPathsForVisibleItems.first else { return }
+
+    let controller = LightboxController(images: images, startIndex: indexPath.item)
+    controller.dismissalDelegate = self
+
+    present(controller, animated: true, completion: nil)
 
   }
 
