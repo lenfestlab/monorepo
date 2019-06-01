@@ -198,7 +198,11 @@ class Cache {
 
   func loadImages$(_ urls: [URL], withLoader loader: ImageDownloader) -> Observable<[Image]> {
     return Observable.zip( urls.map({ url in
-      return self.loadImage$(url, withLoader: loader)
+      return Observable.just(url)
+        .observeOn(Scheduler.background)
+        .flatMap({ [unowned self] url in
+          return self.loadImage$(url, withLoader: loader)
+        })
     }))
   }
 
