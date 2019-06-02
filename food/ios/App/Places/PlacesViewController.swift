@@ -180,7 +180,7 @@ class PlacesViewController: UIViewController, Contextual {
     let showLoadingIndicator = viewIfLoaded?.window != nil
 
     if showLoadingIndicator {
-      self.spinner(.show)
+      HUD.change(.show)
     }
 
     if let coordinate = coordinate {
@@ -189,7 +189,7 @@ class PlacesViewController: UIViewController, Contextual {
     self.placeStore.refresh(completionBlock: { (places) -> (Void) in
       if showLoadingIndicator {
         DispatchQueue.main.async { [weak self] in
-          self?.spinner(.hide)
+          HUD.change(.hide)
         }
       }
       completionBlock?(places)

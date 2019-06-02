@@ -120,6 +120,7 @@ class DetailViewController: UIViewController, Contextual {
     self.isSaved$ = context.cache.isSaved$(place.identifier)
     super.init(nibName: nil, bundle: nil)
     eagerLoadCarouselImages$()
+    maintainContextAnimatingState()
   }
 
   private func eagerLoadCarouselImages$() -> Void {
@@ -134,6 +135,14 @@ class DetailViewController: UIViewController, Contextual {
       }
       .takeUntil(willDisappear$)
       .subscribe()
+      .disposed(by: rx.disposeBag)
+  }
+
+  private func maintainContextAnimatingState() {
+    rx.methodInvoked(#selector(UIViewController.viewDidAppear(_:)))
+      .mapTo(false)
+      .startWith(true)
+      .bind(to: context.detailAnimating$$)
       .disposed(by: rx.disposeBag)
   }
 

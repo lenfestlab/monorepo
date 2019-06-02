@@ -18,6 +18,10 @@ class Cache {
     return try! Realm()
   }
 
+  func get<T: Object>(_ identifier: String) -> T? {
+    return realm.object(ofType: T.self, forPrimaryKey: identifier)
+  }
+
   func replace<T: RealmSwift.Object>(_ newObjects: [T]) throws -> Void {
     let realm = self.realm
     try realm.write {

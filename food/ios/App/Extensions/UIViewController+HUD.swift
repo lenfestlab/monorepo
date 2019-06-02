@@ -1,10 +1,10 @@
 import UIKit
 import SVProgressHUD
 
-extension UIViewController {
+enum HUD {
 
   enum ChangeHUDAction { case show, hide }
-  func spinner(_ action: ChangeHUDAction) {
+  static func change(_ action: ChangeHUDAction) {
     switch action {
     case .show:
       SVProgressHUD.show()

@@ -121,7 +121,7 @@ class NotificationManager: NSObject, UNUserNotificationCenterDelegate, Contextua
     let actionId = response.actionIdentifier
     let userInfo = response.notification.request.content.userInfo
     let url = userInfo["url"] as? String
-    let postURL = userInfo["post_url"] as? String
+    let postURLString = userInfo["post_url"] as? String
     let placeIdentifier = userInfo["place_id"] as? String
 
     guard let category = Category(rawValue: categoryId) else {
@@ -136,7 +136,11 @@ class NotificationManager: NSObject, UNUserNotificationCenterDelegate, Contextua
     case .some(let action):
       switch action {
       case .read:
-        attemptReadPlace(category, placeIdentifier, postURL, completionHandler)
+        if let urlString = postURLString {
+          attemptReadPlace(category, placeIdentifier, urlString, completionHandler)
+        } else {
+          attemptShowPlace(category, placeIdentifier, completionHandler)
+        }
       case .save:
         attemptUpdatePlace(category, placeIdentifier, save: true, completionHandler)
       case .unsave:
@@ -165,8 +169,10 @@ class NotificationManager: NSObject, UNUserNotificationCenterDelegate, Contextua
     _ identifier: String?,
     _ completionHandler: @escaping ()->()) {
     guard let identifier = identifier else { return completionHandler() }
+    HUD.change(.show)
     api.getPlace$(identifier)
       .observeOn(Scheduler.main)
+      .do(onCompleted: { HUD.change(.hide) })
       .subscribe(onNext: { [weak self] (result: Result<Place>) in
         guard let `self` = self else { return completionHandler() }
         switch result {
@@ -176,17 +182,15 @@ class NotificationManager: NSObject, UNUserNotificationCenterDelegate, Contextua
               category,
               place: place,
               location: self.locationManager.latestCoordinate))
-          let vc =
-            DetailViewController(
-              context: self.context,
-              place: place)
+          let vc = DetailViewController(context: self.context, place: place)
           self.delegate?.push(vc, animated: true)
           completionHandler()
         case .failure(let error):
           print("NOOP error \(error)")
           completionHandler()
         }
-      }).disposed(by: rx.disposeBag)
+      })
+      .disposed(by: rx.disposeBag)
   }
 
   private func attemptReadPlace(
@@ -195,8 +199,12 @@ class NotificationManager: NSObject, UNUserNotificationCenterDelegate, Contextua
     _ urlString: String?,
     _ completionHandler: @escaping ()->()) {
     guard let identifier = identifier else { return completionHandler() }
+    HUD.change(.show)
     api.getPlace$(identifier)
       .observeOn(Scheduler.main)
+      .do(onCompleted: {
+        HUD.change(.hide)
+      })
       .subscribe(onNext: { [weak self] (result: Result<Place>) in
         guard let `self` = self else { return completionHandler() }
         switch result {
@@ -221,8 +229,12 @@ class NotificationManager: NSObject, UNUserNotificationCenterDelegate, Contextua
     _ identifier: String?,
     _ completionHandler: @escaping () -> ()) {
     guard let identifier = identifier else { return completionHandler() }
+    HUD.change(.show)
     api.getPlace$(identifier)
       .observeOn(Scheduler.main)
+      .do(onCompleted: {
+        HUD.change(.hide)
+      })
       .subscribe(onNext: { [weak self] (result: Result<Place>) in
         switch result {
         case .success(let place):
