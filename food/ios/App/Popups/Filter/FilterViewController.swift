@@ -259,7 +259,6 @@ class FilterViewController: UIViewController, Contextual {
 
     // flash scrollbar to show content exists below the fold.
     self.rx.methodInvoked(#selector(UIViewController.viewDidAppear(_:)))
-      .debug("didAppear$")
       .subscribe({ [weak self] _ in
         self?.scrollView.flashScrollIndicators()
       })

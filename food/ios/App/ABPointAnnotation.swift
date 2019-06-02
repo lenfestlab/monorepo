@@ -5,7 +5,7 @@ class ABPointAnnotation : MKPointAnnotation {
 
   init(place: Place) {
     super.init()
-    self.coordinate = place.coordinate()
+    self.coordinate = place.coordinate
     self.title = place.name
   }
 

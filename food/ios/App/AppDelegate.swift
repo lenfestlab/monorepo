@@ -4,6 +4,7 @@ import FirebaseMessaging
 import SafariServices
 import AlamofireNetworkActivityLogger
 import RxSwift
+import RxSwiftExt
 import SwiftDate
 import CoreLocation
 import NSObject_Rx
@@ -50,8 +51,8 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
     }
 
     self.cache = Cache()
-    self.analytics = AnalyticsManager(env)
-    self.locationManager = LocationManager(env: env, analytics: analytics)
+    self.locationManager = LocationManager(env: env)
+    self.analytics = AnalyticsManager(env: env, locationManager: locationManager)
     self.api =
       Api(
         env: env,
@@ -181,10 +182,10 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
       let queue = DispatchQueue.main
       queue.asyncAfter(deadline: 3.seconds.fromNow, execute: { [weak self] in
         guard
-          let locationManager = self?.locationManager,
-          let latestLocation = locationManager.latestLocation
+          let `self` = self,
+          let latestLocation = self.locationManager.latestLocation
           else { return completionHandler(.noData) }
-        locationManager.logLocationChange(latestLocation)
+        self.analytics.logLocationChange(latestLocation)
         // NOTE: wait long enough for GA request too complete
         queue.asyncAfter(deadline: 3.seconds.fromNow, execute: {
           completionHandler(.newData)
@@ -194,8 +195,8 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
       guard let placeId = userInfo["place_id"] as? String
         else { print("MIA: `place_id`"); return completionHandler(.failed) }
       let place$ = self.api.getPlace$(placeId)
-      let latestLocation$ = self.locationManager.location$
-      Observable.combineLatest(place$, latestLocation$)
+      let location$ = self.locationManager.significantLocation$
+      Observable.combineLatest(place$, location$)
         .flatMapFirst({ [weak self] (result, currentLocation) -> Observable<Bookmark> in
           guard let `self` = self else { throw VisitError.SelfMIA }
           switch result {
@@ -256,17 +257,35 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
   }
 
   private func syncData() -> Void {
+
     let updateDefaultPlaces$ =
-      api.updateDefaultPlaces$()
+      locationManager.status$
+        .flatMap({ [unowned self] status -> Observable<CLLocation> in
+          let manager = self.locationManager!
+          switch status {
+          case .authorizedAlways, .authorizedWhenInUse:
+            return manager.significantLocation$
+          case .denied, .notDetermined, .restricted:
+            return Observable.just(manager.defaultLocation)
+          @unknown default: fatalError()
+          }
+        })
+        .flatMapLatest({ [unowned self] location -> Observable<[Place]> in
+          let coordinate = location.coordinate
+          let lat = coordinate.latitude
+          let lng = coordinate.longitude
+          return self.api.updateDefaultPlaces$(lat: lat, lng: lng)
+        })
         .mapTo(true)
+
     let updateBookmarks$ =
       authToken$ // wait for auth token
         .flatMapFirst({ [unowned self] token in
           return self.api.updateBookmarks$(authToken: token)
         })
         .mapTo(true)
-    // warm cache in order of appearance
-    Observable.concat([
+
+    Observable.zip([
       updateDefaultPlaces$,
       updateBookmarks$,
       ])

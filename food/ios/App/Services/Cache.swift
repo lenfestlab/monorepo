@@ -27,20 +27,20 @@ class Cache {
     try realm.write {
       let oldObjects = realm.objects(T.self)
       realm.delete(oldObjects)
-      realm.add(newObjects, update: true)
+      realm.add(newObjects, update: .all)
     }
   }
 
   func put<T: RealmSwift.Object>(_ newObjects: [T]) throws -> Void {
     let realm = self.realm
     try realm.write {
-      realm.add(newObjects, update: true)
+      realm.add(newObjects, update: .modified)
     }
   }
   func put<T: RealmSwift.Object>(_ newObject: T) throws -> Void {
     let realm = self.realm
     try realm.write {
-      realm.add(newObject, update: true)
+      realm.add(newObject, update: .modified)
     }
   }
 
@@ -107,7 +107,8 @@ class Cache {
   func observePlaces$(_ filter: PlaceFilter = .all) -> Observable<[Place]> {
     switch filter {
     case .all:
-      return allObjects$()
+      return asArray$(realm.objects(Place.self)
+        .sorted(byKeyPath: "distanceOpt"))
     case .bookmarked:
       return
         bookmarks$
@@ -138,6 +139,7 @@ class Cache {
 
   private func places(in category: Category) -> Results<Place> {
     return places.filter("%@ IN categories", category)
+      .sorted(byKeyPath: "distanceOpt")
   }
 
   var isEmpty: Bool {
@@ -169,7 +171,7 @@ class Cache {
         let bookmark = Bookmark()
         bookmark.placeId = placeId
         bookmark.place = realm.object(ofType: Place.self, forPrimaryKey: placeId)
-        realm.add(bookmark, update: true)
+        realm.add(bookmark, update: .modified)
         return bookmark
       }()
       if toSaved {

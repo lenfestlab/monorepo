@@ -28,10 +28,7 @@ class Place: RealmSwift.Object, Mappable {
   var categories = List<Category>()
   var nabes = List<Neighborhood>()
   @objc dynamic var post: Post?
-  // distance from current location
   var distanceOpt = RealmOptional<Double>()
-  // distance from Philly central, for sorting Guides centered there by default
-  @objc dynamic var distanceDefault: Double = Double.infinity
 
   let bookmarks = LinkingObjects(fromType: Bookmark.self, property: "place")
 
@@ -50,8 +47,6 @@ class Place: RealmSwift.Object, Mappable {
       (map["website"], StringTransform())
     reservationsURLString <-
       (map["reservations_url"], StringTransform())
-    distanceOpt <-
-      (map["distance"], RealmOptionalTransform())
     triggerRadiusOpt <-
       (map["trigger_radius"], RealmOptionalTransform())
     visitRadiusOpt <-
@@ -62,6 +57,8 @@ class Place: RealmSwift.Object, Mappable {
       (map["nabes"], ListTransform<Neighborhood>())
     post <-
       map["post"]
+    // NOTE: prefer local distance calculations
+    distanceOpt <- (map["distance"], RealmOptionalTransform())
   }
 
   var distance: Double? {
@@ -135,14 +132,14 @@ class Place: RealmSwift.Object, Mappable {
     return post?.imageURL
   }
 
-  func coordinate() -> CLLocationCoordinate2D {
+  var coordinate: CLLocationCoordinate2D {
     return CLLocationCoordinate2D(latitude: (self.location?.latitude)!, longitude: (self.location?.longitude)!)
   }
 
   static let defaultRadius: Double = 100
 
   var region: CLCircularRegion {
-    let center = coordinate()
+    let center = coordinate
     let radius = self.triggerRadius ?? Place.defaultRadius
     let region =
       CLCircularRegion(
@@ -154,21 +151,25 @@ class Place: RealmSwift.Object, Mappable {
     return region
   }
 
-  func distance(from other: Place) -> Double? {
+  func distanceFrom(_ other: Place) -> Double? {
     guard
       let location = self.location?.nativeLocation,
       let otherLocation = other.location?.nativeLocation
       else { return nil }
     return location.distance(from: otherLocation)
   }
-  func distance(from otherLocation: CLLocation) -> Double? {
+  func distanceFrom(_ otherLocation: CLLocation) -> Double? {
     guard let location = self.location?.nativeLocation else { return nil }
     return location.distance(from: otherLocation)
   }
 
   override var description: String {
     guard let name = self.name else { return "???" }
-    return name
+    var desc = name
+    if let distance = self.distance {
+      desc.append(" [\(distance)]")
+    }
+    return desc
   }
   override var debugDescription: String {
     return description
