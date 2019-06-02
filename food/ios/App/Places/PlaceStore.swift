@@ -48,6 +48,8 @@ class PlaceStore: NSObject, Contextual {
     switch target {
     case .placesAll:
       placesCached$ = cache.defaultPlaces$
+        .take(1) // ignore cache after first read
+        .share()
     case .placesCategorizedIn(let identifier):
       placesCached$ = cache.observePlaces$(.category(identifier))
     case .placesBookmarked:

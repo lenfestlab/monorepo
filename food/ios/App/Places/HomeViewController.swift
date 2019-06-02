@@ -152,9 +152,9 @@ class HomeViewController: PlacesViewController {
     cache.isEmpty$
       .bind(onNext: { [weak self] isEmpty in
         if isEmpty {
-          self?.spinner(.show)
+          HUD.change(.show)
         } else {
-          self?.spinner(.hide)
+          HUD.change(.hide)
         }
       })
       .disposed(by: rx.disposeBag)

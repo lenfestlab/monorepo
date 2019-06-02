@@ -64,8 +64,8 @@ extension MapViewController: UICollectionViewDelegate {
       let mapPlace = mapPlaces[indexPath.row]
       let place = mapPlace.place
       analytics.log(.tapsOnCard(place: place, controllerIdentifierKey: self.controllerIdentifierKey))
-      collectionView.isUserInteractionEnabled = false;
-      openPlace(place)
+      let detailViewController = DetailViewController(context: context, place: place)
+      navigationController?.pushViewController(detailViewController, animated: true)
     } else {
       scrollToItem(at: indexPath)
       let mapPlace = mapPlaces[indexPath.row]
@@ -74,13 +74,6 @@ extension MapViewController: UICollectionViewDelegate {
     return true
   }
 
-  func openPlace(_ place: Place) {
-    let detailViewController =
-      DetailViewController(
-        context: context,
-        place: place)
-    self.navigationController?.pushViewController(detailViewController, animated: true)
-  }
 }
 
 extension MapViewController : MKMapViewDelegate {
@@ -206,14 +199,13 @@ class MapViewController: UIViewController, Contextual {
 
   @objc func updateLocationButton() {
     self.locationButton.isSelected = self.locationManager.authorized()
-    self.mapView?.showsUserLocation = self.locationManager.authorized()
+    mapView?.showsUserLocation = self.locationManager.authorized()
   }
 
   override func viewDidAppear(_ animated: Bool) {
     super.viewDidAppear(animated)
     updateLocationButton()
     AppDelegate.shared().lastViewedURL = nil
-    self.collectionView?.isUserInteractionEnabled = true;
   }
 
   var mapPlaces: [MapPlace] = []
@@ -240,6 +232,16 @@ class MapViewController: UIViewController, Contextual {
 
   override func viewDidLoad() {
     super.viewDidLoad()
+
+    detailAnimating$
+      .debug("animating$")
+      .subscribe(onNext: { [weak self] isAnimating in
+        guard let `self` = self else { return print("MIA: self") }
+        let isEnabled = !isAnimating
+        self.collectionView.isUserInteractionEnabled = isEnabled
+        self.mapView?.showsUserLocation = (self.locationManager.authorized() && isEnabled)
+      })
+      .disposed(by: rx.disposeBag)
 
     NotificationCenter.default.addObserver(self, selector: #selector(updateLocationButton), name: .locationAuthorizationUpdated, object: nil)
 
