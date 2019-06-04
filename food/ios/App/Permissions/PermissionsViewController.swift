@@ -88,7 +88,6 @@ class PermissionsViewController: UIViewController, LocationManagerAuthorizationD
 
   @IBAction func done(sender: UIButton) {
     self.analytics.log(.tapsEnableLocationButton)
-    let env = Env()
 
     let alertController = UIAlertController(
       title: "Allow \"\(env.appName)\" to access your location?",

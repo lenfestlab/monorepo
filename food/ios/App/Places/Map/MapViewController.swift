@@ -12,6 +12,9 @@ extension MKMapView {
     let region:MKCoordinateRegion = MKCoordinateRegion(center: center, span: span)
     self.setRegion(region, animated: true)
   }
+  func center(_ region: MKCoordinateRegion) {
+    self.setRegion(region, animated: true)
+  }
 }
 
 extension UICollectionView {
@@ -157,14 +160,18 @@ class MapViewController: UIViewController, Contextual {
   private var _currentPlace: MapPlace? {
     didSet {
       NSObject.cancelPreviousPerformRequests(withTarget: self, selector: #selector(centerToCurrentPlaceIfNotVisible), object: nil)
-      self.perform(#selector(centerToCurrentPlaceIfNotVisible), with: nil, afterDelay: 0.5)
+      self.perform(#selector(centerToCurrentPlaceIfNotVisible), with: nil, afterDelay: 0.0)
     }
   }
 
   var currentPlace: MapPlace? {
     set {
-      if let annotation = currentPlace?.annotation, let view = mapView?.view(for: annotation) as? ABAnnotationView {
-        view.isSelected = false
+      for annotation in annotations {
+        if
+          let view = mapView?.view(for: annotation) as? ABAnnotationView,
+          view.isSelected {
+          view.isSelected = false
+        }
       }
       if let annotation = newValue?.annotation, let view = mapView?.view(for: annotation) as? ABAnnotationView {
         view.isSelected = true
@@ -230,11 +237,11 @@ class MapViewController: UIViewController, Contextual {
     mapPlacesChangeset$$.onNext(changeset)
   }
 
+
   override func viewDidLoad() {
     super.viewDidLoad()
 
     detailAnimating$
-      .debug("animating$")
       .subscribe(onNext: { [weak self] isAnimating in
         guard let `self` = self else { return print("MIA: self") }
         let isEnabled = !isAnimating
@@ -264,21 +271,82 @@ class MapViewController: UIViewController, Contextual {
       .subscribe(onNext: { [weak self] changeset in
         guard let view = self?.collectionView else { return }
         view.reload(using: changeset, setData: { [weak self] latestPlaces in
-          guard let `self` = self else { return }
+          guard let `self` = self else { return print("MIA: self") }
           let mapPlaces = latestPlaces.map({ MapPlace(place: $0) })
           self.mapPlaces = mapPlaces
           self.updateAnnotations()
           if mapPlaces.isNotEmpty {
-            self.currentPlace = self.mapPlaces.first
+            // scale map to encompass 5 nearest places and user's location
+            guard
+              let mapView = self.mapView,
+              let firstPlace = latestPlaces.first,
+              let firstLocation = firstPlace.location?.nativeLocation
+              else {
+                self.mapView?.center(self.locationManager.defaultCoordinate)
+                return print("MIA: firstPlace") }
+            var visibleCoordinates: [CLLocationCoordinate2D] = []
+            if let currentLocation = self.locationManager.latestLocation {
+              visibleCoordinates.append(currentLocation.coordinate)
+            }
+            let sortedPlaces =
+              latestPlaces.sorted(by: { (p1,p2) -> Bool in
+                guard
+                  let d1 = p1.distanceFrom(firstLocation),
+                  let d2 = p2.distanceFrom(firstLocation)
+                  else { return false }
+                return d1 < d2
+              })
+            let maximumNearestPlaces = 5
+            let nearestPlaces = sortedPlaces.prefix(maximumNearestPlaces)
+            let nearestCoordinates = nearestPlaces.compactMap({ $0.coordinate })
+            visibleCoordinates.append(contentsOf: nearestCoordinates)
+            let rect = self.rectCovering(visibleCoordinates)
+            let carouselHeight = self.collectionView.frame.height
+            let filterBarHeight: CGFloat = 34
+            let padding: CGFloat = 30
+            let edgePadding =
+              UIEdgeInsets(
+                top: padding + filterBarHeight + 250.0,
+                left: padding,
+                bottom: padding + carouselHeight,
+                right: padding)
+            mapView.setVisibleMapRect(rect, edgePadding: edgePadding, animated: false)
+            // setting `self.currentPlace` moves the mapview
+            // instead, just select/highlight the first annotation
+            let firstCoordinate = firstLocation.coordinate
+            let firstAnnotation =
+              self.annotations.first(where: { annotation -> Bool in
+                let coordinate = annotation.coordinate
+                let lat = coordinate.latitude; let lng = coordinate.longitude
+                return (lat == firstCoordinate.latitude) && (lng == firstCoordinate.longitude)
+              })
+            guard let annotation = firstAnnotation
+              else { return print("MIA: firstAnnotation") }
+            if let view = mapView.view(for: annotation) as? ABAnnotationView {
+              view.isSelected = true
+            }
           }
         })
       })
       .disposed(by: rx.disposeBag)
 
     self.navigationController?.styleController()
-    self.mapView?.center(locationManager.defaultCoordinate)
-    self.reloadMap()
   }
+
+  // https://stackoverflow.com/a/11862786
+  private func rectCovering(_ coordinates: [CLLocationCoordinate2D]) -> MKMapRect {
+    var rect: MKMapRect = MKMapRect.null
+    for coordinate in coordinates {
+      let point = MKMapPoint(coordinate)
+      rect = rect.union(MKMapRect(x: point.x, y: point.y, width:0, height:0))
+    }
+    return rect
+  }
+  private func regionCovering(_ coordinates: [CLLocationCoordinate2D]) -> MKCoordinateRegion {
+    let rect = self.rectCovering(coordinates)
+    return MKCoordinateRegion(rect)
+  }
+
 
   @IBAction func centerCurrentLocation() {
     if self.locationManager.authorizationStatus == .denied {
@@ -363,7 +431,7 @@ class MapViewController: UIViewController, Contextual {
       return
     }
     DispatchQueue.main.async {
-      if let coordinate = self.currentPlace?.place.coordinate() {
+      if let coordinate = self.currentPlace?.place.coordinate {
         let visibleMapRect = map.visibleMapRect
         let scale = visibleMapRect.width / Double(map.frame.width)
         let downBy = 250 + self.topPadding

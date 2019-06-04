@@ -25,11 +25,4 @@ class GuideViewController: PlacesViewController {
     self.mapViewController.controllerIdentifierKey = "guide"
   }
 
-  override func viewWillAppear(_ animated: Bool) {
-    super.viewWillAppear(animated)
-    // TODO: hotfix only, refactor - guide default map center/span
-    let coordinate = locationManager.defaultCoordinate
-    self.mapViewController.mapView?.center(coordinate)
-  }
-
 }

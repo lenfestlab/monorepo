@@ -10,10 +10,6 @@ extension PlacesViewController: PlaceStoreDelegate {
 
 class PlacesViewController: UIViewController, Contextual {
 
-  func initalDataFetched() {
-
-  }
-
   func displayContentController(_ content: UIViewController) {
     addChild(content)
     self.view.insertSubview(content.view, at: 0)
@@ -134,46 +130,19 @@ class PlacesViewController: UIViewController, Contextual {
     self.analytics.log(.switchesViewListToCarousel(page: self.page()))
   }
 
-  @objc func onLocationUpdated(_ notification: Notification) {
-    if let location = notification.object as? CLLocation {
-      DispatchQueue.main.async {
-        self.initialMapDataFetch(coordinate: location.coordinate)
-      }
-    }
-  }
-
   override func viewDidLoad() {
     super.viewDidLoad()
     // Trigger adding required children views
     self.selectedIndex = _selectedIndex
-
-    NotificationCenter.default.addObserver(self, selector: #selector(onLocationUpdated(_:)), name: .locationUpdated, object: nil)
 
     self.topBar.isHidden = self.topBarIsHidden
     self.filterBarIsHidden = true
 
     self.view.addSubview(self.topBar)
     self.view.addSubview(self.filterBar)
-
-    if let location = self.locationManager.latestLocation {
-      initialMapDataFetch(coordinate: location.coordinate)
-    }
   }
 
-  var _initalDataFetched = false
-
-  func initialMapDataFetch(coordinate: CLLocationCoordinate2D) {
-    if _initalDataFetched {
-      return
-    }
-    if self.placeStore.loading {
-      return
-    }
-//    self.mapViewController.centerMap(coordinate)
-    self.refresh(coordinate: coordinate)
-  }
-
-  func refresh(coordinate: CLLocationCoordinate2D? = nil, completionBlock: (([Place]) -> (Void))? = nil) {
+  func refresh(completionBlock: (([Place]) -> (Void))? = nil) {
     // restrict post-launch data fetches to Home view; rest observe cache only.
     guard case .placesAll = target else { return }
 
@@ -183,14 +152,9 @@ class PlacesViewController: UIViewController, Contextual {
       HUD.change(.show)
     }
 
-    if let coordinate = coordinate {
-      self.placeStore.lastCoordinateUsed = coordinate
-    }
-    self.placeStore.refresh(completionBlock: { (places) -> (Void) in
+    self.placeStore.refresh(completionBlock: { places in
       if showLoadingIndicator {
-        DispatchQueue.main.async { [weak self] in
-          HUD.change(.hide)
-        }
+        HUD.change(.hide)
       }
       completionBlock?(places)
     })
@@ -219,12 +183,8 @@ class PlacesViewController: UIViewController, Contextual {
   //
 
   func fetchedData(_ changeset: PlacesChangeset, _ setData: PlacesChangesetClosure) {
-    if !_initalDataFetched {
-      _initalDataFetched = true
-      self.initalDataFetched()
-    }
-    self.mapViewController.fetchedData(changeset, setData)
-    self.listViewController.fetchedData(changeset, setData)
+    mapViewController.fetchedData(changeset, setData)
+    listViewController.fetchedData(changeset, setData)
   }
 
   func didSetPlaceFiltered() {

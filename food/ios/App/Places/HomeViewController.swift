@@ -28,10 +28,12 @@ extension HomeViewController : FilterModuleDelegate {
     self.mapViewController.controllerIdentifierKey = active ? "filtered-results" : "home"
     self.listViewController.controllerIdentifierKey = active ? "filtered-results" : "home"
 
-    let coordinate = locationManager.latestLocation?.coordinate ?? locationManager.defaultCoordinate
-    self.refresh(coordinate: coordinate) { (places) -> (Void) in
-      if places.count == 0 {
-        self.analytics.log(.noResultsWhenFiltering(filterModule: filter))
+    self.refresh() { [weak self] places in
+      if places.isEmpty {
+        self?.analytics.log(.noResultsWhenFiltering(filterModule: filter))
+      } else {
+        // reset carousel if filters changed
+        self?.mapViewController.scrollToItem(at: IndexPath(item: 0, section: 0))
       }
     }
   }
@@ -150,7 +152,7 @@ class HomeViewController: PlacesViewController {
     // Cache is empty on first load and after Realm schema changes
     // In latter case, indicate fetching underway w/ spinner.
     cache.isEmpty$
-      .bind(onNext: { [weak self] isEmpty in
+      .bind(onNext: { isEmpty in
         if isEmpty {
           HUD.change(.show)
         } else {

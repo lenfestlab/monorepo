@@ -31,7 +31,7 @@ class Api {
     return
       RxAlamofire
         .requestJSON(.get, "\(env.apiBaseUrlString)/places/\(identifier)")
-        .observeOn(Scheduler.background)
+        .subscribeOn(Scheduler.background)
         .map({ _response, json -> Result<Place> in
           guard
             let json = json as? JSON,
@@ -56,7 +56,7 @@ class Api {
     return
       RxAlamofire
         .requestJSON(.patch, url, parameters: params)
-        .observeOn(Scheduler.background)
+        .subscribeOn(Scheduler.background)
         .map({ _response, json in
           guard
             let json = json as? JSON,
@@ -119,7 +119,7 @@ class Api {
     return
       RxAlamofire
         .requestJSON(.get, url, parameters: params)
-        .observeOn(Scheduler.background)
+        .subscribeOn(Scheduler.background)
         .map({ _response, json in
           guard
             let json = json as? JSON,
@@ -190,10 +190,11 @@ class Api {
       "sort": sort.rawValue.lowercased(),
     ]
     if let authToken = Installation.authToken() { params["auth_token"] = authToken }
+    let currentLocation = locationManager.makeLocation(lat: lat, lng: lng)
     return
       RxAlamofire
         .requestJSON(.get, target.urlString, parameters: params)
-        .observeOn(Scheduler.background)
+        .subscribeOn(Scheduler.background)
         .map({ _response, json -> [Place] in
           guard
             let json = json as? JSON,
@@ -201,19 +202,27 @@ class Api {
             else { throw ApiError.parse }
           return [Place](JSONArray: data)
         })
-        .do(onNext: { [weak self] places in
-          guard let `self` = self else { return }
-          // set distance/distanceDefault before caching else clobbered by nils
-          let defaultLocation = self.locationManager.defaultLocation
+        // recalculate distance locally
+        .do(onNext: { places in
+          guard let currentLocation = currentLocation
+            else { return print("MIA: currentLocation") }
           places.forEach({ place in
             if let placeLocation = place.location?.nativeLocation {
-              place.distanceDefault = placeLocation.distance(from: defaultLocation)
-              if let currentLocation = self.locationManager.latestLocation {
-                place.distance = currentLocation.distance(from: placeLocation)
-              }
+              let distance = currentLocation.distance(from: placeLocation)
+              place.distance = distance
             }
           })
-          try self.cache.put(places)
+        })
+        .do(onNext: { [weak self] places in
+          try self?.cache.put(places)
+        })
+        // if sorted by distance, re-sort using local distance calculations
+        .map({ places in
+          guard case SortMode.distance = sort else { return places }
+          return places.sorted(by: {
+            guard let d1 = $0.distance, let d2 = $1.distance else { return false }
+            return d1 <= d2
+          })
         })
         // map thread-unsafe realm objects back to main thread
         .flatMap({ (objects: [Place]) -> Observable<[Place]> in
@@ -228,11 +237,8 @@ class Api {
         .share()
   }
 
-  func updateDefaultPlaces$() -> Observable<[Place]> {
-    let coordinate = locationManager.defaultCoordinate
-    let lat = coordinate.latitude
-    let lng = coordinate.longitude
-    return self.getPlaces$(target: .placesAll, lat: lat, lng: lng)
+  func updateDefaultPlaces$(lat: Double, lng: Double) -> Observable<[Place]> {
+    return getPlaces$(target: .placesAll, lat: lat, lng: lng)
   }
 
 }

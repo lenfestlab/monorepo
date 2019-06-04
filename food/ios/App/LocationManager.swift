@@ -4,10 +4,10 @@ import UserNotifications
 import SwiftDate
 import RxSwift
 import RxSwiftExt
+import RxRelay
 import RxCoreLocation
 
 extension Notification.Name {
-  static let locationUpdated = Notification.Name("locationUpdated")
   static let locationAuthorizationUpdated = Notification.Name("locationAuthorizationUpdated")
 }
 
@@ -40,6 +40,12 @@ class LocationManager: NSObject, CLLocationManagerDelegate {
     }
   }
 
+  lazy var status$ = {() -> Observable<CLAuthorizationStatus> in
+    return locationManager.rx.didChangeAuthorization.map({ (manager, status) -> CLAuthorizationStatus in
+      return status
+    })
+  }()
+
   let defaultCoordinate =
     CLLocationCoordinate2D(
       latitude: 39.9526,
@@ -53,7 +59,7 @@ class LocationManager: NSObject, CLLocationManagerDelegate {
   }()
 
   weak var authorizationDelegate: LocationManagerAuthorizationDelegate?
-  var locationManager:CLLocationManager
+  private var locationManager:CLLocationManager
 
   func startMonitoringSignificantLocationChanges() {
     locationManager.startMonitoringSignificantLocationChanges()
@@ -64,10 +70,8 @@ class LocationManager: NSObject, CLLocationManagerDelegate {
   }
 
   let env: Env
-  let analytics: AnalyticsManager?
-  init(env: Env, analytics: AnalyticsManager) {
+  init(env: Env) {
     self.env = env
-    self.analytics = analytics
     locationManager = CLLocationManager()
     locationManager.desiredAccuracy = kCLLocationAccuracyHundredMeters
     locationManager.pausesLocationUpdatesAutomatically = false
@@ -93,7 +97,6 @@ class LocationManager: NSObject, CLLocationManagerDelegate {
 
   func authorizationStatusUpdated(status: CLAuthorizationStatus) {
     self.authorizationStatus = status
-
     switch status {
     case .notDetermined:
       // Request when-in-use authorization initially
@@ -115,57 +118,38 @@ class LocationManager: NSObject, CLLocationManagerDelegate {
     }
   }
 
+  private let location$$ = BehaviorRelay<CLLocation?>(value: nil)
+
   public var latestLocation: CLLocation? {
-    didSet {
-      if let location = latestLocation {
-        NotificationCenter.default.post(name: .locationUpdated, object: location)
-      }
+    set {
+      location$$.accept(latestLocation)
+    }
+    get {
+      return location$$.value
     }
   }
+
   public var latestCoordinate: CLLocationCoordinate2D? {
     return latestLocation?.coordinate
   }
 
-  func locationManager(_ manager: CLLocationManager,
-                       didUpdateLocations locations: [CLLocation]) {
-    guard let location = locations.last else {
-      print("ERROR: MIA: locations.last")
-      return
-    }
-    let region =
-      Region(calendar: Calendars.gregorian,
-             zone: Zones.autoUpdating, // default is GMT: https://git.io/fpAIZ
-        locale: Locale.autoupdatingCurrent)
-    let now = Date().in(region: region)
-    let timestamp = location.timestamp.in(region: region)
-    guard timestamp.isInside(date: now, granularity: .minute) else { return }
-    self.latestLocation = location
-    self.logLocationChange(location)
-  }
+  lazy var significantLocation$ = { () -> Observable<CLLocation> in
+    return locationManager.rx.location
+      .unwrap()
+      .distinctUntilChanged()
+      .do(onNext: { [unowned self] location in
+        self.location$$.accept(location)
+      })
+      .share(replay: 1, scope: .whileConnected)
+  }()
 
-  // analyze location in hours beginning: 8am, 4pm and midnight
-  func logLocationChange(_ newLocation: CLLocation) {
-    guard let analytics = self.analytics else { return }
-    let region =
-      Region(calendar: Calendars.gregorian,
-             zone: Zones.autoUpdating, // default is GMT: https://git.io/fpAIZ
-             locale: Locale.autoupdatingCurrent)
-    let now = Date().in(region: region)
-    let timestamp = newLocation.timestamp.in(region: region)
-    guard timestamp.isInside(date: now, granularity: .minute) else {
-      return print("\t skip stale location")
-    }
-    let windowHourStarts = env.isPreProduction ? Array(0..<23) : [0, 8, 16]
-    let windowHours = windowHourStarts.map { now.dateBySet(hour: $0, min: 0, secs: 0)! }
-    let isInWindow: Bool = windowHours.contains { beginsAt -> Bool in
-      let endsAt = 1.hours.from(beginsAt)!.in(region: region)
-      return now.isInRange(date: beginsAt, and: endsAt)
-    }
-    guard isInWindow else {
-      return print("location changed outside window")
-    }
-    analytics.log(.backgroundTrackingforLocation(newLocation.coordinate))
-  }
+  lazy var location$ = {() -> Observable<CLLocation> in
+    return location$$
+      .unwrap()
+      .distinctUntilChanged()
+      .asObservable()
+      .share(replay: 1, scope: .whileConnected)
+  }()
 
   func locationManager(_ manager: CLLocationManager, monitoringDidFailFor region: CLRegion?, withError error: Error) {
     print("locationManager failed for region with identifier: \(region!.identifier) ")
@@ -213,26 +197,19 @@ class LocationManager: NSObject, CLLocationManagerDelegate {
         .share()
   }
 
-  var location$: Observable<CLLocation> {
-    return self.locationManager.rx.location
-      .unwrap()
-      .distinctUntilChanged()
-      .share()
-  }
-
-  func locationManager(_ manager: CLLocationManager, didEnterRegion region: CLRegion) {
-    self.analytics!.log(.regionEntered(source: "LocationManager"))
-    // NOTE: see Notification.observeLocationManager()
-  }
-
-  func simulate(enteredRegion region: CLRegion) {
-    self.locationManager(self.locationManager, didEnterRegion: region)
-  }
+  lazy var placemark$ = { () -> Observable<CLPlacemark> in
+    return self.locationManager.rx.placemark.share()
+  }()
 
   func resetRegionMonitoring(latestRegions regions: [CLCircularRegion]) {
     let manager = locationManager
     manager.monitoredRegions.forEach { manager.stopMonitoring(for: $0) }
     regions.forEach { manager.startMonitoring(for: $0) }
+  }
+
+  func makeLocation(lat: Double?, lng: Double?) -> CLLocation? {
+    guard let lat = lat, let lng = lng else { return nil }
+    return CLLocation(latitude: lat, longitude: lng)
   }
 
 }

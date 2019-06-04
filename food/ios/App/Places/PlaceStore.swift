@@ -48,8 +48,7 @@ class PlaceStore: NSObject, Contextual {
     switch target {
     case .placesAll:
       placesCached$ = cache.defaultPlaces$
-        .take(1) // ignore cache after first read
-        .share()
+        .take(1)
     case .placesCategorizedIn(let identifier):
       placesCached$ = cache.observePlaces$(.category(identifier))
     case .placesBookmarked:
@@ -58,7 +57,10 @@ class PlaceStore: NSObject, Contextual {
 
     Observable.combineLatest(
       searchText$,
-      Observable.merge(placesCached$, places$))
+      Observable.concat(
+        placesCached$,
+        places$)
+      )
       .map({ (searchText, places) -> [Place] in
         guard let searchText = searchText, searchText.isNotEmpty
           else { return places }
@@ -79,8 +81,6 @@ class PlaceStore: NSObject, Contextual {
       .disposed(by: rx.disposeBag)
   }
 
-  var lastCoordinateUsed : CLLocationCoordinate2D?
-
   var loading = false
 
   var filterModule = FilterModule()
@@ -98,7 +98,7 @@ class PlaceStore: NSObject, Contextual {
       return
     }
 
-    guard let coordinate = self.lastCoordinateUsed else {
+    guard let coordinate = locationManager.latestCoordinate else {
       completionBlock?([])
       return
     }

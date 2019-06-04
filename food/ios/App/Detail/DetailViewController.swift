@@ -124,16 +124,19 @@ class DetailViewController: UIViewController, Contextual {
   }
 
   private func eagerLoadCarouselImages$() -> Void {
-    guard let post = place.post else { return }
     let willAppear$ = rx.methodInvoked(#selector(UIViewController.viewWillAppear(_:)))
     let willDisappear$ = rx.methodInvoked(#selector(UIViewController.viewWillDisappear(_:)))
     willAppear$
-      .flatMapLatest { [unowned self] _ -> Observable<[Image]> in
-        let urls = post.images.compactMap({ $0.url })
+      .takeUntil(willDisappear$)
+      .map({ [weak self] _ -> [URL] in
+        guard let `self` = self, let post = self.place.post else { return [] }
+        return post.images.compactMap({ $0.url })
+      })
+      .observeOn(Scheduler.background)
+      .flatMapLatest { [unowned self] urls -> Observable<[Image]> in
         let loader = UIImageView.af_sharedImageDownloader
         return self.cache.loadImages$(Array(urls), withLoader: loader)
       }
-      .takeUntil(willDisappear$)
       .subscribe()
       .disposed(by: rx.disposeBag)
   }

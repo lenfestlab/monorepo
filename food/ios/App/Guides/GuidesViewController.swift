@@ -22,8 +22,9 @@ class GuidesViewController: UITableViewController, Contextual {
 
     // eager fetch images
     guides$
-      .flatMapFirst({ [unowned self] guides -> Observable<[Image]> in
-        let urls = guides.compactMap({ $0.imageURL })
+      .map({ $0.compactMap({ $0.imageURL }) })
+      .observeOn(Scheduler.background)
+      .flatMapFirst({ [unowned self] urls -> Observable<[Image]> in
         let loader = UIImageView.af_sharedImageDownloader
         return self.cache.loadImages$(Array(urls), withLoader: loader)
       })

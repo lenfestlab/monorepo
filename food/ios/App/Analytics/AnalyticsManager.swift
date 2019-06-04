@@ -5,6 +5,9 @@ import GoogleReporter
 import CoreMotion
 import Firebase
 import Amplitude
+import SwiftDate
+import RxSwift
+import NSObject_Rx
 
 typealias FirebaseAnalytics = Analytics
 
@@ -188,15 +191,6 @@ struct AnalyticsEvent {
         location: location)
   }
 
-  static func regionEntered(source: String) -> AnalyticsEvent {
-    return
-      AnalyticsEvent(
-        name: "region-entered",
-        metadata: ["source": source],
-        category: .debug,
-        label: source)
-  }
-
   static func backgroundTrackingforLocation(_ location: CLLocationCoordinate2D?) -> AnalyticsEvent {
     return AnalyticsEvent(name: "location", category: .background, location: location)
   }
@@ -363,17 +357,20 @@ struct AnalyticsEvent {
 
 }
 
-class AnalyticsManager {
+class AnalyticsManager: NSObject {
 
   private let env: Env
+  private let locationManager: LocationManager
   private let amplitude: Amplitude
   private let backgroundQueue = DispatchQueue.global(qos: .background)
 
   static let separator = ","
 
-  init(_ env: Env) {
+  init(env: Env, locationManager: LocationManager) {
     self.env = env
+    self.locationManager = locationManager
     self.amplitude = Amplitude.instance()
+    super.init()
     let installationId = env.installationId
 
     let gaId = env.get(.googleAnalyticsTrackingId)
@@ -424,6 +421,7 @@ class AnalyticsManager {
       amplitude.setUserProperties([propName: installationId])
     }
 
+    self.observeLocationManager()
   }
 
   func log(_ event: AnalyticsEvent) {
@@ -488,6 +486,61 @@ class AnalyticsManager {
         return new
       })
     }
+  }
+
+  // analyze location in hours beginning: 8am, 4pm and midnight
+  func logLocationChange(_ newLocation: CLLocation) {
+    let region =
+      Region(calendar: Calendars.gregorian,
+             zone: Zones.autoUpdating, // default is GMT: https://git.io/fpAIZ
+        locale: Locale.autoupdatingCurrent)
+    let now = Date().in(region: region)
+    let timestamp = newLocation.timestamp.in(region: region)
+    guard timestamp.isInside(date: now, granularity: .minute) else {
+      return print("\t skip stale location")
+    }
+    let windowHourStarts = env.isPreProduction ? Array(0..<23) : [0, 8, 16]
+    let windowHours = windowHourStarts.map { now.dateBySet(hour: $0, min: 0, secs: 0)! }
+    let isInWindow: Bool = windowHours.contains { beginsAt -> Bool in
+      let endsAt = 1.hours.from(beginsAt)!.in(region: region)
+      return now.isInRange(date: beginsAt, and: endsAt)
+    }
+    guard isInWindow else {
+      return print("location changed outside window")
+    }
+    log(.backgroundTrackingforLocation(newLocation.coordinate))
+  }
+
+  private func observeLocationManager() {
+    locationManager.significantLocation$
+      .do(onNext: { [weak self] location in
+        guard let `self` = self else { return print("MIA: self") }
+        let region =
+          Region(calendar: Calendars.gregorian,
+                 zone: Zones.autoUpdating, // default is GMT: https://git.io/fpAIZ
+            locale: Locale.autoupdatingCurrent)
+        let now = Date().in(region: region)
+        let timestamp = location.timestamp.in(region: region)
+        guard timestamp.isInside(date: now, granularity: .minute) else { return }
+        self.logLocationChange(location)
+      })
+      .subscribe()
+      .disposed(by: rx.disposeBag)
+
+    locationManager.placemark$
+      .subscribe(onNext: { [weak self] placemark in
+        guard
+          let locality = placemark.locality,
+          let subLocality = placemark.subLocality,
+          let postalCode = placemark.postalCode
+          else { return print("MIA: placemark") }
+        self?.mergeCustomDimensions(cds: [
+          "cd15": locality,
+          "cd16": subLocality,
+          "cd17": postalCode
+          ])
+      })
+      .disposed(by: rx.disposeBag)
   }
 
 }
