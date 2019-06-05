@@ -190,7 +190,6 @@ class MapViewController: UIViewController, Contextual {
           else { return false }
         return d1 < d2
       })
-    let maximumNearestPlaces = 5
     let nearestPlaces = sortedPlaces.prefix(maximumNearestPlaces)
     let nearestCoordinates = nearestPlaces.compactMap({ $0.coordinate })
     visibleCoordinates.append(contentsOf: nearestCoordinates)
