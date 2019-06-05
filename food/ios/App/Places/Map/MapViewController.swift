@@ -1,128 +1,12 @@
 import UIKit
-import MapKit
 import UserNotifications
 import UPCarouselFlowLayout
 import CoreMotion
 import RxSwift
 import RxCocoa
-
-extension MKMapView {
-  func center(_ center: CLLocationCoordinate2D,
-                 span: MKCoordinateSpan = MKCoordinateSpan(latitudeDelta: 0.04, longitudeDelta: 0.04)) {
-    let region:MKCoordinateRegion = MKCoordinateRegion(center: center, span: span)
-    self.setRegion(region, animated: true)
-  }
-  func center(_ region: MKCoordinateRegion) {
-    self.setRegion(region, animated: true)
-  }
-}
-
-extension UICollectionView {
-
-  var collectionViewFlowLayout: UICollectionViewFlowLayout {
-    return self.collectionViewLayout as! UICollectionViewFlowLayout
-  }
-
-  func indexOfMajorCell() -> Int {
-    let itemWidth = self.collectionViewFlowLayout.itemSize.width
-    let offset = self.collectionViewFlowLayout.collectionView!.contentOffset.x
-    let proportionalOffset = offset / itemWidth
-    let index = Int(round(proportionalOffset))
-    let numberOfItems = self.numberOfItems(inSection: 0)
-    let safeIndex = max(0, min(numberOfItems - 1, index))
-    return safeIndex
-  }
-
-}
-
-private let mapPinIdentifier = "pin"
+import MapKit
 
 fileprivate let sectionInsets = UIEdgeInsets(top: 0, left: 0, bottom: 0, right: 0)
-
-extension MapViewController: UICollectionViewDataSource {
-
-  func numberOfSections(in collectionView: UICollectionView) -> Int {
-    return 1
-  }
-
-  func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
-    return mapPlaces.count
-  }
-
-  func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
-    let cell = collectionView.dequeueReusableCell(withReuseIdentifier: PlaceCell.reuseIdentifier, for: indexPath) as! PlaceCell
-
-    // Configure the cell
-    let mapPlace:MapPlace = mapPlaces[indexPath.row]
-    let place = mapPlace.place
-    cell.setPlace(context: context, place: place, index: indexPath.row, showIndex: self.showIndex)
-    return cell
-  }
-}
-
-extension MapViewController: UICollectionViewDelegate {
-
-  func collectionView(_ collectionView: UICollectionView, shouldSelectItemAt indexPath: IndexPath) -> Bool {
-    if collectionView.indexOfMajorCell() == indexPath.row {
-      let mapPlace = mapPlaces[indexPath.row]
-      let place = mapPlace.place
-      analytics.log(.tapsOnCard(place: place, controllerIdentifierKey: self.controllerIdentifierKey))
-      let detailViewController = DetailViewController(context: context, place: place)
-      navigationController?.pushViewController(detailViewController, animated: true)
-    } else {
-      scrollToItem(at: indexPath)
-      let mapPlace = mapPlaces[indexPath.row]
-      self.currentPlace = mapPlace
-    }
-    return true
-  }
-
-}
-
-extension MapViewController : MKMapViewDelegate {
-
-  func mapView(_ mapView: MKMapView, rendererFor overlay: MKOverlay) -> MKOverlayRenderer {
-    let renderer = MKPolygonRenderer(polygon: overlay as! MKPolygon)
-    renderer.fillColor = UIColor.black.withAlphaComponent(0.5)
-    renderer.strokeColor = UIColor.red
-    renderer.lineWidth = 10
-    return renderer
-  }
-
-  func mapView(_ mapView: MKMapView, didUpdate userLocation: MKUserLocation) {
-    let coordinate = userLocation.coordinate
-    self.locationManager.latestLocation = CLLocation(latitude: coordinate.latitude, longitude: coordinate.longitude)
-  }
-
-  func mapView(_ mapView: MKMapView, viewFor annotation: MKAnnotation) -> MKAnnotationView? {
-    if annotation is MKUserLocation {
-      //return nil so map view draws "blue dot" for standard user location
-      return nil
-    }
-
-    let index = (annotation as! ABPointAnnotation).index
-
-    let  pinView = ABAnnotationView(annotation: annotation, reuseIdentifier: mapPinIdentifier)
-    pinView.tag = index
-    pinView.isSelected = (annotation.title == currentPlace?.place.name)
-    pinView.showsIndex = self.showIndex
-    pinView.setIndex(index)
-    let btn = UIButton(type: .detailDisclosure)
-    pinView.rightCalloutAccessoryView = btn
-
-    return pinView
-  }
-
-  func mapView(_ mapView: MKMapView, didSelect view: MKAnnotationView) {
-    let indexPath = IndexPath(row: view.tag, section: 0)
-    let mapPlace = mapPlaces[indexPath.row]
-    let place = mapPlace.place
-    analytics.log(.tapsOnPin(place: place))
-    scrollToItem(at: indexPath)
-    self.currentPlace = mapPlace
-  }
-
-}
 
 extension MapViewController: UIGestureRecognizerDelegate {
 
@@ -443,14 +327,6 @@ class MapViewController: UIViewController, Contextual {
         let pixelHeight = map.frame.height - collectionViewFrameHeight - downBy - self.view.safeAreaInsets.bottom
         let height = scale * Double(pixelHeight)
         let remainderRect = MKMapRect(x: x, y: y, width: width, height: height)
-
-//        var remPoints = [MKMapPoint]()
-//        remPoints.append(remainderRect.origin) // topLeft
-//        remPoints.append(MKMapPoint(x: remainderRect.origin.x + remainderRect.size.width, y: remainderRect.origin.y))
-//        remPoints.append(MKMapPoint(x: remainderRect.origin.x + remainderRect.size.width, y: remainderRect.origin.y + remainderRect.size.height))
-//        remPoints.append(MKMapPoint(x: remainderRect.origin.x, y: remainderRect.origin.y + remainderRect.size.height)) // topRight
-//        let remPoly = MKPolygon.init(points: remPoints, count: 4)
-//        self.mapView.addOverlay(remPoly)
 
         if(!remainderRect.contains(MKMapPoint(coordinate))){
           self.mapView?.center(coordinate, span: map.region.span)
