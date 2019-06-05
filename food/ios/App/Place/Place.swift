@@ -136,7 +136,7 @@ class Place: RealmSwift.Object, Mappable {
     return CLLocationCoordinate2D(latitude: (self.location?.latitude)!, longitude: (self.location?.longitude)!)
   }
 
-  static let defaultRadius: Double = 100
+  static let defaultRadius: Double = 50
 
   var region: CLCircularRegion {
     let center = coordinate

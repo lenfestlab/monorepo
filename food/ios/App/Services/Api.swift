@@ -31,7 +31,8 @@ class Api {
     return
       RxAlamofire
         .requestJSON(.get, "\(env.apiBaseUrlString)/places/\(identifier)")
-        .subscribeOn(Scheduler.background)
+        .observeOn(Scheduler.background)
+        .retry(2)
         .map({ _response, json -> Result<Place> in
           guard
             let json = json as? JSON,
@@ -56,7 +57,8 @@ class Api {
     return
       RxAlamofire
         .requestJSON(.patch, url, parameters: params)
-        .subscribeOn(Scheduler.background)
+        .observeOn(Scheduler.background)
+        .retry(2)
         .map({ _response, json in
           guard
             let json = json as? JSON,
@@ -119,7 +121,8 @@ class Api {
     return
       RxAlamofire
         .requestJSON(.get, url, parameters: params)
-        .subscribeOn(Scheduler.background)
+        .observeOn(Scheduler.background)
+        .retry(2)
         .map({ _response, json in
           guard
             let json = json as? JSON,
@@ -190,11 +193,10 @@ class Api {
       "sort": sort.rawValue.lowercased(),
     ]
     if let authToken = Installation.authToken() { params["auth_token"] = authToken }
-    let currentLocation = locationManager.makeLocation(lat: lat, lng: lng)
     return
       RxAlamofire
         .requestJSON(.get, target.urlString, parameters: params)
-        .subscribeOn(Scheduler.background)
+        .observeOn(Scheduler.background)
         .map({ _response, json -> [Place] in
           guard
             let json = json as? JSON,
@@ -203,8 +205,8 @@ class Api {
           return [Place](JSONArray: data)
         })
         // recalculate distance locally
-        .do(onNext: { places in
-          guard let currentLocation = currentLocation
+        .do(onNext: { [weak self] places in
+          guard let currentLocation = self?.locationManager.latestLocation
             else { return print("MIA: currentLocation") }
           places.forEach({ place in
             if let placeLocation = place.location?.nativeLocation {

@@ -113,14 +113,13 @@ class Cache {
       return
         bookmarks$
           .map({ $0.compactMap({ $0.place }) })
-          .share(replay: 1, scope: .whileConnected)
+          .share()
     case .category(let identifier):
       guard let category = realm.object(ofType: Category.self, forPrimaryKey: identifier)
         else { return Observable.just([]) }
       let places = self.places(in: category)
       return
-        Observable.array(from: places, synchronousStart: false)
-          .startWith(places.toArray())
+        asArray$(places)
           .share()
     }
   }

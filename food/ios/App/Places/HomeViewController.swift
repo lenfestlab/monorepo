@@ -161,6 +161,7 @@ class HomeViewController: PlacesViewController {
       })
       .disposed(by: rx.disposeBag)
 
+    refresh()
   }
 
   lazy var emptyView : EmptyView = {

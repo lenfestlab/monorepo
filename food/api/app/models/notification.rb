@@ -130,7 +130,7 @@ class Notification < ApplicationRecord
         body: body,
         # http://bit.ly/2KLf8SB
         # > Corresponds to `category` in the APNs payload
-        click_action: "announcement",
+        click_action: (post.url ? "announcement" : "announcement-sans-url"),
       },
       data: {
         image_url: post.image_url,
