@@ -114,13 +114,19 @@ class DetailViewController: UIViewController, Contextual {
   var context: Context
   var isSaved$: Observable<Bool>
 
-  init(context: Context, place: Place) {
+  init(context: Context, place: Place, eagerLoadView: Bool = true) {
     self.context = context
     self.place = place
     self.isSaved$ = context.cache.isSaved$(place.identifier)
     super.init(nibName: nil, bundle: nil)
     eagerLoadCarouselImages$()
     maintainContextAnimatingState()
+    // NOTE: `NSMutableAttributedString(html...)` is expensive but evidently
+    // must run on the main thread for access to webkit; eager load our view on
+    // init to leave main thread free during VC transition animation.
+    if eagerLoadView {
+      loadViewIfNeeded()
+    }
   }
 
   private func eagerLoadCarouselImages$() -> Void {
