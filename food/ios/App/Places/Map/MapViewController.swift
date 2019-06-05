@@ -161,54 +161,7 @@ class MapViewController: UIViewController, Contextual {
           self.updateAnnotations()
           if mapPlaces.isNotEmpty {
             // scale map to encompass 5 nearest places and user's location
-            guard
-              let mapView = self.mapView,
-              let firstPlace = latestPlaces.first,
-              let firstLocation = firstPlace.location?.nativeLocation
-              else {
-                self.mapView?.center(self.locationManager.defaultCoordinate)
-                return print("MIA: firstPlace") }
-            var visibleCoordinates: [CLLocationCoordinate2D] = []
-            if let currentLocation = self.locationManager.latestLocation {
-              visibleCoordinates.append(currentLocation.coordinate)
-            }
-            let sortedPlaces =
-              latestPlaces.sorted(by: { (p1,p2) -> Bool in
-                guard
-                  let d1 = p1.distanceFrom(firstLocation),
-                  let d2 = p2.distanceFrom(firstLocation)
-                  else { return false }
-                return d1 < d2
-              })
-            let maximumNearestPlaces = 5
-            let nearestPlaces = sortedPlaces.prefix(maximumNearestPlaces)
-            let nearestCoordinates = nearestPlaces.compactMap({ $0.coordinate })
-            visibleCoordinates.append(contentsOf: nearestCoordinates)
-            let rect = self.rectCovering(visibleCoordinates)
-            let carouselHeight = self.collectionView.frame.height
-            let filterBarHeight: CGFloat = 34
-            let padding: CGFloat = 30
-            let edgePadding =
-              UIEdgeInsets(
-                top: padding + filterBarHeight + 250.0,
-                left: padding,
-                bottom: padding + carouselHeight,
-                right: padding)
-            mapView.setVisibleMapRect(rect, edgePadding: edgePadding, animated: false)
-            // setting `self.currentPlace` moves the mapview
-            // instead, just select/highlight the first annotation
-            let firstCoordinate = firstLocation.coordinate
-            let firstAnnotation =
-              self.annotations.first(where: { annotation -> Bool in
-                let coordinate = annotation.coordinate
-                let lat = coordinate.latitude; let lng = coordinate.longitude
-                return (lat == firstCoordinate.latitude) && (lng == firstCoordinate.longitude)
-              })
-            guard let annotation = firstAnnotation
-              else { return print("MIA: firstAnnotation") }
-            if let view = mapView.view(for: annotation) as? ABAnnotationView {
-              view.isSelected = true
-            }
+            self.scaleMapToEncompassNearestPlaces(latestPlaces)
           }
         })
       })
@@ -216,6 +169,58 @@ class MapViewController: UIViewController, Contextual {
 
     self.navigationController?.styleController()
   }
+
+  func scaleMapToEncompassNearestPlaces(_ latestPlaces: [Place], maximumNearestPlaces: Int = 5) {
+    guard
+      let mapView = self.mapView,
+      let firstPlace = latestPlaces.first,
+      let firstLocation = firstPlace.location?.nativeLocation
+      else {
+        self.mapView?.center(self.locationManager.defaultCoordinate)
+        return print("MIA: firstPlace") }
+    var visibleCoordinates: [CLLocationCoordinate2D] = []
+    if let currentLocation = self.locationManager.latestLocation {
+      visibleCoordinates.append(currentLocation.coordinate)
+    }
+    let sortedPlaces =
+      latestPlaces.sorted(by: { (p1,p2) -> Bool in
+        guard
+          let d1 = p1.distanceFrom(firstLocation),
+          let d2 = p2.distanceFrom(firstLocation)
+          else { return false }
+        return d1 < d2
+      })
+    let maximumNearestPlaces = 5
+    let nearestPlaces = sortedPlaces.prefix(maximumNearestPlaces)
+    let nearestCoordinates = nearestPlaces.compactMap({ $0.coordinate })
+    visibleCoordinates.append(contentsOf: nearestCoordinates)
+    let rect = self.rectCovering(visibleCoordinates)
+    let carouselHeight = self.collectionView.frame.height
+    let filterBarHeight: CGFloat = 34
+    let padding: CGFloat = 30
+    let edgePadding =
+      UIEdgeInsets(
+        top: padding + filterBarHeight + 250.0,
+        left: padding,
+        bottom: padding + carouselHeight,
+        right: padding)
+    mapView.setVisibleMapRect(rect, edgePadding: edgePadding, animated: false)
+    // setting `self.currentPlace` moves the mapview
+    // instead, just select/highlight the first annotation
+    let firstCoordinate = firstLocation.coordinate
+    let firstAnnotation =
+      self.annotations.first(where: { annotation -> Bool in
+        let coordinate = annotation.coordinate
+        let lat = coordinate.latitude; let lng = coordinate.longitude
+        return (lat == firstCoordinate.latitude) && (lng == firstCoordinate.longitude)
+      })
+    guard let annotation = firstAnnotation
+      else { return print("MIA: firstAnnotation") }
+    if let view = mapView.view(for: annotation) as? ABAnnotationView {
+      view.isSelected = true
+    }
+  }
+
 
   // https://stackoverflow.com/a/11862786
   private func rectCovering(_ coordinates: [CLLocationCoordinate2D]) -> MKMapRect {
