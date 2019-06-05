@@ -122,7 +122,7 @@ class LocationManager: NSObject, CLLocationManagerDelegate {
 
   public var latestLocation: CLLocation? {
     set {
-      location$$.accept(latestLocation)
+      location$$.accept(newValue)
     }
     get {
       return location$$.value
@@ -146,7 +146,6 @@ class LocationManager: NSObject, CLLocationManagerDelegate {
   lazy var location$ = {() -> Observable<CLLocation> in
     return location$$
       .unwrap()
-      .distinctUntilChanged()
       .asObservable()
       .share(replay: 1, scope: .whileConnected)
   }()
@@ -203,8 +202,17 @@ class LocationManager: NSObject, CLLocationManagerDelegate {
 
   func resetRegionMonitoring(latestRegions regions: [CLCircularRegion]) {
     let manager = locationManager
-    manager.monitoredRegions.forEach { manager.stopMonitoring(for: $0) }
-    regions.forEach { manager.startMonitoring(for: $0) }
+    let new: Set<CLCircularRegion> = Set(regions)
+    let monitoredRegions =
+      manager.monitoredRegions.compactMap { region -> CLCircularRegion? in
+        guard let circularRegion = region as? CLCircularRegion else { return nil }
+        return circularRegion
+    }
+    let old: Set<CLCircularRegion> = Set(monitoredRegions)
+    let additions = new.subtracting(old)
+    let removals = old.subtracting(new)
+    removals.forEach { manager.stopMonitoring(for: $0) }
+    additions.forEach { manager.startMonitoring(for: $0) }
   }
 
   func makeLocation(lat: Double?, lng: Double?) -> CLLocation? {

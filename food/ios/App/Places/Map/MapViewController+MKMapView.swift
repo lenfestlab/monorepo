@@ -27,7 +27,8 @@ extension MapViewController : MKMapViewDelegate {
 
   func mapView(_ mapView: MKMapView, didUpdate userLocation: MKUserLocation) {
     let coordinate = userLocation.coordinate
-    self.locationManager.latestLocation = CLLocation(latitude: coordinate.latitude, longitude: coordinate.longitude)
+    let location = CLLocation(latitude: coordinate.latitude, longitude: coordinate.longitude)
+    self.locationManager.latestLocation = location
   }
 
   func mapView(_ mapView: MKMapView, viewFor annotation: MKAnnotation) -> MKAnnotationView? {

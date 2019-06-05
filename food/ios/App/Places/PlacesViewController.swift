@@ -142,6 +142,7 @@ class PlacesViewController: UIViewController, Contextual {
     self.view.addSubview(self.filterBar)
   }
 
+
   func refresh(completionBlock: (([Place]) -> (Void))? = nil) {
     // restrict post-launch data fetches to Home view; rest observe cache only.
     guard case .placesAll = target else { return }

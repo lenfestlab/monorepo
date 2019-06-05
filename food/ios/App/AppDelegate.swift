@@ -114,10 +114,12 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
   }
 
   private func observeBookmarkedPlaces() -> Void {
-    // sync bookmaked places with monitored regions for nearby alerts
+    // sync bookmarked places with monitored regions for nearby alerts
     self.cache.bookmarkedPlaces$
-      .subscribe(onNext: { [weak self] objects in
-        let regions = objects.compactMap({ $0.region })
+      .map({ $0.map({ $0.region }) })
+      .observeOn(Scheduler.background)
+      .distinctUntilChanged()
+      .subscribe(onNext: { [weak self] regions in
         self?.locationManager.resetRegionMonitoring(latestRegions: regions)
       })
       .disposed(by: rx.disposeBag)

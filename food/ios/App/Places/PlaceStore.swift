@@ -53,6 +53,7 @@ class PlaceStore: NSObject, Contextual {
       placesCached$ = cache.observePlaces$(.category(identifier))
     case .placesBookmarked:
       placesCached$ = cache.bookmarkedPlaces$
+          .debug("placesCached$")
     }
 
     Observable.combineLatest(

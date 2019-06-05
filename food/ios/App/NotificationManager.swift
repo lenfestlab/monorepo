@@ -54,7 +54,6 @@ class NotificationManager: NSObject, UNUserNotificationCenterDelegate, Contextua
     _ center: UNUserNotificationCenter,
     willPresent notification: UNNotification,
     withCompletionHandler completionHandler: @escaping (UNNotificationPresentationOptions) -> Void) {
-    print("notificationmanager userNotificationCenter willPresent: \(notification) withCompletionHandler")
     completionHandler([.alert, .sound])
   }
 
@@ -80,12 +79,28 @@ class NotificationManager: NSObject, UNUserNotificationCenterDelegate, Contextua
   }
 
   enum Category: String, CaseIterable {
-    case announcement, nearby
+    case announcement = "announcement"
+    case announcementSansURL = "announcement-sans-url"
+    case nearby = "nearby"
+    case nearbySansURL = "nearby-sans-url"
+
     var identifier: String { return rawValue }
+
     var actions: Set<Action> {
       switch self {
       case .announcement: return [.read, .save, .share]
       case .nearby: return [.read, .unsave, .share]
+      case .announcementSansURL: return [.save]
+      case .nearbySansURL: return [.unsave]
+      }
+    }
+
+    var analyticsName: String {
+      switch self {
+      case .announcement, .announcementSansURL:
+        return "announcement"
+      case .nearby, .nearbySansURL:
+        return "nearby"
       }
     }
   }
@@ -115,7 +130,6 @@ class NotificationManager: NSObject, UNUserNotificationCenterDelegate, Contextua
     _ center: UNUserNotificationCenter,
     didReceive response: UNNotificationResponse,
     withCompletionHandler completionHandler: @escaping () -> Void) {
-    print("\n response"); print(response)
     self.notificationResponse$.onNext(response)
     let categoryId = response.notification.request.content.categoryIdentifier
     let actionId = response.actionIdentifier
@@ -322,7 +336,12 @@ class NotificationManager: NSObject, UNUserNotificationCenterDelegate, Contextua
           let place = bookmark.place,
           let placeName = place.name
           else { throw Exception.missingPlaceName }
-        let category = Category.nearby
+        let category: Category
+        if let _ = place.post?.url {
+          category = .nearby
+        } else {
+          category = .nearbySansURL
+        }
         let content = UNMutableNotificationContent()
         content.categoryIdentifier = category.rawValue
         content.sound = UNNotificationSound.default
@@ -332,13 +351,15 @@ class NotificationManager: NSObject, UNUserNotificationCenterDelegate, Contextua
         if let url = place.post?.url?.absoluteString {
           content.userInfo["post_url"] = url
         }
-        guard
+        if
           let imageURLString = place.imageURL?.absoluteString,
           let imageURL = URL(string: imageURLString),
           let imageData = NSData(contentsOf: imageURL),
-          let image = UNNotificationAttachment.create("image.jpg", data: imageData, options: nil)
-          else { throw Exception.missingPlaceImage }
-        content.attachments = [image]
+          let image = UNNotificationAttachment.create("image.jpg", data: imageData, options: nil) {
+          content.attachments = [image]
+        } else {
+          content.attachments = []
+        }
         let request =
           UNNotificationRequest(
             identifier: UUID().uuidString,

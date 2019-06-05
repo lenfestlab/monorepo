@@ -62,7 +62,7 @@ class PlaceCell: UICollectionViewCell {
       .unwrap()
       .bind(onNext: { [weak self] distance in
         let miles = (distance / 1609.344)
-        let format = ((miles >= 10) || (miles == 0)) ? "%0.0f" : "%0.1f"
+        let format = ((miles >= 10) || (miles < 0.1)) ? "%0.0f" : "%0.1f"
         let milesAway = String(format: "\(format) miles away", miles)
         self?.milesAwayLabel.text = milesAway
       })
