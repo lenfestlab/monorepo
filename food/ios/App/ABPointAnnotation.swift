@@ -2,8 +2,10 @@ import MapKit
 
 class ABPointAnnotation : MKPointAnnotation {
   var index: Int = 0
+  let identifier: String
 
   init(place: Place) {
+    identifier = place.identifier
     super.init()
     self.coordinate = place.coordinate
     self.title = place.name

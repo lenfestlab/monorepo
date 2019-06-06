@@ -32,21 +32,15 @@ extension MapViewController : MKMapViewDelegate {
   }
 
   func mapView(_ mapView: MKMapView, viewFor annotation: MKAnnotation) -> MKAnnotationView? {
-    if annotation is MKUserLocation {
-      //return nil so map view draws "blue dot" for standard user location
-      return nil
-    }
-
-    let index = (annotation as! ABPointAnnotation).index
-
-    let  pinView = ABAnnotationView(annotation: annotation, reuseIdentifier: mapPinIdentifier)
+    guard let annotation = annotation as? ABPointAnnotation else { return nil }
+    let index = annotation.index
+    let pinView = ABAnnotationView(annotation: annotation, reuseIdentifier: mapPinIdentifier)
     pinView.tag = index
-    pinView.isSelected = (annotation.title == currentPlace?.place.name)
+    pinView.isSelected = (annotation.identifier == currentPlace?.place.identifier)
     pinView.showsIndex = self.showIndex
     pinView.setIndex(index)
     let btn = UIButton(type: .detailDisclosure)
     pinView.rightCalloutAccessoryView = btn
-
     return pinView
   }
 

@@ -12,7 +12,7 @@ class NeighborhoodViewController: UITableViewController, Contextual {
   let alphabet = ["A","B","C","D", "E", "F","G","H","I","J","K","L","M","N","O","P","Q","R","S","T","U","V","W","X","Y","Z"]
 
   override func sectionIndexTitles(for tableView: UITableView) -> [String]? {
-    return self.alphabet
+    return self.alphabet.map { " \($0)\t"}
   }
 
   @objc func applyFilter() {
