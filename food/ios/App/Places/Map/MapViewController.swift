@@ -51,9 +51,7 @@ class MapViewController: UIViewController, Contextual {
   var currentPlace: MapPlace? {
     set {
       for annotation in annotations {
-        if
-          let view = mapView?.view(for: annotation) as? ABAnnotationView,
-          view.isSelected {
+        if let view = mapView?.view(for: annotation) as? ABAnnotationView {
           view.isSelected = false
         }
       }
