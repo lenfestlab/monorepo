@@ -151,15 +151,19 @@ class Place: RealmSwift.Object, Mappable {
     return region
   }
 
+  var nativeLocation: CLLocation? {
+    return location?.nativeLocation
+  }
+
   func distanceFrom(_ other: Place) -> Double? {
     guard
-      let location = self.location?.nativeLocation,
-      let otherLocation = other.location?.nativeLocation
+      let location = self.nativeLocation,
+      let otherLocation = other.nativeLocation
       else { return nil }
     return location.distance(from: otherLocation)
   }
   func distanceFrom(_ otherLocation: CLLocation) -> Double? {
-    guard let location = self.location?.nativeLocation else { return nil }
+    guard let location = self.nativeLocation else { return nil }
     return location.distance(from: otherLocation)
   }
 

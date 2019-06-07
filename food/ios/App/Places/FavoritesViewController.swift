@@ -4,6 +4,7 @@ class FavoritesViewController: PlacesViewController {
 
   init(context: Context) {
     super.init(target: .placesBookmarked, context: context)
+    loadViewIfNeeded()
   }
 
   required init?(coder aDecoder: NSCoder) {

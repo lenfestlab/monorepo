@@ -64,14 +64,11 @@ class Cache {
   }()
 
   var bookmarks: Results<Bookmark> {
-    return realm.objects(Bookmark.self)
-      .sorted(byKeyPath: "lastSavedAt", ascending: false)
-      .filter("lastSavedAt != nil AND ((lastUnsavedAt == nil) OR (lastUnsavedAt < lastSavedAt))")
+    return
+      realm.objects(Bookmark.self)
+        .sorted(byKeyPath: "lastSavedAt", ascending: false)
+        .filter("lastSavedAt != nil AND ((lastUnsavedAt == nil) OR (lastUnsavedAt < lastSavedAt))")
   }
-
-  lazy var bookmarks$: Observable<[Bookmark]> = {
-    return asArray$(bookmarks)
-  }()
 
   enum CategoryFilter {
     case guide
@@ -111,7 +108,7 @@ class Cache {
         .sorted(byKeyPath: "distanceOpt"))
     case .bookmarked:
       return
-        bookmarks$
+        asArray$(bookmarks)
           .map({ $0.compactMap({ $0.place }) })
           .share()
     case .category(let identifier):
@@ -178,6 +175,21 @@ class Cache {
       } else {
         bookmark.lastUnsavedAt = Date()
       }
+    }
+  }
+
+  func patchBookmark(_ placeId: String, _ closure: (Bookmark) -> Void) -> Void {
+    let realm = self.realm
+    let existing = realm.object(ofType: Bookmark.self, forPrimaryKey: placeId)
+    try? realm.write {
+      let bookmark = existing ?? { () -> Bookmark in
+        let bookmark = Bookmark()
+        bookmark.placeId = placeId
+        bookmark.place = realm.object(ofType: Place.self, forPrimaryKey: placeId)
+        realm.add(bookmark, update: .modified)
+        return bookmark
+        }()
+      closure(bookmark)
     }
   }
 

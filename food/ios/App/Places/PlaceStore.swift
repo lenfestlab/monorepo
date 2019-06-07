@@ -47,7 +47,26 @@ class PlaceStore: NSObject, Contextual {
     let placesCached$: Observable<[Place]>
     switch target {
     case .placesAll:
-      placesCached$ = cache.defaultPlaces$
+      placesCached$ =
+        Observable.combineLatest(
+          locationManager.latestOrDefaultLocation$,
+          cache.defaultPlaces$)
+          .map({ [weak self] (location, places) -> [Place] in
+            // sort first set of places using best-available location
+            guard
+              let `self` = self,
+              let currentLocation = self.locationManager.latestLocation
+              else { return places }
+            return places.sorted(by: { (p1, p2) -> Bool in
+              guard
+                let l1 = p1.nativeLocation,
+                let l2 = p2.nativeLocation
+                else { return false }
+              let d1 = currentLocation.distance(from: l1)
+              let d2 = currentLocation.distance(from: l2)
+              return d1 <= d2
+            })
+          })
         .take(1)
     case .placesCategorizedIn(let identifier):
       placesCached$ = cache.observePlaces$(.category(identifier))
