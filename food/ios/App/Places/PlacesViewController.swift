@@ -102,8 +102,7 @@ class PlacesViewController: UIViewController, Contextual {
 
     super.init(nibName: nil, bundle: nil)
 
-    self.placeStore.delegate = self
-    self.placeStore.beginObservingPlaces() // MUST be called after delegate set
+    self.filterBarIsHidden = true
   }
 
   required init?(coder aDecoder: NSCoder) {
@@ -136,10 +135,13 @@ class PlacesViewController: UIViewController, Contextual {
     self.selectedIndex = _selectedIndex
 
     self.topBar.isHidden = self.topBarIsHidden
-    self.filterBarIsHidden = true
+    self.filterBar?.isHidden = self.filterBarIsHidden
 
     self.view.addSubview(self.topBar)
     self.view.addSubview(self.filterBar)
+
+    self.placeStore.delegate = self
+    self.placeStore.beginObservingPlaces() // MUST be called after delegate set
   }
 
 
