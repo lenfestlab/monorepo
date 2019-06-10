@@ -320,7 +320,7 @@ class NotificationManager: NSObject, UNUserNotificationCenterDelegate, Contextua
   private func observeLocationManager() {
     locationManager.regionEntry$
       // record entry for "visit" calculations
-      .flatMap({ [unowned self] region -> Observable<Bookmark> in
+      .flatMapLatest({ [unowned self] region -> Observable<Bookmark> in
         let placeId = region.identifier
         return self.api.recordRegionChange$(placeId, isEntering: true)
       })
@@ -330,12 +330,13 @@ class NotificationManager: NSObject, UNUserNotificationCenterDelegate, Contextua
         guard let lastNotifiedAt = bookmark.lastNotifiedAt else { return true }
         return lastNotifiedAt.isBeforeDate(7.days.ago, granularity: .second)
       })
-      .flatMap({ [weak self] bookmark -> Observable<Bookmark> in
+      .flatMapLatest({ [weak self] bookmark -> Observable<Bookmark> in
         guard let `self` = self else { throw Exception.missingSelf }
         guard
           let place = bookmark.place,
           let placeName = place.name
           else { throw Exception.missingPlaceName }
+        let identifier = place.identifier
         let category: Category
         if let _ = place.post?.url {
           category = .nearby
@@ -347,7 +348,7 @@ class NotificationManager: NSObject, UNUserNotificationCenterDelegate, Contextua
         content.sound = UNNotificationSound.default
         content.title = "You're nearby \(placeName)!"
         content.body = "You saved \(placeName) to your list of restaurants."
-        content.userInfo["place_id"] = place.identifier
+        content.userInfo["place_id"] = identifier
         if let url = place.post?.url?.absoluteString {
           content.userInfo["post_url"] = url
         }
@@ -375,7 +376,8 @@ class NotificationManager: NSObject, UNUserNotificationCenterDelegate, Contextua
           category,
           place: place,
           location: self.locationManager.latestCoordinate))
-        return self.api.recordNotification$(place.identifier)
+        self.cache.patchBookmark(identifier, { $0.lastNotifiedAt = Date() })
+        return self.api.recordNotification$(identifier)
       })
       .subscribe()
       .disposed(by: rx.disposeBag)

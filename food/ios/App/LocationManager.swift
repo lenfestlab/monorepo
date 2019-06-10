@@ -220,4 +220,17 @@ class LocationManager: NSObject, CLLocationManagerDelegate {
     return CLLocation(latitude: lat, longitude: lng)
   }
 
+  lazy var latestOrDefaultLocation$ = {()-> Observable<CLLocation> in
+    status$
+      .flatMap({ [unowned self] status -> Observable<CLLocation> in
+        switch status {
+        case .authorizedAlways, .authorizedWhenInUse:
+          return self.significantLocation$
+        case .denied, .notDetermined, .restricted:
+          return Observable.just(self.defaultLocation)
+        @unknown default: fatalError()
+        }
+      })
+  }()
+
 }

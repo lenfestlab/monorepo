@@ -261,17 +261,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
   private func syncData() -> Void {
 
     let updateDefaultPlaces$ =
-      locationManager.status$
-        .flatMap({ [unowned self] status -> Observable<CLLocation> in
-          let manager = self.locationManager!
-          switch status {
-          case .authorizedAlways, .authorizedWhenInUse:
-            return manager.significantLocation$
-          case .denied, .notDetermined, .restricted:
-            return Observable.just(manager.defaultLocation)
-          @unknown default: fatalError()
-          }
-        })
+      locationManager.latestOrDefaultLocation$
         .flatMapLatest({ [unowned self] location -> Observable<[Place]> in
           let coordinate = location.coordinate
           let lat = coordinate.latitude
