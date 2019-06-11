@@ -27,6 +27,7 @@ class FavoritesViewController: PlacesViewController {
     let view = EmptyView()
     view.emptyImageView.image = UIImage(named: "no-favorites")
     view.emptyTitleLabel.text = "Your plate is empty!"
+    view.clearButton.isHidden = true
     view.backgroundColor = .white
     return view
   }()

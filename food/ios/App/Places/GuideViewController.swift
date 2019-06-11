@@ -9,6 +9,9 @@ class GuideViewController: PlacesViewController {
     super.init(target: .placesCategorizedIn(category.identifier), context: context)
     self.category = category
     self.selectedIndex = 1 // default to list view instead of map
+
+    self.mapViewController.showIndex = true
+    self.listViewController.showIndex = true
   }
 
   override func page() -> String {

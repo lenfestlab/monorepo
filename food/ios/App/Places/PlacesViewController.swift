@@ -35,10 +35,11 @@ class PlacesViewController: UIViewController, Contextual {
       }
       _selectedIndex = newValue
       if selectedIndex == 1 {
-        self.navigationItem.rightBarButtonItem = UIBarButtonItem(image: UIImage(named: "map-view"), style: .plain, target: self, action: #selector(map))
+        self.navigationItem.rightBarButtonItem = UIBarButtonItem(title: "Map", style: .plain, target: self, action: #selector(map))
       } else {
-        self.navigationItem.rightBarButtonItem = UIBarButtonItem(image: UIImage(named: "list-view"), style: .plain, target: self, action: #selector(list))
+        self.navigationItem.rightBarButtonItem = UIBarButtonItem(title: "List", style: .plain, target: self, action: #selector(list))
       }
+
     }
     get {
       return _selectedIndex

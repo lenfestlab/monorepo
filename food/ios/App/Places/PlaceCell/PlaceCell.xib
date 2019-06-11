@@ -44,10 +44,10 @@
                                 <nil key="highlightedColor"/>
                             </label>
                             <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="vlm-0v-r0S">
-                                <rect key="frame" x="292" y="111" width="50" height="50"/>
+                                <rect key="frame" x="287" y="111" width="40" height="40"/>
                                 <constraints>
-                                    <constraint firstAttribute="width" constant="50" id="WDh-Tn-j3A"/>
-                                    <constraint firstAttribute="height" constant="50" id="dAn-1N-cCM"/>
+                                    <constraint firstAttribute="width" constant="40" id="WDh-Tn-j3A"/>
+                                    <constraint firstAttribute="height" constant="40" id="dAn-1N-cCM"/>
                                 </constraints>
                                 <state key="normal" image="heart"/>
                                 <state key="selected" image="heart-selected"/>
@@ -88,11 +88,11 @@
                             <constraint firstItem="5jZ-OZ-Mgk" firstAttribute="centerY" secondItem="Dz4-fv-GMQ" secondAttribute="centerY" constant="3" id="Ad9-tJ-JOe"/>
                             <constraint firstAttribute="trailing" secondItem="tNe-d0-EMl" secondAttribute="trailing" constant="10" id="BTd-Gx-8yE"/>
                             <constraint firstAttribute="bottom" secondItem="tNe-d0-EMl" secondAttribute="bottom" constant="12" id="Fu0-Ml-sNw"/>
-                            <constraint firstAttribute="trailing" secondItem="vlm-0v-r0S" secondAttribute="trailing" id="GeF-tm-yKK"/>
+                            <constraint firstAttribute="trailing" secondItem="vlm-0v-r0S" secondAttribute="trailing" constant="15" id="GeF-tm-yKK"/>
                             <constraint firstItem="tNe-d0-EMl" firstAttribute="leading" secondItem="oW8-1A-AE3" secondAttribute="leading" constant="15" id="LWA-s0-afj"/>
                             <constraint firstItem="tNe-d0-EMl" firstAttribute="top" secondItem="5jZ-OZ-Mgk" secondAttribute="bottom" constant="4" id="Mc5-f2-lbW"/>
                             <constraint firstItem="5jZ-OZ-Mgk" firstAttribute="top" secondItem="xOb-IV-e8y" secondAttribute="bottom" constant="12" id="N3N-ww-jOn"/>
-                            <constraint firstItem="xOb-IV-e8y" firstAttribute="bottom" secondItem="vlm-0v-r0S" secondAttribute="bottom" id="NEy-io-erE"/>
+                            <constraint firstItem="xOb-IV-e8y" firstAttribute="bottom" secondItem="vlm-0v-r0S" secondAttribute="bottom" constant="10" id="NEy-io-erE"/>
                             <constraint firstAttribute="trailing" relation="greaterThanOrEqual" secondItem="5jZ-OZ-Mgk" secondAttribute="trailing" constant="15" id="Nda-gl-2y7"/>
                             <constraint firstItem="Dz4-fv-GMQ" firstAttribute="leading" secondItem="oW8-1A-AE3" secondAttribute="leading" constant="15" id="fBW-cg-OmL"/>
                             <constraint firstAttribute="trailing" secondItem="xOb-IV-e8y" secondAttribute="trailing" id="gYj-hA-pvp"/>
@@ -124,7 +124,7 @@
         </collectionViewCell>
     </objects>
     <resources>
-        <image name="heart" width="22" height="23"/>
+        <image name="heart" width="40" height="40"/>
         <image name="heart-selected" width="22" height="23"/>
     </resources>
 </document>
