@@ -235,7 +235,7 @@ class DetailViewController: UIViewController, Contextual {
     self.addressLabel.addGestureRecognizer(tapGesture)
     self.addressLabel.isUserInteractionEnabled = true
 
-    let reviewString = NSMutableAttributedString(string: "View Full Review", font: UIFont.lightLarge, fontColor: .white)
+    let reviewString = NSMutableAttributedString(string: "Read Full Review", font: UIFont.lightLarge, fontColor: .white)
     reviewString.addAttribute(.underlineStyle, value: NSUnderlineStyle.single.rawValue, range: NSMakeRange(0, reviewString.length))
     self.reviewButton.setAttributedTitle(reviewString, for: .normal)
 
