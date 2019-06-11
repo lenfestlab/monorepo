@@ -3,7 +3,7 @@ import UIKit
 extension NSAttributedString {
 
   class func heartIcon() -> NSAttributedString {
-    let image = UIImage(named: "heart")
+    let image = UIImage(named: "heart-icon")
     let attachment = NSTextAttachment()
     attachment.image = image
     attachment.bounds = CGRect(x: 0, y: -5, width: image?.size.width ?? 0, height: image?.size.height ?? 0)
@@ -80,6 +80,15 @@ class FilterModule : NSObject {
   var nabes = [Neighborhood]()
   var authors = [Author]()
   var sortMode : SortMode = .distance
+
+  func reset() {
+    self.sortMode = .distance
+    self.ratings = []
+    self.prices = []
+    self.categories = []
+    self.nabes = []
+    self.authors = []
+  }
 
   func labelText() -> NSAttributedString? {
 

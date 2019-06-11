@@ -113,12 +113,7 @@ class FilterViewController: UIViewController, Contextual {
   }
 
   @IBAction func clearAll() {
-    self.filterModule.sortMode = .distance
-    self.filterModule.ratings = []
-    self.filterModule.prices = []
-    self.filterModule.categories = []
-    self.filterModule.nabes = []
-    self.filterModule.authors = []
+    self.filterModule.reset()
     self.filterDelegate?.filterUpdated(self, filter: self.filterModule)
   }
 

@@ -31,6 +31,18 @@ class EmptyView: UIView {
     return label
   }()
 
+  lazy var clearButton : UIButton! = {
+    let clearButton = UIButton(frame: .zero)
+    clearButton.setTitle("Clear All Selections", for: .normal)
+    clearButton.setTitleColor(.black, for: .normal)
+    clearButton.backgroundColor = .lightGreyBlue
+    clearButton.layer.cornerRadius = 5.0
+    clearButton.titleLabel?.font = .lightLarge
+    clearButton.clipsToBounds = true
+    self.addSubview(clearButton)
+    return clearButton
+  }()
+
   override func layoutSubviews() {
     super.layoutSubviews()
 
@@ -45,6 +57,9 @@ class EmptyView: UIView {
     self.emptyImageView.center = CGPoint(x: self.center.x, y: self.center.y - 100)
     self.emptyTitleLabel.frame = CGRect(x: padding, y: self.emptyImageView.frame.maxY + 36, width: labelWidth, height: 21)
     self.emptySubtitleLabel.frame = CGRect(x: padding, y: self.emptyTitleLabel.frame.maxY + 14, width: labelWidth, height: 60)
+    self.emptySubtitleLabel.frame = CGRect(x: padding, y: self.emptyTitleLabel.frame.maxY + 14, width: labelWidth, height: 60)
+    self.clearButton.frame = CGRect(x: 0, y: 0, width: 184, height: 35)
+    self.clearButton.center = CGPoint(x: self.center.x, y: self.emptySubtitleLabel.frame.maxY + 36)
   }
 
 

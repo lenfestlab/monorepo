@@ -3,9 +3,8 @@ import CoreLocation
 import SVProgressHUD
 
 extension HomeViewController : FilterModuleDelegate {
-  func filterUpdated(_ viewController: UIViewController, filter: FilterModule) {
-    viewController.dismiss(animated: true, completion: nil)
 
+  func updateFilter(_ filter: FilterModule) {
     self.placeStore.filterModule = filter
 
     if let labelText = filter.labelText() {
@@ -36,6 +35,11 @@ extension HomeViewController : FilterModuleDelegate {
         self?.mapViewController.scrollToItem(at: IndexPath(item: 0, section: 0))
       }
     }
+  }
+
+  func filterUpdated(_ viewController: UIViewController, filter: FilterModule) {
+    viewController.dismiss(animated: true, completion: nil)
+    updateFilter(filter)
   }
 
 }
@@ -148,7 +152,9 @@ class HomeViewController: PlacesViewController {
 
     self.emptyView.isHidden = true
     self.view.insertSubview(self.emptyView, belowSubview: self.topBar)
-
+    self.emptyView.clearButton.isHidden = false
+    self.emptyView.clearButton.addTarget(self, action: #selector(clearAll), for: .touchUpInside)
+    
     // Cache is empty on first load and after Realm schema changes
     // In latter case, indicate fetching underway w/ spinner.
     cache.isEmpty$
@@ -163,6 +169,13 @@ class HomeViewController: PlacesViewController {
 
     refresh()
   }
+
+  @objc func clearAll() {
+    let filterModule = self.placeStore.filterModule
+    filterModule.reset()
+    self.updateFilter(filterModule)
+  }
+
 
   lazy var emptyView : EmptyView = {
     let view = EmptyView()

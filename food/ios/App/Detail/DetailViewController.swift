@@ -174,7 +174,9 @@ class DetailViewController: UIViewController, Contextual {
   override func viewDidLoad() {
     super.viewDidLoad()
 
-    self.reviewButton.isHidden = self.place.post?.url == nil
+    if self.place.post?.url == nil {
+      self.reviewButton.removeFromSuperview()
+    }
 
     self.loveButton.isHidden = Installation.authToken() == nil
 
@@ -233,10 +235,9 @@ class DetailViewController: UIViewController, Contextual {
     self.addressLabel.addGestureRecognizer(tapGesture)
     self.addressLabel.isUserInteractionEnabled = true
 
-    self.reviewButton.titleLabel?.font = UIFont.lightLarge
-    self.reviewButton.setBackgroundImage(UIColor.lightGreyBlue.pixelImage(), for: .normal)
-    self.reviewButton.layer.cornerRadius = 5.0
-    self.reviewButton.clipsToBounds = true
+    let reviewString = NSMutableAttributedString(string: "View Full Review", font: UIFont.lightLarge, fontColor: .white)
+    reviewString.addAttribute(.underlineStyle, value: NSUnderlineStyle.single.rawValue, range: NSMakeRange(0, reviewString.length))
+    self.reviewButton.setAttributedTitle(reviewString, for: .normal)
 
     if let authorName = self.place.post?.author?.name {
       self.reviewLabel.text = "By \(authorName)"
