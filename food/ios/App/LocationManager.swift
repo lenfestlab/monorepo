@@ -41,9 +41,16 @@ class LocationManager: NSObject, CLLocationManagerDelegate {
   }
 
   lazy var status$ = {() -> Observable<CLAuthorizationStatus> in
-    return locationManager.rx.didChangeAuthorization.map({ (manager, status) -> CLAuthorizationStatus in
-      return status
-    })
+    return
+      Observable.merge(
+        locationManager.rx.status,
+        locationManager.rx.didChangeAuthorization
+          .map({ (manager, status) -> CLAuthorizationStatus in
+            return status
+          })
+        )
+        .distinctUntilChanged()
+        .share(replay: 1, scope: .whileConnected)
   }()
 
   let defaultCoordinate =
@@ -231,6 +238,7 @@ class LocationManager: NSObject, CLLocationManagerDelegate {
         @unknown default: fatalError()
         }
       })
+      .share(replay: 1, scope: .whileConnected)
   }()
 
 }
