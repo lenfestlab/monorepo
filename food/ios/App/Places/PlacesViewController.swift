@@ -34,10 +34,21 @@ class PlacesViewController: UIViewController, Contextual {
         displayContentController(self.viewControllers[newValue])
       }
       _selectedIndex = newValue
+
+      let mapButton = UIButton(frame: CGRect(x: 0, y: 0, width: 39, height: 20))
+      mapButton.setTitle("Map", for: .normal)
+      mapButton.setTitleColor(.darkRed, for: .normal)
+      mapButton.addTarget(self, action: #selector(map), for: .touchUpInside)
+
+      let listButton = UIButton(frame: CGRect(x: 0, y: 0, width: 39, height: 20))
+      listButton.setTitle("List", for: .normal)
+      listButton.setTitleColor(.darkRed, for: .normal)
+      listButton.addTarget(self, action: #selector(list), for: .touchUpInside)
+
       if selectedIndex == 1 {
-        self.navigationItem.rightBarButtonItem = UIBarButtonItem(title: "Map", style: .plain, target: self, action: #selector(map))
+        self.navigationItem.rightBarButtonItem = UIBarButtonItem(customView: mapButton)
       } else {
-        self.navigationItem.rightBarButtonItem = UIBarButtonItem(title: "List", style: .plain, target: self, action: #selector(list))
+        self.navigationItem.rightBarButtonItem = UIBarButtonItem(customView: listButton)
       }
 
     }
