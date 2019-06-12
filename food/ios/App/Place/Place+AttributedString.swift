@@ -4,8 +4,9 @@ extension Place {
 
   func attributedCategories() -> NSAttributedString {
     var names: [String] = []
-    names.append(contentsOf: categories.map({ $0.name }).compactMap({$0}))
-    names.append(contentsOf: nabes.map({ $0.name }).compactMap({$0}))
+    names.append(contentsOf: cuisines.compactMap({ $0.name }))
+    names.append(contentsOf: nabes.compactMap({ $0.name }))
+    names.append(contentsOf: guides.compactMap({ $0.name }))
     return NSAttributedString(string: names.joined(separator: " | "))
   }
 

@@ -73,7 +73,6 @@ class PlaceCell: UICollectionViewCell {
       attributedTitle.append(NSMutableAttributedString(string: "\(index + 1). ", font: UIFont.mediumSmall, fontColor: .black))
     }
     attributedTitle.append(place.attributedTitle(font: UIFont.mediumSmall))
-
     self.textLabel.attributedText = attributedTitle
     self.textLabel.lineBreakMode = .byTruncatingTail
 
@@ -100,9 +99,11 @@ class PlaceCell: UICollectionViewCell {
 
   override func prepareForReuse() {
     super.prepareForReuse()
-    self.bag = DisposeBag()
-    self.textLabel.text = nil
-    self.imageView.image = nil
+    bag = DisposeBag()
+    imageView.image = nil
+    textLabel.text = nil
+    subtitleLabel.text = nil
+    categoryLabel.text = nil
   }
 
   @IBAction func tapBookmarkButton() {

@@ -179,4 +179,11 @@ class Place: RealmSwift.Object, Mappable {
     return description
   }
 
+  var cuisines: [Category] {
+    return categories.filter({ $0.isCuisine })
+  }
+  var guides: [Category] {
+    return categories.filter({ !$0.isCuisine })
+  }
+
 }
