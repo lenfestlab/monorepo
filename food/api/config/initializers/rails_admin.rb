@@ -1,7 +1,7 @@
 RailsAdmin.config do |config|
   config.default_items_per_page = Integer(ENV["ADMIN_PAGE_ITEMS"]) || 100
 
-  if Rails.env.production?
+  if ENV["ADMIN_BASIC_PASSWORD"].present?
     config.authenticate_with do
       authenticate_or_request_with_http_basic('Lenfest Lab Admin') do |username, password|
         username == 'admin' && password == ENV["ADMIN_BASIC_PASSWORD"]
