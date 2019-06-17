@@ -178,7 +178,7 @@ class DetailViewController: UIViewController, Contextual {
       self.reviewButton.removeFromSuperview()
     }
 
-    self.loveButton.isHidden = Installation.authToken() == nil
+    self.loveButton.isHidden = api.authToken == nil
 
     isSaved$
       .bind(to: loveButton.rx.isSelected)

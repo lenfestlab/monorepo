@@ -64,20 +64,7 @@ class PermissionsViewController: UIViewController, LocationManagerAuthorizationD
       print("ERROR: MIA: PermissionViewController AppDelegate")
       return
     }
-
-    iCloudUserIDAsync() { cloudId, error in
-      DispatchQueue.main.async {
-        if let cloudId = cloudId {
-          print("received iCloudID \(cloudId)")
-          appDelegate.showEmailRegistration(cloudId: cloudId)
-        } else {
-          print("Fetched iCloudID was nil")
-          UserDefaults.standard.set(true, forKey: "onboarding-completed")
-          let appDelegate = application.delegate as? AppDelegate
-          appDelegate?.showHomeScreen()
-        }
-      }
-    }
+    appDelegate.showEmailRegistration()
   }
 
 

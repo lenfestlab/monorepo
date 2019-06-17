@@ -14,7 +14,8 @@ Rails.application.routes.draw do
 
   mount RailsAdmin::Engine => '/admin', as: 'rails_admin'
 
-  resources :users, only: :update
+  resources :users, only: :update # TODO: deprecated
+  resources :installs, controller: :users, only: :update
 
   %i[
     categories

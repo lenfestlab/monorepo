@@ -1,6 +1,6 @@
 import UIKit
 
-class TabBarViewController: UITabBarController {
+class TabBarViewController: UITabBarController, Contextual {
 
   let restaurantsTitle = "All Restaurants"
   let guidesTitle = "Guides"
@@ -11,7 +11,7 @@ class TabBarViewController: UITabBarController {
   var listViewController: ListViewController!
   var guidesViewController: GuidesViewController!
 
-  private let context: Context
+  var context: Context
   private let notificationManager: NotificationManager
 
   init(
@@ -30,7 +30,7 @@ class TabBarViewController: UITabBarController {
   }
 
   @IBAction func settings(sender: UIButton) {
-    self.context.analytics.log(.tapsSettingsButton)
+    analytics.log(.tapsSettingsButton)
     let settingsController =
       SettingsViewController(
         context: context,
@@ -67,7 +67,7 @@ class TabBarViewController: UITabBarController {
     // load Guides view before display to ensure its tableView is populated
     assert(self.guidesViewController?.view != nil)
 
-    if Installation.authToken() != nil {
+    if let _ = api.authToken {
       self.favoritesViewController = FavoritesViewController(context: context)
       self.favoritesViewController.selectedIndex = 1
       let favoritesNavigationController = UINavigationController(rootViewController: self.favoritesViewController)

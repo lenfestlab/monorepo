@@ -1,6 +1,6 @@
 import UIKit
 
-class EmailViewController: UIViewController, UITextFieldDelegate {
+class EmailViewController: UIViewController, UITextFieldDelegate, Contextual {
 
   func textFieldShouldReturn(_ textField: UITextField) -> Bool {
     textField.resignFirstResponder()
@@ -8,7 +8,7 @@ class EmailViewController: UIViewController, UITextFieldDelegate {
     return true
   }
 
-  private let analytics: AnalyticsManager
+  var context: Context
 
   @IBOutlet weak var submitButton : UIButton!
   @IBOutlet weak var textField : UITextField!
@@ -19,12 +19,8 @@ class EmailViewController: UIViewController, UITextFieldDelegate {
   @IBOutlet weak var stepLabel: UILabel!
   @IBOutlet weak var headerLabel: UILabel!
 
-
-  var cloudId : String
-
-  init(analytics: AnalyticsManager, cloudId: String) {
-    self.analytics = analytics
-    self.cloudId = cloudId
+  init(context: Context) {
+    self.context = context
     super.init(nibName: nil, bundle: nil)
     navigationItem.hidesBackButton = true
   }
@@ -104,17 +100,14 @@ class EmailViewController: UIViewController, UITextFieldDelegate {
 
     button.isEnabled = false
 
-    self.analytics.log(.tapsSubmitEmailButton)
+    analytics.log(.tapsSubmitEmailButton)
 
-    Installation.update(cloudId: cloudId, emailAddress: emailAddress, completion: { (success, authToken) in
-      DispatchQueue.main.async { [unowned self] in
-        if success {
-          self.next()
-        } else {
-          button.isEnabled = true
-        }
-      }
-    })
+    api.updateEmail$(email: emailAddress)
+      .subscribe(onNext: { [weak self] _ in
+          self?.next()
+        }, onError: { [weak self] error in
+          self?.submitButton.isEnabled = true
+      }).disposed(by: rx.disposeBag)
 
   }
 

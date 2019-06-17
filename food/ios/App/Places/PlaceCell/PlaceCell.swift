@@ -90,7 +90,7 @@ class PlaceCell: UICollectionViewCell {
       imageView.set(url, filter: filter)
     }
 
-    self.loveButton.isHidden = Installation.authToken() == nil
+    self.loveButton.isHidden = context.api.authToken == nil
 
     self.context?.cache.isSaved$(place.identifier)
       .bind(to: loveButton.rx.isSelected)

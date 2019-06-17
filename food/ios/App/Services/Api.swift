@@ -3,9 +3,13 @@ import RxAlamofire
 import RxSwift
 import RxCocoa
 import RxSwiftExt
+import RxRelay
 import Gloss
 import ObjectMapper
 import RealmSwift
+
+fileprivate let cacheKeyAuthToken = "auth-token"
+fileprivate let cacheKeyEmail = "email"
 
 class Api {
 
@@ -21,11 +25,106 @@ class Api {
   let cache: Cache
   let locationManager: LocationManager
 
-  init(env: Env, cache: Cache, locationManager: LocationManager) {
+  init(
+    env: Env,
+    cache: Cache,
+    locationManager: LocationManager
+    ) {
     self.env = env
     self.cache = cache
     self.locationManager = locationManager
   }
+
+  typealias AuthToken = String
+  let authToken$$ = BehaviorRelay<AuthToken?>(value: {() -> String? in
+    let defaults = UserDefaults.standard
+    guard let token = defaults.value(forKey: cacheKeyAuthToken) as? String else {
+      return nil
+    }
+    return token
+  }())
+  lazy var authToken$ = { () -> Observable<AuthToken> in
+    return self.authToken$$
+      .asObservable()
+      .unwrap()
+      .distinctUntilChanged()
+      .do(onNext: { [unowned self] token in
+        let defaults = UserDefaults.standard
+        defaults.setValue(token, forKey: cacheKeyAuthToken)
+        defaults.synchronize()
+      })
+      .share(replay: 1, scope: .whileConnected)
+  }()
+  var authToken: AuthToken? {
+    set {
+      authToken$$.accept(newValue)
+    }
+    get {
+      return authToken$$.value
+    }
+  }
+
+  typealias Email = String
+  let email$$ = BehaviorRelay<Email?>(value: {() -> Email? in
+    let defaults = UserDefaults.standard
+    guard let email = defaults.value(forKey: cacheKeyEmail) as? String else {
+      return nil
+    }
+    return email
+  }())
+  lazy var email$ = {() -> Observable<Email?> in
+    return email$$
+      .asObservable()
+      .distinctUntilChanged()
+      .do(onNext: { [unowned self] email in
+        let defaults = UserDefaults.standard
+        defaults.setValue(email, forKey: cacheKeyEmail)
+        defaults.synchronize()
+      })
+      .share(replay: 1, scope: .whileConnected)
+  }()
+  var email: String? {
+    set {
+      email$$.accept(newValue)
+    }
+    get {
+      return email$$.value
+    }
+  }
+
+  func registerInstall$() -> Observable<Void> {
+    return patchInstall$(params: [:])
+  }
+
+  func updateEmail$(email: String) -> Observable<Void> {
+    return patchInstall$(params: ["email" : email])
+  }
+
+  func updateGcmToken$(_ token: String) -> Observable<Void> {
+    return patchInstall$(params: ["gcm_token" : token])
+  }
+
+  private func patchInstall$(params: [String: Any]) -> Observable<Void> {
+    let url = "\(env.apiBaseUrlString)/installs/\(env.installationId)"
+    return
+      RxAlamofire
+        .requestJSON(.patch, url, parameters: params)
+        .observeOn(Scheduler.background)
+        .map({ _response, json -> (String, String?) in
+          guard
+            let json = json as? JSON,
+            let authToken = json["auth_token"] as? AuthToken
+            else { throw ApiError.parse }
+          let email = json["email"] as? String
+          return (authToken, email)
+        })
+        .observeOn(Scheduler.main)
+        .map({ (token, email) -> Void in
+          self.authToken = token
+          self.email = email
+        })
+  }
+
 
   func getPlace$(_ identifier: String) -> Observable<Result<Place>> {
     return
@@ -53,7 +152,7 @@ class Api {
     let url = "\(env.apiBaseUrlString)/bookmarks"
     var params = params
     params["place_id"] = identifier
-    if let authToken = Installation.authToken() { params["auth_token"] = authToken }
+    if let authToken = self.authToken { params["auth_token"] = authToken }
     return
       RxAlamofire
         .requestJSON(.patch, url, parameters: params)
@@ -114,32 +213,34 @@ class Api {
       .share()
   }
 
-  func updateBookmarks$(authToken: AuthToken) -> Observable<[Bookmark]> {
+  func updateBookmarks$() -> Observable<[Bookmark]> {
     let url = "\(env.apiBaseUrlString)/bookmarks"
-    var params: [String: Any] = [:]
-    params["auth_token"] = authToken
     return
-      RxAlamofire
-        .requestJSON(.get, url, parameters: params)
-        .observeOn(Scheduler.background)
-        .retry(2)
-        .map({ _response, json in
-          guard
-            let json = json as? JSON,
-            let data = json["data"] as? [JSON]
-            else { throw ApiError.parse }
-          return [Bookmark].init(JSONArray: data)
-        })
-        .do(onNext: { [weak self] bookmarks in
-          try self?.cache.put(bookmarks)
-        })
-        .flatMap({ (objects: [Bookmark]) -> Observable<[Bookmark]> in
-          return Observable.just(objects)
-            .map({ $0.map({ ThreadSafeReference(to: $0) }) })
-            .observeOn(Scheduler.main)
-            .map({ refs in
-              let realm = try Realm()
-              return refs.compactMap(realm.resolve)
+      authToken$
+        .flatMapFirst({ authToken -> Observable<[Bookmark]> in
+          let params: [String: Any] = ["auth_token": authToken]
+          return RxAlamofire
+            .requestJSON(.get, url, parameters: params)
+            .observeOn(Scheduler.background)
+            .retry(2)
+            .map({ _response, json in
+              guard
+                let json = json as? JSON,
+                let data = json["data"] as? [JSON]
+                else { throw ApiError.parse }
+              return [Bookmark].init(JSONArray: data)
+            })
+            .do(onNext: { [weak self] bookmarks in
+              try self?.cache.put(bookmarks)
+            })
+            .flatMap({ (objects: [Bookmark]) -> Observable<[Bookmark]> in
+              return Observable.just(objects)
+                .map({ $0.map({ ThreadSafeReference(to: $0) }) })
+                .observeOn(Scheduler.main)
+                .map({ refs in
+                  let realm = try Realm()
+                  return refs.compactMap(realm.resolve)
+                })
             })
         })
   }
@@ -192,7 +293,7 @@ class Api {
       "authors": author_ids,
       "sort": sort.rawValue.lowercased(),
     ]
-    if let authToken = Installation.authToken() { params["auth_token"] = authToken }
+    if let authToken = self.authToken { params["auth_token"] = authToken }
     return
       RxAlamofire
         .requestJSON(.get, target.urlString, parameters: params)
