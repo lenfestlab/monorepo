@@ -80,36 +80,10 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
 
     if !onboardingCompleted {
       window!.rootViewController = self.mainController
-      window!.makeKeyAndVisible()
-      return true
-    }
-
-    if Installation.authToken() != nil {
-      self.showHomeScreen()
-      window!.makeKeyAndVisible()
     } else {
-      let cloudViewController = CloudViewController()
-      window!.rootViewController = cloudViewController
-      window!.makeKeyAndVisible()
-      iCloudUserIDAsync() { cloudId, error in
-        if let cloudId = cloudId {
-          print("received iCloudID \(cloudId)")
-
-          Installation.register(cloudId: cloudId, completion: { (success, accessToken) in
-            DispatchQueue.main.async { [unowned self] in
-              self.showHomeScreen()
-            }
-          })
-
-        } else {
-          print("Fetched iCloudID was nil")
-          DispatchQueue.main.async { [unowned self] in
-            self.showHomeScreen()
-          }
-        }
-      }
+      self.showHomeScreen()
     }
-
+    window!.makeKeyAndVisible()
     return true
   }
 
@@ -147,9 +121,9 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
     window!.rootViewController = self.tabController
   }
 
-  func showEmailRegistration(cloudId: String) {
+  func showEmailRegistration() {
     mainController.pushViewController(
-      EmailViewController(analytics: self.analytics, cloudId: cloudId),
+      EmailViewController(context: self.context),
       animated: false)
   }
 
@@ -259,6 +233,9 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
   }
 
   private func syncData() -> Void {
+    let register$ =
+      api.registerInstall$()
+        .mapTo(true)
 
     let updateDefaultPlaces$ =
       locationManager.latestOrDefaultLocation$
@@ -271,13 +248,11 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         .mapTo(true)
 
     let updateBookmarks$ =
-      authToken$ // wait for auth token
-        .flatMapFirst({ [unowned self] token in
-          return self.api.updateBookmarks$(authToken: token)
-        })
+      api.updateBookmarks$()
         .mapTo(true)
 
     Observable.zip([
+      register$,
       updateDefaultPlaces$,
       updateBookmarks$,
       ])
@@ -304,17 +279,11 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
 extension AppDelegate: MessagingDelegate {
 
   func messaging(_ messaging: Messaging, didReceiveRegistrationToken gcmToken: String) {
-
-    // sync latest GCM token w/ server
-    iCloudUserIDAsync() { cloudId, error in
-      guard let id = cloudId else { return }
-      let params = ["gcm_token": gcmToken]
-      Installation.patch(cloudId: id, params: params, completion: { (success, _) in
-        if !success {
-          print("FAIL: sync GCM token")
-        }
+    api.updateGcmToken$(gcmToken)
+      .subscribe(onError: { error in
+        print("FAIL: sync GCM token \(error)")
       })
-    }
+      .disposed(by: rx.disposeBag)
 
     // NOTE: shared topic for all notification types; fork behavior on payload
     let topic = "all"
@@ -323,7 +292,6 @@ extension AppDelegate: MessagingDelegate {
         print("ERROR: gcm: failed to subscribe to topic \(topic) - \(errorDesc)")
       }
     }
-
   }
 
 }

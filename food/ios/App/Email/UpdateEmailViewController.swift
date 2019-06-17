@@ -1,6 +1,7 @@
 import UIKit
 
-class UpdateEmailViewController: UIViewController, UITextFieldDelegate {
+class UpdateEmailViewController: UIViewController, UITextFieldDelegate, Contextual {
+
 
   func textFieldShouldReturn(_ textField: UITextField) -> Bool {
     textField.resignFirstResponder()
@@ -8,15 +9,15 @@ class UpdateEmailViewController: UIViewController, UITextFieldDelegate {
     return true
   }
 
-  private let analytics: AnalyticsManager
+  var context: Context
 
   @IBOutlet weak var submitButton : UIButton!
   @IBOutlet weak var textField : UITextField!
   @IBOutlet weak var textView : UIView!
   @IBOutlet weak var errorLabel : UILabel!
 
-  init(analytics: AnalyticsManager) {
-    self.analytics = analytics
+  init(context: Context) {
+    self.context = context
     super.init(nibName: nil, bundle: nil)
   }
 
@@ -31,7 +32,7 @@ class UpdateEmailViewController: UIViewController, UITextFieldDelegate {
 
     self.textField.delegate = self
 
-    self.textField.text = Installation.shared.email
+    self.textField.text = api.email
 
     self.navigationController?.styleController()
 
@@ -57,14 +58,6 @@ class UpdateEmailViewController: UIViewController, UITextFieldDelegate {
   }
 
   @IBAction func submit(_ sender: Any?) {
-    iCloudUserIDAsync() { [weak self] cloudId, error in
-      guard let id = cloudId else { return }
-      self?.submitWithCloudId(id)
-    }
-  }
-
-
-  func submitWithCloudId(_ cloudId: String) {
     guard let button = self.submitButton else {
       return
     }
@@ -92,15 +85,12 @@ class UpdateEmailViewController: UIViewController, UITextFieldDelegate {
 
     self.analytics.log(.tapsSubmitEmailButton)
 
-    Installation.update(cloudId: cloudId, emailAddress: emailAddress, completion: { (success, authToken) in
-      DispatchQueue.main.async { [unowned self] in
-        if success {
-          self.next()
-        } else {
-          button.isEnabled = true
-        }
-      }
-    })
+    api.updateEmail$(email: emailAddress)
+      .subscribe(onNext: { [weak self] _ in
+        self?.next()
+        }, onError: { [weak self] error in
+          self?.submitButton.isEnabled = true
+      }).disposed(by: rx.disposeBag)
 
   }
 

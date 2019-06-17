@@ -196,15 +196,18 @@ class SettingsViewController: BaseSettingsViewController, LocationManagerAuthori
 
     data.append(SettingsSectionManager(title: "PERMISSIONS", rows: toggleRows))
 
-    if Installation.authToken() != nil {
+    if let _ = api.authToken {
       let emailCell = UITableViewCell(style: UITableViewCell.CellStyle.value1, reuseIdentifier: nil)
-      emailCell.textLabel?.text = Installation.shared.email ?? "Email Address"
+      api.email$
+        .bind { email in
+          emailCell.textLabel?.text = email ?? "Email Address"
+        }.disposed(by: rx.disposeBag)
       emailCell.textLabel?.font = .lightLarge
       emailCell.separatorInset = .zero
       emailCell.detailTextLabel?.text = "Edit"
 
       let emailManager = SettingsRowManager(tableViewCell: emailCell) {
-        self.navigationController?.pushViewController(UpdateEmailViewController(analytics: self.analytics), animated: true)
+        self.navigationController?.pushViewController(UpdateEmailViewController(context: self.context), animated: true)
       }
 
       data.append(SettingsSectionManager(title: "EMAIL", rows: [emailManager]))
