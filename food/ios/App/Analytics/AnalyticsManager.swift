@@ -400,16 +400,6 @@ class AnalyticsManager: NSObject {
 
         //"installation-id"
         "cd1": installationId // same value as "cid" param above
-
-        // "User ID" - https://goo.gl/ZXsk6q
-        // > This is intended to be a known identifier for a user provided by the
-        // > site owner/tracking library user. It must not itself be PII
-        // > (personally identifiable information). The value should never be
-        // > persisted in GA cookies or other Analytics provided storage.
-        // NOTE: deliberately omitted; to persist id across deletes/installs,
-        // fetch the iCloud ID (async), set as the "uid" custom dimension, per:
-        // https://goo.gl/5QFvkb
-        // "uid": env.userId,
       ]
     }
 

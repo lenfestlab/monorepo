@@ -5,7 +5,6 @@ targets:
       - target: NotificationService
         codeSign: true
         embed: true
-      - sdk: CloudKit.framework
       - carthage: Gloss
       - carthage: UserDefaultsStore
       - carthage: GoogleReporter
