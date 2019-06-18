@@ -391,5 +391,24 @@ class NotificationManager: NSObject, UNUserNotificationCenterDelegate, Contextua
       .disposed(by: rx.disposeBag)
   }
 
+  func showMigrationAlert() {
+    let content = UNMutableNotificationContent()
+    content.categoryIdentifier = "migration"
+    content.sound = UNNotificationSound.default
+    content.title = "TODO"
+    content.body = "TODO"
+    content.userInfo["url"] = "https://google.com"
+    let request =
+      UNNotificationRequest(
+        identifier: UUID().uuidString,
+        content: content,
+        trigger: nil)
+    guard let center = self.notificationCenter
+      else { return }
+    center.add(request, withCompletionHandler: { (error) in
+      if let error = error { print(error) }
+    })
+  }
+
 }
 

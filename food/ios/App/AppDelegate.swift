@@ -84,6 +84,14 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
       self.showHomeScreen()
     }
     window!.makeKeyAndVisible()
+
+    // TODO / WIP - notify if app deprecated
+    if
+      let identifier = Bundle.main.bundleIdentifier,
+      identifier.contains("food") {
+      notificationManager.showMigrationAlert()
+    }
+
     return true
   }
 
