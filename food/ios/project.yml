@@ -24,7 +24,6 @@ configs:
 
 settings:
   base:
-    APP_NAME: Philly Eats
     APP_VERSION: 1.0.3
     APP_MARKETING_PATH: food
     TARGETED_DEVICE_FAMILY: '1' # iPhone only
