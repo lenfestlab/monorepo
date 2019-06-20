@@ -7,9 +7,10 @@ class PostSerializer < ActiveModel::Serializer
     rating
     image_url
     images
-    url
     author
     details
   ])
+
+  attribute :url_with_analytics, key: :url
 
 end
