@@ -49,10 +49,12 @@ class Place < ApplicationRecord
 
   def cache_nabes!
     # match nabe on city name, but only if lat/lng match fails
-    if nabe = Nabe.covering(self.lat, self.lng).first
-      self.nabe = nabe
-    else
-      self.nabe = Nabe.find_by name: address_city
+    unless nabe_id
+      if nabe = Nabe.covering(self.lat, self.lng).first
+        self.nabe = nabe
+      else
+        self.nabe = Nabe.find_by name: address_city
+      end
     end
     self.cached_nabe_identifiers = [self.nabe.try(:identifier)].compact
     self.cached_nabes = [self.nabe.try(:as_json)].compact
