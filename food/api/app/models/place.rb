@@ -54,7 +54,7 @@ class Place < ApplicationRecord
     else
       self.nabe = Nabe.find_by name: address_city
     end
-    self.cached_nabe_identifiers = [self.nabe.identifier].compact
+    self.cached_nabe_identifiers = [self.nabe.try(:identifier)].compact
     self.cached_nabes = [self.nabe.try(:as_json)].compact
   end
 
