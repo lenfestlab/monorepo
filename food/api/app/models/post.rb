@@ -209,6 +209,19 @@ class Post < ApplicationRecord
       help "Set to a past date to hide post indefinitely."
     end
 
+    configure :prices_admin do
+      label "Prices"
+      help "Comma-delimited list of dollar signs, e.g. '$$' or  '$$$,$$$$'"
+    end
+
+  end
+
+  def prices_admin= as_string
+    as_ints = as_string.split(/[,\s]+/).compact.map(&:length)
+    self.prices = (as_ints & Array(0..4)).sort!
+  end
+  def prices_admin
+    prices.map { |i| "$" * i }.join(",")
   end
 
   def admin_name
