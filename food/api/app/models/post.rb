@@ -63,11 +63,6 @@ class Post < ApplicationRecord
     end
   end
 
-  def url
-    secure_url = Post.ensure_https read_attribute(:url)
-    append_analytics_params secure_url
-  end
-
   def append_analytics_params url_string
     return nil unless url_string
     return url_string unless url_string.include?("philly.com") # PMN only
@@ -85,6 +80,10 @@ class Post < ApplicationRecord
     end
     uri.query = URI.encode_www_form(params)
     uri.to_s
+  end
+
+  def url_with_analytics
+    append_analytics_params Post.ensure_https(url)
   end
 
   def self.md_fields
