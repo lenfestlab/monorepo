@@ -342,5 +342,9 @@ class FilterViewController: UIViewController, Contextual {
     self.present(navigationController, animated: true, completion: nil)
   }
 
+  @objc override func dismissPopUp() {
+    self.dismiss(animated: true, completion: nil)
+    self.analytics.log(.closeFilter(filterModule: self.filterModule))
+  }
 
 }

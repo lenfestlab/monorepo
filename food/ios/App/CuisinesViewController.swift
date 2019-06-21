@@ -152,4 +152,8 @@ class CuisinesViewController: UITableViewController, Contextual {
     }
   }
 
+  @objc override func dismissPopUp() {
+    self.analytics.log(.closeCuisine(cuisines: self.selected))
+    self.dismiss(animated: true, completion: nil)
+  }
 }
