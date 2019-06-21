@@ -231,7 +231,7 @@ struct AnalyticsEvent {
   }
 
   static func switchesViewListToCarousel(page: String) -> AnalyticsEvent {
-    return AnalyticsEvent(name: "view-carousel", category: .navigation, label: page)
+    return AnalyticsEvent(name: "view-map", category: .navigation, label: page)
   }
 
   static let tapsFilterButton = AnalyticsEvent(name: "filter", category: .navigation)
