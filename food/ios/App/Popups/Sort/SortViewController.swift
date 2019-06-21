@@ -96,4 +96,8 @@ class SortViewController: UITableViewController {
     cell?.accessoryType  = .none
   }
 
+  @objc override func dismissPopUp() {
+    self.analytics.log(.closeSort())
+    self.dismiss(animated: true, completion: nil)
+  }
 }

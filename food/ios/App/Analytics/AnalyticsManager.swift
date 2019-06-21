@@ -345,6 +345,24 @@ struct AnalyticsEvent {
     return AnalyticsEvent(name: "region-did-change", category: .app, label: latlng, cd2: latlngDelta)
   }
 
+  static func closeCuisine(cuisines: [Category]) -> AnalyticsEvent {
+    return AnalyticsEvent(name: "close-cuisine", category: .filter, cd7: cuisines.map{ $0.name }.joined(separator: ","))
+  }
+
+  static func closeSort() -> AnalyticsEvent {
+    return AnalyticsEvent(name: "close-sort", category: .filter)
+  }
+
+  static func closeFilter(filterModule: FilterModule) -> AnalyticsEvent {
+    let cuisines = filterModule.categories.map({ $0.name }).compactMap({$0}).joined(separator: ",")
+    let neighborhoods = filterModule.nabes.map({ $0.name }).compactMap({$0}).joined(separator: ",")
+    let bells = filterModule.ratings.map { "\($0)" }.joined(separator: ",")
+    let price = filterModule.prices.map { "\($0)" }.joined(separator: ",")
+    let reviewer = filterModule.authors.map { $0.name }.joined(separator: ",")
+    return AnalyticsEvent(name: "close-filter", category: .filter, cd7: cuisines, cd8: neighborhoods, cd9: bells, cd10: price, cd11: reviewer)
+  }
+
+
   static func visited(
     place: Place,
     location: CLLocationCoordinate2D?

@@ -6,6 +6,10 @@ extension UIViewController {
     return self.parent as? PopupViewController
   }
 
+  @objc func dismissPopUp() {
+    self.dismiss(animated: true, completion: nil)
+  }
+
 }
 
 class PopupViewController: UIViewController {
@@ -19,7 +23,7 @@ class PopupViewController: UIViewController {
   lazy var exitButton : UIView! = {
     let exitButton = UIButton(frame: .zero)
     exitButton.setImage(UIImage(named: "exit-button"), for: .normal)
-    exitButton.addTarget(self, action: #selector(dismissPopUp), for: .touchUpInside)
+    exitButton.addTarget(self.rootViewController, action: #selector(dismissPopUp), for: .touchUpInside)
     return exitButton
   }()
 
@@ -120,10 +124,5 @@ class PopupViewController: UIViewController {
                                    width: width,
                                    height: height)
   }
-
-  @objc func dismissPopUp() {
-    self.dismiss(animated: true, completion: nil)
-  }
-
 
 }
