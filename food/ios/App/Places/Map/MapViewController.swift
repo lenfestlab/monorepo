@@ -119,9 +119,18 @@ class MapViewController: UIViewController, Contextual {
     mapPlacesChangeset$$.onNext(changeset)
   }
 
+  @objc func didDragMap(_ sender: UIGestureRecognizer? = nil) {
+    if let region = self.mapView?.region, sender?.state == .ended {
+      analytics.log(.regionDidChange(region))
+    }
+  }
 
   override func viewDidLoad() {
     super.viewDidLoad()
+
+    let panRec = UIPanGestureRecognizer(target: self, action: #selector(didDragMap))
+    self.mapView?.addGestureRecognizer(panRec)
+    panRec.delegate = self
 
     detailAnimating$
       .subscribe(onNext: { [weak self] isAnimating in

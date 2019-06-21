@@ -8,6 +8,7 @@ import Amplitude
 import SwiftDate
 import RxSwift
 import NSObject_Rx
+import MapKit
 
 typealias FirebaseAnalytics = Analytics
 
@@ -335,6 +336,13 @@ struct AnalyticsEvent {
     let name = toSaved ? "add" : "remove"
     let (latlng, meta) = locationMeta(location)
     return AnalyticsEvent(name: name, metadata: meta, category: .notification, label: place.name, cd2: latlng, cd7: place.analyticsCuisine, cd8: place.analyticsNeighborhood, cd9: place.analyticsBells, cd10: place.analyticsPrice, cd11: place.analyticsReviewer, cd13: category.analyticsName)
+  }
+
+  static func regionDidChange(_ region: MKCoordinateRegion) -> AnalyticsEvent {
+    let latlng = String(format:"%f,%f", region.center.latitude, region.center.longitude)
+    let latlngDelta = String(format:"%f,%f", region.span.latitudeDelta, region.span.latitudeDelta)
+
+    return AnalyticsEvent(name: "region-did-change", category: .app, label: latlng, cd2: latlngDelta)
   }
 
   static func visited(
