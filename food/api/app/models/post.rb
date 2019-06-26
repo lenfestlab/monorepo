@@ -65,7 +65,7 @@ class Post < ApplicationRecord
 
   def append_analytics_params url_string
     return nil unless url_string
-    return url_string unless url_string.include?("philly.com") # PMN only
+    return url_string unless url_string.include?(ENV["UTM_DOMAIN"])
     # NOTE: assumes all post's places are of same name (eg, a chain)
     place_name = places.first.try :name
     params = {
