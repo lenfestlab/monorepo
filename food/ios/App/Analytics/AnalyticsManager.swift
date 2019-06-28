@@ -31,7 +31,7 @@ typealias Meta = Dictionary<String, String>
 
 enum AnalyticsCategory: String {
   case debug // for pre-production use only
-  case onboarding, notification, settings, background, detail, card, filter, navigation, tab, search
+  case onboarding, notification, settings, background, detail, card, filter, navigation, tab, search, region
   case app = "in-app"
 }
 
@@ -340,9 +340,10 @@ struct AnalyticsEvent {
 
   static func regionDidChange(_ region: MKCoordinateRegion) -> AnalyticsEvent {
     let latlng = String(format:"%f,%f", region.center.latitude, region.center.longitude)
-    let latlngDelta = String(format:"%f,%f", region.span.latitudeDelta, region.span.latitudeDelta)
+    let latDelta = String(format:"%f", region.span.latitudeDelta)
+    let lngDelta = String(format:"%f", region.span.longitudeDelta)
 
-    return AnalyticsEvent(name: "region-did-change", category: .app, label: latlng, cd2: latlngDelta)
+    return AnalyticsEvent(name: latDelta, category: .region, label: lngDelta, cd2: latlng)
   }
 
   static func closeCuisine(cuisines: [Category]) -> AnalyticsEvent {
