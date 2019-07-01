@@ -184,9 +184,17 @@ class DetailViewController: UIViewController, Contextual {
       .bind(to: loveButton.rx.isSelected)
       .disposed(by: rx.disposeBag)
 
-    self.websiteButton.isEnabled = self.place.website != nil
-    self.callButton.isEnabled = self.place.phone != nil
-    self.reservationButton.isEnabled = self.place.reservationsURL != nil
+    if self.place.website == nil {
+      self.websiteButton.removeFromSuperview()
+    }
+
+    if self.place.phone == nil {
+      self.callButton.removeFromSuperview()
+    }
+
+    if self.place.reservationsURL == nil {
+      self.reservationButton.removeFromSuperview()
+    }
 
     self.navigationItem.titleView = UIImageView(image: UIImage(named: "inquirer-logo"))
 
