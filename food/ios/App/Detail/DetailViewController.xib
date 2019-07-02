@@ -25,12 +25,12 @@
                 <outlet property="quoteView" destination="vcp-GK-3Jk" id="v7y-0Q-flG"/>
                 <outlet property="remainderLabel" destination="pdT-78-H4o" id="fm6-S8-dkG"/>
                 <outlet property="remainderView" destination="byn-VW-N4g" id="5F4-Lz-n7W"/>
-                <outlet property="reservationButton" destination="pui-dp-0Vm" id="iI1-gC-WVc"/>
+                <outlet property="reservationButton" destination="vgv-FZ-W1H" id="JwD-fB-oNF"/>
                 <outlet property="reviewButton" destination="z9m-jC-tax" id="EIk-cW-Jzo"/>
                 <outlet property="reviewLabel" destination="yWd-kx-huO" id="mIk-CG-dQG"/>
                 <outlet property="titleLabel" destination="0Du-xu-VxK" id="IaV-oO-cpm"/>
                 <outlet property="view" destination="i5M-Pr-FkT" id="sfx-zR-JGt"/>
-                <outlet property="websiteButton" destination="vgv-FZ-W1H" id="tZe-64-9As"/>
+                <outlet property="websiteButton" destination="pui-dp-0Vm" id="URG-hN-1ls"/>
             </connections>
         </placeholder>
         <placeholder placeholderIdentifier="IBFirstResponder" id="-2" customClass="UIResponder"/>
@@ -60,15 +60,16 @@
                             <nil key="highlightedColor"/>
                         </label>
                         <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="right" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="vgv-FZ-W1H">
-                            <rect key="frame" x="323" y="316.5" width="100" height="35"/>
+                            <rect key="frame" x="243" y="316.5" width="105" height="35"/>
                             <constraints>
                                 <constraint firstAttribute="height" constant="35" id="0Y3-Lx-ppa"/>
+                                <constraint firstAttribute="width" constant="105" id="p7N-wa-Zuc"/>
                             </constraints>
-                            <state key="normal" image="detail-website-button">
+                            <state key="normal" image="detail-reservation-button">
                                 <color key="titleColor" white="0.33333333333333331" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                             </state>
                             <connections>
-                                <action selector="openWebsite" destination="-1" eventType="touchUpInside" id="LRT-Zu-9eW"/>
+                                <action selector="makeReservation" destination="-1" eventType="touchUpInside" id="vlH-iz-HTj"/>
                             </connections>
                         </button>
                         <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="vcp-GK-3Jk">
@@ -153,15 +154,16 @@
                             </constraints>
                         </view>
                         <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="pui-dp-0Vm">
-                            <rect key="frame" x="193" y="316.5" width="120" height="35"/>
+                            <rect key="frame" x="138" y="316.5" width="95" height="35"/>
                             <constraints>
                                 <constraint firstAttribute="height" constant="35" id="gGL-VM-w8Q"/>
+                                <constraint firstAttribute="width" constant="95" id="iiB-Ms-Q6z"/>
                             </constraints>
-                            <state key="normal" image="detail-reservation-button">
+                            <state key="normal" image="detail-website-button">
                                 <color key="titleColor" white="0.33333333329999998" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                             </state>
                             <connections>
-                                <action selector="makeReservation" destination="-1" eventType="touchUpInside" id="niw-fe-FpS"/>
+                                <action selector="openWebsite" destination="-1" eventType="touchUpInside" id="KTk-rr-4Hx"/>
                             </connections>
                         </button>
                         <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="REVIEWED BY CRAIG LABAN" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="yWd-kx-huO">
@@ -187,9 +189,9 @@
                             </constraints>
                         </view>
                         <button opaque="NO" contentMode="scaleToFill" horizontalHuggingPriority="249" contentHorizontalAlignment="leading" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="MuZ-q0-Xj6">
-                            <rect key="frame" x="83" y="316.5" width="100" height="35"/>
+                            <rect key="frame" x="33" y="316.5" width="95" height="35"/>
                             <constraints>
-                                <constraint firstAttribute="width" constant="100" id="PbQ-KY-AhZ"/>
+                                <constraint firstAttribute="width" constant="95" id="PbQ-KY-AhZ"/>
                                 <constraint firstAttribute="height" constant="35" id="pDp-4d-fpk"/>
                             </constraints>
                             <state key="normal" image="detail-call-button">
@@ -251,12 +253,14 @@
                         <constraint firstItem="vgv-FZ-W1H" firstAttribute="top" secondItem="VxG-Fb-Rao" secondAttribute="bottom" constant="21" id="1OC-gq-HuE"/>
                         <constraint firstAttribute="trailing" secondItem="OXe-E2-GTQ" secondAttribute="trailing" constant="33" id="21u-J5-jlU"/>
                         <constraint firstItem="pui-dp-0Vm" firstAttribute="leading" secondItem="MuZ-q0-Xj6" secondAttribute="trailing" constant="10" id="2Jt-WX-edn"/>
+                        <constraint firstItem="vgv-FZ-W1H" firstAttribute="leading" secondItem="VxG-Fb-Rao" secondAttribute="leading" priority="998" id="2ME-4f-ozv"/>
                         <constraint firstItem="e2S-1R-Ijl" firstAttribute="leading" secondItem="EKL-wW-4DM" secondAttribute="leading" constant="33" id="2gn-yM-W1H"/>
                         <constraint firstItem="byn-VW-N4g" firstAttribute="top" secondItem="EIw-Hk-sJl" secondAttribute="bottom" id="3N5-f7-Red"/>
                         <constraint firstAttribute="trailing" secondItem="e2S-1R-Ijl" secondAttribute="trailing" constant="33" id="41R-VP-Az8"/>
-                        <constraint firstItem="pui-dp-0Vm" firstAttribute="centerX" secondItem="EKL-wW-4DM" secondAttribute="centerX" id="47U-hY-HGR"/>
                         <constraint firstItem="B2F-q3-8JB" firstAttribute="leading" secondItem="EKL-wW-4DM" secondAttribute="leading" constant="32" id="48e-gh-4ER"/>
+                        <constraint firstItem="pui-dp-0Vm" firstAttribute="top" secondItem="VxG-Fb-Rao" secondAttribute="bottom" constant="21" id="4Wj-iT-DQA"/>
                         <constraint firstItem="OXe-E2-GTQ" firstAttribute="leading" secondItem="EKL-wW-4DM" secondAttribute="leading" constant="33" id="5Lj-jj-8TL"/>
+                        <constraint firstItem="MuZ-q0-Xj6" firstAttribute="top" secondItem="VxG-Fb-Rao" secondAttribute="bottom" constant="21" id="6q7-tn-gwI"/>
                         <constraint firstItem="pui-dp-0Vm" firstAttribute="centerY" secondItem="vgv-FZ-W1H" secondAttribute="centerY" id="7mA-1d-q9b"/>
                         <constraint firstAttribute="trailing" secondItem="CMQ-mE-znW" secondAttribute="trailing" id="AN2-Yh-bDP"/>
                         <constraint firstItem="yWd-kx-huO" firstAttribute="top" secondItem="pui-dp-0Vm" secondAttribute="bottom" constant="21" id="EQO-yu-I46"/>
@@ -265,6 +269,7 @@
                         <constraint firstAttribute="bottom" secondItem="byn-VW-N4g" secondAttribute="bottom" constant="20" id="Gpp-Hs-m0K"/>
                         <constraint firstItem="byn-VW-N4g" firstAttribute="leading" secondItem="EKL-wW-4DM" secondAttribute="leading" id="INK-9h-vdF"/>
                         <constraint firstItem="VxG-Fb-Rao" firstAttribute="top" secondItem="B2F-q3-8JB" secondAttribute="bottom" constant="10" id="JZc-t1-VUf"/>
+                        <constraint firstItem="yWd-kx-huO" firstAttribute="top" secondItem="MuZ-q0-Xj6" secondAttribute="bottom" constant="21" id="Kha-7K-aVq"/>
                         <constraint firstItem="yWd-kx-huO" firstAttribute="centerX" secondItem="EKL-wW-4DM" secondAttribute="centerX" id="My1-rT-B9A"/>
                         <constraint firstItem="OXe-E2-GTQ" firstAttribute="top" secondItem="e2S-1R-Ijl" secondAttribute="bottom" id="Ol0-h1-QgX"/>
                         <constraint firstItem="CMQ-mE-znW" firstAttribute="leading" secondItem="EKL-wW-4DM" secondAttribute="leading" id="PGm-kZ-JJM"/>
@@ -275,6 +280,7 @@
                         <constraint firstItem="EIw-Hk-sJl" firstAttribute="top" secondItem="OXe-E2-GTQ" secondAttribute="bottom" id="S0V-Dz-wdI"/>
                         <constraint firstItem="hJ8-4L-VGF" firstAttribute="leading" secondItem="yWd-kx-huO" secondAttribute="trailing" constant="14" id="UdK-8s-fiE"/>
                         <constraint firstAttribute="trailing" secondItem="0Du-xu-VxK" secondAttribute="trailing" constant="32" id="Z7J-8l-Pwt"/>
+                        <constraint firstItem="yWd-kx-huO" firstAttribute="top" secondItem="vgv-FZ-W1H" secondAttribute="bottom" constant="21" id="ZqD-NP-X6E"/>
                         <constraint firstItem="0Du-xu-VxK" firstAttribute="top" secondItem="CMQ-mE-znW" secondAttribute="bottom" constant="24" id="cOp-QI-FEH"/>
                         <constraint firstAttribute="trailing" secondItem="byn-VW-N4g" secondAttribute="trailing" id="dl0-oL-wp7"/>
                         <constraint firstItem="vcp-GK-3Jk" firstAttribute="leading" secondItem="EKL-wW-4DM" secondAttribute="leading" id="fBr-df-Klb"/>
@@ -284,7 +290,9 @@
                         <constraint firstItem="CMQ-mE-znW" firstAttribute="top" secondItem="EKL-wW-4DM" secondAttribute="top" id="jbl-FB-Z7E"/>
                         <constraint firstItem="MuZ-q0-Xj6" firstAttribute="centerY" secondItem="vgv-FZ-W1H" secondAttribute="centerY" id="kHg-Ej-Xui"/>
                         <constraint firstAttribute="trailing" secondItem="EIw-Hk-sJl" secondAttribute="trailing" id="lAd-S3-htq"/>
+                        <constraint firstItem="VxG-Fb-Rao" firstAttribute="leading" secondItem="MuZ-q0-Xj6" secondAttribute="leading" id="s72-Uw-0RR"/>
                         <constraint firstItem="vgv-FZ-W1H" firstAttribute="leading" secondItem="pui-dp-0Vm" secondAttribute="trailing" constant="10" id="sYS-9u-ea8"/>
+                        <constraint firstItem="VxG-Fb-Rao" firstAttribute="leading" secondItem="pui-dp-0Vm" secondAttribute="leading" priority="999" id="tD9-XG-Pqk"/>
                         <constraint firstItem="CMQ-mE-znW" firstAttribute="centerX" secondItem="EKL-wW-4DM" secondAttribute="centerX" id="ti2-Bj-Bhm"/>
                         <constraint firstItem="LOB-WE-66E" firstAttribute="centerY" secondItem="yWd-kx-huO" secondAttribute="centerY" id="wlj-bo-fZ0"/>
                         <constraint firstAttribute="trailing" secondItem="VxG-Fb-Rao" secondAttribute="trailing" constant="20" id="xyx-kd-tOz"/>
@@ -305,9 +313,9 @@
         </view>
     </objects>
     <resources>
-        <image name="detail-call-button" width="100" height="30"/>
-        <image name="detail-reservation-button" width="120" height="30"/>
-        <image name="detail-website-button" width="100" height="30"/>
+        <image name="detail-call-button" width="95" height="35"/>
+        <image name="detail-reservation-button" width="105" height="35"/>
+        <image name="detail-website-button" width="95" height="35"/>
         <image name="heart" width="40" height="40"/>
         <image name="heart-selected" width="40" height="40"/>
     </resources>
