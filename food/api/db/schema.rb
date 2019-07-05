@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2019_05_28_065652) do
+ActiveRecord::Schema.define(version: 2019_07_05_162302) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_stat_statements"
@@ -88,7 +88,6 @@ ActiveRecord::Schema.define(version: 2019_05_28_065652) do
     t.date "display_starts"
     t.date "display_ends"
     t.text "description"
-    t.index ["cached_images"], name: "index_categories_on_cached_images", using: :gin
     t.index ["display_ends"], name: "index_categories_on_display_ends"
     t.index ["display_starts"], name: "index_categories_on_display_starts"
     t.index ["identifier"], name: "index_categories_on_identifier"
@@ -194,7 +193,6 @@ ActiveRecord::Schema.define(version: 2019_05_28_065652) do
     t.string "cached_nabe_identifiers", array: true
     t.index ["author_identifiers"], name: "index_places_on_author_identifiers"
     t.index ["cached_nabe_identifiers"], name: "index_places_on_cached_nabe_identifiers", using: :gin
-    t.index ["cached_nabes"], name: "index_places_on_cached_nabes", using: :gin
     t.index ["category_identifiers"], name: "index_places_on_category_identifiers", using: :gin
     t.index ["identifier"], name: "index_places_on_identifier"
     t.index ["lonlat"], name: "index_places_on_lonlat", using: :gist
@@ -236,8 +234,9 @@ ActiveRecord::Schema.define(version: 2019_05_28_065652) do
     t.boolean "live", default: true, null: false
     t.text "cached_place_names"
     t.text "url"
+    t.integer "cached_images_count", default: 0
     t.index ["author_id"], name: "index_posts_on_author_id"
-    t.index ["cached_images"], name: "index_posts_on_cached_images", using: :gin
+    t.index ["cached_images_count"], name: "index_posts_on_cached_images_count"
     t.index ["cached_place_names"], name: "index_posts_on_cached_place_names"
     t.index ["display_ends"], name: "index_posts_on_display_ends"
     t.index ["display_starts"], name: "index_posts_on_display_starts"
