@@ -39,6 +39,7 @@ class Post < ApplicationRecord
   before_save :update_cache
   def update_cache
     self.cached_images = photos.as_json
+    self.cached_images_count = cached_images.count
     self.cached_place_names = places.map(&:name).join(" / ")
   end
 
@@ -55,6 +56,8 @@ class Post < ApplicationRecord
       .where("(display_ends >= ?) OR (display_ends IS NULL)", today)
       .where(live: true)
   }
+
+  scope :missing_image, -> { where(cached_images_count: 0) }
 
   # TODO: deprecate
   def image_url
@@ -143,6 +146,7 @@ class Post < ApplicationRecord
       notifications
       cached_place_names
       url_archived
+      cached_images_count
     ].each do |attr|
       configure attr do
         hide
@@ -161,11 +165,16 @@ class Post < ApplicationRecord
         rating
       ].concat(Post.md_fields))
 
-      scopes([nil, :live, :wip])
+      scopes([nil, :live, :wip, :missing_image])
 
       field :cached_place_names do
         queryable true
         hide
+      end
+
+      field :cached_images_count do
+        label "Image count"
+        filterable true
       end
 
     end
