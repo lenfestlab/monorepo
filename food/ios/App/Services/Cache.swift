@@ -21,27 +21,34 @@ class Cache {
   func get<T: Object>(_ identifier: String) -> T? {
     return realm.object(ofType: T.self, forPrimaryKey: identifier)
   }
-
-  func replace<T: RealmSwift.Object>(_ newObjects: [T]) throws -> Void {
-    let realm = self.realm
-    try realm.write {
-      let oldObjects = realm.objects(T.self)
-      realm.delete(oldObjects)
-      realm.add(newObjects, update: .all)
-    }
+  func get<T: Object>(_ identifiers: [String]) -> [T] {
+    return realm.objects(T.self).filter("(identifier IN %@)", identifiers).toArray()
   }
 
-  func put<T: RealmSwift.Object>(_ newObjects: [T]) throws -> Void {
+  func put<T: RealmSwift.Object>(_ newObjects: [T], overwriteLocalProperties: Bool = false) throws -> [T] {
     let realm = self.realm
+    var results: [T] = []
     try realm.write {
-      realm.add(newObjects, update: .modified)
+      newObjects.forEach({ (newObject: T) in
+        if !overwriteLocalProperties, let newObject = newObject as? PartialUpdatable {
+          results.append(realm.create(T.self, value: newObject.asPartialDictionary(), update: .modified))
+        } else {
+          results.append(realm.create(T.self, value: newObject.asDictionary(), update: .modified))
+        }
+      })
     }
+    return results
   }
-  func put<T: RealmSwift.Object>(_ newObject: T) throws -> Void {
-    let realm = self.realm
+  func put<T: RealmSwift.Object>(_ newObject: T, overwriteLocalProperties: Bool = false) throws -> T {
+    var result: T!
     try realm.write {
-      realm.add(newObject, update: .modified)
+      if !overwriteLocalProperties, let newObject = newObject as? PartialUpdatable {
+        result = realm.create(T.self, value: newObject.asPartialDictionary(), update: .modified)
+      } else {
+        result = realm.create(T.self, value: newObject.asDictionary(), update: .modified)
+      }
     }
+    return result
   }
 
   private func asArray$<T: Object>(_ results: Results<T>) -> Observable<[T]> {
@@ -110,14 +117,12 @@ class Cache {
       return
         asArray$(bookmarks)
           .map({ $0.compactMap({ $0.place }) })
-          .share()
     case .category(let identifier):
       guard let category = realm.object(ofType: Category.self, forPrimaryKey: identifier)
         else { return Observable.just([]) }
-      let places = self.places(in: category)
-      return
-        asArray$(places)
-          .share()
+      return asArray$(realm.objects(Place.self)
+        .filter("%@ IN categories", category)
+        .sorted(byKeyPath: "distanceOpt"))
     }
   }
 
@@ -129,19 +134,6 @@ class Cache {
     return observePlaces$(.bookmarked)
   }()
 
-  private var places: Results<Place> {
-    return realm.objects(Place.self)
-  }
-
-  private func places(in category: Category) -> Results<Place> {
-    return places.filter("%@ IN categories", category)
-      .sorted(byKeyPath: "distanceOpt")
-  }
-
-  var isEmpty: Bool {
-    return places.isEmpty
-  }
-
   var isEmpty$: Observable<Bool> {
     return observePlaces$()
       .map({ places in
@@ -151,7 +143,6 @@ class Cache {
       .share()
   }
 
-
   func observePlace$(_ place: Place) -> Observable<Place> {
     return Observable.from(object: place)
   }
@@ -160,37 +151,22 @@ class Cache {
     _ placeId: String,
     toSaved: Bool
     ) -> Void {
-    let realm = self.realm
-    let existing = realm.object(ofType: Bookmark.self, forPrimaryKey: placeId)
-    try? realm.write {
-      let bookmark = existing ?? { () -> Bookmark in
-        let bookmark = Bookmark()
-        bookmark.placeId = placeId
-        bookmark.place = realm.object(ofType: Place.self, forPrimaryKey: placeId)
-        realm.add(bookmark, update: .modified)
-        return bookmark
-      }()
-      if toSaved {
-        bookmark.lastSavedAt = Date()
-      } else {
-        bookmark.lastUnsavedAt = Date()
-      }
+    let bookmark = Bookmark()
+    bookmark.placeId = placeId
+    bookmark.place = realm.object(ofType: Place.self, forPrimaryKey: placeId)
+    if toSaved {
+      bookmark.lastSavedAt = Date()
+    } else {
+      bookmark.lastUnsavedAt = Date()
     }
+    let _ = try? put(bookmark)
   }
 
-  func patchBookmark(_ placeId: String, _ closure: (Bookmark) -> Void) -> Void {
-    let realm = self.realm
-    let existing = realm.object(ofType: Bookmark.self, forPrimaryKey: placeId)
-    try? realm.write {
-      let bookmark = existing ?? { () -> Bookmark in
-        let bookmark = Bookmark()
-        bookmark.placeId = placeId
-        bookmark.place = realm.object(ofType: Place.self, forPrimaryKey: placeId)
-        realm.add(bookmark, update: .modified)
-        return bookmark
-        }()
-      closure(bookmark)
-    }
+  func patchBookmark(_ placeId: String, lastNotifiedAt: Date) -> Void {
+    let bookmark = Bookmark()
+    bookmark.placeId = placeId
+    bookmark.place = self.realm.object(ofType: Place.self, forPrimaryKey: placeId)
+    let _ = try? put(bookmark)
   }
 
   func isSaved(_ placeId: String) -> Bool {
