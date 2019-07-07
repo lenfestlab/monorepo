@@ -6,12 +6,16 @@ import AlamofireImage
 
 class Cache {
 
-  init() {
+  init(env: Env) {
     // Realm
     Realm.Configuration.defaultConfiguration =
       Realm.Configuration(
         // clear cache on schema conflict
         deleteRealmIfMigrationNeeded: true)
+    // log db location for Realm Browser
+    if env.isPreProduction, let db = Realm.Configuration.defaultConfiguration.fileURL {
+      print("realm db file: \(db.absoluteString)")
+    }
   }
 
   var realm: Realm {
@@ -166,6 +170,7 @@ class Cache {
     let bookmark = Bookmark()
     bookmark.placeId = placeId
     bookmark.place = self.realm.object(ofType: Place.self, forPrimaryKey: placeId)
+    bookmark.lastNotifiedAt = lastNotifiedAt
     let _ = try? put(bookmark)
   }
 
@@ -217,5 +222,14 @@ class Cache {
       }
     }
   }
+
+  lazy var viewedPlaces$: Observable<[Place]> = {
+    return asArray$(realm.objects(PlaceEvent.self))
+      .map({ [unowned self] placeEvents -> [Place] in
+        let placeIds: [String] = placeEvents.compactMap({$0.placeId})
+        return self.get(placeIds)
+      })
+      .share(replay: 1, scope: .whileConnected)
+  }()
 
 }

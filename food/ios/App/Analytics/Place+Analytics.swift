@@ -38,4 +38,13 @@ extension Place {
     return "\(rating)"
   }
 
+  var contactMeta: String {
+    var keys: [String] = []
+    if let _ = phone { keys.append("phone")}
+    if let _ = website { keys.append("website")}
+    if let _ = reservationsURL { keys.append("reservations")}
+    if let _ = self.post?.url { keys.append("review")}
+    return keys.joined(separator: ",")
+  }
+
 }

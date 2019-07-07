@@ -120,6 +120,7 @@ class DetailViewController: UIViewController, Contextual {
     self.isSaved$ = context.cache.isSaved$(place.identifier)
     super.init(nibName: nil, bundle: nil)
     eagerLoadCarouselImages$()
+    trackView$()
     maintainContextAnimatingState()
     // NOTE: `NSMutableAttributedString(html...)` is expensive but evidently
     // must run on the main thread for access to webkit; eager load our view on
@@ -143,6 +144,12 @@ class DetailViewController: UIViewController, Contextual {
         let loader = UIImageView.af_sharedImageDownloader
         return self.cache.loadImages$(Array(urls), withLoader: loader)
       }
+      .subscribe()
+      .disposed(by: rx.disposeBag)
+  }
+
+  private func trackView$() {
+    api.recordPlaceEvent$(place.identifier, .viewed)
       .subscribe()
       .disposed(by: rx.disposeBag)
   }

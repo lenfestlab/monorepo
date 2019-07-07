@@ -7,6 +7,7 @@ import RxRelay
 import Gloss
 import ObjectMapper
 import RealmSwift
+import NSObject_Rx
 
 fileprivate let cacheKeyAuthToken = "auth-token"
 fileprivate let cacheKeyEmail = "email"
@@ -24,6 +25,7 @@ class Api {
   let env: Env
   let cache: Cache
   let locationManager: LocationManager
+  let disposeBag = DisposeBag()
 
   init(
     env: Env,
@@ -33,6 +35,25 @@ class Api {
     self.env = env
     self.cache = cache
     self.locationManager = locationManager
+    self.observeLocation()
+  }
+
+  private func observeLocation() -> Void {
+    // sync entry/exit with server so it can wake app up for visit calculation
+    let entry$ =
+      locationManager.regionEntry$
+        .flatMapLatest({ [unowned self] region -> Observable<PlaceEvent> in
+          return self.recordPlaceEvent$(region.identifier, .entered)
+        })
+    let exit$ =
+      locationManager.regionExit$
+        .flatMapLatest({ [unowned self] region -> Observable<PlaceEvent> in
+          return self.recordPlaceEvent$(region.identifier, .exited)
+        })
+    Observable.zip(entry$, exit$)
+      .ignoreErrors()
+      .subscribe()
+      .disposed(by: disposeBag)
   }
 
   typealias AuthToken = String
@@ -179,24 +200,12 @@ class Api {
         })
   }
 
-  func recordRegionChange$(
-    _ identifier: String,
-    isEntering: Bool
-    ) -> Observable<Bookmark> {
-    let key = isEntering ? "last_entered_at" : "last_exited_at"
-    return patchBookmark(identifier, [key : Date() ])
-  }
-
   func recordNotification$(
     _ identifier: String
     ) -> Observable<Bookmark> {
     let now = Date()
     cache.patchBookmark(identifier, lastNotifiedAt: now)
     return patchBookmark(identifier, ["last_notified_at": now])
-  }
-
-  func recordVisit$(_ identifier: String) -> Observable<Bookmark> {
-    return patchBookmark(identifier, ["last_visited_at": Date()])
   }
 
   func updateBookmark$(
@@ -241,6 +250,72 @@ class Api {
                   return refs.compactMap(realm.resolve)
                 })
             })
+        })
+  }
+
+  func getPlaceEvents$() -> Observable<[PlaceEvent]> {
+    let url = "\(env.apiBaseUrlString)/place_events"
+    return
+      authToken$
+        .flatMapFirst({ authToken -> Observable<[PlaceEvent]> in
+          let params: [String: Any] = ["auth_token": authToken]
+          return RxAlamofire
+            .requestJSON(.get, url, parameters: params)
+            .observeOn(Scheduler.background)
+            .retry(2)
+            .map({ [weak self] _response, json -> [PlaceEvent] in
+              guard
+                let `self` = self,
+                let json = json as? JSON,
+                let data = json["data"] as? [JSON]
+                else { throw ApiError.parse }
+              let objects = [PlaceEvent].init(JSONArray: data)
+              return try self.cache.put(objects)
+            })
+            .flatMap({ (objects: [PlaceEvent]) -> Observable<[PlaceEvent]> in
+              return Observable.just(objects)
+                .map({ $0.map({ ThreadSafeReference(to: $0) }) })
+                .observeOn(Scheduler.main)
+                .map({ refs in
+                  let realm = try Realm()
+                  return refs.compactMap(realm.resolve)
+                })
+            })
+        })
+  }
+
+  func recordPlaceEvent$(
+    _ placeId: String,
+    _ kind: PlaceEvent.Kind
+    ) -> Observable<PlaceEvent> {
+    let url = "\(env.apiBaseUrlString)/place_events/\(placeId)"
+    let method: HTTPMethod = .patch
+    var params: [String: Any] = [:]
+    params["last_\(kind.name)_at"] = Date()
+    if let authToken = self.authToken { params["auth_token"] = authToken }
+    return
+      RxAlamofire
+        .requestJSON(method, url, parameters: params)
+        .observeOn(Scheduler.background)
+        .retry(2)
+        .map({ [weak self] (_response, json) -> PlaceEvent in
+          guard
+            let `self` = self,
+            let json = json as? JSON,
+            let data = json["place_event"] as? JSON,
+            let object = PlaceEvent(JSON: data)
+            else { throw ApiError.parse }
+          return try self.cache.put(object)
+        })
+        .flatMap({ (object: PlaceEvent) -> Observable<PlaceEvent> in
+          return Observable.just(object)
+            .map({ ThreadSafeReference(to: $0) })
+            .observeOn(Scheduler.main)
+            .map({ ref -> PlaceEvent? in
+              let realm = try Realm()
+              return realm.resolve(ref)
+            })
+            .unwrap()
         })
   }
 
@@ -317,7 +392,7 @@ class Api {
         })
         .map({ [weak self] (places: [Place]) in
           guard let `self` = self else { throw ApiError.missingSelf }
-          return try self.cache.put(places)
+          return try self.cache.put(places, overwriteLocalProperties: true)
         })
         // if sorted by distance, re-sort using local distance calculations
         .map({ (places: [Place]) in

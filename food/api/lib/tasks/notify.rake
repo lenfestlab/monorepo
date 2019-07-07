@@ -22,7 +22,7 @@ namespace :notify do
 
   desc "request visit status of all eligible apps"
   task visit_checks: :environment do
-    Bookmark.visitable.each &:visit_check
+    PlaceEvent.visitable.each &:visit_check
   end
 
 end

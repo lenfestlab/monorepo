@@ -9,6 +9,7 @@ import SwiftDate
 import CoreLocation
 import NSObject_Rx
 import Sentry
+import CoreLocation
 
 typealias Result<T> = Swift.Result<T, Error>
 typealias LaunchOptions = [UIApplication.LaunchOptionsKey: Any]?
@@ -44,13 +45,8 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
     FirebaseApp.configure()
     Messaging.messaging().delegate = self
     application.registerForRemoteNotifications()
-    InstanceID.instanceID().instanceID { (result, error) in
-      if let error = error {
-        print("gcm: Error fetching remote instange ID: \(error)")
-      }
-    }
 
-    self.cache = Cache()
+    self.cache = Cache(env: env)
     self.locationManager = LocationManager(env: env)
     self.analytics = AnalyticsManager(env: env, locationManager: locationManager)
     self.api =
@@ -76,7 +72,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
 
     self.syncData()
     self.observeFirstTouch()
-    self.observeBookmarkedPlaces()
+    self.observeTrackablePlaces()
 
     if !onboardingCompleted {
       window!.rootViewController = self.mainController
@@ -87,10 +83,26 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
     return true
   }
 
-  private func observeBookmarkedPlaces() -> Void {
-    // sync bookmarked places with monitored regions for nearby alerts
-    self.cache.bookmarkedPlaces$
-      .map({ $0.map({ $0.region }) })
+  private func observeTrackablePlaces() -> Void {
+    // Track viewed & saved places for nearby alerts and visit analytics.
+    // > Core Location prevents any single app from monitoring more than 20 regions simultaneously.
+    // - https://apple.co/2YIGoDH
+    Observable.combineLatest(
+      locationManager.significantLocation$,
+      cache.bookmarkedPlaces$,
+      cache.viewedPlaces$)
+      .map({ (location, bookmarkedPlaces, viewedPlaces) -> [CLCircularRegion] in
+        let bookmarked = bookmarkedPlaces.compactMap({$0.region})
+        let viewed = viewedPlaces.compactMap({$0.region})
+        let union = Array(Set(bookmarked).union(Set(viewed)))
+        let sorted = union.sorted(by: { (r1, r2) -> Bool in
+          let d1 = location.coordinate.distance(from: r1.center)
+          let d2 = location.coordinate.distance(from: r2.center)
+          return d1 < d2
+        })
+        let nearest: [CLCircularRegion] = Array(sorted.prefix(20))
+        return nearest
+      })
       .observeOn(Scheduler.background)
       .distinctUntilChanged()
       .subscribe(onNext: { [weak self] regions in
@@ -137,6 +149,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
     case PlaceLocationMIA
     case TooFarAway
     case SelfMIA
+    case throttle
   }
 
   func application(
@@ -171,37 +184,52 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
       guard let placeId = userInfo["place_id"] as? String
         else { print("MIA: `place_id`"); return completionHandler(.failed) }
       let place$ = self.api.getPlace$(placeId)
-      let location$ = self.locationManager.significantLocation$
+      let location$ = self.locationManager.location$
       Observable.combineLatest(place$, location$)
-        .flatMapFirst({ [weak self] (result, currentLocation) -> Observable<Bookmark> in
+        .flatMapFirst({ [weak self] (result, currentLocation) -> Observable<PlaceEvent> in
           guard let `self` = self else { throw VisitError.SelfMIA }
           switch result {
           case let .failure(error): throw error
           case let .success(place):
+            // Prevent duplicate visit events
+            if
+              let placeEvent: PlaceEvent = self.cache.get(placeId),
+              let lastEnteredAt = placeEvent.lastEnteredAt,
+              let lastVisitedAt = placeEvent.lastVisitedAt,
+              lastVisitedAt > lastEnteredAt {
+              throw VisitError.throttle
+            }
+            // Rough proxy of a "visit" - remaining within the geofence.
             guard let placeLocation = place.location?.nativeLocation
               else { throw VisitError.PlaceLocationMIA }
             let distance = currentLocation.distance(from: placeLocation)
-            print(distance)
-            guard distance.isLess(than: place.visitRadiusMax) else {
-              throw VisitError.TooFarAway }
-            self.analytics.log(.visited(place: place, location: currentLocation.coordinate))
-            return self.api.recordVisit$(placeId)
+            guard distance.isLess(than: place.visitRadiusMax)
+              else { throw VisitError.TooFarAway }
+            // Determine upstream events that included place in geofence list
+            // Currently, MUST must have viewed place to setup its geofence
+            var triggers: [String] = ["viewed"]
+            if let _: Bookmark = self.cache.get(place.identifier) {
+              triggers.append("saved")
+            }
+            self.analytics.log(.visited(
+              place: place,
+              location: currentLocation.coordinate,
+              triggers: triggers))
+            return self.api.recordPlaceEvent$(placeId, .visited)
           }
         })
         .subscribe({ [weak self] event in
-          guard let `self` = self
-            else { return completionHandler(.failed) }
+          guard let `self` = self else { return completionHandler(.failed) }
           switch event {
-          case .next(let bookmark):
+          case .next:
             // if API recorded visit, display local notification (stag only)
             guard self.env.isPreProduction,
-              let placeName = bookmark.place?.name,
               let center = self.notificationManager.notificationCenter
               else { return }
             let content = UNMutableNotificationContent()
             content.categoryIdentifier = "visiting"
             content.sound = UNNotificationSound.default
-            content.title = "Visit: \(placeName)"
+            content.title = "Visit!"
             let request =
               UNNotificationRequest(
                 identifier: UUID().uuidString,
@@ -251,10 +279,17 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
       api.updateBookmarks$()
         .mapTo(true)
 
+    let updatePlaceEvents$ =
+      api.getPlaceEvents$()
+        .mapTo(true)
+
     Observable.zip([
       register$,
       updateDefaultPlaces$,
-      updateBookmarks$,
+      Observable.concat([
+        updateBookmarks$,
+        updatePlaceEvents$
+        ])
       ])
       .subscribe()
       .disposed(by: rx.disposeBag)
