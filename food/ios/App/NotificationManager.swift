@@ -376,7 +376,6 @@ class NotificationManager: NSObject, UNUserNotificationCenterDelegate, Contextua
           category,
           place: place,
           location: self.locationManager.latestCoordinate))
-        self.cache.patchBookmark(identifier, { $0.lastNotifiedAt = Date() })
         return self.api.recordNotification$(identifier)
       })
       .subscribe()

@@ -158,16 +158,14 @@ class Api {
         .requestJSON(.patch, url, parameters: params)
         .observeOn(Scheduler.background)
         .retry(2)
-        .map({ _response, json in
+        .map({ [weak self] (_response, json) -> Bookmark in
           guard
+            let `self` = self,
             let json = json as? JSON,
             let data = json["bookmark"] as? JSON,
             let bookmark = Bookmark(JSON: data)
             else { throw ApiError.parse }
-          return bookmark
-        })
-        .do(onNext: { [weak self] bookmark in
-          try self?.cache.put(bookmark)
+          return try self.cache.put(bookmark)
         })
         .flatMap({ (object: Bookmark) -> Observable<Bookmark> in
           return Observable.just(object)
@@ -192,7 +190,9 @@ class Api {
   func recordNotification$(
     _ identifier: String
     ) -> Observable<Bookmark> {
-    return patchBookmark(identifier, ["last_notified_at": Date()])
+    let now = Date()
+    cache.patchBookmark(identifier, lastNotifiedAt: now)
+    return patchBookmark(identifier, ["last_notified_at": now])
   }
 
   func recordVisit$(_ identifier: String) -> Observable<Bookmark> {
@@ -223,15 +223,14 @@ class Api {
             .requestJSON(.get, url, parameters: params)
             .observeOn(Scheduler.background)
             .retry(2)
-            .map({ _response, json in
+            .map({ [weak self] _response, json -> [Bookmark] in
               guard
+                let `self` = self,
                 let json = json as? JSON,
                 let data = json["data"] as? [JSON]
                 else { throw ApiError.parse }
-              return [Bookmark].init(JSONArray: data)
-            })
-            .do(onNext: { [weak self] bookmarks in
-              try self?.cache.put(bookmarks)
+              let bookmarks: [Bookmark] = [Bookmark].init(JSONArray: data)
+              return try self.cache.put(bookmarks)
             })
             .flatMap({ (objects: [Bookmark]) -> Observable<[Bookmark]> in
               return Observable.just(objects)
@@ -298,7 +297,7 @@ class Api {
       RxAlamofire
         .requestJSON(.get, target.urlString, parameters: params)
         .observeOn(Scheduler.background)
-        .map({ _response, json -> [Place] in
+        .map({ (_response, json) -> [Place] in
           guard
             let json = json as? JSON,
             let data = json["data"] as? [JSON]
@@ -316,11 +315,12 @@ class Api {
             }
           })
         })
-        .do(onNext: { [weak self] places in
-          try self?.cache.put(places)
+        .map({ [weak self] (places: [Place]) in
+          guard let `self` = self else { throw ApiError.missingSelf }
+          return try self.cache.put(places)
         })
         // if sorted by distance, re-sort using local distance calculations
-        .map({ places in
+        .map({ (places: [Place]) in
           guard case SortMode.distance = sort else { return places }
           return places.sorted(by: {
             guard let d1 = $0.distance, let d2 = $1.distance else { return false }
