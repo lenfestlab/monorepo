@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2019_07_05_162302) do
+ActiveRecord::Schema.define(version: 2019_07_08_203841) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_stat_statements"
@@ -158,6 +158,25 @@ ActiveRecord::Schema.define(version: 2019_07_05_162302) do
     t.index ["post_id"], name: "index_notifications_on_post_id"
     t.index ["state"], name: "index_notifications_on_state"
     t.index ["user_id"], name: "index_notifications_on_user_id"
+  end
+
+  create_table "place_events", force: :cascade do |t|
+    t.uuid "identifier", default: -> { "uuid_generate_v4()" }
+    t.bigint "user_id"
+    t.bigint "place_id"
+    t.datetime "last_viewed_at"
+    t.datetime "last_entered_at"
+    t.datetime "last_exited_at"
+    t.datetime "last_visited_at"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["identifier"], name: "index_place_events_on_identifier"
+    t.index ["last_entered_at"], name: "index_place_events_on_last_entered_at"
+    t.index ["last_exited_at"], name: "index_place_events_on_last_exited_at"
+    t.index ["last_viewed_at"], name: "index_place_events_on_last_viewed_at"
+    t.index ["last_visited_at"], name: "index_place_events_on_last_visited_at"
+    t.index ["place_id"], name: "index_place_events_on_place_id"
+    t.index ["user_id"], name: "index_place_events_on_user_id"
   end
 
   create_table "places", force: :cascade do |t|

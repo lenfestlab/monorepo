@@ -9,6 +9,11 @@ class User < ApplicationRecord
     presence: true,
     uniqueness: true
 
+  has_many :place_events,
+    -> { order(created_at: :desc) },
+    inverse_of: :user,
+    dependent: :destroy
+
 
   ## Admin
   #

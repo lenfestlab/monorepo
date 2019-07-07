@@ -80,7 +80,7 @@ class LocationManager: NSObject, CLLocationManagerDelegate {
   init(env: Env) {
     self.env = env
     locationManager = CLLocationManager()
-    locationManager.desiredAccuracy = kCLLocationAccuracyHundredMeters
+    locationManager.desiredAccuracy = kCLLocationAccuracyBest
     locationManager.pausesLocationUpdatesAutomatically = false
     locationManager.allowsBackgroundLocationUpdates = true
     super.init()
@@ -211,7 +211,7 @@ class LocationManager: NSObject, CLLocationManagerDelegate {
     let manager = locationManager
     let new: Set<CLCircularRegion> = Set(regions)
     let monitoredRegions =
-      manager.monitoredRegions.compactMap { region -> CLCircularRegion? in
+      manager.monitoredRegions.compactMap { (region: CLRegion) -> CLCircularRegion? in
         guard let circularRegion = region as? CLCircularRegion else { return nil }
         return circularRegion
     }

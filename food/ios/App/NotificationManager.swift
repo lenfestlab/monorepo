@@ -35,7 +35,7 @@ class NotificationManager: NSObject, UNUserNotificationCenterDelegate, Contextua
     notificationCenter?.delegate = self
     refreshAuthorizationStatus { (status) in }
     setCategories()
-    observeLocationManager()
+    observeLocation()
   }
 
   func requestAuthorization(completionHandler: @escaping (UNAuthorizationStatus, Error?) -> Void){
@@ -317,12 +317,16 @@ class NotificationManager: NSObject, UNUserNotificationCenterDelegate, Contextua
     case missingNotificationCenter
   }
 
-  private func observeLocationManager() {
+  private func observeLocation() {
     locationManager.regionEntry$
-      // record entry for "visit" calculations
-      .flatMapLatest({ [unowned self] region -> Observable<Bookmark> in
+      // exclude places tracked by merely viewing them in the past
+      .filterMap({ [unowned self] (region) -> FilterMap<Bookmark> in
         let placeId = region.identifier
-        return self.api.recordRegionChange$(placeId, isEntering: true)
+        if let bookmark: Bookmark = self.cache.get(placeId) {
+          return .map(bookmark)
+        } else {
+          return .ignore
+        }
       })
       // throttle nearby notifications for each place
       .filter({ bookmark in
@@ -378,14 +382,7 @@ class NotificationManager: NSObject, UNUserNotificationCenterDelegate, Contextua
           location: self.locationManager.latestCoordinate))
         return self.api.recordNotification$(identifier)
       })
-      .subscribe()
-      .disposed(by: rx.disposeBag)
-
-    locationManager.regionExit$
-      .flatMap({ [unowned self] region -> Observable<Bookmark> in
-        let placeId = region.identifier
-        return self.api.recordRegionChange$(placeId, isEntering: false)
-      })
+      .ignoreErrors()
       .subscribe()
       .disposed(by: rx.disposeBag)
   }

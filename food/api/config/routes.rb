@@ -30,6 +30,8 @@ Rails.application.routes.draw do
   resources :bookmarks, only: %i[ index show ]
   patch '/bookmarks(/:id)', controller: :bookmarks, action: :update
 
+  resources :place_events, only: %i[ update index ]
+
   # static pages
   get "/privacy", to: redirect("privacy.html")
   get "/tos", to: redirect("tos.html")

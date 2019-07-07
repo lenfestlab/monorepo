@@ -54,7 +54,9 @@ struct AnalyticsEvent {
     cd9: String? = nil,
     cd10: String? = nil,
     cd11: String? = nil,
-    cd13: String? = nil
+    cd13: String? = nil,
+    cd18: String? = nil, // Contact meta - "phone, reservations, website, review"
+    cd19: String? = nil // Visit Criteria - "viewed, saved"
     ) {
     self.name = name
     self.category = category
@@ -88,6 +90,12 @@ struct AnalyticsEvent {
 
     if let cd13 = cd13 {
       self.metadata["cd13"] = cd13
+    }
+    if let cd18 = cd18 {
+      self.metadata["cd18"] = cd18
+    }
+    if let cd19 = cd19 {
+      self.metadata["cd19"] = cd19
     }
 
     let buildVersion = env.buildVersion
@@ -151,7 +159,7 @@ struct AnalyticsEvent {
   }
 
   static func tapsOnCard(place: Place, controllerIdentifierKey: String) -> AnalyticsEvent {
-    return AnalyticsEvent(name: "tap", category: .card, label: place.name, cd6: controllerIdentifierKey, cd7: place.analyticsCuisine, cd8: place.analyticsNeighborhood, cd9: place.analyticsBells, cd10: place.analyticsPrice, cd11: place.analyticsReviewer)
+    return AnalyticsEvent(name: "tap", category: .card, label: place.name, cd6: controllerIdentifierKey, cd7: place.analyticsCuisine, cd8: place.analyticsNeighborhood, cd9: place.analyticsBells, cd10: place.analyticsPrice, cd11: place.analyticsReviewer, cd18: place.contactMeta)
   }
 
   static func swipesCarousel(place: Place, currentLocation: CLLocationCoordinate2D?) -> AnalyticsEvent {
@@ -366,7 +374,8 @@ struct AnalyticsEvent {
 
   static func visited(
     place: Place,
-    location: CLLocationCoordinate2D?
+    location: CLLocationCoordinate2D?,
+    triggers: [String] = []
     ) -> AnalyticsEvent {
     let (latlng, meta) = locationMeta(location)
     return AnalyticsEvent(
@@ -379,7 +388,8 @@ struct AnalyticsEvent {
       cd8: place.analyticsNeighborhood,
       cd9: place.analyticsBells,
       cd10: place.analyticsPrice,
-      cd11: place.analyticsReviewer)
+      cd11: place.analyticsReviewer,
+      cd19: triggers.joined(separator: ","))
   }
 
 }
@@ -470,6 +480,9 @@ class AnalyticsManager: NSObject {
         parameters: event.metadata)
 
       // event + property map services (eg, Amplitude, Firebase)
+
+      // spare FIR/Amplitude format-incompat events
+      if (event.category == .region) { return }
 
       // Firebase
       // ... > Event name must contain only letters, numbers, or underscores

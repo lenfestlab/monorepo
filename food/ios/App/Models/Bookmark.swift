@@ -23,9 +23,10 @@ class Bookmark: RealmSwift.Object, Mappable {
   @objc dynamic var place: Place?
   @objc dynamic var lastSavedAt: Date?
   @objc dynamic var lastUnsavedAt: Date?
+  @objc dynamic var lastNotifiedAt: Date?
+  // NOTE: deprecated, moved to PlaceEvent
   @objc dynamic var lastEnteredAt: Date?
   @objc dynamic var lastExitedAt: Date?
-  @objc dynamic var lastNotifiedAt: Date?
 
   func mapping(map: Map) {
     identifier <-
