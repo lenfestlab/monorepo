@@ -153,7 +153,7 @@ class SettingsViewController: BaseSettingsViewController, LocationManagerAuthori
     feedbackCell.separatorInset = .zero
 
     let feedbackManager = SettingsRowManager(tableViewCell: feedbackCell) {
-      let url = URL(string: "https://goo.gl/forms/rJzeBGvAs5vDxCnP2")
+      let url = URL(string: "https://forms.gle/8kbicuRFv8TdKA3KA")
       let svc = SFSafariViewController(url: url!)
       self.present(svc, animated: true)
     }
