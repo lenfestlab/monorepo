@@ -61,7 +61,7 @@
                     <nil key="highlightedColor"/>
                 </label>
                 <imageView opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" insetsLayoutMarginsFromSafeArea="NO" image="intro-image" translatesAutoresizingMaskIntoConstraints="NO" id="LoI-jC-Rhf">
-                    <rect key="frame" x="116" y="321" width="143" height="100"/>
+                    <rect key="frame" x="102.5" y="321" width="170" height="39"/>
                 </imageView>
             </subviews>
             <color key="backgroundColor" red="1" green="1" blue="1" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
@@ -85,6 +85,6 @@
     </objects>
     <resources>
         <image name="intro-button" width="16.5" height="60"/>
-        <image name="intro-image" width="143" height="100"/>
+        <image name="intro-image" width="170" height="39"/>
     </resources>
 </document>
