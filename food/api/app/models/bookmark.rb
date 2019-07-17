@@ -58,7 +58,7 @@ class Bookmark < ApplicationRecord
   end
 
   def admin_name
-    %{#{user.admin_name} - #{place.name}}
+    %{#{user.try(:admin_name)} - #{place.try(:name)}}
   end
 
 end
