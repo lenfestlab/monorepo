@@ -22,7 +22,6 @@ class User < ApplicationRecord
     object_label_method :admin_name
 
     %i[
-      icloud_id
       identifier
       auth_token
       created_at
@@ -42,6 +41,18 @@ class User < ApplicationRecord
         read_only true
       end
     end
+
+    configure :icloud_id do
+      label "Installation id"
+      read_only true
+    end
+
+    list do
+      configure :icloud_id do
+        hide
+      end
+    end
+
 
   end
 
