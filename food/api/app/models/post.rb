@@ -253,7 +253,7 @@ class Post < ApplicationRecord
   end
 
   def self.ensure_https url_string
-    return nil unless url_string
+    return nil if url_string.blank?
     uri = URI(url_string)
     uri.scheme = 'https'
     uri.to_s.gsub("www2", "www")
