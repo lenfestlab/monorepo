@@ -4,6 +4,10 @@ import ObjectMapperAdditions
 import ObjectMapperAdditionsRealm
 import RealmSwift
 import DifferenceKit
+import PhoneNumberKit
+
+// A PhoneNumberKit instance is relatively expensive to allocate...
+let phoneNumberKit = PhoneNumberKit()
 
 extension Place: Differentiable {}
 
@@ -14,6 +18,10 @@ class Place: RealmSwift.Object, Mappable {
 
   override static func primaryKey() -> String? {
     return "identifier"
+  }
+
+  override static func ignoredProperties() -> [String] {
+    return ["phoneURL"]
   }
 
   @objc dynamic var identifier = ""
@@ -101,14 +109,32 @@ class Place: RealmSwift.Object, Mappable {
     }
   }
 
-  var website: URL? {
-    guard let websiteURLString = websiteURLString else { return nil }
+  lazy var phoneURL: URL? = { () -> URL? in
+    guard let rawNumber = self.phone
+      else { print("MIA: phone"); return nil }
+    guard let parsedNumber = try? phoneNumberKit.parse(rawNumber)
+      else { print("MIA: parsedNumber"); return nil }
+    let formattedNumber = phoneNumberKit.format(parsedNumber, toType: .e164)
+    guard let telURL = URL(string: "tel://\(formattedNumber)")
+      else { print("MIA: telURL"); return nil }
+    return telURL
+  }()
+
+  var websiteURL: URL? {
+    guard
+      let websiteURLString = websiteURLString,
+      websiteURLString.hasPrefix("http") // prevent crashing on incomplete URLs
+      else { return nil }
     return URL(string: websiteURLString)
   }
 
   var reservationsURL: URL? {
     guard let reservationsURLString = reservationsURLString else { return nil }
     return URL(string: reservationsURLString)
+  }
+
+  var postURL: URL? {
+    return post?.url
   }
 
   var visitRadiusMax: Double {

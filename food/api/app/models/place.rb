@@ -19,6 +19,8 @@ class Place < ApplicationRecord
   validates :lonlat, uniqueness: { scope: :name }
   validates :name,   uniqueness: { scope: %i[ address_street_with_number ] }
 
+  validates :website, url: true, presence: false
+
   before_validation :set_address
   def set_address
     unless address_street_with_number
