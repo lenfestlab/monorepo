@@ -40,10 +40,10 @@ extension Place {
 
   var contactMeta: String {
     var keys: [String] = []
-    if let _ = phone { keys.append("phone")}
-    if let _ = website { keys.append("website")}
+    if let _ = phoneURL { keys.append("phone")}
+    if let _ = websiteURL { keys.append("website")}
     if let _ = reservationsURL { keys.append("reservations")}
-    if let _ = self.post?.url { keys.append("review")}
+    if let _ = postURL { keys.append("review")}
     return keys.joined(separator: ",")
   }
 

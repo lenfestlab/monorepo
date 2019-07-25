@@ -23,6 +23,7 @@ targets:
       - carthage: Lightbox
       - carthage: Cache
       - carthage: Imaginary
+      - carthage: PhoneNumberKit
       # network
       - carthage: Alamofire
       - carthage: AlamofireImage

@@ -96,6 +96,7 @@ class DetailViewController: UIViewController, Contextual {
   @IBOutlet weak var callButton: UIButton!
   @IBOutlet weak var reservationButton: UIButton!
   @IBOutlet weak var websiteButton: UIButton!
+  @IBOutlet weak var buttonsView: UIStackView!
 
   @IBOutlet weak var quoteView: UIView!
   @IBOutlet weak var quoteLabel: UILabel!
@@ -191,16 +192,23 @@ class DetailViewController: UIViewController, Contextual {
       .bind(to: loveButton.rx.isSelected)
       .disposed(by: rx.disposeBag)
 
-    if self.place.website == nil {
-      self.websiteButton.removeFromSuperview()
+    buttonsView.axis = .horizontal
+    buttonsView.distribution = .equalSpacing
+    buttonsView.spacing = 10
+
+    callButton.removeFromSuperview()
+    if place.phoneURL != nil {
+      buttonsView.addArrangedSubview(callButton)
     }
 
-    if self.place.phone == nil {
-      self.callButton.removeFromSuperview()
+    websiteButton.removeFromSuperview()
+    if place.websiteURL != nil {
+      buttonsView.addArrangedSubview(websiteButton)
     }
 
-    if self.place.reservationsURL == nil {
-      self.reservationButton.removeFromSuperview()
+    reservationButton.removeFromSuperview()
+    if place.reservationsURL != nil {
+      buttonsView.addArrangedSubview(reservationButton)
     }
 
     self.navigationItem.titleView = UIImageView(image: UIImage(named: "inquirer-logo"))
@@ -310,25 +318,25 @@ class DetailViewController: UIViewController, Contextual {
   @IBAction func openFullReview() {
     analytics.log(.tapsFullReviewButton(place: self.place))
     let app = AppDelegate.shared()
-    if let link = self.place.post?.url {
-      app.openInlineBrowser(url: link)
+    if let url = self.place.postURL {
+      app.openInlineBrowser(url: url)
     }
   }
 
   @IBAction func openWebsite() {
     analytics.log(.tapsWebsiteButton(place: self.place))
     let app = AppDelegate.shared()
-    if let link = self.place.website {
-      app.openInlineBrowser(url: link)
+    if let url = self.place.websiteURL {
+      app.openInlineBrowser(url: url)
     }
   }
 
   @IBAction func call() {
     analytics.log(.tapsCallButton(place: self.place))
-    if let phone = self.place.phone {
-      guard let number = URL(string: "tel://" + phone) else { return }
-      UIApplication.shared.open(number)
-    }
+    guard
+      let url = place.phoneURL
+      else { return print("MIA: phoneURL") }
+    UIApplication.shared.open(url)
   }
 
   @IBAction func openInMap() {
