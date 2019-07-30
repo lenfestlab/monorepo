@@ -82,6 +82,10 @@ class Image < ApplicationRecord
       end
     end
 
+    export do
+      exclude_fields :preview
+    end
+
   end
 
   def admin_name

@@ -209,6 +209,9 @@ class Post < ApplicationRecord
         url = bindings[:object].url
         bindings[:view].content_tag(:a, url, href: url, target: "_blank")
       end
+      export_value do
+        value
+      end
     end
 
     configure :display_starts do
@@ -221,6 +224,10 @@ class Post < ApplicationRecord
     configure :prices_admin do
       label "Prices"
       help "Comma-delimited list of dollar signs, e.g. '$$' or  '$$$,$$$$'"
+    end
+
+    export do
+      exclude_fields :prices_admin
     end
 
   end
