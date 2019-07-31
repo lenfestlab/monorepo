@@ -91,7 +91,9 @@ class Place: RealmSwift.Object, Mappable {
     guard
       let name = name,
       let address = address,
-      let q = "\(name) \(address)".addingPercentEncoding(withAllowedCharacters: NSCharacterSet.urlQueryAllowed)
+      let q = "\(name) \(address)".addingPercentEncoding(withAllowedCharacters:
+        CharacterSet.urlQueryAllowed
+          .subtracting(CharacterSet(charactersIn: "&")))
       else { print("MIA: name or addres"); return nil }
     switch service {
     case .google: // http://bit.ly/2EIa6Ri
