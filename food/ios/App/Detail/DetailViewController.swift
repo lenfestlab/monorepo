@@ -85,7 +85,7 @@ extension DetailViewController: UIScrollViewDelegate {
 class DetailViewController: UIViewController, Contextual {
 
   var place : Place
-  
+
   @IBOutlet weak var pageControl: UIPageControl!
   @IBOutlet weak var collectionView: UICollectionView!
   @IBOutlet weak var menuLabel: UILabel!
@@ -278,7 +278,7 @@ class DetailViewController: UIViewController, Contextual {
           self.quoteView.backgroundColor = .greyishBlue
         }
       }
-      
+
       if let html = post.menu {
         if let attributedText = NSMutableAttributedString(html: html, h1Font: UIFont.mediumLarge) {
           self.menuLabel.attributedText = attributedText
@@ -351,4 +351,3 @@ class DetailViewController: UIViewController, Contextual {
   }
 
 }
-
