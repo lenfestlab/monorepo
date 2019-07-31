@@ -85,7 +85,13 @@ class PlaceStore: NSObject, Contextual {
           else { return places }
         return places.filter({
           guard let title = $0.title?.lowercased() else { return false }
-          return title.contains(searchText.lowercased())
+          if title.folding(options: .diacriticInsensitive, locale: .current).contains(searchText.lowercased()) {
+            return true
+          }
+          if title.contains(searchText.lowercased()) {
+            return true
+          }
+          return false
         })
       })
       // calculate collection changes from prior render
