@@ -5,7 +5,6 @@ class PostSerializer < ActiveModel::Serializer
     blurb
     prices
     rating
-    image_url
     images
     author
     details
