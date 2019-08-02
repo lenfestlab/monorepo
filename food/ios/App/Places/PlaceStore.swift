@@ -84,11 +84,12 @@ class PlaceStore: NSObject, Contextual {
         guard let searchText = searchText, searchText.isNotEmpty
           else { return places }
         return places.filter({
-          guard let title = $0.title?.lowercased() else { return false }
-          if title.folding(options: .diacriticInsensitive, locale: .current).contains(searchText.lowercased()) {
+          let lowered = searchText.lowercased().replacingOccurrences(of: "’", with: "")
+          guard let title = $0.title?.lowercased().replacingOccurrences(of: "’", with: "") else { return false }
+          if title.folding(options: .diacriticInsensitive, locale: .current).contains(lowered) {
             return true
           }
-          if title.contains(searchText.lowercased()) {
+          if title.contains(lowered) {
             return true
           }
           return false
