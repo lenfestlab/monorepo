@@ -67,7 +67,7 @@ class Post < ApplicationRecord
   end
 
   def append_analytics_params url_string
-    return nil unless url_string
+    return nil if url_string.blank?
     return url_string unless url_string.include?(ENV["UTM_DOMAIN"])
     # NOTE: assumes all post's places are of same name (eg, a chain)
     place_name = places.first.try :name
@@ -77,15 +77,21 @@ class Post < ApplicationRecord
       utm_campaign: ENV["UTM_CAMPAIGN"],
       utm_term: place_name # ENV["UTM_TERM"]
     }
-    uri = URI(url_string)
+    # https://git.io/fj95Y
+    if url_string.include? "#"
+      url_string, fragment = url_string.split "#"
+    end
+    uri = URI(URI.encode(url_string))
     if (query = uri.query) && (old_params = CGI.parse(query))
       params = old_params.merge!(params)
     end
     uri.query = URI.encode_www_form(params)
+    uri.fragment = fragment if fragment
     uri.to_s
   end
 
   def url_with_analytics
+    return nil if url.blank?
     append_analytics_params Post.ensure_https(url)
   end
 
@@ -261,9 +267,7 @@ class Post < ApplicationRecord
 
   def self.ensure_https url_string
     return nil if url_string.blank?
-    uri = URI(url_string)
-    uri.scheme = 'https'
-    uri.to_s.gsub("www2", "www")
+    url_string.gsub("www2", "www").gsub("http:", "https:")
   end
 
   def self.ensure_present string
