@@ -143,7 +143,6 @@ targets:
     sources: Shared
     settings:
       PRODUCT_BUNDLE_IDENTIFIER: $(BUNDLE_ID_PREFIX)$(BUNDLE_ID_SUFFIX).shared
-      CODE_SIGN_IDENTITY: iPhone Developer
       APPLICATION_EXTENSION_API_ONLY: true
     postbuildScripts:
       - name: "Bump build number"
