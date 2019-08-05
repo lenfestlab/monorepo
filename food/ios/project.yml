@@ -25,7 +25,7 @@ configs:
 settings:
   base:
     SWIFT_VERSION: 5.0
-    APP_VERSION: 1.0.6
+    APP_VERSION: 1.0.7
     APP_MARKETING_PATH: food
     TARGETED_DEVICE_FAMILY: '1' # iPhone only
     # link system frameworks - https://git.io/fAZbC
@@ -40,6 +40,7 @@ settings:
     # > scripts have moved the dSYM from the location Xcode generated it.
     # > Unable to process Here.app.dSYM at path...
     DEBUG_INFORMATION_FORMAT: "dwarf-with-dsym"
+    CODE_SIGN_STYLE: Automatic
   configs:
     # > Each key will be matched to any configs that contain the key and
     # > is case insensitive. So if you had Staging Debug and Staging Release,
@@ -119,8 +120,9 @@ targets:
     settings:
       PRODUCT_BUNDLE_IDENTIFIER: $(BUNDLE_ID_PREFIX)$(BUNDLE_ID_SUFFIX).notification-service
       TARGETED_DEVICE_FAMILY: "$(inherited)"
-      # extension code signing not automatically set like in App target:
-      # https://git.io/fjYBY
+      # extension code signing not automatically set like in App target, else:
+      # > error: An empty identity is not valid when signing a binary for the
+      # > product type 'App Extension'. (in target 'NotificationService')
       CODE_SIGN_IDENTITY: iPhone Developer
     postbuildScripts:
       - name: "Bump build number"
