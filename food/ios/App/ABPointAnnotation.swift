@@ -35,7 +35,6 @@ class ABAnnotationView : MKAnnotationView {
   var showsIndex: Bool = false {
     didSet {
       updatePin()
-      self.indexLabel.isHidden = !showsIndex
     }
   }
 

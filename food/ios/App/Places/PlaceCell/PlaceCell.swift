@@ -68,12 +68,7 @@ class PlaceCell: UICollectionViewCell {
       })
       .disposed(by: bag)
 
-    let attributedTitle = NSMutableAttributedString()
-    if showIndex {
-      attributedTitle.append(NSMutableAttributedString(string: "\(index + 1). ", font: UIFont.mediumSmall, fontColor: .black))
-    }
-    attributedTitle.append(place.attributedTitle(font: UIFont.mediumSmall))
-    self.textLabel.attributedText = attributedTitle
+    self.textLabel.attributedText = place.attributedTitle(font: UIFont.mediumSmall)
     self.textLabel.lineBreakMode = .byTruncatingTail
 
     self.subtitleLabel.attributedText = place.attributedSubtitle(font: UIFont.mediumSmall, capHeight: UIFont.mediumSmall.capHeight)
