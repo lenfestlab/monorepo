@@ -40,17 +40,9 @@ class ABAnnotationView : MKAnnotationView {
 
   func updatePin() {
     if isSelected {
-      if showsIndex {
-        self.image = UIImage(named: "selected-pin-index")
-      }  else {
-        self.image = UIImage(named: "selected-pin")
-      }
+      self.image = UIImage(named: "selected-pin")
     } else {
-      if showsIndex {
-        self.image = UIImage(named: "pin-index")
-      }  else {
-        self.image = UIImage(named: "pin")
-      }
+      self.image = UIImage(named: "pin")
     }
   }
 
