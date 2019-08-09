@@ -123,13 +123,11 @@ class PlaceStore: NSObject, Contextual {
       completionBlock?([])
       return
     }
-
-    guard let coordinate = locationManager.latestCoordinate else {
-      completionBlock?([])
-      return
-    }
-
     self.loading = true
+
+    let coordinate: CLLocationCoordinate2D =
+      locationManager.latestCoordinate ??
+        locationManager.defaultLocation.coordinate
 
     self.api.getPlaces$(
       target: self.target,
