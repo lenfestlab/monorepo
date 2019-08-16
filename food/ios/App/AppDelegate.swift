@@ -36,10 +36,12 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
 
   func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: LaunchOptions) -> Bool {
     self.env = Env()
-    if !env.isRemote {
-      NetworkActivityLogger.shared.level = .off
+
+    if env.networkLogLevel != .off {
+      NetworkActivityLogger.shared.level = env.networkLogLevel
       NetworkActivityLogger.shared.startLogging()
     }
+
     self.addCrashReporting(env: env)
 
     FirebaseApp.configure()
@@ -73,6 +75,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
     self.syncData()
     self.observeFirstTouch()
     self.observeTrackablePlaces()
+    self.observeLocation()
 
     if !onboardingCompleted {
       window!.rootViewController = self.mainController
@@ -145,20 +148,12 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
     case visitCheck = "visit_check"
   }
 
-  enum VisitError: Error {
-    case PlaceLocationMIA
-    case TooFarAway
-    case SelfMIA
-    case throttle
-  }
-
   func application(
     _ application: UIApplication,
     didReceiveRemoteNotification
     userInfo: [AnyHashable : Any],
     fetchCompletionHandler completionHandler: @escaping (UIBackgroundFetchResult
     ) -> Void) {
-    print("didReceiveRemoteNotification userInfo: \(userInfo)")
     guard
       let typeString  = userInfo["type"] as? String,
       let type = RemoteNotificationType(rawValue: typeString)
@@ -180,91 +175,93 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
           completionHandler(.newData)
         })
       })
-    case .visitCheck:
-      guard let placeId = userInfo["place_id"] as? String
-        else { print("MIA: `place_id`"); return completionHandler(.failed) }
-      let place$ = self.api.getPlace$(placeId)
-      let location$ = self.locationManager.location$
-      Observable.combineLatest(place$, location$)
-        .flatMapFirst({ [weak self] (result, currentLocation) -> Observable<PlaceEvent> in
-          guard let `self` = self else { throw VisitError.SelfMIA }
-          switch result {
-          case let .failure(error): throw error
-          case let .success(place):
-            // Prevent duplicate visit events
-            if
-              let placeEvent: PlaceEvent = self.cache.get(placeId),
-              let lastEnteredAt = placeEvent.lastEnteredAt,
-              let lastVisitedAt = placeEvent.lastVisitedAt,
-              lastVisitedAt > lastEnteredAt {
-              throw VisitError.throttle
-            }
-            // Rough proxy of a "visit" - remaining within the geofence.
-            guard let placeLocation = place.location?.nativeLocation
-              else { throw VisitError.PlaceLocationMIA }
-            let distance = currentLocation.distance(from: placeLocation)
-            guard distance.isLess(than: place.visitRadiusMax)
-              else { throw VisitError.TooFarAway }
-            // Determine upstream events that included place in geofence list
-            // Currently, MUST must have viewed place to setup its geofence
-            var triggers: [String] = ["viewed"]
-            if let _: Bookmark = self.cache.get(place.identifier) {
-              triggers.append("saved")
-            }
-            self.analytics.log(.visited(
-              place: place,
-              location: currentLocation.coordinate,
-              triggers: triggers))
-            return self.api.recordPlaceEvent$(placeId, .visited)
-          }
-        })
-        .subscribe({ [weak self] event in
-          guard let `self` = self else { return completionHandler(.failed) }
-          switch event {
-          case .next:
-            // if API recorded visit, display local notification (stag only)
-            guard self.env.isPreProduction,
-              let center = self.notificationManager.notificationCenter
-              else { return }
-            let content = UNMutableNotificationContent()
-            content.categoryIdentifier = "visiting"
-            content.sound = UNNotificationSound.default
-            content.title = "Visit!"
-            let request =
-              UNNotificationRequest(
-                identifier: UUID().uuidString,
-                content: content,
-                trigger: nil)
-            center.add(request, withCompletionHandler: { (error) in
-              if let error = error { print(error) }
-            })
-          case let .error(error):
-            print(error)
-            completionHandler(.failed)
-          case .completed:
-            completionHandler(.newData)
-          }
-        })
-        .disposed(by: rx.disposeBag)
-
+    case .visitCheck: // NOTE: DEPRECATED
+      completionHandler(.noData)
     }
+  }
+
+  enum VisitError: Error {
+    case selfMIA
+    case tooShort
+    var localizedDescription: String {
+      return "visit"
+    }
+  }
+
+  private func observeLocation() -> Void {
+    let entry$ =
+      locationManager.regionEntry$
+        .flatMapLatest({ [unowned self] region -> Observable<PlaceEvent> in
+          if let place: Place = self.cache.get(region.identifier) {
+            self.analytics.log(.placeEvent(kind: .entered, place: place))
+          }
+          return self.api.recordPlaceEvent$(region.identifier, .entered)
+        })
+    let exit$ =
+      locationManager.regionExit$
+        .flatMapLatest({ [unowned self] region -> Observable<PlaceEvent> in
+          if let place: Place = self.cache.get(region.identifier) {
+            self.analytics.log(.placeEvent(kind: .exited, place: place))
+          }
+          return self.api.recordPlaceEvent$(region.identifier, .exited)
+        })
+
+    let visit$ =
+      exit$.flatMap { [unowned self] placeEvent -> Observable<PlaceEvent> in
+        guard
+          let enteredAt = placeEvent.lastEnteredAt,
+          let exitedAt = placeEvent.lastExitedAt,
+          enteredAt < exitedAt,
+          enteredAt.isBeforeDate(10.minutes.ago, granularity: .second)
+          else { throw VisitError.tooShort }
+
+        let latestCoordinate = self.locationManager.latestCoordinate
+
+        let placeId = placeEvent.placeId
+        return
+          self.api.getPlace$(placeId)
+            .filterMap({ result -> FilterMap<Place> in
+              guard case let .success(place) = result else { return .ignore }
+              return .map(place)
+            })
+            .flatMap({ [weak self] place -> Observable<PlaceEvent> in
+              guard let `self` = self else { throw VisitError.selfMIA }
+              // Determine upstream events that included place in geofence list
+              // Currently, must have viewed place to setup its geofence
+              var triggers: [String] = ["viewed"]
+              if let _: Bookmark = self.cache.get(placeEvent.placeId) {
+                triggers.append("saved")
+              }
+              self.analytics.log(.visited(
+                place: place,
+                coordinate: latestCoordinate,
+                triggers: triggers))
+              return self.api.recordPlaceEvent$(placeId, .visited)
+            })
+        }
+
+    Observable.zip(entry$, visit$)
+      .ignoreErrors({ [weak self] error -> Bool in
+        self?.analytics.log(.error(error))
+        return true
+      })
+      .subscribe()
+      .disposed(by: rx.disposeBag)
   }
 
   private func addCrashReporting(env: Env) -> Void {
     do {
       Client.shared = try Client(dsn: env.get(.sentryDSN))
       Client.shared?.environment =  env.name.full
+      Client.shared?.enableAutomaticBreadcrumbTracking()
+      Client.shared?.trackMemoryPressureAsEvent()
       try Client.shared?.startCrashHandler()
     } catch let error {
-      print("\(error)")
+      print(error.localizedDescription)
     }
   }
 
   private func syncData() -> Void {
-    let register$ =
-      api.registerInstall$()
-        .mapTo(true)
-
     let updateDefaultPlaces$ =
       locationManager.latestOrDefaultLocation$
         .flatMapLatest({ [unowned self] location -> Observable<[Place]> in
@@ -284,7 +281,6 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         .mapTo(true)
 
     Observable.zip([
-      register$,
       updateDefaultPlaces$,
       Observable.concat([
         updateBookmarks$,
@@ -310,13 +306,12 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
 
 }
 
-
 extension AppDelegate: MessagingDelegate {
 
   func messaging(_ messaging: Messaging, didReceiveRegistrationToken gcmToken: String) {
     api.updateGcmToken$(gcmToken)
       .subscribe(onError: { error in
-        print("FAIL: sync GCM token \(error)")
+        print("FAIL: sync GCM token \(error.localizedDescription)")
       })
       .disposed(by: rx.disposeBag)
 

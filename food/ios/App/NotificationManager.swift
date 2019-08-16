@@ -185,7 +185,6 @@ class NotificationManager: NSObject, UNUserNotificationCenterDelegate, Contextua
     guard let identifier = identifier else { return completionHandler() }
     HUD.change(.show)
     api.getPlace$(identifier)
-      .observeOn(Scheduler.main)
       .do(onCompleted: { HUD.change(.hide) })
       .subscribe(onNext: { [weak self] (result: Result<Place>) in
         guard let `self` = self else { return completionHandler() }
@@ -215,7 +214,6 @@ class NotificationManager: NSObject, UNUserNotificationCenterDelegate, Contextua
     guard let identifier = identifier else { return completionHandler() }
     HUD.change(.show)
     api.getPlace$(identifier)
-      .observeOn(Scheduler.main)
       .do(onCompleted: {
         HUD.change(.hide)
       })
@@ -245,7 +243,6 @@ class NotificationManager: NSObject, UNUserNotificationCenterDelegate, Contextua
     guard let identifier = identifier else { return completionHandler() }
     HUD.change(.show)
     api.getPlace$(identifier)
-      .observeOn(Scheduler.main)
       .do(onCompleted: {
         HUD.change(.hide)
       })

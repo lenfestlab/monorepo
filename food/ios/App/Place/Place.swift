@@ -33,6 +33,7 @@ class Place: RealmSwift.Object, Mappable {
   @objc dynamic var location: Location?
   var triggerRadiusOpt = RealmOptional<Double>()
   var visitRadiusOpt = RealmOptional<Double>()
+  var visitDurationOpt = RealmOptional<Int>()
   var categories = List<Category>()
   var nabes = List<Neighborhood>()
   @objc dynamic var post: Post?
@@ -85,6 +86,8 @@ class Place: RealmSwift.Object, Mappable {
   var visitRadius: Double? {
     return visitRadiusOpt.value
   }
+
+  static let defaultDuration: Int = 10
 
   enum MapsService { case google, apple }
   func mapsURL(_ service: MapsService) -> URL? {
@@ -193,6 +196,19 @@ class Place: RealmSwift.Object, Mappable {
   func distanceFrom(_ otherLocation: CLLocation) -> Double? {
     guard let location = self.nativeLocation else { return nil }
     return location.distance(from: otherLocation)
+  }
+
+  func regionContains(_ location: CLLocation?) -> Bool {
+    guard let coordinate = location?.coordinate else { return false }
+    return self.region.contains(coordinate)
+  }
+
+  func visitRadiusContains(_ location: CLLocation?) -> Bool {
+    guard
+      let location = location,
+      let distance = distanceFrom(location)
+      else { return false }
+    return distance <= visitRadiusMax
   }
 
   override var description: String {

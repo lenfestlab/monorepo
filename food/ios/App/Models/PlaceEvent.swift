@@ -45,4 +45,12 @@ class PlaceEvent: RealmSwift.Object, Mappable {
       map["place_identifier"]
   }
 
+  var isRegionActive: Bool {
+    guard
+      let enteredAt = lastEnteredAt,
+      let exitedAt = lastExitedAt
+      else { return false }
+    return exitedAt < enteredAt
+  }
+
 }

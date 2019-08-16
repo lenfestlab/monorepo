@@ -8,6 +8,8 @@ end
 
 %i[ stag prod ].each do |env_name|
   lane env_name do
+    raise "MIA: bundle id" unless (app_id_prefix = ENV["APP_BUNDLE_ID_PREFIX"])
+
     build_app(
       scheme: "App #{env_name}",
       output_directory: "fastlane/releases",
@@ -31,10 +33,9 @@ lane :sync_dsyms do |opts|
   raise "MIA: env" unless (env_name = opts[:env_name] || :stag)
   raise "MIA: bundle id" unless (app_id_prefix = ENV["APP_BUNDLE_ID_PREFIX"])
   download_dsyms(
-    version: 'latest',
+    min_version: "1.0.0",
     output_directory: "fastlane/releases/dsyms",
     app_identifier: "#{app_id_prefix}.#{env_name}",
   )
   sentry_upload_dsym
 end
-

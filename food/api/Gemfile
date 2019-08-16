@@ -25,7 +25,7 @@ gem 'active_storage-postgresql',
   branch: 'enable-cache-control'
 gem 'down'
 gem 'image_processing'
-
+gem 'nokogiri', '>= 1.10.4'
 
 group :development, :test do
   gem 'byebug', platforms: [:mri, :mingw, :x64_mingw]

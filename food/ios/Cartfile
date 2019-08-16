@@ -22,6 +22,7 @@ github "brenthargrave/DifferenceKit" "drop-window-presence-guard"
 github "brenthargrave/GoogleReporter" "drop-uiwebview-invocation"
 github "hyperoslo/Lightbox"
 github "marmelroy/PhoneNumberKit"
+github "RxSwiftCommunity/RxGesture"
 
 # Firebase experimental carthage support: https://git.io/fAxBS
 binary "https://dl.google.com/dl/firebase/ios/carthage/FirebaseAnalyticsBinary.json"

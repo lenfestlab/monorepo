@@ -8,6 +8,7 @@ import Gloss
 import ObjectMapper
 import RealmSwift
 import NSObject_Rx
+import Sentry
 
 fileprivate let cacheKeyAuthToken = "auth-token"
 fileprivate let cacheKeyEmail = "email"
@@ -35,25 +36,6 @@ class Api {
     self.env = env
     self.cache = cache
     self.locationManager = locationManager
-    self.observeLocation()
-  }
-
-  private func observeLocation() -> Void {
-    // sync entry/exit with server so it can wake app up for visit calculation
-    let entry$ =
-      locationManager.regionEntry$
-        .flatMapLatest({ [unowned self] region -> Observable<PlaceEvent> in
-          return self.recordPlaceEvent$(region.identifier, .entered)
-        })
-    let exit$ =
-      locationManager.regionExit$
-        .flatMapLatest({ [unowned self] region -> Observable<PlaceEvent> in
-          return self.recordPlaceEvent$(region.identifier, .exited)
-        })
-    Observable.zip(entry$, exit$)
-      .ignoreErrors()
-      .subscribe()
-      .disposed(by: disposeBag)
   }
 
   typealias AuthToken = String
@@ -113,10 +95,6 @@ class Api {
     }
   }
 
-  func registerInstall$() -> Observable<Void> {
-    return patchInstall$(params: [:])
-  }
-
   func updateEmail$(email: String) -> Observable<Void> {
     return patchInstall$(params: ["email" : email])
   }
@@ -126,6 +104,7 @@ class Api {
   }
 
   private func patchInstall$(params: [String: Any]) -> Observable<Void> {
+    Client.shared?.user = Sentry.User(userId: env.installationId)
     let url = "\(env.apiBaseUrlString)/installs/\(env.installationId)"
     return
       RxAlamofire
@@ -164,6 +143,7 @@ class Api {
         .catchError({ error -> Observable<Result<Place>> in
           return Observable.just(Result.failure(error))
         })
+        .observeOn(Scheduler.main)
   }
 
   private func patchBookmark(

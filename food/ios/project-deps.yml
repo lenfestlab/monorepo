@@ -24,6 +24,7 @@ targets:
       - carthage: Cache
       - carthage: Imaginary
       - carthage: PhoneNumberKit
+      - carthage: RxGesture
       # network
       - carthage: Alamofire
       - carthage: AlamofireImage

@@ -318,7 +318,11 @@ class MapViewController: UIViewController, Contextual {
   }
 
   func scrollToItem(at indexPath:IndexPath) {
-    self.collectionView?.collectionViewFlowLayout.collectionView!.scrollToItem(at: indexPath, at: .centeredHorizontally, animated: true)
+    guard
+      let collectionView = collectionView.collectionViewFlowLayout.collectionView,
+      collectionView.numberOfSections > 0
+      else { return print("ERROR: empty collectionView") }
+    collectionView.scrollToItem(at: indexPath, at: .centeredHorizontally, animated: true)
   }
 
   @objc func centerToCurrentPlaceIfNotVisible() {
