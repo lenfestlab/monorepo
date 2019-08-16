@@ -20,11 +20,12 @@ class PlaceEvent < ApplicationRecord
   scope :visitable, -> {
     now = Time.zone.now
     duration = Integer(ENV["DEFAULT_VISIT_DURATION"] || 10)
+    deadline = Integer(ENV["DEFAULT_VISIT_DEADLINE"] || 60)
     before = duration.minutes.ago now
-    where("last_entered_at > COALESCE(last_exited_at, 'epoch')")  # hasn't yet exited
+    where("last_entered_at > COALESCE(last_exited_at, 'epoch')")
       .where("last_entered_at > COALESCE(last_visited_at, 'epoch')") # no visit recorded yet
       .where("last_entered_at < ?", before) # entered 15+ min ago
-      .where("last_entered_at > ?", 1.hour.ago(now)) # check window is 1h
+      .where("last_entered_at > ?", deadline.minutes.ago(now)) # check window is 1h
   }
 
   def visit_check

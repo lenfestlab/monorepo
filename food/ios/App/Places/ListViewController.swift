@@ -27,7 +27,7 @@ extension ListViewController { // UICollectionViewDelegate
 
   override func collectionView(_ collectionView: UICollectionView, shouldSelectItemAt indexPath: IndexPath) -> Bool {
     let place = self.placeStore.places[indexPath.row]
-    analytics.log(.tapsOnCard(place: place, controllerIdentifierKey: self.controllerIdentifierKey))
+    analytics.log(.tapsOnCard(place: place, controllerIdentifierKey: self.controllerIdentifierKey, locationManager.latestLocation))
     openPlace(place)
     return true
   }

@@ -1,3 +1,4 @@
+import AlamofireNetworkActivityLogger
 import UIKit
 
 class Env {
@@ -26,6 +27,7 @@ class Env {
     case versionMarketing = "CFBundleShortVersionString"
     case amplitudeApiKey = "AMPLITUDE_API_KEY"
     case sentryDSN = "SENTRY_DSN"
+    case networkLogLevel = "NETWORK_LOG_LEVEL"
   }
 
   private var bundle: Bundle
@@ -80,5 +82,18 @@ class Env {
   var buildVersion: String {
     return get(.versionBuild)
   }
+
+  var networkLogLevel: NetworkActivityLoggerLevel {
+    guard isPreProduction else { return .off }
+    switch get(.networkLogLevel) {
+    case "debug": return .debug
+    case "info": return .info
+    case "warn": return .warn
+    case "error": return .error
+    case "fatal": return .fatal
+    default: return .off
+    }
+  }
+
 
 }

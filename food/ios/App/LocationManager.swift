@@ -241,4 +241,8 @@ class LocationManager: NSObject, CLLocationManagerDelegate {
       .share(replay: 1, scope: .whileConnected)
   }()
 
+  func requestLocation() -> Void {
+    locationManager.requestLocation()
+  }
+
 }

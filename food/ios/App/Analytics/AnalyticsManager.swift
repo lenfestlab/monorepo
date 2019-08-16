@@ -158,8 +158,9 @@ struct AnalyticsEvent {
     return AnalyticsEvent(name: "click-pin", category: .app, label: place.name, cd7: place.analyticsCuisine, cd8: place.analyticsNeighborhood, cd9: place.analyticsBells, cd10: place.analyticsPrice, cd11: place.analyticsReviewer)
   }
 
-  static func tapsOnCard(place: Place, controllerIdentifierKey: String) -> AnalyticsEvent {
-    return AnalyticsEvent(name: "tap", category: .card, label: place.name, cd6: controllerIdentifierKey, cd7: place.analyticsCuisine, cd8: place.analyticsNeighborhood, cd9: place.analyticsBells, cd10: place.analyticsPrice, cd11: place.analyticsReviewer, cd18: place.contactMeta)
+  static func tapsOnCard(place: Place, controllerIdentifierKey: String, _ currentLocation: CLLocation?) -> AnalyticsEvent {
+    let cd19 = place.visitRadiusContains(currentLocation) ? "inside" : "outside"
+    return AnalyticsEvent(name: "tap", category: .card, label: place.name, cd6: controllerIdentifierKey, cd7: place.analyticsCuisine, cd8: place.analyticsNeighborhood, cd9: place.analyticsBells, cd10: place.analyticsPrice, cd11: place.analyticsReviewer, cd18: place.contactMeta, cd19: cd19)
   }
 
   static func swipesCarousel(place: Place, currentLocation: CLLocationCoordinate2D?) -> AnalyticsEvent {
@@ -371,13 +372,32 @@ struct AnalyticsEvent {
     return AnalyticsEvent(name: "close-filter", category: .filter, cd7: cuisines, cd8: neighborhoods, cd9: bells, cd10: price, cd11: reviewer)
   }
 
+  static func placeEvent(
+    kind: PlaceEvent.Kind,
+    place: Place,
+    coordinate: CLLocationCoordinate2D? = nil
+    ) -> AnalyticsEvent {
+    let (latlng, meta) = locationMeta(coordinate)
+    return AnalyticsEvent(
+      name: kind.name,
+      metadata: meta,
+      category: .debug,
+      label: place.name,
+      cd2: latlng,
+      cd7: place.analyticsCuisine,
+      cd8: place.analyticsNeighborhood,
+      cd9: place.analyticsBells,
+      cd10: place.analyticsPrice,
+      cd11: place.analyticsReviewer
+    )
+  }
 
   static func visited(
     place: Place,
-    location: CLLocationCoordinate2D?,
+    coordinate: CLLocationCoordinate2D?,
     triggers: [String] = []
     ) -> AnalyticsEvent {
-    let (latlng, meta) = locationMeta(location)
+    let (latlng, meta) = locationMeta(coordinate)
     return AnalyticsEvent(
       name: "visited",
       metadata: meta,
@@ -390,6 +410,16 @@ struct AnalyticsEvent {
       cd10: place.analyticsPrice,
       cd11: place.analyticsReviewer,
       cd19: triggers.joined(separator: ","))
+  }
+
+  static func error(
+    _ error: Error
+    ) -> AnalyticsEvent {
+    return AnalyticsEvent(
+      name: "error",
+      category: .debug,
+      label: error.localizedDescription
+    )
   }
 
 }
@@ -455,9 +485,6 @@ class AnalyticsManager: NSObject {
     let action = event.name
     let category = event.category.rawValue
     let label = (event.label ?? "")
-
-    // skip debugging events
-    guard (event.category != .debug) else { return }
 
     // NOTE: workaround iOS 12 networking bug that drops requests prematurely
     // GH discussion: https://git.io/fpY6S

@@ -25,20 +25,17 @@ configs:
 settings:
   base:
     SWIFT_VERSION: 5.0
-    APP_VERSION: 1.0.9
+    APP_VERSION: 1.0.10
     APP_MARKETING_PATH: food
     TARGETED_DEVICE_FAMILY: '1' # iPhone only
     # link system frameworks - https://git.io/fAZbC
     # -ObjC required by crashlytics: https://git.io/fAQPW
     OTHER_LDFLAGS: "$(inherited) -framework Foundation -ObjC -lsqlite3.0"
-    # Override to ensure dSYm, enable forced crashes:
-    # See "Adjust your project's debug settings": https://goo.gl/ZRLPwG
-    # ...else build warning:
-    # > -1: DEBUG_INFORMATION_FORMAT should be set to dwarf-with-dsym for all
-    # > configurations. This could also be a timing issue, make sure the
-    # > Fabric run script build phase is the last build phase and no other
-    # > scripts have moved the dSYM from the location Xcode generated it.
-    # > Unable to process Here.app.dSYM at path...
+    # https://docs.sentry.io/clients/cocoa/dsym/#upload-symbols-with-sentry-cli
+    # > you need to st the DEBUG_INFORMATION_FORMAT to be DWARF with dSYM File.
+    # > By default, an Xcode project will only have DEBUG_INFORMATION_FORMAT
+    # > set to DWARF with dSYM File in Release so make sure everything is set
+    # > in your build settings properly.
     DEBUG_INFORMATION_FORMAT: "dwarf-with-dsym"
     CODE_SIGN_STYLE: Automatic
   configs:
@@ -87,11 +84,13 @@ targets:
         - prod
     dependencies: [] # ./deps.yml
     prebuildScripts:
-      - name: Copy Firebase config
+      - name: "Copy Firebase config"
         path: scripts/copy_firebase_config.sh
     postbuildScripts:
       - name: "Bump build number"
         path: scripts/update_build_number.sh
+      - name: "Upload dSYM"
+        path: scripts/upload_symbols.sh
 
   Tests:
     platform: iOS

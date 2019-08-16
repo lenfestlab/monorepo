@@ -2,6 +2,9 @@ import UIKit
 import CoreLocation
 import SVProgressHUD
 import RxRealm
+import RxGesture
+import RxSwift
+import SwiftDate
 
 extension PlacesViewController: PlaceStoreDelegate {
   // functions defined in class, else compiler error:
@@ -72,6 +75,15 @@ class PlacesViewController: UIViewController, Contextual {
     filterBar.layer.borderWidth = 1
     filterBar.layer.borderColor = UIColor.slate.withAlphaComponent(0.3).cgColor
     return filterBar
+  }()
+
+  var telemetryView: UILabel = {
+    let label = UILabel(frame: .zero)
+    label.backgroundColor = .white
+    label.numberOfLines = 0
+    label.font = UIFont.monospacedDigitSystemFont(ofSize: 14, weight: .regular)
+    label.isHidden = true
+    return label
   }()
 
 
@@ -154,6 +166,60 @@ class PlacesViewController: UIViewController, Contextual {
 
     self.placeStore.delegate = self
     self.placeStore.beginObservingPlaces() // MUST be called after delegate set
+
+
+    // Place events telemetry
+
+    view.addSubview(telemetryView)
+    telemetryView.snp.makeConstraints { [unowned self] make in
+      make.top.equalTo(topBar.snp.bottom)
+      make.left.equalTo(self.view)
+      make.right.equalTo(self.view)
+    }
+
+    topBar.rx.swipeGesture([.up, .down]).when(.ended)
+      .map({ [unowned self] _ in
+        return !self.telemetryView.isHidden
+      })
+      .bind(to: telemetryView.rx.isHidden)
+      .disposed(by: rx.disposeBag)
+
+    let latestPlaceEvent$: Observable<PlaceEvent?> =
+      cache.recentPlaceEvents$.map { $0.first }
+
+    let telemetryText$: Observable<String> =
+      latestPlaceEvent$.map({ [unowned self] placeEvent in
+        let text = "  Last nearby place: \n"
+        let notAvailable = "n/a"
+        let formatDate = { (ts: Date?) -> String in
+          let region =
+            Region(
+              calendar: Calendars.gregorian,
+              zone: Zones.autoUpdating,
+              locale: Locale.autoupdatingCurrent)
+          guard let ts = ts else { return "-" }
+          let localTs = ts.in(region: region)
+          return localTs.toFormat("MMM dd hh:mm:s a")
+        }
+        guard
+          let event = placeEvent,
+          let place: Place = self.cache.get(event.placeId),
+          let placeName = place.name
+          else { return text.appending(notAvailable) }
+        return text.appending("""
+          \(placeName)
+          viewed:  \(formatDate(event.lastViewedAt))
+          entered: \(formatDate(event.lastEnteredAt))
+          exited:    \(formatDate(event.lastExitedAt))
+          visited:   \(formatDate(event.lastVisitedAt))
+          inside? \(event.isRegionActive)
+        """)
+      })
+
+    telemetryText$
+      .bind(to: telemetryView.rx.text)
+      .disposed(by: rx.disposeBag)
+
   }
 
 

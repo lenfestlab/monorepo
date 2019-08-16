@@ -24,7 +24,7 @@ extension MapViewController: UICollectionViewDelegate {
     if collectionView.indexOfMajorCell() == indexPath.row {
       let mapPlace = mapPlaces[indexPath.row]
       let place = mapPlace.place
-      analytics.log(.tapsOnCard(place: place, controllerIdentifierKey: self.controllerIdentifierKey))
+      analytics.log(.tapsOnCard(place: place, controllerIdentifierKey: self.controllerIdentifierKey, locationManager.latestLocation))
       let detailViewController = DetailViewController(context: context, place: place)
       navigationController?.pushViewController(detailViewController, animated: true)
     } else {

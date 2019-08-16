@@ -2,6 +2,7 @@ import RxSwift
 import RxCocoa
 import RealmSwift
 import RxRealm
+import RxSwiftExt
 import AlamofireImage
 
 class Cache {
@@ -231,5 +232,19 @@ class Cache {
       })
       .share(replay: 1, scope: .whileConnected)
   }()
+
+  lazy var recentPlaceEvents$: Observable<[PlaceEvent]> = {
+    return asArray$(realm.objects(PlaceEvent.self)
+        .sorted(byKeyPath: "lastEnteredAt", ascending: false))
+  }()
+
+  func observeVisitedAt$(_ placeId: String) -> Observable<Date?> {
+    guard
+      let event = realm.object(ofType: PlaceEvent.self, forPrimaryKey: placeId)
+      else { return Observable.just(nil) }
+    return Observable.from(object: event, emitInitialValue: false)
+      .map({ $0.lastVisitedAt })
+      .unwrap()
+  }
 
 }
