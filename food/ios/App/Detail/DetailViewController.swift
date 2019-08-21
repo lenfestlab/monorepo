@@ -271,7 +271,7 @@ class DetailViewController: UIViewController, Contextual {
         formatter.dateFormat = "MMM. dd, yyyy"
         let myString = formatter.string(from: publishedAt)
 
-        reviewLabelString = "\(reviewLabelString) \n Published \(myString)"
+        reviewLabelString = "\(reviewLabelString) \n Published on \(myString)"
     }
 
     self.reviewLabel.text = reviewLabelString
