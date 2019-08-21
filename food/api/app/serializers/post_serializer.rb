@@ -8,6 +8,7 @@ class PostSerializer < ActiveModel::Serializer
     images
     author
     details
+    published_at
   ])
 
   attribute :url_with_analytics, key: :url
