@@ -25,6 +25,7 @@ class Post: RealmSwift.Object, Mappable {
   @objc dynamic var drinks: String?
   @objc dynamic var remainder: String?
   @objc dynamic var author: Author?
+  @objc dynamic var publishedAt: Date?
   var images = List<Img>()
 
   func mapping(map: Map) {
@@ -50,6 +51,8 @@ class Post: RealmSwift.Object, Mappable {
       (map["details.drinks"], StringTransform())
     remainder <-
       (map["details.remainder"], StringTransform())
+    publishedAt <-
+        (map["published_at"], DateTransform())
     author <-
       map["author"]
     images <-

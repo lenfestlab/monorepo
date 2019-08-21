@@ -262,11 +262,20 @@ class DetailViewController: UIViewController, Contextual {
     reviewString.addAttribute(.underlineStyle, value: NSUnderlineStyle.single.rawValue, range: NSMakeRange(0, reviewString.length))
     self.reviewButton.setAttributedTitle(reviewString, for: .normal)
 
+    var reviewLabelString = "Unknown Author"
     if let authorName = self.place.post?.author?.name {
-      self.reviewLabel.text = "By \(authorName)"
-    } else {
-      self.reviewLabel.text = "Unknown Author"
+      reviewLabelString = "By \(authorName)"
     }
+    if let publishedAt = self.place.post?.publishedAt {
+        let formatter = DateFormatter()
+        formatter.dateFormat = "MMM. dd, yyyy"
+        let myString = formatter.string(from: publishedAt)
+
+        reviewLabelString = "\(reviewLabelString) \n Published \(myString)"
+    }
+
+    self.reviewLabel.text = reviewLabelString
+
     self.reviewLabel.font = UIFont.lightLarge
 
     if let post = self.place.post {
