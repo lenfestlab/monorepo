@@ -4,6 +4,7 @@ import RxSwift
 import RxCocoa
 import AlamofireImage
 import Lightbox
+import SwiftDate
 
 let imageIdentifier = "ImageViewCell"
 
@@ -109,6 +110,9 @@ class DetailViewController: UIViewController, Contextual {
 
   @IBOutlet weak var reviewButton: UIButton!
   @IBOutlet weak var reviewLabel: UILabel!
+  @IBOutlet weak var reviewPublishedLabel: UILabel!
+  @IBOutlet weak var dividerLeft: UIView!
+  @IBOutlet weak var dividerRight: UIView!
 
   @IBOutlet weak var loveButton: UIButton!
 
@@ -266,17 +270,57 @@ class DetailViewController: UIViewController, Contextual {
     if let authorName = self.place.post?.author?.name {
       reviewLabelString = "By \(authorName)"
     }
-    if let publishedAt = self.place.post?.publishedAt {
-        let formatter = DateFormatter()
-        formatter.dateFormat = "MMM. dd, yyyy"
-        let myString = formatter.string(from: publishedAt)
+    self.reviewLabel.text = reviewLabelString
+    self.reviewLabel.font = UIFont.lightLarge
 
-        reviewLabelString = "\(reviewLabelString) \n Published on \(myString)"
+    reviewLabel.removeFromSuperview()
+    reviewPublishedLabel.removeFromSuperview()
+    let reviewContainer =
+      UIStackView(arrangedSubviews: [
+        reviewLabel,
+        ])
+    reviewContainer.axis = .vertical
+    reviewContainer.distribution = .equalSpacing
+    reviewContainer.alignment = .center
+    view.addSubview(reviewContainer)
+    reviewContainer.snp.makeConstraints { [unowned self] make in
+      let marginV = 21
+      make.centerX.equalToSuperview()
+      make.top.equalTo(self.buttonsView.snp.bottom).offset(marginV)
+      make.bottom.equalTo(self.quoteView.snp.top).offset(-marginV)
+    }
+    dividerLeft.removeFromSuperview()
+    view.addSubview(dividerLeft)
+    let dividerMarginH = 14
+    let dividerH = 2
+    let dividerW = 30
+    let dividedView: UIView = reviewContainer
+    dividerLeft.snp.makeConstraints { [unowned self] make in
+      make.width.equalTo(dividerW)
+      make.height.equalTo(dividerH)
+      make.centerY.equalTo(self.reviewLabel)
+      make.right.equalTo(dividedView.snp.left).inset(-dividerMarginH)
+    }
+    dividerRight.snp.makeConstraints { [unowned self] make in
+      make.width.equalTo(dividerW)
+      make.height.equalTo(dividerH)
+      make.centerY.equalTo(self.reviewLabel)
+      make.left.equalTo(dividedView.snp.right).inset(-dividerMarginH)
     }
 
-    self.reviewLabel.text = reviewLabelString
+    self.reviewPublishedLabel.font = UIFont.lightLarge
+    if let publishedAt: Date = self.place.post?.publishedAt {
+      let region =
+        Region(
+          calendar: Calendars.gregorian,
+          zone: Zones.autoUpdating,
+          locale: Locale.autoupdatingCurrent)
+      let localizedDate = publishedAt.in(region: region)
+      let formattedDate = localizedDate.toFormat("MMM. dd, yyyy")
+      reviewPublishedLabel.text = "Published on \(formattedDate)"
+      reviewContainer.addArrangedSubview(reviewPublishedLabel)
+    }
 
-    self.reviewLabel.font = UIFont.lightLarge
 
     if let post = self.place.post {
       if let html = post.placeSummary {

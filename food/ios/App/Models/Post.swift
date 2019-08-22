@@ -52,7 +52,7 @@ class Post: RealmSwift.Object, Mappable {
     remainder <-
       (map["details.remainder"], StringTransform())
     publishedAt <-
-        (map["published_at"], DateTransform())
+      (map["published_at"], ISO8601DateTransform())
     author <-
       map["author"]
     images <-

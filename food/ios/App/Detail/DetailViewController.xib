@@ -16,6 +16,8 @@
                 <outlet property="callButton" destination="MuZ-q0-Xj6" id="8b8-zy-9kF"/>
                 <outlet property="categoryLabel" destination="B2F-q3-8JB" id="W6O-UE-mxr"/>
                 <outlet property="collectionView" destination="e38-44-n6S" id="vG1-6w-GyN"/>
+                <outlet property="dividerLeft" destination="LOB-WE-66E" id="42F-N4-ywk"/>
+                <outlet property="dividerRight" destination="hJ8-4L-VGF" id="qlS-Rc-Iu7"/>
                 <outlet property="drinkLabel" destination="OXe-E2-GTQ" id="EWf-nu-Nfg"/>
                 <outlet property="loveButton" destination="a4z-ZV-z3a" id="JD8-p7-cqZ"/>
                 <outlet property="menuLabel" destination="e2S-1R-Ijl" id="yFw-FV-m1t"/>
@@ -29,6 +31,7 @@
                 <outlet property="reservationButton" destination="vgv-FZ-W1H" id="JwD-fB-oNF"/>
                 <outlet property="reviewButton" destination="z9m-jC-tax" id="EIk-cW-Jzo"/>
                 <outlet property="reviewLabel" destination="yWd-kx-huO" id="mIk-CG-dQG"/>
+                <outlet property="reviewPublishedLabel" destination="7az-OU-42V" id="BGP-ls-l5P"/>
                 <outlet property="titleLabel" destination="0Du-xu-VxK" id="IaV-oO-cpm"/>
                 <outlet property="view" destination="i5M-Pr-FkT" id="sfx-zR-JGt"/>
                 <outlet property="websiteButton" destination="pui-dp-0Vm" id="URG-hN-1ls"/>
@@ -167,16 +170,14 @@
                                 <action selector="openWebsite" destination="-1" eventType="touchUpInside" id="KTk-rr-4Hx"/>
                             </connections>
                         </button>
-                        <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" textAlignment="center" lineBreakMode="tailTruncation" numberOfLines="2" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="yWd-kx-huO">
-                            <rect key="frame" x="155" y="372.5" width="196.5" height="41"/>
-                            <string key="text">By Craig Laban
-Published on Jan. 2. 2019</string>
+                        <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="By Craig Laban" textAlignment="center" lineBreakMode="tailTruncation" numberOfLines="2" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="yWd-kx-huO">
+                            <rect key="frame" x="195" y="372.5" width="116" height="20.5"/>
                             <fontDescription key="fontDescription" type="system" pointSize="17"/>
                             <nil key="textColor"/>
                             <nil key="highlightedColor"/>
                         </label>
                         <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="hJ8-4L-VGF" userLabel="Right Divider">
-                            <rect key="frame" x="365.5" y="392" width="30" height="2"/>
+                            <rect key="frame" x="325" y="382" width="30" height="2"/>
                             <color key="backgroundColor" red="0.58823529411764708" green="0.74117647058823533" blue="0.77647058823529413" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                             <constraints>
                                 <constraint firstAttribute="width" constant="30" id="0b0-2z-MRl"/>
@@ -184,7 +185,7 @@ Published on Jan. 2. 2019</string>
                             </constraints>
                         </view>
                         <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="LOB-WE-66E" userLabel="Left Divider">
-                            <rect key="frame" x="111" y="392" width="30" height="2"/>
+                            <rect key="frame" x="151" y="382" width="30" height="2"/>
                             <color key="backgroundColor" red="0.58823529409999997" green="0.74117647060000003" blue="0.77647058820000003" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                             <constraints>
                                 <constraint firstAttribute="height" constant="2" id="1Rk-bg-VBl"/>
@@ -256,6 +257,12 @@ Published on Jan. 2. 2019</string>
                                 <constraint firstAttribute="height" constant="35" id="mJR-fh-SsR"/>
                             </constraints>
                         </stackView>
+                        <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Published on" textAlignment="center" lineBreakMode="tailTruncation" numberOfLines="2" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="7az-OU-42V">
+                            <rect key="frame" x="203.5" y="393" width="99" height="20.5"/>
+                            <fontDescription key="fontDescription" type="system" pointSize="17"/>
+                            <nil key="textColor"/>
+                            <nil key="highlightedColor"/>
+                        </label>
                     </subviews>
                     <constraints>
                         <constraint firstItem="e2S-1R-Ijl" firstAttribute="top" secondItem="vcp-GK-3Jk" secondAttribute="bottom" constant="20" id="045-YI-rZf"/>
@@ -263,6 +270,7 @@ Published on Jan. 2. 2019</string>
                         <constraint firstAttribute="trailing" secondItem="OXe-E2-GTQ" secondAttribute="trailing" constant="33" id="21u-J5-jlU"/>
                         <constraint firstItem="pui-dp-0Vm" firstAttribute="leading" secondItem="MuZ-q0-Xj6" secondAttribute="trailing" constant="10" id="2Jt-WX-edn"/>
                         <constraint firstItem="vgv-FZ-W1H" firstAttribute="leading" secondItem="VxG-Fb-Rao" secondAttribute="leading" priority="998" id="2ME-4f-ozv"/>
+                        <constraint firstItem="7az-OU-42V" firstAttribute="centerX" secondItem="yWd-kx-huO" secondAttribute="centerX" id="2My-Ru-nD2"/>
                         <constraint firstItem="e2S-1R-Ijl" firstAttribute="leading" secondItem="EKL-wW-4DM" secondAttribute="leading" constant="33" id="2gn-yM-W1H"/>
                         <constraint firstItem="byn-VW-N4g" firstAttribute="top" secondItem="EIw-Hk-sJl" secondAttribute="bottom" id="3N5-f7-Red"/>
                         <constraint firstAttribute="trailing" secondItem="e2S-1R-Ijl" secondAttribute="trailing" constant="33" id="41R-VP-Az8"/>
@@ -281,7 +289,7 @@ Published on Jan. 2. 2019</string>
                         <constraint firstItem="OXe-E2-GTQ" firstAttribute="top" secondItem="e2S-1R-Ijl" secondAttribute="bottom" id="Ol0-h1-QgX"/>
                         <constraint firstItem="CMQ-mE-znW" firstAttribute="leading" secondItem="EKL-wW-4DM" secondAttribute="leading" id="PGm-kZ-JJM"/>
                         <constraint firstItem="B2F-q3-8JB" firstAttribute="top" secondItem="0Du-xu-VxK" secondAttribute="bottom" constant="5" id="Pjk-kh-92q"/>
-                        <constraint firstItem="vcp-GK-3Jk" firstAttribute="top" secondItem="yWd-kx-huO" secondAttribute="bottom" constant="21" id="QuO-Eq-BUx"/>
+                        <constraint firstItem="vcp-GK-3Jk" firstAttribute="top" secondItem="7az-OU-42V" secondAttribute="bottom" constant="21" id="QuO-Eq-BUx"/>
                         <constraint firstItem="EIw-Hk-sJl" firstAttribute="leading" secondItem="EKL-wW-4DM" secondAttribute="leading" id="R8g-Nc-L2t"/>
                         <constraint firstItem="VxG-Fb-Rao" firstAttribute="leading" secondItem="e2S-1R-Ijl" secondAttribute="leading" id="RQc-yk-ATB"/>
                         <constraint firstItem="EIw-Hk-sJl" firstAttribute="top" secondItem="OXe-E2-GTQ" secondAttribute="bottom" id="S0V-Dz-wdI"/>
@@ -302,6 +310,7 @@ Published on Jan. 2. 2019</string>
                         <constraint firstAttribute="trailing" secondItem="jbx-UG-KcE" secondAttribute="trailing" priority="1" constant="114" id="rPQ-aP-a2g"/>
                         <constraint firstItem="VxG-Fb-Rao" firstAttribute="leading" secondItem="MuZ-q0-Xj6" secondAttribute="leading" id="s72-Uw-0RR"/>
                         <constraint firstItem="vgv-FZ-W1H" firstAttribute="leading" secondItem="pui-dp-0Vm" secondAttribute="trailing" constant="10" id="sYS-9u-ea8"/>
+                        <constraint firstItem="7az-OU-42V" firstAttribute="top" secondItem="yWd-kx-huO" secondAttribute="bottom" id="sts-nJ-g6W"/>
                         <constraint firstItem="VxG-Fb-Rao" firstAttribute="leading" secondItem="pui-dp-0Vm" secondAttribute="leading" priority="999" id="tD9-XG-Pqk"/>
                         <constraint firstItem="CMQ-mE-znW" firstAttribute="centerX" secondItem="EKL-wW-4DM" secondAttribute="centerX" id="ti2-Bj-Bhm"/>
                         <constraint firstItem="LOB-WE-66E" firstAttribute="centerY" secondItem="yWd-kx-huO" secondAttribute="centerY" id="wlj-bo-fZ0"/>
