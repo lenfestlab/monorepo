@@ -26,7 +26,7 @@ class PlaceEventsController < ApplicationController
     data =  current_user.place_events
     render(
       adapter: :json,
-      root: :data,
+      root: 'data',
       meta: { count: data.size },
       json: data,
       each_serializer: PlaceEventSerializer

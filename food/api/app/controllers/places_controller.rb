@@ -30,7 +30,7 @@ class PlacesController < ApplicationController
 
     render(
       adapter: :json,
-      root: :data,
+      root: 'data',
       meta: { count: data.size },
       json: data,
       each_serializer: PlaceSerializer
@@ -47,4 +47,3 @@ class PlacesController < ApplicationController
   end
 
 end
-

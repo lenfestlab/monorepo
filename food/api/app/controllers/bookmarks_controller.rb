@@ -7,7 +7,7 @@ class BookmarksController < ApplicationController
     data =  current_user.bookmarks.saved
     render(
       adapter: :json,
-      root: :data,
+      root: 'data',
       meta: { count: data.size },
       json: data,
       each_serializer: BookmarkSerializer
@@ -45,4 +45,3 @@ class BookmarksController < ApplicationController
   end
 
 end
-
