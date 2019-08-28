@@ -44,5 +44,9 @@ Rails.application.routes.draw do
     (ENV["APP_MARKETING_URL"] ||
      "https://testflight.apple.com/join/vqlIFhxI"))
 
+  get "/food", to: redirect(
+    (ENV["APP_MARKETING_URL"] ||
+     "https://apps.apple.com/us/app/philly-eats/id1469058161?ls=1"))
+
   get "force_exception" => "application#force_exception"
 end
