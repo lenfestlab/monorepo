@@ -1,8 +1,8 @@
 ## Lenfest Institute for Journalism
 
-### HERE for Local Journalism
+### FOOD
 
-Download from the [App Store](https://lenfestlab.org/here)
+Download from the [App Store](https://food-prod.lenfestlab.org/food)
 
 ### Quickstart
 
