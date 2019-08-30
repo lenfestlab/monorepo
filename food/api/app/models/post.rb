@@ -247,7 +247,7 @@ class Post < ApplicationRecord
   end
 
   def admin_name
-    place_name = cached_place_names.split("/").first
+    place_name = cached_place_names.try(:split,"/").try(:first)
     preview = blurb.try(:truncate, 40)
     "[#{id}] #{place_name} > #{preview}"
   end
