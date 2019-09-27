@@ -24,7 +24,7 @@ configs:
 
 settings:
   base:
-    SWIFT_VERSION: 5.0
+    SWIFT_VERSION: 5.1
     APP_VERSION: 1.0.10
     APP_MARKETING_PATH: food
     TARGETED_DEVICE_FAMILY: '1' # iPhone only
