@@ -81,14 +81,23 @@ class PermissionsViewController: UIViewController, LocationManagerAuthorizationD
       message: "\(env.appName) uses your location to send you news about places you go. Please Always Allow access.",
       preferredStyle: .alert)
 
-    let action1 = UIAlertAction(title: "Only While Using the App", style: .default) { (action:UIAlertAction) in
-      print("Only While Using the App");
+    let actionTitle1: String
+    let actionTitle2: String
+    if #available(iOS 13.0, *) {
+      actionTitle1 = "Allow While Using App"
+      actionTitle2 = "Allow Once"
+    } else {
+      actionTitle1 = "Only While Using the App"
+      actionTitle2 = "Always Allow"
+    }
+    let action1 = UIAlertAction(title: actionTitle1, style: .default) { (action:UIAlertAction) in
+      print(actionTitle1)
       self.locationManager.enableBasicLocationServices()
     }
     alertController.addAction(action1)
 
-    let action2 = UIAlertAction(title: "Always Allow", style: .default) { (action:UIAlertAction) in
-      print("You've pressed default");
+    let action2 = UIAlertAction(title: actionTitle2, style: .default) { (action:UIAlertAction) in
+      print(actionTitle2)
       self.locationManager.enableBasicLocationServices()
     }
     alertController.addAction(action2)
@@ -102,13 +111,21 @@ class PermissionsViewController: UIViewController, LocationManagerAuthorizationD
     self.present(alertController, animated: true, completion: nil)
 
     let grayH: CGFloat = 267.5 // from view hierarchy debugger
-    let gray = UIView(frame: CGRect.init(x: 0, y: 0, width: 270, height: grayH))
+    let gray = UIView(frame: CGRect(x: 0, y: 0, width: 270, height: grayH))
     gray.backgroundColor = UIColor.black.withAlphaComponent(0.1)
     gray.layer.cornerRadius = 11.0
     gray.isUserInteractionEnabled = false
     alertController.view.addSubview(gray)
 
-    let maskY: CGFloat = 179 // eyeballed
+    let maskY: CGFloat
+    let imageSuperviewInset: CGFloat
+    if #available(iOS 13.0, *) {
+      maskY = 134
+      imageSuperviewInset = 80
+    } else {
+      maskY = 179
+      imageSuperviewInset = 40
+    }
     let maskH: CGFloat = 44
     let maskW: CGFloat = 270
     let maskRect = CGRect(x: 0, y: maskY, width: maskW, height: maskH)
@@ -148,7 +165,6 @@ class PermissionsViewController: UIViewController, LocationManagerAuthorizationD
       let widthHalf = width / 2
       let center: CGPoint
       let centerY: CGFloat = (maskY + (maskH / 2))
-      let imageSuperviewInset: CGFloat = 40 // eyeballed
       center = (imageNameSuffix == "Left")
         ? CGPoint(x: widthHalf - imageSuperviewInset, y: centerY)
         : CGPoint(x: (maskW - widthHalf) + imageSuperviewInset, y: centerY)
