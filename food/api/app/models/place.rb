@@ -39,7 +39,6 @@ class Place < ApplicationRecord
     read_attribute(:trigger_radius) || DEFAULT_TRIGGER_RADIUS
   end
 
-
   ## PostGIS
   #
 
@@ -63,6 +62,7 @@ class Place < ApplicationRecord
   end
 
   belongs_to :nabe,
+    optional: true,
     counter_cache: :places_count
 
   def self.format lng, lat
