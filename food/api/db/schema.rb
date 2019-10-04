@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2019_07_08_203841) do
+ActiveRecord::Schema.define(version: 2019_10_07_132713) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_stat_statements"
@@ -88,6 +88,8 @@ ActiveRecord::Schema.define(version: 2019_07_08_203841) do
     t.date "display_starts"
     t.date "display_ends"
     t.text "description"
+    t.string "source_key"
+    t.boolean "is_craving", default: false
     t.index ["display_ends"], name: "index_categories_on_display_ends"
     t.index ["display_starts"], name: "index_categories_on_display_starts"
     t.index ["identifier"], name: "index_categories_on_identifier"
@@ -254,6 +256,9 @@ ActiveRecord::Schema.define(version: 2019_07_08_203841) do
     t.text "cached_place_names"
     t.text "url"
     t.integer "cached_images_count", default: 0
+    t.boolean "previously_reviewed", default: false
+    t.boolean "previously_unreviewed", default: false
+    t.boolean "is_2019_top_25", default: false
     t.index ["author_id"], name: "index_posts_on_author_id"
     t.index ["cached_images_count"], name: "index_posts_on_cached_images_count"
     t.index ["cached_place_names"], name: "index_posts_on_cached_place_names"

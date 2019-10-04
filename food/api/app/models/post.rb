@@ -34,8 +34,6 @@ class Post < ApplicationRecord
     author
   ], presence: true )
 
-  validates :blurb, uniqueness: true
-
   before_save :update_cache
   def update_cache
     self.cached_images = photos.as_json
@@ -136,6 +134,9 @@ class Post < ApplicationRecord
 
   scope :live, ->{ where(live: true) }
   scope :wip, -> { where(live: false) }
+  scope :previously_reviewed, -> { where(previously_reviewed: true) }
+  scope :previously_unreviewed, -> { where(previously_unreviewed: true) }
+  scope :top_25, -> { where(is_2019_top_25: true) }
 
   ## Admin
   #
@@ -153,6 +154,9 @@ class Post < ApplicationRecord
       cached_place_names
       url_archived
       cached_images_count
+      previously_reviewed
+      previously_unreviewed
+      is_2019_top_25
     ].each do |attr|
       configure attr do
         hide
@@ -171,7 +175,14 @@ class Post < ApplicationRecord
         rating
       ].concat(Post.md_fields))
 
-      scopes([nil, :live, :wip, :missing_image])
+      scopes([nil,
+              :live,
+              :wip,
+              :missing_image,
+              :previously_unreviewed,
+              :previously_reviewed,
+              :top_25
+      ])
 
       field :cached_place_names do
         queryable true

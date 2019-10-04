@@ -1,8 +1,9 @@
 class Category < ApplicationRecord
 
   validates :name,
-    presence: true,
-    uniqueness: true
+    presence: true
+
+  validates :name, uniqueness: { scope: :is_cuisine }
 
   has_many :categorizations, dependent: :destroy
   has_many :places, through: :categorizations
@@ -20,9 +21,10 @@ class Category < ApplicationRecord
     super(ids)
   end
 
-  validates :photos,
-    presence: true,
-    unless: Proc.new { |r| r.is_cuisine }
+  # TODO: restore once craving guides' images imported
+  # validates :photos,
+    # presence: true,
+    # unless: Proc.new { |r| r.is_cuisine }
 
   validates :display_starts,
     presence: true,
