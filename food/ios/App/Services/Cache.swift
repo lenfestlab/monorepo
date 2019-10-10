@@ -23,6 +23,22 @@ class Cache {
     return try! Realm()
   }
 
+  lazy var asyncOpen$: Observable<Realm> = {
+    return Observable.create { observer -> Disposable in
+      Realm.asyncOpen { (realm, error) in
+        if let err = error {
+          observer.onError(err)
+        } else if let realm = realm {
+          observer.onNext(realm)
+        }
+        observer.onCompleted()
+      }
+      return Disposables.create()
+    }
+    .take(1)
+    .share(replay: 1, scope: .whileConnected)
+  }()
+
   func get<T: Object>(_ identifier: String) -> T? {
     return realm.object(ofType: T.self, forPrimaryKey: identifier)
   }
@@ -104,8 +120,20 @@ class Cache {
     return categories$(filter: .cuisine)
   }()
 
-  lazy var guides$: Observable<[Category]> = {
-    return categories$(filter: .guide)
+  func guides$(guideGroup: GuideGroup) -> Observable<[Category]> {
+    return asArray$(
+      realm.objects(Category.self)
+        .filter("%@ IN guideGroups", guideGroup))
+  }
+
+  lazy var guideGroups$: Observable<[GuideGroup]> = {
+    return asyncOpen$
+      .flatMapFirst( { [unowned self] realm -> Observable<[GuideGroup]> in
+        return self.asArray$(
+          realm
+            .objects(GuideGroup.self)
+            .sorted(byKeyPath: "priority", ascending: false))
+      })
   }()
 
   enum PlaceFilter {

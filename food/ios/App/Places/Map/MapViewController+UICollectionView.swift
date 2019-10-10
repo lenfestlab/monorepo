@@ -37,6 +37,16 @@ extension MapViewController: UICollectionViewDelegate {
 
 }
 
+extension MapViewController: UICollectionViewDelegateFlowLayout {
+  func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, sizeForItemAt indexPath: IndexPath) -> CGSize {
+    let padding = placeCellPadding
+    let view = collectionView
+    let width = view.frame.size.width - 2*padding - 10
+    return CGSize(width: width, height: 234)
+  }
+}
+
+
 extension MapViewController: UICollectionViewDataSource {
 
   func numberOfSections(in collectionView: UICollectionView) -> Int {

@@ -13,12 +13,11 @@ class GuidesViewController: UITableViewController, Contextual {
   private let guides$: Observable<[Guide]>
   private var guides: [Guide] = []
 
-  init(context: Context) {
+  init(context: Context, guideGroup: GuideGroup) {
     self.context = context
-    self.guides$ = context.cache.guides$
-
+    self.guides$ = context.cache.guides$(guideGroup: guideGroup)
     super.init(nibName: nil, bundle: nil)
-    navigationItem.hidesBackButton = true
+    self.title = guideGroup.title
 
     // eager fetch images
     guides$
@@ -42,7 +41,6 @@ class GuidesViewController: UITableViewController, Contextual {
     let nib = UINib.init(nibName: "GuideCell", bundle: nil)
     self.tableView.register(nib, forCellReuseIdentifier: "reuseIdentifier")
     self.navigationController?.styleController()
-    self.navigationItem.title = "Guides"
     self.tableView.separatorStyle = .none
     self.tableView.contentInset = UIEdgeInsets(top: 0, left: 0, bottom: 15, right: 0);
 

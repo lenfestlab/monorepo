@@ -21,7 +21,7 @@ class Category < ApplicationRecord
     super(ids)
   end
 
-  has_and_belongs_to_many :guide_groups, touch: true
+  has_and_belongs_to_many :guide_groups
 
   # TODO: restore once craving guides' images imported
   # validates :photos,
@@ -43,7 +43,6 @@ class Category < ApplicationRecord
   after_destroy :update_places
   def update_places
     self.places.map &:save!
-    self.guide_groups.map &:save!
   end
 
   before_save :update_cache
@@ -140,23 +139,12 @@ class Category < ApplicationRecord
       .where("(display_ends >= ?) OR (display_ends IS NULL)", today)
   }
 
+
   ## Serialization
   #
 
-  def as_json(options = nil)
-    super({
-      only: %i[
-        identifier
-        is_cuisine
-        name
-        description
-        display_starts
-        display_ends
-      ],
-      methods: %i[
-        image_url
-      ]
-    }.merge(options || {}))
+  def as_json
+    ActiveModelSerializers::SerializableResource.new(self, {}).as_json
   end
 
 end

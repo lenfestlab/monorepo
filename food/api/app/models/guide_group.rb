@@ -20,11 +20,6 @@ class GuideGroup < ApplicationRecord
     super(ids)
   end
 
-  before_save :update_cache
-  def update_cache
-    self.cached_guides = categories.as_json
-  end
-
   scope :prioritized, -> { order(priority: :desc) }
 
   ## Admin
@@ -55,4 +50,10 @@ class GuideGroup < ApplicationRecord
   def admin_name
     title
   end
+
+
+  def as_json
+    ActiveModelSerializers::SerializableResource.new(self, {}).as_json
+  end
+
 end

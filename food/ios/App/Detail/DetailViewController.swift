@@ -57,6 +57,7 @@ extension DetailViewController: UICollectionViewDelegate {
     guard let indexPath = self.collectionView.indexPathsForVisibleItems.first else { return }
 
     let controller = LightboxController(images: images, startIndex: indexPath.item)
+    controller.modalPresentationStyle = .fullScreen // https://git.io/JelVC
     controller.dismissalDelegate = self
 
     present(controller, animated: true, completion: nil)
