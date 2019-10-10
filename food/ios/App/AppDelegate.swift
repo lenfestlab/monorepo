@@ -240,7 +240,13 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
             })
         }
 
-    Observable.zip(entry$, visit$)
+    let locationStatus$ =
+      locationManager.status$
+        .do(onNext: { [weak self] status in
+          self?.analytics.log(.latestLocationPermission(status: status))
+        })
+
+    Observable.zip(entry$, visit$, locationStatus$)
       .ignoreErrors({ [weak self] error -> Bool in
         self?.analytics.log(.error(error))
         return true

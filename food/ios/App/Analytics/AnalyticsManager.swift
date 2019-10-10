@@ -154,6 +154,12 @@ struct AnalyticsEvent {
     return AnalyticsEvent(name: "enable-location", category: .onboarding, label:label)
   }
 
+  static func latestLocationPermission(status: CLAuthorizationStatus) -> AnalyticsEvent {
+    return AnalyticsEvent(name: "latest-location-status",
+                          category: .app,
+                          label: status.description)
+  }
+
   static func tapsOnPin(place: Place) -> AnalyticsEvent {
     return AnalyticsEvent(name: "click-pin", category: .app, label: place.name, cd7: place.analyticsCuisine, cd8: place.analyticsNeighborhood, cd9: place.analyticsBells, cd10: place.analyticsPrice, cd11: place.analyticsReviewer)
   }
