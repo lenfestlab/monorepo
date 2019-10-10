@@ -276,6 +276,10 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
       api.updateBookmarks$()
         .mapTo(true)
 
+    let updateGuideGroups$ =
+      api.updateGuideGroups$()
+        .mapTo(true)
+
     let updatePlaceEvents$ =
       api.getPlaceEvents$()
         .mapTo(true)
@@ -284,7 +288,8 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
       updateDefaultPlaces$,
       Observable.concat([
         updateBookmarks$,
-        updatePlaceEvents$
+        updatePlaceEvents$,
+        updateGuideGroups$
         ])
       ])
       .subscribe()

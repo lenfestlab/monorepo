@@ -108,6 +108,10 @@ class Cache {
     return categories$(filter: .guide)
   }()
 
+  lazy var guideGroups$: Observable<[GuideGroup]> = {
+    return allObjects$()
+  }()
+
   enum PlaceFilter {
     case all
     case bookmarked
