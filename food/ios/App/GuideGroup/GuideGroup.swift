@@ -28,7 +28,7 @@ class GuideGroup: RealmSwift.Object, Mappable {
     title <-
       (map["title"], StringTransform())
     desc <-
-      (map["desc"], StringTransform())
+      (map["description"], StringTransform())
     priority <-
       (map["priority"], IntTransform())
     guides <-

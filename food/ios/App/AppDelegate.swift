@@ -278,6 +278,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
 
     let updateGuideGroups$ =
       api.updateGuideGroups$()
+        .debug("guides$")
         .mapTo(true)
 
     let updatePlaceEvents$ =
@@ -286,11 +287,9 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
 
     Observable.zip([
       updateDefaultPlaces$,
-      Observable.concat([
-        updateBookmarks$,
-        updatePlaceEvents$,
-        updateGuideGroups$
-        ])
+      updateBookmarks$,
+      updatePlaceEvents$,
+      updateGuideGroups$,
       ])
       .subscribe()
       .disposed(by: rx.disposeBag)
