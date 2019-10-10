@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2019_10_07_132713) do
+ActiveRecord::Schema.define(version: 2019_10_10_175152) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_stat_statements"
@@ -95,6 +95,14 @@ ActiveRecord::Schema.define(version: 2019_10_07_132713) do
     t.index ["identifier"], name: "index_categories_on_identifier"
   end
 
+  create_table "categories_guide_groups", id: false, force: :cascade do |t|
+    t.bigint "guide_group_id", null: false
+    t.bigint "category_id", null: false
+    t.bigserial "insert_id", null: false
+    t.index ["category_id"], name: "index_categories_guide_groups_on_category_id"
+    t.index ["guide_group_id"], name: "index_categories_guide_groups_on_guide_group_id"
+  end
+
   create_table "categories_images", id: false, force: :cascade do |t|
     t.bigint "image_id", null: false
     t.bigint "category_id", null: false
@@ -112,6 +120,15 @@ ActiveRecord::Schema.define(version: 2019_10_07_132713) do
     t.index ["category_id"], name: "index_categorizations_on_category_id"
     t.index ["identifier"], name: "index_categorizations_on_identifier"
     t.index ["place_id"], name: "index_categorizations_on_place_id"
+  end
+
+  create_table "guide_groups", force: :cascade do |t|
+    t.uuid "identifier", default: -> { "uuid_generate_v4()" }
+    t.string "title"
+    t.string "description"
+    t.jsonb "cached_guides", default: [], array: true
+    t.integer "priority", default: 0
+    t.index ["identifier"], name: "index_guide_groups_on_identifier"
   end
 
   create_table "images", force: :cascade do |t|

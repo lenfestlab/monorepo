@@ -21,6 +21,7 @@ Rails.application.routes.draw do
     categories
     nabes
     authors
+    guide_groups
   ].each do |resource_name|
     resources resource_name, only: :index
   end

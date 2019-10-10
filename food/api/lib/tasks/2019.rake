@@ -77,16 +77,6 @@ _json.each do |i|
 
   rating = i["Bells"].try(:strip).try(:size) || -1 # default, -1 == unrated
 
-  #TODO: ? if contains "no", assume assigned 0 bells
-  # rating = 0 if rating_text && rating_text.match?(/no/i)
-  # if rating_text
-    # if (rating_match = rating_text.match(/\*/))
-      # if (rating_raw = rating_match[0])
-         # rating = Integer(rating_raw)
-      # end
-    # end
-  # end
-
   # extract list/guide keys
   standard_keys = <<EOF
 Name
