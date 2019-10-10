@@ -21,6 +21,8 @@ class Category < ApplicationRecord
     super(ids)
   end
 
+  has_and_belongs_to_many :guide_groups, touch: true
+
   # TODO: restore once craving guides' images imported
   # validates :photos,
     # presence: true,
@@ -41,6 +43,7 @@ class Category < ApplicationRecord
   after_destroy :update_places
   def update_places
     self.places.map &:save!
+    self.guide_groups.map &:save!
   end
 
   before_save :update_cache
