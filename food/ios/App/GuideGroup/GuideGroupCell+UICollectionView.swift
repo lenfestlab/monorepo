@@ -21,6 +21,12 @@ extension GuideGroupCell: UICollectionViewDelegate {
 
 }
 
+extension GuideGroupCell: UICollectionViewDelegateFlowLayout {
+  func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, sizeForItemAt indexPath: IndexPath) -> CGSize {
+    return CGSize(width: 170, height: 226)
+  }
+}
+
 extension GuideGroupCell: UICollectionViewDataSource {
 
   func numberOfSections(in collectionView: UICollectionView) -> Int {
@@ -28,18 +34,21 @@ extension GuideGroupCell: UICollectionViewDataSource {
   }
 
   func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
-    return mapPlaces.count
+    return self.guideGroup?.guides.count ?? 0
   }
 
   func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
-    let cell = collectionView.dequeueReusableCell(withReuseIdentifier: PlaceCell.reuseIdentifier, for: indexPath) as! PlaceCell
+    let cell = collectionView.dequeueReusableCell(withReuseIdentifier: GuideCollectionCell.reuseIdentifier, for: indexPath) as! GuideCollectionCell
 
     // Configure the cell
-    let mapPlace:MapPlace = mapPlaces[indexPath.row]
-    let place = mapPlace.place
-    if let context = context {
-        cell.setPlace(context: context, place: place, index: indexPath.row, showIndex: self.showIndex)
+    if let guide = self.guideGroup?.guides[indexPath.row] {
+      cell.setCategory(category: guide)
     }
+//    let mapPlace:MapPlace = self.guideGroup?.guides[indexPath.row]
+//    let place = mapPlace.place
+//    if let context = context {
+//        cell.setPlace(context: context, place: place, index: indexPath.row, showIndex: self.showIndex)
+//    }
     return cell
   }
 }

@@ -9,7 +9,6 @@ class GuideGroupViewController: UITableViewController, Contextual {
 
   var context: Context
 
-  typealias Guide = Category
   private let guideGroups$: Observable<[GuideGroup]>
   private var guideGroups: [GuideGroup] = []
 

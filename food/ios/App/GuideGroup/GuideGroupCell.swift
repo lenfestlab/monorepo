@@ -9,6 +9,10 @@ class GuideGroupCell: UITableViewCell {
   @IBOutlet weak var containerView: UIView!
   @IBOutlet weak var collectionView: UICollectionView!
 
+  static let reuseIdentifier = "GuideGroupCell"
+
+  var guideGroup: GuideGroup?
+
   var mapPlaces: [MapPlace] = []
   var currentPlace: MapPlace?
   var navigationController: UINavigationController?
@@ -29,7 +33,8 @@ class GuideGroupCell: UITableViewCell {
 
   override func awakeFromNib() {
     super.awakeFromNib()
-
+    let nib = UINib(nibName: "GuideCollectionCell", bundle:nil)
+    self.collectionView.register(nib, forCellWithReuseIdentifier: GuideCollectionCell.reuseIdentifier)
     self.allButton?.titleLabel?.font = UIFont.italicSmall
     self.allButton?.setTitleColor(.slate, for: .normal)
     self.guideLabel?.font = UIFont.mediumLarge
@@ -43,6 +48,7 @@ class GuideGroupCell: UITableViewCell {
   }
 
   func setGuideGroup(guideGroup: GuideGroup){
+    self.guideGroup = guideGroup
     self.guideLabel?.text = guideGroup.title
     self.descriptionLabel?.text = guideGroup.desc
     self.selectionStyle = .none
