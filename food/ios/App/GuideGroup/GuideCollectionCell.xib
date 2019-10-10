@@ -1,0 +1,80 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.XIB" version="3.0" toolsVersion="15400" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" useSafeAreas="YES" colorMatched="YES">
+    <device id="retina6_1" orientation="portrait" appearance="light"/>
+    <dependencies>
+        <deployment identifier="iOS"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="15404"/>
+        <capability name="Safe area layout guides" minToolsVersion="9.0"/>
+        <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
+    </dependencies>
+    <objects>
+        <placeholder placeholderIdentifier="IBFilesOwner" id="-1" userLabel="File's Owner"/>
+        <placeholder placeholderIdentifier="IBFirstResponder" id="-2" customClass="UIResponder"/>
+        <collectionViewCell opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" id="gTV-IL-0wX" customClass="GuideCollectionCell" customModule="App" customModuleProvider="target">
+            <rect key="frame" x="0.0" y="0.0" width="219" height="263"/>
+            <autoresizingMask key="autoresizingMask"/>
+            <view key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center">
+                <rect key="frame" x="0.0" y="0.0" width="219" height="263"/>
+                <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                <subviews>
+                    <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="JP8-cJ-O4B">
+                        <rect key="frame" x="5" y="10" width="209" height="253"/>
+                        <subviews>
+                            <imageView clipsSubviews="YES" userInteractionEnabled="NO" contentMode="scaleAspectFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" translatesAutoresizingMaskIntoConstraints="NO" id="Opi-Ex-dS0" customClass="RemoteImageView" customModule="App" customModuleProvider="target">
+                                <rect key="frame" x="0.0" y="0.0" width="209" height="209"/>
+                                <color key="backgroundColor" red="0.87376538209999999" green="0.87376538209999999" blue="0.87376538209999999" alpha="1" colorSpace="custom" customColorSpace="displayP3"/>
+                                <constraints>
+                                    <constraint firstAttribute="width" secondItem="Opi-Ex-dS0" secondAttribute="height" multiplier="1:1" id="zuF-P3-dIu"/>
+                                </constraints>
+                            </imageView>
+                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" verticalCompressionResistancePriority="751" text="UNION LEAGUE OF PHILADELPHIA" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="Sy8-V4-Cjf">
+                                <rect key="frame" x="10" y="214" width="189" height="17.5"/>
+                                <fontDescription key="fontDescription" type="system" pointSize="14"/>
+                                <nil key="textColor"/>
+                                <nil key="highlightedColor"/>
+                            </label>
+                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Label" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="a6F-nB-53e">
+                                <rect key="frame" x="10" y="231.5" width="189" height="17.5"/>
+                                <fontDescription key="fontDescription" type="system" pointSize="14"/>
+                                <nil key="textColor"/>
+                                <nil key="highlightedColor"/>
+                            </label>
+                        </subviews>
+                        <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
+                        <constraints>
+                            <constraint firstAttribute="trailing" secondItem="Opi-Ex-dS0" secondAttribute="trailing" id="9c5-19-gaj"/>
+                            <constraint firstItem="Opi-Ex-dS0" firstAttribute="leading" secondItem="JP8-cJ-O4B" secondAttribute="leading" id="IoN-Ii-aW5"/>
+                            <constraint firstAttribute="trailing" secondItem="a6F-nB-53e" secondAttribute="trailing" constant="10" id="Put-C9-Fdb"/>
+                            <constraint firstItem="Opi-Ex-dS0" firstAttribute="leading" secondItem="JP8-cJ-O4B" secondAttribute="leading" id="RuC-HP-N8y"/>
+                            <constraint firstAttribute="trailing" secondItem="Opi-Ex-dS0" secondAttribute="trailing" id="X7k-hn-Er2"/>
+                            <constraint firstItem="Sy8-V4-Cjf" firstAttribute="top" secondItem="Opi-Ex-dS0" secondAttribute="bottom" constant="5" id="d1T-HI-5fA"/>
+                            <constraint firstItem="Opi-Ex-dS0" firstAttribute="top" secondItem="JP8-cJ-O4B" secondAttribute="top" id="hMt-Ur-Ede"/>
+                            <constraint firstItem="a6F-nB-53e" firstAttribute="top" secondItem="Sy8-V4-Cjf" secondAttribute="bottom" id="mMb-va-tXE"/>
+                            <constraint firstItem="Opi-Ex-dS0" firstAttribute="top" secondItem="JP8-cJ-O4B" secondAttribute="top" id="n9p-pY-w7H"/>
+                            <constraint firstAttribute="trailing" secondItem="Sy8-V4-Cjf" secondAttribute="trailing" constant="10" id="nQp-2C-wTh"/>
+                            <constraint firstAttribute="bottom" secondItem="a6F-nB-53e" secondAttribute="bottom" constant="4" id="nr8-5u-475"/>
+                            <constraint firstItem="Sy8-V4-Cjf" firstAttribute="height" secondItem="a6F-nB-53e" secondAttribute="height" id="veC-z2-FXA"/>
+                            <constraint firstItem="a6F-nB-53e" firstAttribute="leading" secondItem="JP8-cJ-O4B" secondAttribute="leading" constant="10" id="xni-vg-62L"/>
+                            <constraint firstItem="Sy8-V4-Cjf" firstAttribute="leading" secondItem="JP8-cJ-O4B" secondAttribute="leading" constant="10" id="y3j-Sn-bcg"/>
+                        </constraints>
+                    </view>
+                </subviews>
+            </view>
+            <constraints>
+                <constraint firstItem="JP8-cJ-O4B" firstAttribute="leading" secondItem="gTV-IL-0wX" secondAttribute="leading" constant="5" id="5NA-Ol-NlS"/>
+                <constraint firstAttribute="bottom" secondItem="JP8-cJ-O4B" secondAttribute="bottom" id="KIA-fD-vcq"/>
+                <constraint firstAttribute="trailing" secondItem="JP8-cJ-O4B" secondAttribute="trailing" constant="5" id="NaL-BU-Tnt"/>
+                <constraint firstItem="JP8-cJ-O4B" firstAttribute="top" secondItem="gTV-IL-0wX" secondAttribute="top" constant="10" id="lzA-np-RtE"/>
+            </constraints>
+            <viewLayoutGuide key="safeArea" id="ZTg-uK-7eu"/>
+            <size key="customSize" width="219" height="263"/>
+            <connections>
+                <outlet property="containerView" destination="JP8-cJ-O4B" id="F1N-NH-f6a"/>
+                <outlet property="imageView" destination="Opi-Ex-dS0" id="kx1-Oa-NHO"/>
+                <outlet property="subtitleLabel" destination="a6F-nB-53e" id="YZU-qz-iIy"/>
+                <outlet property="textLabel" destination="Sy8-V4-Cjf" id="p4E-f8-26n"/>
+            </connections>
+            <point key="canvasLocation" x="136.95652173913044" y="128.23660714285714"/>
+        </collectionViewCell>
+    </objects>
+</document>

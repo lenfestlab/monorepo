@@ -26,6 +26,7 @@ class Category: RealmSwift.Object, Mappable {
   @objc dynamic var isCuisine: Bool = false
   @objc dynamic var displayStarts: Date?
   @objc dynamic var displayEnds: Date?
+  var guideGroups = List<GuideGroup>()
 
   let places = LinkingObjects(fromType: Place.self, property: "categories")
 
@@ -44,6 +45,8 @@ class Category: RealmSwift.Object, Mappable {
       (map["display_starts"], ISO8601JustDateTransform())
     displayEnds <-
       (map["display_ends"], ISO8601JustDateTransform())
+    guideGroups <-
+      (map["guide_groups"], ListTransform<GuideGroup>())
   }
 
   var imageURL: URL? {

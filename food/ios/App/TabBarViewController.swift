@@ -10,6 +10,7 @@ class TabBarViewController: UITabBarController, Contextual {
   var favoritesViewController: FavoritesViewController!
   var listViewController: ListViewController!
   var guidesViewController: GuidesViewController!
+  var groupsViewController: GuideGroupViewController!
 
   var context: Context
   private let notificationManager: NotificationManager
@@ -57,15 +58,15 @@ class TabBarViewController: UITabBarController, Contextual {
     mapNavigationController.tabBarItem.selectedImage = UIImage(named: "tab-restaurant-icon-selected")
     controllers.append(mapNavigationController)
 
-    self.guidesViewController = GuidesViewController(context: context)
-    let guideNavigationController =
-      UINavigationController(rootViewController: self.guidesViewController)
-    guideNavigationController.tabBarItem.title = "Guides"
-    guideNavigationController.tabBarItem.image = UIImage(named: "tab-guides-icon")
-    guideNavigationController.tabBarItem.selectedImage = UIImage(named: "tab-guides-icon-selected")
-    controllers.append(guideNavigationController)
+    self.groupsViewController = GuideGroupViewController(context: context)
+    let groupNavigationController =
+      UINavigationController(rootViewController: self.groupsViewController)
+    groupNavigationController.tabBarItem.title = guidesTitle
+    groupNavigationController.tabBarItem.image = UIImage(named: "tab-guides-icon")
+    groupNavigationController.tabBarItem.selectedImage = UIImage(named: "tab-guides-icon-selected")
+    controllers.append(groupNavigationController)
     // load Guides view before display to ensure its tableView is populated
-    assert(self.guidesViewController?.view != nil)
+    assert(self.groupsViewController?.view != nil)
 
     if let _ = api.authToken {
       self.favoritesViewController = FavoritesViewController(context: context)

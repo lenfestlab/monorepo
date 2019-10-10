@@ -280,13 +280,15 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
       api.getPlaceEvents$()
         .mapTo(true)
 
-    Observable.zip([
-      updateDefaultPlaces$,
-      Observable.concat([
-        updateBookmarks$,
-        updatePlaceEvents$
+    cache.asyncOpen$
+      .debug("asyncOpen$")
+      .flatMapFirst({ _ -> Observable<[Bool]> in
+        return Observable.zip([
+          updateDefaultPlaces$,
+          updateBookmarks$,
+          updatePlaceEvents$,
         ])
-      ])
+      })
       .subscribe()
       .disposed(by: rx.disposeBag)
   }
