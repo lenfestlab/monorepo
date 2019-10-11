@@ -3,19 +3,30 @@ import UIKit
 extension GuideGroupCell: UICollectionViewDelegate {
 
   func collectionView(_ collectionView: UICollectionView, shouldSelectItemAt indexPath: IndexPath) -> Bool {
+
     if let context = context {
-      if collectionView.indexOfMajorCell() == indexPath.row {
-        let mapPlace = mapPlaces[indexPath.row]
-        let place = mapPlace.place
-    //      analytics.log(.tapsOnCard(place: place, controllerIdentifierKey: self.controllerIdentifierKey, locationManager.latestLocation))
-        let detailViewController = DetailViewController(context: context, place: place)
-        navigationController?.pushViewController(detailViewController, animated: true)
-      } else {
-        scrollToItem(at: indexPath)
-        let mapPlace = mapPlaces[indexPath.row]
-        self.currentPlace = mapPlace
+      if self.numberOfGuides() == 1, let guide = self.guideGroup?.guides.first {
+        let place:Place = guide.places[indexPath.row]
+        if collectionView.indexOfMajorCell() == indexPath.row {
+      //      analytics.log(.tapsOnCard(place: place, controllerIdentifierKey: self.controllerIdentifierKey, locationManager.latestLocation))
+          let detailViewController = DetailViewController(context: context, place: place)
+          navigationController?.pushViewController(detailViewController, animated: true)
+        } else {
+          scrollToItem(at: indexPath)
+          self.currentPlace = place
+        }
+        return true
+      }
+
+      if let category = self.guideGroup?.guides[indexPath.row] {
+    //    context.analytics.log(.tapsOnGuideCell(category: category))
+        let placeController = GuideViewController(context: context, category: category)
+        placeController.title = category.name
+        placeController.topBarIsHidden = true
+        self.navigationController?.pushViewController(placeController, animated: true)
       }
     }
+
     return true
   }
 
@@ -23,11 +34,21 @@ extension GuideGroupCell: UICollectionViewDelegate {
 
 extension GuideGroupCell: UICollectionViewDelegateFlowLayout {
   func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, sizeForItemAt indexPath: IndexPath) -> CGSize {
-    return CGSize(width: 160, height: 206)
+    if self.guideGroup?.guides.count == 1 {
+      let padding = placeCellPadding
+      let view = collectionView
+      let width = view.frame.size.width - 2*padding
+      return CGSize(width: width, height: view.frame.size.height)
+    }
+    return CGSize(width: 160, height: 216)
   }
 }
 
 extension GuideGroupCell: UICollectionViewDataSource {
+
+  func numberOfGuides() -> Int? {
+    return self.guideGroup?.guides.count
+  }
 
   func numberOfSections(in collectionView: UICollectionView) -> Int {
     return 1
@@ -41,7 +62,7 @@ extension GuideGroupCell: UICollectionViewDataSource {
   }
 
   func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
-    if self.guideGroup?.guides.count == 1, let guide = self.guideGroup?.guides.first, let context = context {
+    if self.numberOfGuides() == 1, let guide = self.guideGroup?.guides.first, let context = context {
       let cell = collectionView.dequeueReusableCell(withReuseIdentifier: PlaceCell.reuseIdentifier, for: indexPath) as! PlaceCell
       let place:Place = guide.places[indexPath.row]
       cell.setPlace(context: context, place: place, index: indexPath.row, showIndex: self.showIndex)

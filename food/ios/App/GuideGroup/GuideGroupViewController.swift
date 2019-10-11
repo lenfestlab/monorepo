@@ -62,6 +62,8 @@ class GuideGroupViewController: UITableViewController, Contextual {
     let cell = tableView.dequeueReusableCell(withIdentifier: "reuseIdentifier", for: indexPath) as! GuideGroupCell
     let guideGroup = guideGroups[indexPath.row]
     cell.setGuideGroup(guideGroup: guideGroup)
+    cell.navigationController = self.navigationController
+    cell.context = context
     return cell
   }
 

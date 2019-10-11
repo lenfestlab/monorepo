@@ -13,9 +13,8 @@ class GuideGroupCell: UITableViewCell {
 
   var guideGroup: GuideGroup?
 
-  var mapPlaces: [MapPlace] = []
-  var currentPlace: MapPlace?
-  var navigationController: UINavigationController?
+  var currentPlace: Place?
+  weak var navigationController: UINavigationController?
   var context: Context?
   var showIndex = false {
     didSet {
@@ -33,8 +32,8 @@ class GuideGroupCell: UITableViewCell {
 
   override func awakeFromNib() {
     super.awakeFromNib()
-    let nib = UINib(nibName: "GuideCollectionCell", bundle:nil)
-    self.collectionView.register(nib, forCellWithReuseIdentifier: GuideCollectionCell.reuseIdentifier)
+    self.collectionView.register(UINib(nibName: "GuideCollectionCell", bundle:nil), forCellWithReuseIdentifier: GuideCollectionCell.reuseIdentifier)
+    self.collectionView.register(UINib(nibName: "PlaceCell", bundle:nil), forCellWithReuseIdentifier: PlaceCell.reuseIdentifier)
     self.allButton?.titleLabel?.font = UIFont.italicSmall
     self.allButton?.setTitleColor(.slate, for: .normal)
     self.guideLabel?.font = UIFont.mediumLarge

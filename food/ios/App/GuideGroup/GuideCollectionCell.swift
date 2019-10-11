@@ -28,7 +28,7 @@ class GuideCollectionCell: UICollectionViewCell {
 
   func setCategory(category: Category){
     self.textLabel?.text = category.name
-    self.subtitleLabel?.text = "See all 4 restaurants"
+    self.subtitleLabel?.text = "See all \(category.places.count) restaurants"
     if
       let imageView = imageView,
       let url = category.imageURL {
