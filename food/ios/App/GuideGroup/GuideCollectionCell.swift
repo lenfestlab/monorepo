@@ -13,8 +13,6 @@ class GuideCollectionCell: UICollectionViewCell {
 
     override func awakeFromNib() {
       super.awakeFromNib()
-      containerView.layer.borderColor = UIColor.lightGray.cgColor
-      containerView.layer.borderWidth = 1
 
       containerView.layer.shadowColor = UIColor.black.cgColor
       containerView.layer.shadowOpacity = 0.3
@@ -22,6 +20,7 @@ class GuideCollectionCell: UICollectionViewCell {
       containerView.layer.shadowOffset = .zero
       containerView.layer.shadowRadius = radius
 
+      self.clipsToBounds = false
       self.textLabel.font = .bookSmall
       self.subtitleLabel.font = .bookSmall
       self.subtitleLabel.textColor = .slate

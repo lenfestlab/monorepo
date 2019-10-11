@@ -20,7 +20,7 @@
                         <rect key="frame" x="-2" y="0.0" width="361" height="315"/>
                         <subviews>
                             <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="c3N-4l-PbJ" userLabel="Left Divider">
-                                <rect key="frame" x="13" y="62" width="30" height="2"/>
+                                <rect key="frame" x="13" y="73" width="30" height="2"/>
                                 <color key="backgroundColor" red="0.58823529409999997" green="0.74117647060000003" blue="0.77647058820000003" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                                 <constraints>
                                     <constraint firstAttribute="width" constant="30" id="2HY-gH-9Cv"/>
@@ -28,7 +28,7 @@
                                 </constraints>
                             </view>
                             <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Descriptions of this guide goes here testing testing" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="5zW-aZ-lhD">
-                                <rect key="frame" x="13" y="43" width="335" height="11"/>
+                                <rect key="frame" x="13" y="43" width="335" height="22"/>
                                 <fontDescription key="fontDescription" type="system" pointSize="17"/>
                                 <nil key="textColor"/>
                                 <nil key="highlightedColor"/>
@@ -55,11 +55,11 @@
                                 <constraints>
                                     <constraint firstAttribute="height" constant="240" id="sS3-RD-RXX"/>
                                 </constraints>
-                                <collectionViewFlowLayout key="collectionViewLayout" scrollDirection="horizontal" minimumLineSpacing="10" minimumInteritemSpacing="10" id="IjO-VE-q9m">
+                                <collectionViewFlowLayout key="collectionViewLayout" scrollDirection="horizontal" minimumLineSpacing="13" minimumInteritemSpacing="13" id="IjO-VE-q9m">
                                     <size key="itemSize" width="50" height="50"/>
                                     <size key="headerReferenceSize" width="0.0" height="0.0"/>
                                     <size key="footerReferenceSize" width="0.0" height="0.0"/>
-                                    <inset key="sectionInset" minX="0.0" minY="0.0" maxX="0.0" maxY="0.0"/>
+                                    <inset key="sectionInset" minX="13" minY="0.0" maxX="13" maxY="0.0"/>
                                 </collectionViewFlowLayout>
                                 <connections>
                                     <outlet property="dataSource" destination="gGt-m7-mJR" id="rc8-fe-U8f"/>
@@ -78,7 +78,7 @@
                             <constraint firstItem="CQ5-oI-z9S" firstAttribute="trailing" secondItem="5zW-aZ-lhD" secondAttribute="trailing" id="Pxa-aV-P2N"/>
                             <constraint firstItem="IMn-MK-Pmx" firstAttribute="top" secondItem="EVa-j3-86w" secondAttribute="top" constant="13" id="Uwz-7h-AHF"/>
                             <constraint firstItem="5zW-aZ-lhD" firstAttribute="leading" secondItem="c3N-4l-PbJ" secondAttribute="leading" id="ZpY-ub-ZPK"/>
-                            <constraint firstItem="beV-0G-FL8" firstAttribute="top" secondItem="c3N-4l-PbJ" secondAttribute="bottom" constant="11" id="aBF-T0-zba"/>
+                            <constraint firstItem="beV-0G-FL8" firstAttribute="top" secondItem="c3N-4l-PbJ" secondAttribute="bottom" id="aBF-T0-zba"/>
                             <constraint firstItem="IMn-MK-Pmx" firstAttribute="leading" secondItem="EVa-j3-86w" secondAttribute="leading" constant="13" id="gK6-1Z-Ude"/>
                             <constraint firstItem="beV-0G-FL8" firstAttribute="leading" secondItem="EVa-j3-86w" secondAttribute="leading" id="la5-Q0-Ydt"/>
                             <constraint firstItem="c3N-4l-PbJ" firstAttribute="top" secondItem="5zW-aZ-lhD" secondAttribute="bottom" constant="8" id="xxn-yj-djL"/>
