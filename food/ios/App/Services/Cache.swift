@@ -109,7 +109,9 @@ class Cache {
   }()
 
   lazy var guideGroups$: Observable<[GuideGroup]> = {
-    return allObjects$()
+    return asArray$(
+      realm.objects(GuideGroup.self)
+        .sorted(byKeyPath: "priority", ascending: false))
   }()
 
   enum PlaceFilter {
