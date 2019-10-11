@@ -233,34 +233,6 @@ class Api {
         })
   }
 
-  func updateGuideGroups$() -> Observable<[GuideGroup]> {
-    let url = "\(env.apiBaseUrlString)/guide_groups"
-    return RxAlamofire
-      .requestJSON(.get, url)
-      .observeOn(Scheduler.background)
-      .retry(2)
-      .map({ [weak self] _response, json -> [GuideGroup] in
-        guard
-          let `self` = self,
-          let json = json as? JSON,
-          let data = json["data"] as? [JSON]
-          else {
-            throw ApiError.parse
-        }
-        let guideGroups: [GuideGroup] = [GuideGroup].init(JSONArray: data)
-        return try self.cache.put(guideGroups)
-      })
-      .flatMap({ (objects: [GuideGroup]) -> Observable<[GuideGroup]> in
-        return Observable.just(objects)
-          .map({ $0.map({ ThreadSafeReference(to: $0) }) })
-          .observeOn(Scheduler.main)
-          .map({ refs in
-            let realm = try Realm()
-            return refs.compactMap(realm.resolve)
-          })
-      })
-  }
-
   func getPlaceEvents$() -> Observable<[PlaceEvent]> {
     let url = "\(env.apiBaseUrlString)/place_events"
     return

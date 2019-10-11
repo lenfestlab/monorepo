@@ -276,11 +276,6 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
       api.updateBookmarks$()
         .mapTo(true)
 
-    let updateGuideGroups$ =
-      api.updateGuideGroups$()
-        .debug("guides$")
-        .mapTo(true)
-
     let updatePlaceEvents$ =
       api.getPlaceEvents$()
         .mapTo(true)
@@ -289,7 +284,6 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
       updateDefaultPlaces$,
       updateBookmarks$,
       updatePlaceEvents$,
-      updateGuideGroups$,
       ])
       .subscribe()
       .disposed(by: rx.disposeBag)
