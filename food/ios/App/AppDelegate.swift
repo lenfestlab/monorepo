@@ -66,7 +66,6 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
     self.notificationManager = NotificationManager(context: context)
 
     window = UIWindow(frame: UIScreen.main.bounds)
-    let onboardingCompleted = UserDefaults.standard.bool(forKey: "onboarding-completed")
 
     let introController = IntroViewController(analytics: self.analytics)
     self.mainController = MainController(rootViewController: introController)
@@ -77,13 +76,20 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
     self.observeTrackablePlaces()
     self.observeLocation()
 
-    if !onboardingCompleted {
+    if onboardingIncomplete {
       window!.rootViewController = self.mainController
     } else {
       self.showHomeScreen()
     }
     window!.makeKeyAndVisible()
     return true
+  }
+
+  private var onboardingComplete: Bool {
+    return UserDefaults.standard.bool(forKey: "onboarding-completed")
+  }
+  private var onboardingIncomplete: Bool {
+    return !onboardingComplete
   }
 
   private func observeTrackablePlaces() -> Void {
@@ -268,13 +274,25 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
   }
 
   private func syncData() -> Void {
+
     let updateDefaultPlaces$ =
-      locationManager.latestOrDefaultLocation$
+      cache.asyncOpen$
+        .do(onNext: { [unowned self] realm in
+          if self.onboardingComplete && realm.isEmpty {
+            HUD.change(.show)
+          }
+        })
+        .flatMap({ [unowned self] _ -> Observable<CLLocation> in
+          return self.locationManager.latestOrDefaultLocation$
+        })
         .flatMapLatest({ [unowned self] location -> Observable<[Place]> in
           let coordinate = location.coordinate
           let lat = coordinate.latitude
           let lng = coordinate.longitude
           return self.api.updateDefaultPlaces$(lat: lat, lng: lng)
+        })
+        .do(onNext: { _ in
+          HUD.change(.hide)
         })
         .mapTo(true)
 
@@ -287,7 +305,6 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         .mapTo(true)
 
     cache.asyncOpen$
-      .debug("asyncOpen$")
       .flatMapFirst({ _ -> Observable<[Bool]> in
         return Observable.zip([
           updateDefaultPlaces$,
