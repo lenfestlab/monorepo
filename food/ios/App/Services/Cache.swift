@@ -233,35 +233,6 @@ class Cache {
       .share()
   }
 
-  func loadImages$(_ urls: [URL], withLoader loader: ImageDownloader) -> Observable<[Image]> {
-    return Observable.zip( urls.map({ url in
-      return Observable.just(url)
-        .observeOn(Scheduler.background)
-        .flatMap({ [unowned self] url in
-          return self.loadImage$(url, withLoader: loader)
-        })
-    }))
-  }
-
-  private func loadImage$(_ url: URL, withLoader loader: ImageDownloader) -> Observable<Image> {
-    let request = URLRequest(url: url)
-    return Observable.create { observer in
-      let receipt = loader.download(request, completion: { response in
-        switch response.result {
-        case .success(let image):
-          observer.onNext(image)
-        case .failure(let error):
-          observer.onError(error)
-        }
-        observer.onCompleted()
-      })
-      return Disposables.create {
-        guard let receipt = receipt else { return }
-        loader.cancelRequest(with: receipt)
-      }
-    }
-  }
-
   lazy var viewedPlaces$: Observable<[Place]> = {
     return asArray$(realm.objects(PlaceEvent.self))
       .map({ [unowned self] placeEvents -> [Place] in
