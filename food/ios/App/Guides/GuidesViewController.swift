@@ -18,17 +18,6 @@ class GuidesViewController: UITableViewController, Contextual {
     self.guides$ = context.cache.guides$(guideGroup: guideGroup)
     super.init(nibName: nil, bundle: nil)
     self.title = guideGroup.title
-
-    // eager fetch images
-    guides$
-      .map({ $0.compactMap({ $0.imageURL }) })
-      .observeOn(Scheduler.background)
-      .flatMapFirst({ [unowned self] urls -> Observable<[Image]> in
-        let loader = UIImageView.af_sharedImageDownloader
-        return self.cache.loadImages$(Array(urls), withLoader: loader)
-      })
-      .subscribe()
-      .disposed(by: rx.disposeBag)
   }
 
   required init?(coder aDecoder: NSCoder) {

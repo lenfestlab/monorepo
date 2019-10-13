@@ -125,7 +125,6 @@ class DetailViewController: UIViewController, Contextual {
     self.place = place
     self.isSaved$ = context.cache.isSaved$(place.identifier)
     super.init(nibName: nil, bundle: nil)
-    eagerLoadCarouselImages$()
     trackView$()
     maintainContextAnimatingState()
     // NOTE: `NSMutableAttributedString(html...)` is expensive but evidently
@@ -134,24 +133,6 @@ class DetailViewController: UIViewController, Contextual {
     if eagerLoadView {
       loadViewIfNeeded()
     }
-  }
-
-  private func eagerLoadCarouselImages$() -> Void {
-    let willAppear$ = rx.methodInvoked(#selector(UIViewController.viewWillAppear(_:)))
-    let willDisappear$ = rx.methodInvoked(#selector(UIViewController.viewWillDisappear(_:)))
-    willAppear$
-      .takeUntil(willDisappear$)
-      .map({ [weak self] _ -> [URL] in
-        guard let `self` = self, let post = self.place.post else { return [] }
-        return post.images.compactMap({ $0.url })
-      })
-      .observeOn(Scheduler.background)
-      .flatMapLatest { [unowned self] urls -> Observable<[Image]> in
-        let loader = UIImageView.af_sharedImageDownloader
-        return self.cache.loadImages$(Array(urls), withLoader: loader)
-      }
-      .subscribe()
-      .disposed(by: rx.disposeBag)
   }
 
   private func trackView$() {
