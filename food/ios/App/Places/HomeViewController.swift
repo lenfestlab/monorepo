@@ -155,18 +155,6 @@ class HomeViewController: PlacesViewController {
     self.emptyView.clearButton.isHidden = false
     self.emptyView.clearButton.addTarget(self, action: #selector(clearAll), for: .touchUpInside)
     
-    // Cache is empty on first load and after Realm schema changes
-    // In latter case, indicate fetching underway w/ spinner.
-    cache.isEmpty$
-      .bind(onNext: { isEmpty in
-        if isEmpty {
-          HUD.change(.show)
-        } else {
-          HUD.change(.hide)
-        }
-      })
-      .disposed(by: rx.disposeBag)
-
     refresh()
   }
 

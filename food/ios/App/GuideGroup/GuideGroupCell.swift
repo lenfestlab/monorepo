@@ -1,6 +1,9 @@
 import UIKit
 import AlamofireImage
 import UPCarouselFlowLayout
+import RxSwift
+import RxRealm
+import DifferenceKit
 
 class GuideGroupCell: UITableViewCell {
 
@@ -13,6 +16,9 @@ class GuideGroupCell: UITableViewCell {
   static let reuseIdentifier = "GuideGroupCell"
 
   var guideGroup: GuideGroup?
+  typealias Guide = Category
+  var guides: [Guide] = []
+  var bag = DisposeBag()
 
   weak var navigationController: UINavigationController?
   var context: Context?
@@ -72,6 +78,23 @@ class GuideGroupCell: UITableViewCell {
     self.guideLabel?.text = guideGroup.title
     self.descriptionLabel?.text = guideGroup.desc
     self.selectionStyle = .none
+
+    Observable.array(from: guideGroup.guides, synchronousStart: false)
+      .map({ [weak self] latest -> StagedChangeset<[Guide]> in
+        return StagedChangeset(source: (self?.guides ?? []), target: latest)
+      })
+      .bind(onNext: { [weak self] changeset in
+        guard let `self` = self else { return }
+        self.collectionView.reload(using: changeset, setData: { guides in
+          self.guides = guides
+        })
+      })
+      .disposed(by: bag)
+  }
+
+  override func prepareForReuse() {
+    super.prepareForReuse()
+    bag = DisposeBag()
   }
 
 }
