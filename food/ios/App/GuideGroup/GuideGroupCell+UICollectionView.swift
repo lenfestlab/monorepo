@@ -20,8 +20,10 @@ extension GuideGroupCell {
 
     let itemWidth = guideCollectionCellSize.width
     let snapToIndex = collectionView.indexOfMajorCell(itemWidth: itemWidth)
-    if let category = self.guideGroup?.guides[snapToIndex] {
-      context.analytics.log(.swipesGuideGroupCarousel(guide: category))
+    if
+      let guideGroup = self.guideGroup {
+      let guide: Guide = guideGroup.guides[snapToIndex]
+      context.analytics.log(.swipesGuideGroupCarousel(guideGroup: guideGroup, guide: guide))
     }
   }
 
