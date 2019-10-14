@@ -10,7 +10,7 @@ extension GuideGroupCell {
     }
 
 
-    if self.numberOfGuides() == 1, let guide = self.guideGroup?.guides.first {
+    if self.numberOfGuides() == 1, let guide = self.guides.first {
       let itemWidth = collectionView.collectionViewFlowLayout.itemSize.width
       let snapToIndex = collectionView.indexOfMajorCell(itemWidth: itemWidth)
       let place:Place = guide.places[snapToIndex]
@@ -20,9 +20,8 @@ extension GuideGroupCell {
 
     let itemWidth = guideCollectionCellSize.width
     let snapToIndex = collectionView.indexOfMajorCell(itemWidth: itemWidth)
-    if
-      let guideGroup = self.guideGroup {
-      let guide: Guide = guideGroup.guides[snapToIndex]
+    let guide = guides[snapToIndex]
+    if let guideGroup = self.guideGroup {
       context.analytics.log(.swipesGuideGroupCarousel(guideGroup: guideGroup, guide: guide))
     }
   }
@@ -41,7 +40,7 @@ extension GuideGroupCell: UICollectionViewDelegate {
   func collectionView(_ collectionView: UICollectionView, shouldSelectItemAt indexPath: IndexPath) -> Bool {
 
     if let context = context {
-      if self.numberOfGuides() == 1, let guide = self.guideGroup?.guides.first {
+      if self.numberOfGuides() == 1, let guide = self.guides.first {
         let place:Place = guide.places[indexPath.row]
         context.analytics.log(.tapsOnCard(place: place, controllerIdentifierKey: self.controllerIdentifierKey, nil))
         let detailViewController = DetailViewController(context: context, place: place)
@@ -49,11 +48,10 @@ extension GuideGroupCell: UICollectionViewDelegate {
         return true
       }
 
-      if let category = self.guideGroup?.guides[indexPath.row] {
-        context.analytics.log(.tapsOnGuideCell(category: category))
-        openGuide(context: context, guide: category)
-        return true
-      }
+      let category = self.guides[indexPath.row]
+      context.analytics.log(.tapsOnGuideCell(category: category))
+      openGuide(context: context, guide: category)
+      return true
     }
 
     return true
@@ -63,7 +61,7 @@ extension GuideGroupCell: UICollectionViewDelegate {
 
 extension GuideGroupCell: UICollectionViewDelegateFlowLayout {
   func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, sizeForItemAt indexPath: IndexPath) -> CGSize {
-    if self.guideGroup?.guides.count == 1 {
+    if self.guides.count == 1 {
       let padding = placeCellPadding
       let view = collectionView
       let width = view.frame.size.width - 2*padding
@@ -76,7 +74,7 @@ extension GuideGroupCell: UICollectionViewDelegateFlowLayout {
 extension GuideGroupCell: UICollectionViewDataSource {
 
   func numberOfGuides() -> Int? {
-    return self.guideGroup?.guides.count
+    return self.guides.count
   }
 
   func numberOfSections(in collectionView: UICollectionView) -> Int {
@@ -84,14 +82,14 @@ extension GuideGroupCell: UICollectionViewDataSource {
   }
 
   func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
-    if self.guideGroup?.guides.count == 1, let guide = self.guideGroup?.guides.first {
-      return guide.places.count 
+    if self.guides.count == 1, let guide = self.guides.first {
+      return guide.places.count
     }
-    return self.guideGroup?.guides.count ?? 0
+    return self.guides.count
   }
 
   func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
-    if self.numberOfGuides() == 1, let guide = self.guideGroup?.guides.first, let context = context {
+    if self.numberOfGuides() == 1, let guide = self.guides.first, let context = context {
       let cell = collectionView.dequeueReusableCell(withReuseIdentifier: PlaceCell.reuseIdentifier, for: indexPath) as! PlaceCell
       let place:Place = guide.places[indexPath.row]
       cell.setPlace(context: context, place: place, index: indexPath.row, showIndex: self.showIndex)
@@ -99,10 +97,8 @@ extension GuideGroupCell: UICollectionViewDataSource {
     }
 
     let cell = collectionView.dequeueReusableCell(withReuseIdentifier: GuideCollectionCell.reuseIdentifier, for: indexPath) as! GuideCollectionCell
-    if let guide = self.guideGroup?.guides[indexPath.row] {
-      cell.setCategory(category: guide)
-    }
+    let guide = self.guides[indexPath.row]
+    cell.setCategory(category: guide)
     return cell
   }
 }
-
