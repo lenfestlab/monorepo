@@ -131,9 +131,8 @@ class HomeViewController: PlacesViewController {
     let searchTextAppearance = UITextField.appearance(whenContainedInInstancesOf: [UISearchBar.self])
     searchTextAppearance.font = UIFont.lightSmall
 
-    searchBar.searchTextPositionAdjustment = UIOffset(horizontal: -10, vertical: 0)
     searchBar.setImage(UIImage(), for: UISearchBar.Icon.search, state: .normal)
-    searchBar.placeholder = " Type a restaurant name"
+    searchBar.placeholder = "Type a restaurant name"
     searchBar.delegate = self
     searchBar.tintColor = .oceanBlue
     searchBar.translatesAutoresizingMaskIntoConstraints = false
