@@ -1,14 +1,56 @@
 namespace :seed do
 
+  dir = Rails.root.join("lib", "data", "2019")
+  return unless dir
+
+  def json filedir, filename
+    JSON.parse(File.read("#{filedir}/#{filename}.json"))
+  end
+
+  desc "import 2019 guide photos"
+  task photos: :environment do
+    _photos = json(dir, "dg2019-photodata")
+    # http://media.inquirer.com/storage/inquirer/projects/dining-guide-2019/photos/restaurants/RS{resource}_{filename}
+    images_attrs_by_key = _photos.reduce({}) { |map, o|
+      key = o["keywords"]
+      resource = o["resource"]
+      filename = URI.escape(o["filename"])
+      url = Post.ensure_https("http://media.inquirer.com/storage/inquirer/projects/dining-guide-2019/photos/restaurants/RS#{resource}_#{filename}")
+      caption, credit, title, filename =
+        o.values_at(*%w{ caption credit title filename })
+      existing = map[key]
+      addition = [{
+        url: url,
+        caption: caption,
+        credit: credit,
+        title: title,
+        source_key: key,
+        resource: resource}]
+      map[key] = existing.present? ? existing.concat(addition) : addition
+      map
+    }
+    missed = []
+    images_attrs_by_key.each do |source_key, images_data|
+      if post = Post.where(source_key: source_key).order('published_at DESC').first
+        images_data.each do |image_data|
+          ap image_data
+          url = image_data[:url]
+          image =
+            Image.find_by_url(url) ||
+            Image.create!(image_data)
+          post.photos << image
+          post.save!
+        end
+      else
+        missed << source_key
+      end
+      ap missed
+    end
+  end
+
+
   desc "import 2019 guide"
   task current: :environment do
-
-dir = Rails.root.join("lib", "data", "2019")
-return unless dir
-
-def json filedir, filename
-  JSON.parse(File.read("#{filedir}/#{filename}.json"))
-end
 
 def nil_if_empty str
   if str && str.present?
@@ -149,25 +191,3 @@ end
 
   end
 end
-
-=begin
-
-_photos = json(dir, "photos")
-_photos.reduce({}) { |map, o|
-  key = o["keywords"]
-  resource = o["resource"]
-  filename = URI.escape(o["filename"])
-  url = Post.ensure_https()
-  caption, credit = o.values_at(*%w{ caption credit })
-  existing = map[key]
-  addition = [{url: url, caption: caption, credit: credit}]
-  map[key] = existing.present? ? existing.concat(addition) : addition
-  map
-}.each do |source_key, images|
-  if post = Post.find_by_source_key(source_key)
-    post.images = images
-    post.save
-  end
-end
-
-=end

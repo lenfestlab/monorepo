@@ -68,6 +68,10 @@ class Image < ApplicationRecord
       categories
       cached_image
       cached_url
+
+      title
+      filename
+      source_key
     ].each do |attr|
       configure attr do
         hide
