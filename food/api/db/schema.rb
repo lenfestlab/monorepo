@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2019_10_10_175152) do
+ActiveRecord::Schema.define(version: 2019_10_14_225035) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_stat_statements"
@@ -128,6 +128,7 @@ ActiveRecord::Schema.define(version: 2019_10_10_175152) do
     t.string "description"
     t.jsonb "cached_guides", default: [], array: true
     t.integer "priority", default: 0
+    t.integer "cached_guides_count", default: 0
     t.index ["identifier"], name: "index_guide_groups_on_identifier"
   end
 

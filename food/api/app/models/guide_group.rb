@@ -22,6 +22,11 @@ class GuideGroup < ApplicationRecord
 
   scope :prioritized, -> { order(priority: :desc) }
 
+  before_save :update_cache
+  def update_cache
+    self.cached_guides_count = self.categories.count
+  end
+
   ## Admin
   #
 
@@ -32,6 +37,7 @@ class GuideGroup < ApplicationRecord
       identifier
       created_at
       updated_at
+      cached_guides_count
     }.each do |hidden_attr|
       configure hidden_attr do
         hide
