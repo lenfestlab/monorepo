@@ -42,6 +42,7 @@ class Category < ApplicationRecord
   after_save :update_places
   after_destroy :update_places
   def update_places
+    self.guide_groups.map &:save!
     self.places.map &:save!
   end
 

@@ -7,4 +7,6 @@ class GuideGroupSerializer < ActiveModel::Serializer
     priority
   ])
 
+  attribute :cached_guides_count, key: :guides_count
+
 end
