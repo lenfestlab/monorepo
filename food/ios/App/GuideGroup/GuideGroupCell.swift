@@ -83,10 +83,7 @@ class GuideGroupCell: UITableViewCell {
     self.selectionStyle = .none
     self.allButton?.isHidden = guideGroup.guides.count == 1
     let constant : CGFloat = (self.itemSize().width - UIScreen.main.bounds.width)/2 + 10
-//    let constant : CGFloat = -self.itemSize().width
-//    self.leadingConstraint.constant = constant
     self.collectionView.contentInset = UIEdgeInsets(top: 0, left: constant, bottom: 0, right: 0)
-//    self.collectionView.contentOffset = CGPoint(x: constant, y: 0)
 
     let layout = UPCarouselFlowLayout()
     layout.scrollDirection = .horizontal
