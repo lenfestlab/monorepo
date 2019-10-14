@@ -310,10 +310,14 @@ class MapViewController: UIViewController, Contextual {
   }
 
   func scrollViewDidEndDecelerating(_ scrollView: UIScrollView) {
-    let snapToIndex = self.collectionView?.indexOfMajorCell() ?? 0
+    guard let collectionView = self.collectionView else {
+      return
+    }
+    let itemWidth = collectionView.collectionViewFlowLayout.itemSize.width
+    let snapToIndex = collectionView.indexOfMajorCell(itemWidth: itemWidth) 
     let mapPlace = mapPlaces[snapToIndex]
     let place = mapPlace.place
-    analytics.log(.swipesCarousel(place: place, currentLocation: self.lastCoordinate))
+    analytics.log(.swipesCarousel(place: place))
     self.currentPlace = mapPlace
   }
 

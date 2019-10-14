@@ -1,5 +1,32 @@
 import UIKit
 
+let guideCollectionCellSize = CGSize(width: 170, height: 216)
+
+extension GuideGroupCell {
+
+  func scrollViewDidEndDecelerating(_ scrollView: UIScrollView) {
+    guard let context = context, let collectionView = self.collectionView else {
+      return
+    }
+
+
+    if self.numberOfGuides() == 1, let guide = self.guideGroup?.guides.first {
+      let itemWidth = collectionView.collectionViewFlowLayout.itemSize.width
+      let snapToIndex = collectionView.indexOfMajorCell(itemWidth: itemWidth)
+      let place:Place = guide.places[snapToIndex]
+      context.analytics.log(.swipesCarousel(place: place))
+      return
+    }
+
+    let itemWidth = guideCollectionCellSize.width
+    let snapToIndex = collectionView.indexOfMajorCell(itemWidth: itemWidth)
+    if let category = self.guideGroup?.guides[snapToIndex] {
+      context.analytics.log(.swipesGuideGroupCarousel(guide: category))
+    }
+  }
+
+}
+
 extension GuideGroupCell: UICollectionViewDelegate {
 
   func openGuide(context: Context, guide: Category) {
@@ -14,14 +41,14 @@ extension GuideGroupCell: UICollectionViewDelegate {
     if let context = context {
       if self.numberOfGuides() == 1, let guide = self.guideGroup?.guides.first {
         let place:Place = guide.places[indexPath.row]
-        //      analytics.log(.tapsOnCard(place: place, controllerIdentifierKey: self.controllerIdentifierKey, locationManager.latestLocation))
+        context.analytics.log(.tapsOnCard(place: place, controllerIdentifierKey: self.controllerIdentifierKey, nil))
         let detailViewController = DetailViewController(context: context, place: place)
         navigationController?.pushViewController(detailViewController, animated: true)
         return true
       }
 
       if let category = self.guideGroup?.guides[indexPath.row] {
-    //    context.analytics.log(.tapsOnGuideCell(category: category))
+        context.analytics.log(.tapsOnGuideCell(category: category))
         openGuide(context: context, guide: category)
         return true
       }
@@ -40,7 +67,7 @@ extension GuideGroupCell: UICollectionViewDelegateFlowLayout {
       let width = view.frame.size.width - 2*padding
       return CGSize(width: width, height: 234)
     }
-    return CGSize(width: 170, height: 216)
+    return guideCollectionCellSize
   }
 }
 
