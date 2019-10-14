@@ -11,14 +11,14 @@
         <placeholder placeholderIdentifier="IBFilesOwner" id="-1" userLabel="File's Owner"/>
         <placeholder placeholderIdentifier="IBFirstResponder" id="-2" customClass="UIResponder"/>
         <collectionViewCell opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" id="gTV-IL-0wX" customClass="GuideCollectionCell" customModule="App" customModuleProvider="target">
-            <rect key="frame" x="0.0" y="0.0" width="219" height="263"/>
+            <rect key="frame" x="0.0" y="0.0" width="219" height="279"/>
             <autoresizingMask key="autoresizingMask"/>
             <view key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center">
-                <rect key="frame" x="0.0" y="0.0" width="219" height="263"/>
+                <rect key="frame" x="0.0" y="0.0" width="219" height="279"/>
                 <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
                 <subviews>
                     <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="JP8-cJ-O4B">
-                        <rect key="frame" x="5" y="10" width="209" height="253"/>
+                        <rect key="frame" x="5" y="10" width="209" height="269"/>
                         <subviews>
                             <imageView clipsSubviews="YES" userInteractionEnabled="NO" contentMode="scaleAspectFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" translatesAutoresizingMaskIntoConstraints="NO" id="Opi-Ex-dS0" customClass="RemoteImageView" customModule="App" customModuleProvider="target">
                                 <rect key="frame" x="0.0" y="0.0" width="209" height="209"/>
@@ -27,14 +27,14 @@
                                     <constraint firstAttribute="width" secondItem="Opi-Ex-dS0" secondAttribute="height" multiplier="1:1" id="zuF-P3-dIu"/>
                                 </constraints>
                             </imageView>
-                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" verticalCompressionResistancePriority="751" text="UNION LEAGUE OF PHILADELPHIA" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="Sy8-V4-Cjf">
-                                <rect key="frame" x="10" y="214" width="189" height="17.5"/>
+                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" verticalCompressionResistancePriority="751" text="UNION LEAGUE OF PHILADELPHIA" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="Sy8-V4-Cjf">
+                                <rect key="frame" x="12" y="221" width="187" height="16"/>
                                 <fontDescription key="fontDescription" type="system" pointSize="14"/>
                                 <nil key="textColor"/>
                                 <nil key="highlightedColor"/>
                             </label>
-                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Label" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="a6F-nB-53e">
-                                <rect key="frame" x="10" y="231.5" width="189" height="17.5"/>
+                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Label" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="a6F-nB-53e">
+                                <rect key="frame" x="14" y="241" width="185" height="16"/>
                                 <fontDescription key="fontDescription" type="system" pointSize="14"/>
                                 <nil key="textColor"/>
                                 <nil key="highlightedColor"/>
@@ -47,15 +47,15 @@
                             <constraint firstAttribute="trailing" secondItem="a6F-nB-53e" secondAttribute="trailing" constant="10" id="Put-C9-Fdb"/>
                             <constraint firstItem="Opi-Ex-dS0" firstAttribute="leading" secondItem="JP8-cJ-O4B" secondAttribute="leading" id="RuC-HP-N8y"/>
                             <constraint firstAttribute="trailing" secondItem="Opi-Ex-dS0" secondAttribute="trailing" id="X7k-hn-Er2"/>
-                            <constraint firstItem="Sy8-V4-Cjf" firstAttribute="top" secondItem="Opi-Ex-dS0" secondAttribute="bottom" constant="5" id="d1T-HI-5fA"/>
+                            <constraint firstItem="Sy8-V4-Cjf" firstAttribute="top" secondItem="Opi-Ex-dS0" secondAttribute="bottom" constant="12" id="d1T-HI-5fA"/>
                             <constraint firstItem="Opi-Ex-dS0" firstAttribute="top" secondItem="JP8-cJ-O4B" secondAttribute="top" id="hMt-Ur-Ede"/>
-                            <constraint firstItem="a6F-nB-53e" firstAttribute="top" secondItem="Sy8-V4-Cjf" secondAttribute="bottom" id="mMb-va-tXE"/>
+                            <constraint firstItem="a6F-nB-53e" firstAttribute="top" secondItem="Sy8-V4-Cjf" secondAttribute="bottom" constant="4" id="mMb-va-tXE"/>
                             <constraint firstItem="Opi-Ex-dS0" firstAttribute="top" secondItem="JP8-cJ-O4B" secondAttribute="top" id="n9p-pY-w7H"/>
                             <constraint firstAttribute="trailing" secondItem="Sy8-V4-Cjf" secondAttribute="trailing" constant="10" id="nQp-2C-wTh"/>
-                            <constraint firstAttribute="bottom" secondItem="a6F-nB-53e" secondAttribute="bottom" constant="4" id="nr8-5u-475"/>
+                            <constraint firstAttribute="bottom" secondItem="a6F-nB-53e" secondAttribute="bottom" constant="12" id="nr8-5u-475"/>
                             <constraint firstItem="Sy8-V4-Cjf" firstAttribute="height" secondItem="a6F-nB-53e" secondAttribute="height" id="veC-z2-FXA"/>
-                            <constraint firstItem="a6F-nB-53e" firstAttribute="leading" secondItem="JP8-cJ-O4B" secondAttribute="leading" constant="10" id="xni-vg-62L"/>
-                            <constraint firstItem="Sy8-V4-Cjf" firstAttribute="leading" secondItem="JP8-cJ-O4B" secondAttribute="leading" constant="10" id="y3j-Sn-bcg"/>
+                            <constraint firstItem="a6F-nB-53e" firstAttribute="leading" secondItem="JP8-cJ-O4B" secondAttribute="leading" constant="14" id="xni-vg-62L"/>
+                            <constraint firstItem="Sy8-V4-Cjf" firstAttribute="leading" secondItem="JP8-cJ-O4B" secondAttribute="leading" constant="12" id="y3j-Sn-bcg"/>
                         </constraints>
                     </view>
                 </subviews>
@@ -67,14 +67,14 @@
                 <constraint firstItem="JP8-cJ-O4B" firstAttribute="top" secondItem="gTV-IL-0wX" secondAttribute="top" constant="10" id="lzA-np-RtE"/>
             </constraints>
             <viewLayoutGuide key="safeArea" id="ZTg-uK-7eu"/>
-            <size key="customSize" width="219" height="263"/>
+            <size key="customSize" width="219" height="279"/>
             <connections>
                 <outlet property="containerView" destination="JP8-cJ-O4B" id="F1N-NH-f6a"/>
                 <outlet property="imageView" destination="Opi-Ex-dS0" id="kx1-Oa-NHO"/>
                 <outlet property="subtitleLabel" destination="a6F-nB-53e" id="YZU-qz-iIy"/>
                 <outlet property="textLabel" destination="Sy8-V4-Cjf" id="p4E-f8-26n"/>
             </connections>
-            <point key="canvasLocation" x="136.95652173913044" y="128.23660714285714"/>
+            <point key="canvasLocation" x="136.95652173913044" y="133.59375"/>
         </collectionViewCell>
     </objects>
 </document>

@@ -14,12 +14,20 @@ class GuideGroupCell: UITableViewCell {
   @IBOutlet weak var descriptionLabel: UILabel?
   @IBOutlet weak var containerView: UIView!
   @IBOutlet weak var collectionView: UICollectionView!
-
+  @IBOutlet weak var heightConstraint: NSLayoutConstraint!
   static let reuseIdentifier = "GuideGroupCell"
 
   var guideGroup: GuideGroup?
   typealias Guide = Category
-  var guides: [Guide] = []
+  var guides: [Guide] = [] {
+    didSet {
+      if guides.count == 1 {
+        self.heightConstraint.constant = 265
+      } else {
+        self.heightConstraint.constant = 255
+      }
+    }
+  }
   var bag = DisposeBag()
 
   weak var navigationController: UINavigationController?
