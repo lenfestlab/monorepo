@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2019_10_14_225035) do
+ActiveRecord::Schema.define(version: 2019_10_15_193514) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_stat_statements"
@@ -138,7 +138,13 @@ ActiveRecord::Schema.define(version: 2019_10_14_225035) do
     t.string "credit"
     t.string "caption"
     t.text "cached_url"
+    t.string "resource"
+    t.string "title"
+    t.string "filename"
+    t.string "source_key"
     t.index ["identifier"], name: "index_images_on_identifier"
+    t.index ["resource"], name: "index_images_on_resource"
+    t.index ["source_key"], name: "index_images_on_source_key"
     t.index ["url"], name: "index_images_on_url"
   end
 
