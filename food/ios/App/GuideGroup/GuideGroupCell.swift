@@ -78,6 +78,7 @@ class GuideGroupCell: UITableViewCell {
     self.guideLabel?.text = guideGroup.title
     self.descriptionLabel?.text = guideGroup.desc
     self.selectionStyle = .none
+    self.allButton?.isHidden = guideGroup.guides.count == 1
 
     Observable.array(from: guideGroup.guides, synchronousStart: false)
       .map({ [weak self] latest -> StagedChangeset<[Guide]> in
@@ -87,6 +88,7 @@ class GuideGroupCell: UITableViewCell {
         guard let `self` = self else { return }
         self.collectionView.reload(using: changeset, setData: { guides in
           self.guides = guides
+          self.allButton?.isHidden = guides.count == 1
         })
       })
       .disposed(by: bag)
