@@ -123,7 +123,6 @@ class HomeViewController: PlacesViewController {
 
   lazy var searchBar: UISearchBar = {
     let searchBar = UISearchBar(frame: CGRect(x: 0, y: 0, width: 100, height: 60))
-//    searchBar.heightAnchor.constraint(equalToConstant: 44).isActive = true
     searchBar.setSearchFieldBackgroundImage(UIImage(named: "search-bar"), for: .normal)
 
     let placeholderAppearance = UILabel.appearance(whenContainedInInstancesOf: [UISearchBar.self])
