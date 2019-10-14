@@ -7,6 +7,8 @@ import DifferenceKit
 
 class GuideGroupCell: UITableViewCell {
 
+  var controllerIdentifierKey : String = "guide-group-cell"
+
   @IBOutlet weak var guideLabel: UILabel?
   @IBOutlet weak var allButton: UIButton?
   @IBOutlet weak var descriptionLabel: UILabel?
@@ -30,6 +32,7 @@ class GuideGroupCell: UITableViewCell {
 
   @IBAction func seeAll() {
     if let context = context, let guideGroup = self.guideGroup {
+      context.analytics.log(.tapsGuideGroupCellSeeAllButton(guideGroup: guideGroup))
       let guides = guideGroup.guides
       if
         guides.count == 1,

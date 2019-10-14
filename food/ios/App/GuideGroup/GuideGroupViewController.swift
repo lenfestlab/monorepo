@@ -67,15 +67,4 @@ class GuideGroupViewController: UITableViewController, Contextual {
     return cell
   }
 
-  override func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
-    let guideGroup = guideGroups[indexPath.row]
-//    context.analytics.log(.tapsOnGuideCell(category: category))
-    let guidesViewController =
-      GuidesViewController(
-        context: context,
-        guideGroup: guideGroup)
-//    guidesController.topBarIsHidden = true
-    self.navigationController?.pushViewController(guidesViewController, animated: true)
-  }
-
 }

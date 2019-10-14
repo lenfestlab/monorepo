@@ -6,8 +6,7 @@ extension UICollectionView {
     return self.collectionViewLayout as! UICollectionViewFlowLayout
   }
 
-  func indexOfMajorCell() -> Int {
-    let itemWidth = self.collectionViewFlowLayout.itemSize.width
+  func indexOfMajorCell(itemWidth: CGFloat) -> Int {
     let offset = self.collectionViewFlowLayout.collectionView!.contentOffset.x
     let proportionalOffset = offset / itemWidth
     let index = Int(round(proportionalOffset))
@@ -21,7 +20,8 @@ extension UICollectionView {
 extension MapViewController: UICollectionViewDelegate {
 
   func collectionView(_ collectionView: UICollectionView, shouldSelectItemAt indexPath: IndexPath) -> Bool {
-    if collectionView.indexOfMajorCell() == indexPath.row {
+    let itemWidth = collectionView.collectionViewFlowLayout.itemSize.width
+    if collectionView.indexOfMajorCell(itemWidth: itemWidth) == indexPath.row {
       let mapPlace = mapPlaces[indexPath.row]
       let place = mapPlace.place
       analytics.log(.tapsOnCard(place: place, controllerIdentifierKey: self.controllerIdentifierKey, locationManager.latestLocation))

@@ -169,8 +169,16 @@ struct AnalyticsEvent {
     return AnalyticsEvent(name: "tap", category: .card, label: place.name, cd6: controllerIdentifierKey, cd7: place.analyticsCuisine, cd8: place.analyticsNeighborhood, cd9: place.analyticsBells, cd10: place.analyticsPrice, cd11: place.analyticsReviewer, cd18: place.contactMeta, cd19: cd19)
   }
 
-  static func swipesCarousel(place: Place, currentLocation: CLLocationCoordinate2D?) -> AnalyticsEvent {
+  static func swipesCarousel(place: Place) -> AnalyticsEvent {
     return AnalyticsEvent(name: "swipe-carousel", category: .app, label: place.name, cd7: place.analyticsCuisine, cd8: place.analyticsNeighborhood, cd9: place.analyticsBells, cd10: place.analyticsPrice, cd11: place.analyticsReviewer)
+  }
+
+  static func swipesGuideGroupCarousel(guide: Category) -> AnalyticsEvent {
+    return AnalyticsEvent(name: "swipe-guide-group-carousel", category: .app, label: guide.name, cd7: guide.identifier, cd8: guide.desc)
+  }
+
+  static func tapsGuideGroupCellSeeAllButton(guideGroup: GuideGroup) -> AnalyticsEvent {
+    return AnalyticsEvent(name: "taps-guide-group-cell-see-all-button", category: .app, label: guideGroup.title, cd7: guideGroup.identifier, cd8: guideGroup.desc)
   }
 
   static func changeNotificationSettings(enabled: Bool) -> AnalyticsEvent {
