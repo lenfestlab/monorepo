@@ -2,6 +2,12 @@ import UIKit
 import CoreLocation
 import SVProgressHUD
 
+class TitleView: UIView {
+    override var intrinsicContentSize: CGSize {
+        return UIView.layoutFittingExpandedSize
+    }
+}
+
 extension HomeViewController : FilterModuleDelegate {
 
   func updateFilter(_ filter: FilterModule) {
@@ -115,9 +121,9 @@ class HomeViewController: PlacesViewController {
     return cuisineButton
   }()
 
-  lazy var searchBar: UISearchBar! = {
-    let searchBar = UISearchBar(frame: CGRect(x: 0, y: 0, width: 600, height: 60))
-    searchBar.heightAnchor.constraint(equalToConstant: 44).isActive = true
+  lazy var searchBar: UISearchBar = {
+    let searchBar = UISearchBar(frame: CGRect(x: 0, y: 0, width: 100, height: 60))
+//    searchBar.heightAnchor.constraint(equalToConstant: 44).isActive = true
     searchBar.setSearchFieldBackgroundImage(UIImage(named: "search-bar"), for: .normal)
 
     let placeholderAppearance = UILabel.appearance(whenContainedInInstancesOf: [UISearchBar.self])
@@ -128,11 +134,24 @@ class HomeViewController: PlacesViewController {
 
     searchBar.searchTextPositionAdjustment = UIOffset(horizontal: -10, vertical: 0)
     searchBar.setImage(UIImage(), for: UISearchBar.Icon.search, state: .normal)
-    searchBar.placeholder = "Type a restaurant name"
+    searchBar.placeholder = " Type a restaurant name"
     searchBar.delegate = self
     searchBar.tintColor = .oceanBlue
+    searchBar.translatesAutoresizingMaskIntoConstraints = false
     return searchBar
   }()
+
+    lazy var titleView: UIView! = {
+      let searchBar = self.searchBar
+      let titleView = TitleView(frame: CGRect(x: 0, y: 0, width: 900, height: 44))
+      titleView.isUserInteractionEnabled = true
+      titleView.addSubview(searchBar)
+      titleView.addConstraint(NSLayoutConstraint(item: titleView, attribute: .leading, relatedBy: .equal, toItem: searchBar, attribute: .leading, multiplier: 1.0, constant: 0.0))
+      titleView.addConstraint(NSLayoutConstraint(item: titleView, attribute: .trailing, relatedBy: .equal, toItem: searchBar, attribute: .trailing, multiplier: 1.0, constant: 0.0))
+      titleView.addConstraint(NSLayoutConstraint(item: titleView, attribute: .height, relatedBy: .equal, toItem: searchBar, attribute: .height, multiplier: 1.0, constant: 0.0))
+
+      return titleView
+    }()
 
   override func viewDidLoad() {
     super.viewDidLoad()
@@ -140,7 +159,7 @@ class HomeViewController: PlacesViewController {
 
     self.mapViewController.controllerIdentifierKey = "home"
     self.listViewController.controllerIdentifierKey = "home"
-    self.navigationItem.titleView =  self.searchBar
+    self.navigationItem.titleView =  self.titleView
 
     let space = UIBarButtonItem(barButtonSystemItem: .flexibleSpace, target: nil, action: nil)
     let one = UIBarButtonItem(customView: self.filterButton)
