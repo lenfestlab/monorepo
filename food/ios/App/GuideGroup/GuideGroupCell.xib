@@ -102,6 +102,7 @@
                 <outlet property="descriptionLabel" destination="5zW-aZ-lhD" id="AKF-RE-SSl"/>
                 <outlet property="guideLabel" destination="IMn-MK-Pmx" id="C19-ti-GrT"/>
                 <outlet property="heightConstraint" destination="nUc-Oz-1nO" id="Yu0-uI-zAC"/>
+                <outlet property="leadingConstraint" destination="la5-Q0-Ydt" id="d1o-uW-xVG"/>
             </connections>
             <point key="canvasLocation" x="539.85507246376812" y="130.58035714285714"/>
         </tableViewCell>

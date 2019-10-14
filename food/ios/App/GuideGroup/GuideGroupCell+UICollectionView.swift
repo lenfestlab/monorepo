@@ -5,6 +5,8 @@ let guideCollectionCellSize = CGSize(width: 170, height: 236)
 extension GuideGroupCell {
 
   func scrollViewDidEndDecelerating(_ scrollView: UIScrollView) {
+    self.collectionView.contentInset = UIEdgeInsets.zero
+    
     guard let context = context, let collectionView = self.collectionView else {
       return
     }
@@ -60,14 +62,16 @@ extension GuideGroupCell: UICollectionViewDelegate {
 }
 
 extension GuideGroupCell: UICollectionViewDelegateFlowLayout {
-  func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, sizeForItemAt indexPath: IndexPath) -> CGSize {
-    if self.guides.count == 1 {
-      let padding = placeCellPadding
-      let view = collectionView
-      let width = view.frame.size.width - 2*padding
-      return CGSize(width: width, height: 234)
+
+  func itemSize() -> CGSize {
+    if self.guideGroup?.guidesCount == 1 {
+      return CGSize(width: 320, height: 234)
     }
     return guideCollectionCellSize
+  }
+
+  func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, sizeForItemAt indexPath: IndexPath) -> CGSize {
+    return self.itemSize()
   }
 }
 

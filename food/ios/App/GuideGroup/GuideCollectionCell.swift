@@ -19,6 +19,8 @@ class GuideCollectionCell: UICollectionViewCell {
       let radius = CGFloat(3)
       containerView.layer.shadowOffset = .zero
       containerView.layer.shadowRadius = radius
+      containerView.layer.borderWidth = 1
+      containerView.layer.borderColor = UIColor.lightGray.cgColor
 
       self.clipsToBounds = false
       self.textLabel.font = .bookSmall
