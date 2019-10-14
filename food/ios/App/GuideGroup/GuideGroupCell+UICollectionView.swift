@@ -1,6 +1,6 @@
 import UIKit
 
-let guideCollectionCellSize = CGSize(width: 170, height: 216)
+let guideCollectionCellSize = CGSize(width: 170, height: 236)
 
 extension GuideGroupCell {
 
