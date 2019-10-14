@@ -20,6 +20,7 @@ class GuideGroup: RealmSwift.Object, Mappable {
   @objc dynamic var title: String = ""
   @objc dynamic var desc: String = ""
   @objc dynamic var priority: Int = 0
+  @objc dynamic var guidesCount: Int = 0
 
   let guides = LinkingObjects(fromType: Category.self, property: "guideGroups")
 
@@ -32,6 +33,8 @@ class GuideGroup: RealmSwift.Object, Mappable {
       (map["description"], StringTransform())
     priority <-
       (map["priority"], IntTransform())
+    guidesCount <-
+      (map["guides_count"], IntTransform())
   }
 
 }

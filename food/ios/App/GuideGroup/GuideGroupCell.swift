@@ -15,13 +15,14 @@ class GuideGroupCell: UITableViewCell {
   @IBOutlet weak var containerView: UIView!
   @IBOutlet weak var collectionView: UICollectionView!
   @IBOutlet weak var heightConstraint: NSLayoutConstraint!
+  @IBOutlet weak var leadingConstraint: NSLayoutConstraint!
   static let reuseIdentifier = "GuideGroupCell"
 
   var guideGroup: GuideGroup?
   typealias Guide = Category
   var guides: [Guide] = [] {
     didSet {
-      if guides.count == 1 {
+      if self.guideGroup?.guidesCount == 1 {
         self.heightConstraint.constant = 265
       } else {
         self.heightConstraint.constant = 255
@@ -43,7 +44,7 @@ class GuideGroupCell: UITableViewCell {
       context.analytics.log(.tapsGuideGroupCellSeeAllButton(guideGroup: guideGroup))
       let guides = guideGroup.guides
       if
-        guides.count == 1,
+        self.guideGroup?.guidesCount == 1,
         let guide = guides.first {
         let vc = GuideViewController(context: context, category: guide)
         vc.title = guide.name
@@ -61,15 +62,6 @@ class GuideGroupCell: UITableViewCell {
 
   override func awakeFromNib() {
     super.awakeFromNib()
-    let padding = placeCellPadding
-    let layout = UPCarouselFlowLayout()
-    layout.scrollDirection = .horizontal
-    let width = self.collectionView.frame.size.width - 2*padding
-    layout.spacingMode = .fixed(spacing: 0)
-    layout.sideItemScale = 1.0
-    layout.sideItemAlpha = 1.0
-    layout.itemSize = CGSize(width: width, height: self.collectionView.frame.size.height)
-    self.collectionView.collectionViewLayout = layout
     self.collectionView.register(UINib(nibName: "GuideCollectionCell", bundle:nil), forCellWithReuseIdentifier: GuideCollectionCell.reuseIdentifier)
     self.collectionView.register(UINib(nibName: "PlaceCell", bundle:nil), forCellWithReuseIdentifier: PlaceCell.reuseIdentifier)
     self.allButton?.titleLabel?.font = UIFont.italicSmall
@@ -90,10 +82,24 @@ class GuideGroupCell: UITableViewCell {
     self.descriptionLabel?.text = guideGroup.desc
     self.selectionStyle = .none
     self.allButton?.isHidden = guideGroup.guides.count == 1
+    let constant : CGFloat = (self.itemSize().width - UIScreen.main.bounds.width)/2 + 10
+//    let constant : CGFloat = -self.itemSize().width
+//    self.leadingConstraint.constant = constant
+    self.collectionView.contentInset = UIEdgeInsets(top: 0, left: constant, bottom: 0, right: 0)
+//    self.collectionView.contentOffset = CGPoint(x: constant, y: 0)
+
+    let layout = UPCarouselFlowLayout()
+    layout.scrollDirection = .horizontal
+    layout.spacingMode = .fixed(spacing: 0)
+    layout.sideItemScale = 1.0
+    layout.sideItemAlpha = 1.0
+    layout.itemSize = self.itemSize()
+    self.collectionView.collectionViewLayout = layout
 
     Observable.array(from: guideGroup.guides, synchronousStart: false)
       .bind(onNext: { [unowned self] guides in
         self.guides = guides
+
         self.allButton?.isHidden = guides.count == 1
         self.collectionView.reloadData()
       })
