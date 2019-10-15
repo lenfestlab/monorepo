@@ -1,8 +1,6 @@
 import UIKit
 import CoreLocation
 
-let placeCellPadding : CGFloat = 35
-
 extension ListViewController { // UICollectionViewDataSource
 
   override func numberOfSections(in collectionView: UICollectionView) -> Int {

@@ -19,7 +19,6 @@ extension MapViewController: UIGestureRecognizerDelegate {
 class MapViewController: UIViewController, Contextual {
 
   var controllerIdentifierKey = "unknown"
-  let padding = placeCellPadding
   let placeStore : PlaceStore!
   var topPadding = CGFloat(64)
 
@@ -303,7 +302,6 @@ class MapViewController: UIViewController, Contextual {
 
   private func configureCollectionViewLayoutItemSize() {
     if let view = collectionView {
-      view.collectionViewFlowLayout.sectionInset = UIEdgeInsets(top: 0, left: padding, bottom: 0, right: padding)
       let width = PlaceCell.itemSize().width
       view.collectionViewFlowLayout.itemSize = CGSize(width: width, height: view.frame.size.height)
     }
