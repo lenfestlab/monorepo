@@ -92,6 +92,10 @@ class GuideGroupCell: UITableViewCell {
     self.collectionView.collectionViewLayout = layout
 
     Observable.array(from: guideGroup.guides, synchronousStart: false)
+      .map({ (guides) -> [Guide] in
+        let ids = guideGroup.guidesIdentifiers.toArray()
+        return Cache.orderedByIdentifier(ids, guides)
+      })
       .bind(onNext: { [unowned self] guides in
         self.guides = guides
 
