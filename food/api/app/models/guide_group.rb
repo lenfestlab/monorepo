@@ -24,7 +24,9 @@ class GuideGroup < ApplicationRecord
 
   before_save :update_cache
   def update_cache
-    self.cached_guides_count = self.categories.count
+    guides = self.categories
+    self.cached_guides_count = guides.count
+    self.cached_guides = guides.map &:identifier
   end
 
   ## Admin

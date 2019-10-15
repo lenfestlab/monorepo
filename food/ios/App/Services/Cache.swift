@@ -120,10 +120,20 @@ class Cache {
     return categories$(filter: .cuisine)
   }()
 
-  func guides$(guideGroup: GuideGroup) -> Observable<[Category]> {
+  typealias Guide = Category
+  static func orderedByIdentifier(_ ids: [String], _ guides: [Guide]) -> [Guide] {
+    return ids.compactMap { identifier -> Guide? in
+      return guides.first { $0.identifier == identifier }
+    }
+  }
+  func guides$(guideGroup: GuideGroup) -> Observable<[Guide]> {
+    let guideIdentifiers: [String] = guideGroup.guidesIdentifiers.toArray()
     return asArray$(
       realm.objects(Category.self)
         .filter("%@ IN guideGroups", guideGroup))
+      .map { (guides: [Guide]) -> [Guide] in
+        return Cache.orderedByIdentifier(guideIdentifiers, guides)
+    }
   }
 
   lazy var guideGroups$: Observable<[GuideGroup]> = {
