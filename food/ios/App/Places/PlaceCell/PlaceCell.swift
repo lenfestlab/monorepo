@@ -116,4 +116,11 @@ class PlaceCell: UICollectionViewCell {
       .disposed(by: rx.disposeBag)
   }
 
+  class func itemSize() -> CGSize {
+    let screenSize = UIScreen.main.bounds
+    let screenWidth = screenSize.width - 2*placeCellPadding
+    return CGSize(width: screenWidth, height: 240)
+    return CGSize(width: 320, height: 234)
+  }
+
 }
