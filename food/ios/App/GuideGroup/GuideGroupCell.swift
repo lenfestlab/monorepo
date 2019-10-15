@@ -82,15 +82,12 @@ class GuideGroupCell: UITableViewCell {
     self.descriptionLabel?.text = guideGroup.desc
     self.selectionStyle = .none
     self.allButton?.isHidden = guideGroup.guides.count == 1
-    let constant : CGFloat = (self.itemSize().width - UIScreen.main.bounds.width)/2 + 10
-//    self.collectionView.contentInset = UIEdgeInsets(top: 0, left: constant, bottom: 0, right: 0)
 
     let layout = GGCarouselFlowLayout()
     layout.scrollDirection = .horizontal
     layout.spacingMode = .fixed(spacing: 0)
     layout.sideItemScale = 1.0
     layout.sideItemAlpha = 1.0
-    layout.sideItemShift = constant
     layout.itemSize = self.itemSize()
     self.collectionView.collectionViewLayout = layout
 

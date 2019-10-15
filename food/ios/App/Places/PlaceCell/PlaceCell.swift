@@ -120,7 +120,7 @@ class PlaceCell: UICollectionViewCell {
     let screenSize = UIScreen.main.bounds
     let screenWidth = screenSize.width - 2*placeCellPadding
     return CGSize(width: screenWidth, height: 240)
-    return CGSize(width: 320, height: 234)
+//    return CGSize(width: 320, height: 234)
   }
 
 }

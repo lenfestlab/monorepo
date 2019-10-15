@@ -147,7 +147,7 @@ class MapViewController: UIViewController, Contextual {
     if let view = self.collectionView {
       let layout = UPCarouselFlowLayout()
       layout.scrollDirection = .horizontal
-      let width = UIScreen.main.bounds.width - 2*padding
+      let width = PlaceCell.itemSize().width
       layout.spacingMode = .fixed(spacing: 0)
       layout.sideItemScale = 1.0
       layout.itemSize = CGSize(width: width, height: view.frame.size.height)
@@ -304,7 +304,7 @@ class MapViewController: UIViewController, Contextual {
   private func configureCollectionViewLayoutItemSize() {
     if let view = collectionView {
       view.collectionViewFlowLayout.sectionInset = UIEdgeInsets(top: 0, left: padding, bottom: 0, right: padding)
-      let width = view.frame.size.width - 2*padding
+      let width = PlaceCell.itemSize().width
       view.collectionViewFlowLayout.itemSize = CGSize(width: width, height: view.frame.size.height)
     }
   }
