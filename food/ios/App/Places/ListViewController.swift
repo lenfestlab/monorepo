@@ -46,9 +46,7 @@ extension ListViewController { // UICollectionViewDelegate
 extension ListViewController: UICollectionViewDelegateFlowLayout {
 
   func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, sizeForItemAt indexPath: IndexPath) -> CGSize {
-    let screenSize = UIScreen.main.bounds
-    let screenWidth = screenSize.width - 2*placeCellPadding
-    return CGSize(width: screenWidth, height: 240)
+    return PlaceCell.itemSize()
   }
 
 }

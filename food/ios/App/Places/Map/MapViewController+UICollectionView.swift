@@ -20,7 +20,7 @@ extension UICollectionView {
 extension MapViewController: UICollectionViewDelegate {
 
   func collectionView(_ collectionView: UICollectionView, shouldSelectItemAt indexPath: IndexPath) -> Bool {
-    let itemWidth = collectionView.collectionViewFlowLayout.itemSize.width
+    let itemWidth = PlaceCell.itemSize().width
     if collectionView.indexOfMajorCell(itemWidth: itemWidth) == indexPath.row {
       let mapPlace = mapPlaces[indexPath.row]
       let place = mapPlace.place
@@ -39,7 +39,7 @@ extension MapViewController: UICollectionViewDelegate {
 
 extension MapViewController: UICollectionViewDelegateFlowLayout {
   func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, sizeForItemAt indexPath: IndexPath) -> CGSize {
-    return CGSize(width: 320, height: 234)
+    return PlaceCell.itemSize()
   }
 }
 
