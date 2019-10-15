@@ -117,8 +117,10 @@ class PlaceCell: UICollectionViewCell {
   }
 
   class func itemSize() -> CGSize {
+//    let placeCellPadding : CGFloat = 35
     let screenSize = UIScreen.main.bounds
-    let screenWidth = screenSize.width - 2*placeCellPadding
+//    let screenWidth = screenSize.width - 2*placeCellPadding
+    let screenWidth = screenSize.width * 0.85
     return CGSize(width: screenWidth, height: 240)
 //    return CGSize(width: 320, height: 234)
   }
