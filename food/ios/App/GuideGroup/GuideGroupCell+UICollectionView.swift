@@ -65,7 +65,7 @@ extension GuideGroupCell: UICollectionViewDelegateFlowLayout {
 
   func itemSize() -> CGSize {
     if self.guideGroup?.guidesCount == 1 {
-      return CGSize(width: 320, height: 234)
+      return PlaceCell.itemSize()
     }
     return guideCollectionCellSize
   }
