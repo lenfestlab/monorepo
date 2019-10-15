@@ -105,6 +105,7 @@ class GuideGroupCell: UITableViewCell {
 
   override func prepareForReuse() {
     super.prepareForReuse()
+    self.collectionView.reloadData()
     bag = DisposeBag()
   }
 
