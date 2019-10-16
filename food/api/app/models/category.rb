@@ -113,7 +113,10 @@ class Category < ApplicationRecord
   end
 
   def admin_name
-    name
+    value = name
+    value << " [cuisine]" if is_cuisine
+    value << " [craving]" if is_craving
+    value
   end
 
 
