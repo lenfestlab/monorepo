@@ -8,19 +8,22 @@ class GuideCollectionCell: UICollectionViewCell {
   @IBOutlet weak var categoryLabel: UILabel!
   @IBOutlet weak var imageView: RemoteImageView!
   @IBOutlet weak var containerView: UIView!
+  @IBOutlet weak var shadowView: UIView!
 
   static let reuseIdentifier = "GuideCollectionCell"
 
     override func awakeFromNib() {
       super.awakeFromNib()
 
-      containerView.layer.shadowColor = UIColor.black.cgColor
-      containerView.layer.shadowOpacity = 0.3
-      let radius = CGFloat(3)
-      containerView.layer.shadowOffset = .zero
-      containerView.layer.shadowRadius = radius
+      shadowView.layer.shadowColor = UIColor.black.cgColor
+      shadowView.layer.shadowOpacity = 0.3
+      shadowView.layer.shadowOffset = .zero
+      shadowView.layer.shadowRadius = 5
+
       containerView.layer.borderWidth = 1
       containerView.layer.borderColor = UIColor.lightGray.cgColor
+      containerView.layer.cornerRadius = 5
+      containerView.clipsToBounds = true
 
       self.clipsToBounds = false
       self.textLabel.font = .bookSmall

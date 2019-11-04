@@ -17,7 +17,11 @@
                 <rect key="frame" x="0.0" y="0.0" width="219" height="279"/>
                 <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
                 <subviews>
-                    <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="JP8-cJ-O4B">
+                    <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="tNj-QY-jjp">
+                        <rect key="frame" x="10" y="15" width="199" height="259"/>
+                        <color key="backgroundColor" white="0.0" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                    </view>
+                    <view clipsSubviews="YES" contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="JP8-cJ-O4B">
                         <rect key="frame" x="5" y="10" width="209" height="269"/>
                         <subviews>
                             <imageView clipsSubviews="YES" userInteractionEnabled="NO" contentMode="scaleAspectFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" translatesAutoresizingMaskIntoConstraints="NO" id="Opi-Ex-dS0" customClass="RemoteImageView" customModule="App" customModuleProvider="target">
@@ -61,9 +65,13 @@
                 </subviews>
             </view>
             <constraints>
+                <constraint firstItem="tNj-QY-jjp" firstAttribute="bottom" secondItem="JP8-cJ-O4B" secondAttribute="bottom" constant="-5" id="3mJ-6G-9No"/>
                 <constraint firstItem="JP8-cJ-O4B" firstAttribute="leading" secondItem="gTV-IL-0wX" secondAttribute="leading" constant="5" id="5NA-Ol-NlS"/>
+                <constraint firstItem="tNj-QY-jjp" firstAttribute="leading" secondItem="JP8-cJ-O4B" secondAttribute="leading" constant="5" id="H4B-Ld-dIt"/>
                 <constraint firstAttribute="bottom" secondItem="JP8-cJ-O4B" secondAttribute="bottom" id="KIA-fD-vcq"/>
                 <constraint firstAttribute="trailing" secondItem="JP8-cJ-O4B" secondAttribute="trailing" constant="5" id="NaL-BU-Tnt"/>
+                <constraint firstItem="tNj-QY-jjp" firstAttribute="top" secondItem="JP8-cJ-O4B" secondAttribute="top" constant="5" id="Zcp-mL-fOv"/>
+                <constraint firstItem="tNj-QY-jjp" firstAttribute="trailing" secondItem="JP8-cJ-O4B" secondAttribute="trailing" constant="-5" id="lF6-yH-eFl"/>
                 <constraint firstItem="JP8-cJ-O4B" firstAttribute="top" secondItem="gTV-IL-0wX" secondAttribute="top" constant="10" id="lzA-np-RtE"/>
             </constraints>
             <viewLayoutGuide key="safeArea" id="ZTg-uK-7eu"/>
@@ -71,6 +79,7 @@
             <connections>
                 <outlet property="containerView" destination="JP8-cJ-O4B" id="F1N-NH-f6a"/>
                 <outlet property="imageView" destination="Opi-Ex-dS0" id="kx1-Oa-NHO"/>
+                <outlet property="shadowView" destination="tNj-QY-jjp" id="GTl-U4-2tx"/>
                 <outlet property="subtitleLabel" destination="a6F-nB-53e" id="YZU-qz-iIy"/>
                 <outlet property="textLabel" destination="Sy8-V4-Cjf" id="p4E-f8-26n"/>
             </connections>
