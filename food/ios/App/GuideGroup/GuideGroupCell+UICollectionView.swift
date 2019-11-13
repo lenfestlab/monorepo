@@ -95,7 +95,8 @@ extension GuideGroupCell: UICollectionViewDataSource {
   func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
     if self.numberOfGuides() == 1, let guide = self.guides.first, let context = context {
       let cell = collectionView.dequeueReusableCell(withReuseIdentifier: PlaceCell.reuseIdentifier, for: indexPath) as! PlaceCell
-      let place:Place = guide.places[indexPath.row]
+      let sortedPlaces = guide.places.sorted(byKeyPath: "distanceOpt")
+      let place: Place = sortedPlaces[indexPath.row]
       cell.setPlace(context: context, place: place, index: indexPath.row, showIndex: self.showIndex)
       return cell
     }
