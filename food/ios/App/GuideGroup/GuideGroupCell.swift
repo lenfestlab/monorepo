@@ -76,12 +76,11 @@ class GuideGroupCell: UITableViewCell {
     // Configure the view for the selected state
   }
 
-  func setGuideGroup(guideGroup: GuideGroup){
+  func setGuideGroup(guideGroup: GuideGroup, context: Context) {
     self.guideGroup = guideGroup
     self.guideLabel?.text = guideGroup.title
     self.descriptionLabel?.text = guideGroup.desc
     self.selectionStyle = .none
-    self.allButton?.isHidden = guideGroup.guides.count == 1
 
     let layout = GGCarouselFlowLayout()
     layout.scrollDirection = .horizontal
@@ -99,8 +98,21 @@ class GuideGroupCell: UITableViewCell {
       .bind(onNext: { [unowned self] guides in
         self.guides = guides
 
-        self.allButton?.isHidden = guides.count == 1
         self.collectionView.reloadData()
+      })
+      .disposed(by: bag)
+
+    // treat scrolling Top 25 carousel as viewing the guide
+    collectionView.rx.didEndDecelerating
+      .take(1) // first swipe only
+      .skipWhile({ [weak self] _ -> Bool in // Top 25 guide only
+        guard let guideCount = self?.guides.count else { return true }
+        return guideCount != 1
+      })
+      .subscribe(onNext: { [weak self] _ in
+        if let topGuide = self?.guides.first {
+          context.analytics.log(.tapsOnGuideCell(category: topGuide))
+        }
       })
       .disposed(by: bag)
   }

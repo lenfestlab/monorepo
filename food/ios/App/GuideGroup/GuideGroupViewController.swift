@@ -61,7 +61,7 @@ class GuideGroupViewController: UITableViewController, Contextual {
   override func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
     let cell = tableView.dequeueReusableCell(withIdentifier: "reuseIdentifier", for: indexPath) as! GuideGroupCell
     let guideGroup = guideGroups[indexPath.row]
-    cell.setGuideGroup(guideGroup: guideGroup)
+    cell.setGuideGroup(guideGroup: guideGroup, context: self.context)
     cell.navigationController = self.navigationController
     cell.context = context
     return cell
