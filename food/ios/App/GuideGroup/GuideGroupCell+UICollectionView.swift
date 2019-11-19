@@ -15,7 +15,7 @@ extension GuideGroupCell {
     if self.numberOfGuides() == 1, let guide = self.guides.first {
       let itemWidth = collectionView.collectionViewFlowLayout.itemSize.width
       let snapToIndex = collectionView.indexOfMajorCell(itemWidth: itemWidth)
-      let place:Place = guide.places[snapToIndex]
+      let place:Place = guide.nearestPlaces[snapToIndex]
       context.analytics.log(.swipesCarousel(place: place))
       return
     }
@@ -43,7 +43,7 @@ extension GuideGroupCell: UICollectionViewDelegate {
 
     if let context = context {
       if self.numberOfGuides() == 1, let guide = self.guides.first {
-        let place:Place = guide.places[indexPath.row]
+        let place:Place = guide.nearestPlaces[indexPath.row]
         context.analytics.log(.tapsOnCard(place: place, controllerIdentifierKey: self.controllerIdentifierKey, nil))
         let detailViewController = DetailViewController(context: context, place: place)
         navigationController?.pushViewController(detailViewController, animated: true)
@@ -95,7 +95,7 @@ extension GuideGroupCell: UICollectionViewDataSource {
   func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
     if self.numberOfGuides() == 1, let guide = self.guides.first, let context = context {
       let cell = collectionView.dequeueReusableCell(withReuseIdentifier: PlaceCell.reuseIdentifier, for: indexPath) as! PlaceCell
-      let sortedPlaces = guide.places.sorted(byKeyPath: "distanceOpt")
+      let sortedPlaces = guide.nearestPlaces
       let place: Place = sortedPlaces[indexPath.row]
       cell.setPlace(context: context, place: place, index: indexPath.row, showIndex: self.showIndex)
       return cell

@@ -30,6 +30,10 @@ class Category: RealmSwift.Object, Mappable {
 
   let places = LinkingObjects(fromType: Place.self, property: "categories")
 
+  var nearestPlaces: [Place] {
+    return self.places.sorted(byKeyPath: "distanceOpt").toArray()
+  }
+
   func mapping(map: Map) {
     identifier <-
       (map["identifier"], StringTransform())
