@@ -3,23 +3,19 @@ class EditionsController < ApplicationController
   layout false
 
   def index
-    resources = Edition.all
-    render json: resources,
-      # { https://git.io/JvTQg }
-      meta: { "total" => resources.count }
+    sort = params[:_sort] || :publish_at
+    order = params[:_order] || :asc
+    resources = Edition.all.order(sort => order)
+    response.headers["X-Total-Count"] = "#{resources.count}"
+    render json: resources
   end
 
   def create
     resource = Edition.new instance_attrs
     if resource.save
-      render json: resource, status: :created, location: resource
+      render json: resource, status: :created
     else
-      # https://git.io/JvTyD
-      render json: resource,
-        status: 422,
-        adapter: :json_api,
-        serializer: ActiveModel::Serializer::ErrorSerializer
-      # TODO render AR validation errors in react-admin
+      render json: resource, status: :unprocessable_entity
     end
   end
 
@@ -27,32 +23,38 @@ class EditionsController < ApplicationController
     resource = Edition.find_by! id: instance_attrs["id"]
     if resource.update instance_attrs
       resource.reload # load db-set fields
-      render json: resource, status: :created, location: resource
+      render json: resource, status: :created
     else
-      # https://git.io/JvTyD
-      render json: resource,
-        status: 422,
-        adapter: :json_api,
-        serializer: ActiveModel::Serializer::ErrorSerializer
+      render json: resource, status: :unprocessable_entity
     end
   end
 
   def show
     resource = Edition.find params[:id]
-    render json: resource, status: :created, location: resource
+    render json: resource, status: :created
   end
 
 
   private
 
   def instance_params
-    params.require(:data).permit(:id, :type, {
-      attributes: %i{ id newsletter_id publish_at subject body_data body_html }
-    })
+    params
+      .require(:edition)
+      .permit(
+        %i{
+        id
+        newsletter_id
+        publish_at
+        subject
+        body_data
+        body_html
+        _sort
+        _order
+        })
   end
 
   def instance_attrs
-    instance_params[:attributes] || {}
+    instance_params || {}
   end
 
 end

@@ -4,4 +4,5 @@ Rails.application.routes.draw do
 
   resources :newsletters, only: %i[ index show ]
   resources :editions, only: %i[ index create update show ]
+  resources :subscriptions, only: %i[ index show create ]
 end
