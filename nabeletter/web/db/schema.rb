@@ -10,11 +10,10 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2020_01_16_222357) do
+ActiveRecord::Schema.define(version: 2020_01_23_153607) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
-  enable_extension "postgis"
 
   create_table "editions", force: :cascade do |t|
     t.datetime "publish_at"
@@ -38,11 +37,19 @@ ActiveRecord::Schema.define(version: 2020_01_16_222357) do
     t.index ["name"], name: "index_newsletters_on_name"
   end
 
-  create_table "spatial_ref_sys", primary_key: "srid", id: :integer, default: nil, force: :cascade do |t|
-    t.string "auth_name", limit: 256
-    t.integer "auth_srid"
-    t.string "srtext", limit: 2048
-    t.string "proj4text", limit: 2048
+  create_table "subscriptions", force: :cascade do |t|
+    t.string "email_address"
+    t.string "name"
+    t.bigint "newsletter_id"
+    t.datetime "subscribed_at"
+    t.datetime "unsubscribed_at"
+    t.datetime "created_at", precision: 6, null: false
+    t.datetime "updated_at", precision: 6, null: false
+    t.index ["email_address"], name: "index_subscriptions_on_email_address"
+    t.index ["name"], name: "index_subscriptions_on_name"
+    t.index ["newsletter_id"], name: "index_subscriptions_on_newsletter_id"
+    t.index ["subscribed_at"], name: "index_subscriptions_on_subscribed_at"
+    t.index ["unsubscribed_at"], name: "index_subscriptions_on_unsubscribed_at"
   end
 
 end

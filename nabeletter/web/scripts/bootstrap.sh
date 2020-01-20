@@ -1,6 +1,6 @@
 #!/bin/bash -x -u -e -v
 
-brew bundle -v --file=.brewfile --no-upgrade
+brew bundle -v --file=.brewfile --no-upgrade --no-lock
 
 asdf plugin-add ruby
 asdf install

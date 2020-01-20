@@ -4,10 +4,8 @@ class NewslettersController < ApplicationController
 
   def index
     resources = Newsletter.all
-    render json: resources,
-      # { https://git.io/JvTQg }
-      # TODO: dedupe w/ config
-      meta: { "total" => resources.count }
+    response.headers["X-Total-Count"] = "#{resources.count}"
+    render json: resources
   end
 
   def show
