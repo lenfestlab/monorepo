@@ -1,10 +1,8 @@
 import React, { Fragment } from "react"
 import { h } from "@cycle/react"
 import { Admin, Resource } from "react-admin"
-
-import jsonServerProvider from "ra-data-json-server"
-const apiHost = "" // same as asset server
-const dataProvider = jsonServerProvider(apiHost)
+import { i18nProvider } from "./i18nProvider"
+import { dataProvider } from "./dataProvider"
 
 import { NewsletterList } from "./newsletters"
 import {
@@ -20,10 +18,16 @@ import {
 } from "./subscriptions"
 
 export const AdminApp = () =>
-  h(Admin, { dataProvider: dataProvider }, [
+  h(Admin, { dataProvider, i18nProvider }, [
     h(Resource, {
       name: "newsletters",
       list: NewsletterList,
+    }),
+    h(Resource, {
+      name: "subscriptions",
+      list: SubscriptionList,
+      create: SubscriptionCreate,
+      show: SubscriptionShow,
     }),
     h(Resource, {
       name: "editions",
@@ -31,11 +35,5 @@ export const AdminApp = () =>
       create: EditionCreate,
       show: EditionShow,
       edit: EditionEdit,
-    }),
-    h(Resource, {
-      name: "subscriptions",
-      list: SubscriptionList,
-      create: SubscriptionCreate,
-      show: SubscriptionShow,
     }),
   ])

@@ -27,6 +27,8 @@ export const SubscriptionList = props =>
     {
       ...props,
       sort: { field: "subscribed_at", order: "DESC" },
+      bulkActionButtons: false,
+      exporter: false,
     },
     [
       h(Datagrid, { rowClick: "show" }, [
@@ -41,7 +43,8 @@ export const SubscriptionList = props =>
           [h(TextField, { source: "name" })]
         ),
         h(TextField, { source: "email_address" }),
-        h(TextField, { source: "name" }),
+        h(TextField, { source: "name_first", label: "First name" }),
+        h(TextField, { source: "name_last", label: "Last name" }),
         h(DateField, {
           source: "subscribed_at",
           showTime: true,
@@ -54,10 +57,9 @@ export const SubscriptionList = props =>
     ]
   )
 
-const initialValues = { newsletter_id: 1 } // NOTE: default to first newsletter
 export const SubscriptionCreate = props =>
   h(Create, { ...props }, [
-    h(SimpleForm, { initialValues, redirect: "list" }, [
+    h(SimpleForm, { redirect: "list", submitOnEnter: true }, [
       h(
         ReferenceInput,
         {
@@ -66,6 +68,7 @@ export const SubscriptionCreate = props =>
           reference: "newsletters",
           allowEmpty: false,
           validate: [required("Newsletter required.")],
+          sort: { field: "name", order: "ASC" },
         },
         [h(SelectInput, { optionText: "name" })]
       ),
@@ -75,8 +78,16 @@ export const SubscriptionCreate = props =>
         validate: [required("Address required."), email()],
       }),
       h(TextInput, {
-        source: "name",
+        label: "First name",
+        source: "name_first",
         fullWidth: true,
+        validate: [required("First name required.")],
+      }),
+      h(TextInput, {
+        label: "Last name",
+        source: "name_last",
+        fullWidth: true,
+        validate: [required("Last name required.")],
       }),
     ]),
   ])
@@ -94,7 +105,8 @@ export const SubscriptionShow = props =>
         [h(TextField, { source: "name" })]
       ),
       h(TextField, { source: "email_address" }),
-      h(TextField, { source: "name" }),
+      h(TextField, { source: "name_first", label: "First name" }),
+      h(TextField, { source: "name_last", label: "Last name" }),
       h(DateField, {
         label: "Subscribed at",
         source: "subscribed_at",

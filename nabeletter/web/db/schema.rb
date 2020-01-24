@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2020_01_23_153607) do
+ActiveRecord::Schema.define(version: 2020_01_16_222357) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -32,21 +32,25 @@ ActiveRecord::Schema.define(version: 2020_01_23_153607) do
 
   create_table "newsletters", force: :cascade do |t|
     t.string "name"
+    t.string "mailgun_list_identifier"
     t.datetime "created_at", precision: 6, null: false
     t.datetime "updated_at", precision: 6, null: false
+    t.index ["mailgun_list_identifier"], name: "index_newsletters_on_mailgun_list_identifier"
     t.index ["name"], name: "index_newsletters_on_name"
   end
 
   create_table "subscriptions", force: :cascade do |t|
     t.string "email_address"
-    t.string "name"
+    t.string "name_first"
+    t.string "name_last"
     t.bigint "newsletter_id"
     t.datetime "subscribed_at"
     t.datetime "unsubscribed_at"
     t.datetime "created_at", precision: 6, null: false
     t.datetime "updated_at", precision: 6, null: false
     t.index ["email_address"], name: "index_subscriptions_on_email_address"
-    t.index ["name"], name: "index_subscriptions_on_name"
+    t.index ["name_first"], name: "index_subscriptions_on_name_first"
+    t.index ["name_last"], name: "index_subscriptions_on_name_last"
     t.index ["newsletter_id"], name: "index_subscriptions_on_newsletter_id"
     t.index ["subscribed_at"], name: "index_subscriptions_on_subscribed_at"
     t.index ["unsubscribed_at"], name: "index_subscriptions_on_unsubscribed_at"

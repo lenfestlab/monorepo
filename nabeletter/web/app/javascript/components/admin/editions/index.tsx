@@ -1,57 +1,25 @@
-import React, { Fragment } from "react"
+import React from "react"
 import { h } from "@cycle/react"
 import {
   Create,
-  DateField,
-  Datagrid,
   DateTimeInput,
   Edit,
-  List,
-  ReferenceField,
   ReferenceInput,
   SelectInput,
-  Show,
   SimpleForm,
-  SimpleShowLayout,
-  TextField,
   TextInput,
   required,
 } from "react-admin"
 import { addHours, startOfTomorrow } from "date-fns"
 
-export const EditionList = props =>
-  h(
-    List,
-    {
-      ...props,
-      sort: { field: "publish_at", order: "DESC" },
-    },
-    [
-      h(Datagrid, { rowClick: "show" }, [
-        h(TextField, { source: "id" }, []),
-        h(
-          ReferenceField,
-          {
-            label: "Newsletter",
-            source: "newsletter.id",
-            reference: "newsletters",
-          },
-          [h(TextField, { source: "name" })]
-        ),
-        h(
-          DateField,
-          { source: "publish_at", label: "Publish/Send at", showTime: true },
-          []
-        ),
-        h(TextField, { source: "subject" }, []),
-      ]),
-    ]
-  )
+export { EditionList } from "./list"
+export { EditionShow } from "./show"
 
-const initialValues = { newsletter_id: 1 } // NOTE: default to first newsletter
+import { BodyInput } from "./body"
+
 export const EditionCreate = props =>
   h(Create, { ...props }, [
-    h(SimpleForm, { initialValues }, [
+    h(SimpleForm, { redirect: "show" }, [
       h(
         ReferenceInput,
         {
@@ -75,53 +43,50 @@ export const EditionCreate = props =>
         validate: [required("Publish date required.")],
         initialValue: addHours(startOfTomorrow(), 6),
       }),
+      h(BodyInput),
     ]),
   ])
 
-// NOTE: by default react-admin waits to send a few seconds and provides "undo"
-// Disable in favor of faster feedback from API
+import { Toolbar, SaveButton } from "react-admin"
+const EditionEditToolbar = props => h(Toolbar, { ...props }, [h(SaveButton)])
+
+const EditPostTitle = ({ record }) => {
+  return <span>Post {record ? `"${record.subject}"` : ""}</span>
+}
+
 export const EditionEdit = props =>
-  h(Edit, { ...props, undoable: false }, [
-    h(SimpleForm, {}, [
-      h(
-        ReferenceInput,
-        {
-          label: "Newsletter",
-          source: "newsletter.id",
-          reference: "newsletters",
-          allowEmpty: false,
-          validate: [required("Newsletter required.")],
-        },
-        [h(SelectInput, { optionText: "name" })]
-      ),
-      h(TextInput, {
-        label: "Subject",
-        source: "subject",
-        fullWidth: true,
-        validate: [required("Subject required for email.")],
-      }),
-      h(DateTimeInput, {
-        label: "Publish/send at",
-        source: "publish_at",
-        validate: [required("Publish date required.")],
-        initialValue: addHours(startOfTomorrow(), 6),
-      }),
-    ]),
-  ])
-
-export const EditionShow = props =>
-  h(Show, { ...props }, [
-    h(SimpleShowLayout, {}, [
-      h(
-        ReferenceField,
-        {
-          label: "Newsletter",
-          source: "newsletter.id",
-          reference: "newsletters",
-        },
-        [h(TextField, { source: "name" })]
-      ),
-      h(TextField, { label: "Email subject", source: "subject" }),
-      h(DateField, { label: "Publish/send at", source: "publish_at" }),
-    ]),
+  h(Edit, { ...props, undoable: false, title: h(EditPostTitle) }, [
+    h(
+      SimpleForm,
+      {
+        redirect: "show",
+        toolbar: h(EditionEditToolbar),
+      },
+      [
+        h(
+          ReferenceInput,
+          {
+            label: "Newsletter",
+            source: "newsletter.id",
+            reference: "newsletters",
+            allowEmpty: false,
+            validate: [required("Newsletter required.")],
+          },
+          [h(SelectInput, { optionText: "name" })]
+        ),
+        h(TextInput, {
+          label: "Subject",
+          source: "subject",
+          fullWidth: true,
+          validate: [required("Subject required for email.")],
+        }),
+        h(DateTimeInput, {
+          label: "Publish/send at",
+          source: "publish_at",
+          validate: [required("Publish date required.")],
+          initialValue: addHours(startOfTomorrow(), 6),
+        }),
+        h(BodyInput),
+      ]
+    ),
   ])

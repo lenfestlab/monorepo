@@ -9,7 +9,7 @@ bash ./scripts/bootstrap.sh
 cp .env.dev.example .env.dev
 
 # run locally
-herokou local -f Procfile.dev
+herokou local -e .env.dev -f Procfile.dev
 
 
 ## Deployment
