@@ -10,4 +10,8 @@ class Newsletter < ApplicationRecord
     presence: true,
     uniqueness: true
 
+  def list_identifier
+    self.mailgun_list_identifier
+  end
+
 end

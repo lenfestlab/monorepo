@@ -5,13 +5,14 @@ class Edition < ApplicationRecord
 
   validates :subject,
     presence: true,
-    uniqueness: true
+    uniqueness: true,
+    length: { in: 1...100 }
 
   validates :publish_at,
-    presence: true
-
-  validates :publish_at,
-    timeliness: { on_or_after: lambda { Date.current }, type: :datetime}
+    timeliness: {
+    allow_nil: true, # optional; leaving blank or set in future ~= "draft"
+    on_or_after: lambda { Date.current }, type: :datetime
+  }
 
   validate :lock_once_delivered
   def lock_once_delivered
@@ -48,14 +49,17 @@ class Edition < ApplicationRecord
   scope :scheduled, -> {
     now = Time.zone.now
     start = 11.minutes.ago now
-    deliverable.where("(deliver_at >= ?) AND (deliver_at <= ?)", start, now)
+    deliverable.where("(publish_at >= ?) AND (publish_at <= ?)", start, now)
   }
 
   ## Email delivery
   #
 
   def deliver
-    # TODO: mailing list delivery
+    deliverer = DeliveryService.new
+    # deliver!(edition: self)
+    # TODO
+    print("TODO: deliver #{self}")
   end
 
 end

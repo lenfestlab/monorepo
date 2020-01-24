@@ -1,4 +1,13 @@
 class SubscriptionSerializer < ActiveModel::Serializer
-  attributes :id, :name, :email_address, :subscribed_at, :unsubscribed_at
+  attributes *%i[
+  id
+  email_address
+  subscribed_at
+  unsubscribed_at
+  name_first
+  name_last
+  ]
+
   belongs_to :newsletter
+
 end

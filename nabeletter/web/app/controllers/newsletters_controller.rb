@@ -4,15 +4,12 @@ class NewslettersController < ApplicationController
 
   def index
     resources = Newsletter.all
-    response.headers["X-Total-Count"] = "#{resources.count}"
-    render json: resources
+    render json: resources, meta: { total: resources.count }
   end
 
   def show
     resource = Newsletter.find params[:id]
-    render json: resource,
-      status: :created,
-      location: resource
+    render json: resource
   end
 
 end

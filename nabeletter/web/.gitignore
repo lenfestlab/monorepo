@@ -41,6 +41,9 @@ node_modules/
 /public/packs
 /public/packs-test
 /public/assets
+# bundle size analysis
+# https://github.com/webpack-contrib/webpack-bundle-analyzer
+/public/packs/*stats.json
 
 # Ignore yarn files
 /yarn-error.log

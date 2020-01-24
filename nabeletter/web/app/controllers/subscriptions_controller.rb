@@ -3,21 +3,31 @@ class SubscriptionsController < ApplicationController
   layout false
 
   def index
-    sort = params[:_sort] || :subscribed_at
-    order = params[:_order] || :asc
+    sort, order = self.sort(default: :subscribed_at)
     resources = Subscription.all.order(sort => order)
-    response.headers["X-Total-Count"] = "#{resources.count}"
-    render json: resources
+    render json: resources, meta: { total: resources.count }
   end
 
   def create
-    # TODO: sync w/ email list
-    resource = Subscription.new instance_attrs
+    ap create_attributes
+    newsletter = Newsletter.find create_attributes[:newsletter_id]
+    resource = Subscription.new create_attributes
     resource.subscribed_at = Time.zone.now
     if resource.save
+      resource.reload # load server-generated attrs
+      subscriber_data =
+        resource.slice(*%i[
+                       email_address
+                       name_first
+                       name_last
+                       ])
+      deliverer = DeliveryService.new
+      deliverer.subscribe!(
+        list_identifier: newsletter.list_identifier,
+        subscriber_data: subscriber_data)
       render json: resource, status: :created
     else
-      render json: resource, status: :unprocessable_entity
+      render_unprocessable_entity(resource: resource)
     end
   end
 
@@ -29,24 +39,21 @@ class SubscriptionsController < ApplicationController
 
   private
 
-  def instance_params
+  def create_params
     params
-      .require(:subscription)
-      .permit(
-        %i{
-        id
+      .require(:data)
+      .permit(:type, attributes: %i{
         newsletter_id
         email_address
-        name
+        name_first
+        name_last
         subscribed_at
         unsubscribed_at
-        _sort
-        _order
         })
   end
 
-  def instance_attrs
-    instance_params || {}
+  def create_attributes
+    create_params[:attributes] || {}
   end
 
 end

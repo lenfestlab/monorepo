@@ -3,29 +3,31 @@ class EditionsController < ApplicationController
   layout false
 
   def index
-    sort = params[:_sort] || :publish_at
-    order = params[:_order] || :asc
+    sort, order = self.sort(default: :publish_at)
     resources = Edition.all.order(sort => order)
-    response.headers["X-Total-Count"] = "#{resources.count}"
-    render json: resources
+    render json: resources, meta: { total: resources.count }
   end
 
   def create
-    resource = Edition.new instance_attrs
+    ap instance_attributes
+    resource = Edition.new instance_attributes
     if resource.save
       render json: resource, status: :created
     else
-      render json: resource, status: :unprocessable_entity
+      render_unprocessable_entity(resource: resource)
     end
   end
 
   def update
-    resource = Edition.find_by! id: instance_attrs["id"]
-    if resource.update instance_attrs
-      resource.reload # load db-set fields
-      render json: resource, status: :created
+    ap instance_attributes
+    updated_attributes = instance_attributes.except(:newsletter)
+    ap updated_attributes
+    resource = Edition.find params[:id]
+    resource.update updated_attributes
+    if resource.valid?
+      render json: resource, status: :ok
     else
-      render json: resource, status: :unprocessable_entity
+      render_unprocessable_entity(resource: resource)
     end
   end
 
@@ -39,22 +41,21 @@ class EditionsController < ApplicationController
 
   def instance_params
     params
-      .require(:edition)
-      .permit(
-        %i{
-        id
-        newsletter_id
-        publish_at
-        subject
-        body_data
-        body_html
-        _sort
-        _order
-        })
+      .require(:data)
+      .permit!
+    #TODO
+      # .permit(:type, attributes: {
+              # :id,
+              # :newsletter_id,
+              # :publish_at,
+              # :subject,
+              # body_data: [],
+              # :body_html
+              # })
   end
 
-  def instance_attrs
-    instance_params || {}
+  def instance_attributes
+    instance_params[:attributes] || {}
   end
 
 end

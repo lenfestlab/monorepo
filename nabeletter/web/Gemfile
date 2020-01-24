@@ -14,6 +14,10 @@ gem 'validates_timeliness', '~> 5.0.0.alpha3'
 gem "sentry-raven"
 gem 'aasm'
 gem 'awesome_print'
+gem 'httparty'
+gem 'timber'
+gem 'timber-rack'
+gem 'timber-rails', github: 'timberio/timber-ruby-rails', ref: '250326b'
 
 group :development do
   gem 'web-console', '>= 3.3.0'
