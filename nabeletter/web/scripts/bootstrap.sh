@@ -3,6 +3,7 @@
 brew bundle -v --file=.brewfile --no-upgrade --no-lock
 
 asdf plugin-add ruby
+asdf plugin-add nodejs
 asdf install
 
 yarn --prefer-offline
