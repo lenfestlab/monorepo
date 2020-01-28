@@ -1,0 +1,212 @@
+<!doctype html>
+<html lang="en">
+
+<head>
+    <!-- Required meta tags -->
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+
+    <title>CMS</title>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="stylesheet" href="cms.css">
+
+    <!-- Bootstrap CSS -->
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css" integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
+
+    <!--- Bootstrap JS --->
+    <script src="https://code.jquery.com/jquery-3.2.1.slim.min.js" integrity="sha384-KJ3o2DKtIkvYIK3UENzmM7KCkRr/rE9/Qpg6aAZGJwFDMVNA/GpGFF93hXpG5KkN" crossorigin="anonymous"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js" integrity="sha384-ApNbgh9B+Y1QKtv3Rn7W3mgPxhU9K/ScQsAP7hUibX39j7fakFPskvXusvfa0b4Q" crossorigin="anonymous"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js" integrity="sha384-JZR6Spejh4U02d8jOt6vLEHfe/JQGiRRSQQxSfFWpi1MquVdAyjUar5+76PVCmYl" crossorigin="anonymous"></script>
+
+    <!--- D3 JS --->
+    <script src="https://d3js.org/d3.v5.js"></script>
+
+    <!--- Listbox --->
+    <script type="text/javascript" src="/listbox.js"></script>
+    <link rel="stylesheet" href="listbox.css">
+
+</head>
+
+<body>
+
+    <div class="container-fluid main">
+        <div class="title">
+            Neighborhood Newsletter “Core Plus”
+        </div>
+        <div class="section">
+            <h2>
+                Summary of neighborhood headlines
+            </h2>
+
+            <div class="container-fluid headlines">
+                <div class="row">
+                    <div class="col">
+                        <div class="input-group mb-3">
+                            <select class="custom-select" id="leftValues" size="5" multiple>
+                            </select>
+                        </div>
+                        <div class="input-group mb-3">
+                            <input type="text" class="form-control" placeholder="Article URL" aria-label="Article URL" aria-describedby="basic-addon2">
+                            <div class="input-group-append">
+                                <button class="btn btn-outline-secondary" type="button">Add</button>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-auto">
+                        <input class="btn btn-success btn-block btn-add" type="button" id="btnRight" value="+" />
+                        <input class="btn btn-danger btn-block btn-minus" type="button" id="btnLeft" value="-" />
+                    </div>
+                    <div class="col">
+                        <select class="custom-select" id="rightValues" size="8" multiple>
+                        </select>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="section">
+            <h2>
+                Weather Outlook
+            </h2>
+            <div class="form-group">
+                <textarea class="form-control" id="exampleFormControlTextarea1" rows="4">Thursday: Don’t forget your umbrella
+Friday: Trash pick-up is today, instead of Thursday, due to the MLK holiday
+Saturday: Sunshine will be out for the Farmers Market on Front Street</textarea>
+            </div>
+        </div>
+        <div class="section">
+            <h2>
+                Fishtown Events
+            </h2>
+
+            <div class="container-fluid events">
+                <div class="row">
+                    <div class="col">
+                        <div class="input-group mb-3">
+                            <select class="custom-select" id="leftValues" size="5" multiple>
+                            </select>
+                        </div>
+                        <div class="input-group mb-3">
+                            <input type="text" class="form-control" placeholder="Article URL" aria-label="Article URL" aria-describedby="basic-addon2">
+                            <div class="input-group-append">
+                                <button class="btn btn-outline-secondary" type="button">Add</button>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-auto">
+                        <input class="btn btn-success btn-block btn-add" type="button" id="btnRight" value="+" />
+                        <input class="btn btn-danger btn-block btn-minus" type="button" id="btnLeft" value="-" />
+                    </div>
+                    <div class="col">
+                        <select class="custom-select" id="rightValues" size="8" multiple>
+                        </select>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="section">
+            <h2>
+                Fishtown News
+            </h2>
+
+            <div class="container-fluid news">
+                <div class="row">
+                    <div class="col">
+                        <div class="input-group mb-3">
+                            <select class="custom-select" id="leftValues" size="5" multiple>
+                            </select>
+                        </div>
+                        <div class="input-group mb-3">
+                            <input type="text" class="form-control" placeholder="Article URL" aria-label="Article URL" aria-describedby="basic-addon2">
+                            <div class="input-group-append">
+                                <button class="btn btn-outline-secondary" type="button">Add</button>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-auto">
+                        <input class="btn btn-success btn-block btn-add" type="button" id="btnRight" value="+" />
+                        <input class="btn btn-danger btn-block btn-minus" type="button" id="btnLeft" value="-" />
+                    </div>
+                    <div class="col">
+                        <select class="custom-select" id="rightValues" size="8" multiple>
+                        </select>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="section">
+            <h2>
+                Fishtown Safety Watch
+            </h2>
+        </div>
+        <div class="section">
+            <h2>
+                Fishtown History
+            </h2>
+        </div>
+        <div class="section">
+            <h2>
+                Instagram photos from Local Businesses
+            </h2>
+        </div>
+        <div class="section">
+            <h2>
+                Tweets from Local Officials
+            </h2>
+        </div>
+        <div class="section">
+            <h2>
+                Top Facebook Post from Neighborhood Group
+            </h2>
+        </div>
+        <div class="section">
+            <h2>
+                Fishtown Stats
+            </h2>
+        </div>
+        <div class="section">
+            <h2>
+                Fishtown Local Business Offers
+            </h2>
+        </div>
+        <div class="section">
+            <h2>
+                Ask the Editor
+            </h2>
+        </div>
+        <div class="section">
+            <h2>
+                Answer from the Editor
+            </h2>
+        </div>
+        <div class="section">
+            <h2>
+                For Sale Properties
+            </h2>
+        </div>
+        <div class="section">
+            <h2>
+                Recently Sold Properties
+            </h2>
+        </div>
+        <div class="section">
+            <h2>
+                New Construction & Demolition
+            </h2>
+        </div>
+        <div class="section">
+            <h2>
+                Permits Under Review
+            </h2>
+        </div>
+        <div class="section">
+            <h2>
+                Footer
+            </h2>
+        </div>
+
+
+    </div>
+
+</body></html>

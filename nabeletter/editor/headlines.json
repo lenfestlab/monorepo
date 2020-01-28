@@ -1,0 +1,26 @@
+[
+    {
+        "source": "Inquirer",
+        "image": "https://picsum.photos/260/130",
+        "title": "Construction News and Updates",
+        "caption": "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut."
+            },
+    {
+        "source": "Inquirer",
+        "image": "https://picsum.photos/260/130",
+        "title": "Neighborhood Projects",
+        "caption": "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut."
+            },
+    {
+        "source": "Inquirer",
+        "image": "https://picsum.photos/260/130",
+        "title": "Restaurant Openings or Closings",
+        "caption": "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut."
+            },
+    {
+        "source": "Inquirer",
+        "image": "https://picsum.photos/260/130",
+        "title": "Crime News",
+        "caption": "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut."
+            }
+]

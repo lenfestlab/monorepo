@@ -1,0 +1,17 @@
+[
+    {
+        "title": "Event Title 1",
+        "datetime": "Date/Time",
+        "about": "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod"
+            },
+    {
+        "title": "Event Title 2",
+        "datetime": "Date/Time",
+        "about": "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod"
+            },
+    {
+        "title": "Event Title 3",
+        "datetime": "Date/Time",
+        "about": "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod"
+            }
+        ]

@@ -1,0 +1,35 @@
+h1 {
+    font-size: 18px;
+}
+
+h2 {
+    height: 48px;
+    font-size: 10px;
+    font-weight: 500;
+}
+
+body {
+    font-family: -apple-system, BlinkMacSystemFont, sans-serif;
+    color: #000000;
+}
+
+.title {
+    text-align: center;
+    background-color: #d8d8d8;
+    font-size: 28px;
+    font-weight: 600;
+    padding: 20px;
+}
+
+.section {
+    padding: 20px;
+}
+
+.main {
+    border: 1px solid #d8d8d8;
+    padding: 0px !important;
+}
+
+.btn:focus {
+    outline: none;
+}
