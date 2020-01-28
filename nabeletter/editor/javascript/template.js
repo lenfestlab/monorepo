@@ -1,9 +1,9 @@
 function render(results) {
 
-    var sections = []
+    var sections = [];
     results.forEach(function (result, index) {
-        let type = result["type"]
-        let title = result["title"]
+        let type = result["type"];
+        let title = result["title"];
 
         sections.push(`<tr><td class="title">${title}</td></tr>`)
         if (type == "news") {
@@ -34,7 +34,7 @@ function render(results) {
 
 
 $(document).ready(function () {
-    d3.json("/template.json").then(function (results) {
+    d3.json("/datasource/template.json").then(function (results) {
         render(results);
     });
 });

@@ -1,6 +1,6 @@
 $(document).ready(function () {
 
-    d3.json("/articles.json").then(function (articles) {
+    d3.json("datasource/articles.json").then(function (articles) {
         articles.forEach(function (article, index) {
             var option = document.createElement("option");
             option.text = `News Story #${index}: ${article.source} - ${article.title}, ${article.caption}`;
@@ -9,7 +9,7 @@ $(document).ready(function () {
         });
     });
 
-    d3.json("/events.json").then(function (articles) {
+    d3.json("datasource/events.json").then(function (articles) {
         articles.forEach(function (article, index) {
             var option = document.createElement("option");
             option.text = `Event #${index}: ${article.datetime} - ${article.title}, ${article.about}`;
@@ -18,7 +18,7 @@ $(document).ready(function () {
         });
     });
 
-    d3.json("/headlines.json").then(function (articles) {
+    d3.json("datasource/headlines.json").then(function (articles) {
         articles.forEach(function (article, index) {
             var option = document.createElement("option");
             option.text = `Story #${index}: ${article.source} - ${article.title}, ${article.caption}`;
