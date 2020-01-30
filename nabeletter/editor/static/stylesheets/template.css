@@ -3,13 +3,54 @@ table {
     margin-right: auto;
 }
 
+.weather {
+  width: 520px;
+}
+
+.weather .day {
+  font-weight: 500;
+  font-size: 12px;
+  text-align: center;
+}
+
+.weather table {
+  border: 0px solid black;
+  margin: 0px 0px 10px 0px;
+  font-size: 10px;
+}
+
+.weather th, .weather td {
+  border: 0px solid black;
+  padding: 6px 6px 6px 6px;
+}
+
+.weather table {
+  text-align: center;
+  background-color: #d8d8d8;
+  height: 60px;
+  width: 60px;  
+}
+
+.weather td {
+  vertical-align: middle !important;
+}
+
+.weather tr {
+  border-spacing: 15px !important;
+}
+
+.article img {  
+    object-fit: cover;
+    width: 260px;
+    height: 130px;
+}
+
 .main {
     width: 600px;
     margin-left: auto;
     margin-right: auto;
     border: 1px solid #d8d8d8;
     border-spacing: 0px;
-
 }
 
 .article {
@@ -32,7 +73,7 @@ table {
 body {
     font-family: -apple-system, BlinkMacSystemFont, sans-serif;
     color: #000000;
-
+    font-size: 14px;
 }
 
 .header {
@@ -85,14 +126,21 @@ body {
     padding: 10px;
 }
 
+.section a:link {
+  text-decoration: none;
+}
+
+.section td {
+  vertical-align: top;
+}
+
 .event {
-    width: 160px;
-    height: 250px;
     background-color: #d8d8d8;
     margin: 6px;
     padding: 23px;
     font-weight: 500;
-
+    font-size: 12px;
+    height: 100px;
 }
 
 .newscaption {
