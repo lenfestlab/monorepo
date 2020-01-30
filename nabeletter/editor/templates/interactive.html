@@ -1,0 +1,63 @@
+<!doctype html>
+<html lang="en">
+
+<head>
+    <link rel="stylesheet" href="stylesheets/interactive.css">
+
+    <!--- Bootstrap JS --->
+    <script src="https://code.jquery.com/jquery-3.2.1.min.js" integrity="sha256-hwg4gsxgFZhOsEEamdOYGBf13FyQuiTwlAQgxVSNgt4=" crossorigin="anonymous"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js" integrity="sha384-ApNbgh9B+Y1QKtv3Rn7W3mgPxhU9K/ScQsAP7hUibX39j7fakFPskvXusvfa0b4Q" crossorigin="anonymous"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js" integrity="sha384-JZR6Spejh4U02d8jOt6vLEHfe/JQGiRRSQQxSfFWpi1MquVdAyjUar5+76PVCmYl" crossorigin="anonymous"></script>
+
+    <!--- D3 JS --->
+    <script src="https://d3js.org/d3.v5.js"></script>
+
+    <script type="text/javascript" src="javascript/weather.js"></script>
+    <script type="text/javascript" src="javascript/feedback.js"></script>
+    <script type="text/javascript" src="javascript/history.js"></script>
+    <script type="text/javascript" src="javascript/safety.js"></script>
+    <script type="text/javascript" src="javascript/events.js"></script>
+    <script type="text/javascript" src="javascript/news.js"></script>
+    <script type="text/javascript" src="javascript/footer.js"></script>
+    <script type="text/javascript" src="javascript/header.js"></script>
+    <script type="text/javascript" src="javascript/template.js"></script>
+
+    <script>
+        function refresh(results = []) {
+            var body = $("#preview").contents().find("body")
+            body.empty()
+            body.append(markup(results));
+        }
+        
+        function save() {
+          var text = document.getElementById("preview").contentDocument.documentElement.innerHTML;
+          var filename = "test.html"
+          var element = document.createElement('a');
+          element.setAttribute('href', 'data:text/plain;charset=utf-8,' + encodeURIComponent(text));
+          element.setAttribute('download', filename);
+
+          element.style.display = 'none';
+          document.body.appendChild(element);
+
+          element.click();
+
+          document.body.removeChild(element);
+        }
+
+        $(document).ready(function() {
+            var $iframe = $("#preview");
+
+            $.get('stylesheets/template.css', function(data) {
+                var head = $("#preview").contents().find("head")
+                head.append(`<style>${data}</style>`);
+            });
+
+        });
+    </script>
+</head>
+
+<body>
+    <iframe src="cms.html" frameborder="0" scrolling="yes" style="height: 100%;  width: 49%; float: left; " height="100%" width="100%" align="left"></iframe>
+    <iframe id="preview" frameborder="0" scrolling="yes" style="overflow: hidden; height: 100%; width: 49%; " height="100%" width="100%" align="right">
+    </iframe>
+</body></html>

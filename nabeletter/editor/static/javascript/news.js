@@ -8,11 +8,14 @@ function news(results) {
 
     articles.forEach(function (article, index) {
         html += `<td>`
+        html += `<a target="_blank" href="${article.url}">`
+      
         html += `<table class="article">`
         html += `<tr><td><img src="${article.image}" ><td></tr>`
         html += `<tr><td class="newstitle">${article.title}<td></tr>`
         html += `<tr><td class="newscaption">${article.caption}<td></tr>`
         html += `</table>`
+        html += `</a>`
         html += `</td>`
 
         if (index % 2) {

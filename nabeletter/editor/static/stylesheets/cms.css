@@ -4,7 +4,6 @@ h1 {
 
 h2 {
     height: 48px;
-    font-size: 10px;
     font-weight: 500;
 }
 
@@ -13,6 +12,13 @@ body {
     color: #000000;
 }
 
+.header {
+  text-align: center;
+  background-color: #d8d8d8;
+  font-size: 28px;
+  font-weight: 600;
+  padding: 20px;
+}
 .title {
     text-align: center;
     background-color: #d8d8d8;
@@ -32,4 +38,9 @@ body {
 
 .btn:focus {
     outline: none;
+}
+
+.btn-add,
+.btn-minus {
+    height: 40px;
 }
