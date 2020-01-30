@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <title>Template Preview</title>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="stylesheet" href="stylesheets/template.css">
+
+    <script src="https://code.jquery.com/jquery-3.4.1.slim.min.js" integrity="sha384-J6qa4849blE2+poT4WnyKhv5vZF5SrPo0iEjwBvKU7imGFAV0wwj1yYfoRSJoZ+n" crossorigin="anonymous"></script>
+
+    <script type="text/javascript" src="javascript/weather.js"></script>
+    <script type="text/javascript" src="javascript/feedback.js"></script>
+    <script type="text/javascript" src="javascript/history.js"></script>
+    <script type="text/javascript" src="javascript/safety.js"></script>
+    <script type="text/javascript" src="javascript/events.js"></script>
+    <script type="text/javascript" src="javascript/news.js"></script>
+    <script type="text/javascript" src="javascript/footer.js"></script>
+    <script type="text/javascript" src="javascript/header.js"></script>
+    <script type="text/javascript" src="javascript/template.js"></script>
+
+    <script>
+        $(document).ready(function() {
+            d3.json("datasource/template.json").then(function(results) {
+                document.body.innerHTML = markup(results);
+            });
+        });
+    </script>
+
+    <script src="https://d3js.org/d3.v5.js"></script>
+</head>
+
+<body>
+
+</body></html>

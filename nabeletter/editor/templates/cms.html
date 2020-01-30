@@ -9,7 +9,6 @@
     <title>CMS</title>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <link rel="stylesheet" href="stylesheets/cms.css">
 
     <!-- Bootstrap CSS -->
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css" integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
@@ -22,18 +21,29 @@
     <!--- D3 JS --->
     <script src="https://d3js.org/d3.v5.js"></script>
 
-    <!--- Listbox --->
-    <script type="text/javascript" src="javascript/listbox.js"></script>
-    <link rel="stylesheet" href="stylesheets/listbox.css">
+    <!--- CMS --->
+    <script type="text/javascript" src="javascript/cms.js"></script>
+    <link rel="stylesheet" href="stylesheets/cms.css">
 
 </head>
 
 <body>
 
     <div class="container-fluid main">
-        <div class="title">
-            Neighborhood Newsletter “Core Plus”
+        <div class="header container-fluid">
+            <div class="row">
+                <div class="col-2">
+                </div>
+                <div class="col-8">
+                    Neighborhood Newsletter “Core Plus”
+                </div>
+                <div class="col-2">
+                    <button type="button" class="btn btn-light btn-lg" onclick="parent.save()">Save</button>
+                </div>
+            </div>
+
         </div>
+
         <div class="section">
             <h2>
                 Summary of neighborhood headlines

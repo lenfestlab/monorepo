@@ -1,0 +1,14 @@
+[
+    {
+        "type": "news",
+        "title": "Fishtown News",
+        "articles": [
+        ]
+    },
+    {
+        "type": "events",
+        "title": "Fishtown Events",
+        "events": [
+        ]
+    }
+]
