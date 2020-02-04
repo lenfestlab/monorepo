@@ -39,10 +39,24 @@ table {
   border-spacing: 15px !important;
 }
 
+.permit img {  
+    object-fit: cover;
+    width: 200px;
+    height: 150px;
+}
+
+.permit {
+    padding: 12px;
+}
+
 .article img {  
     object-fit: cover;
     width: 260px;
     height: 130px;
+}
+
+.article {
+    padding: 12px;
 }
 
 .main {
@@ -51,10 +65,6 @@ table {
     margin-right: auto;
     border: 1px solid #d8d8d8;
     border-spacing: 0px;
-}
-
-.article {
-    padding: 12px;
 }
 
 .header td {
@@ -109,7 +119,6 @@ body {
 }
 
 .newstitle {
-    width: 260px;
     height: 16px;
     font-size: 14px;
     font-weight: 500;
@@ -118,7 +127,6 @@ body {
     line-height: normal;
     letter-spacing: normal;
     color: #000000;
-
 }
 
 .section {
@@ -134,6 +142,22 @@ body {
   vertical-align: top;
 }
 
+.tweet a {
+  -ms-word-break: break-all;
+  word-break: break-all;
+  word-wrap: break-word;
+}
+
+.tweet {
+    word-wrap: break-word;
+    background-color: #d8d8d8;
+    margin: 6px;
+    padding: 23px;
+    font-weight: 500;
+    font-size: 12px;
+    height: 100px;
+}
+
 .event {
     background-color: #d8d8d8;
     margin: 6px;
@@ -144,7 +168,6 @@ body {
 }
 
 .newscaption {
-    width: 260px;
     height: 16px;
     font-size: 14px;
     font-weight: normal;
@@ -153,7 +176,6 @@ body {
     line-height: normal;
     letter-spacing: normal;
     color: #000000;
-
 }
 
 .footer {
@@ -180,6 +202,10 @@ body {
     text-align: center;
     color: #000000;
     padding: 0 0 25px 0;
+}
+
+a {
+    color: black;
 }
 
 a.more {

@@ -3,6 +3,8 @@ import os
 import articles
 import events
 import weather
+import permits
+import tweets
 
 from dotenv import load_dotenv
 
@@ -28,6 +30,11 @@ def index():
 @app.route("/cms.html", methods=['GET'])
 def cms():
     return render_template('cms.html')  
+  
+@app.route("/datasource/permits.json", methods=['GET'])
+def fetch_permits():
+  results = permits.fetch()
+  return jsonify(results)
     
 @app.route("/datasource/articles.json", methods=['GET'])
 def fetch_articles():
@@ -42,6 +49,11 @@ def fetch_events():
 @app.route("/datasource/weather.json", methods=['GET'])
 def fetch_weather():
   results = weather.fetch(app.config.get("DARKSKY_API_KEY"))
+  return jsonify(results)
+  
+@app.route("/datasource/tweets.json", methods=['GET'])
+def fetch_tweets():
+  results = tweets.fetch(app.config.get("TWITTER_API_KEY"), app.config.get("TWITTER_API_SECRET"))
   return jsonify(results)
   
 if __name__ == "__main__":
