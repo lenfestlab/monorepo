@@ -18,9 +18,13 @@ function markup(results, body = null) {
         } else if (type == "safety") {
             sections.push(safety(result));
         } else if (type == "history") {
-            sections.push(history(result));
+          sections.push(history(result));
+        } else if (type == "permits") {
+          sections.push(permits(result));
         } else if (type == "feedback") {
             sections.push(feedback(result));
+        } else if (type == "tweets") {
+            sections.push(tweets(result));
         }
 
     })

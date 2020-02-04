@@ -5,3 +5,4 @@ ics==0.6
 recurring-ical-events==0.1.13b0
 icalendar==4.0.3
 python-dotenv==0.10.5
+tweepy==3.8.0
