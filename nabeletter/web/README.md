@@ -5,11 +5,22 @@
 # Run setup script
 bash ./scripts/bootstrap.sh
 
+# enable localhost SSL
+mkcert -install
+(ipaddr=$(ipconfig getifaddr en0) && \
+  cd ./config/cert/ && \
+  mkcert \
+  --cert-file localhost-cert.pem \
+  --key-file localhost-key.pem \
+  localhost 127.0.0.1 ::1 $ipaddr.xip.io \
+  )
+
 # copy/edit local env vars
 cp .env.dev.example .env.dev
 
 # run locally
-herokou local -e .env.dev -f Procfile.dev
+heroku local -e .env.dev web=1,webpacker=1,log=1
+open https://localhost:3443
 
 
 ## Deployment

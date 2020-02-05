@@ -1,4 +1,3 @@
-import React, { Fragment } from "react"
 import { h } from "@cycle/react"
 import {
   DateField,
@@ -8,12 +7,12 @@ import {
   TextField,
 } from "react-admin"
 
-export const EditionList = props =>
+export const SubscriptionList = props =>
   h(
     List,
     {
       ...props,
-      sort: { field: "publish_at", order: "DESC" },
+      sort: { field: "subscribed_at", order: "DESC" },
       bulkActionButtons: false,
       exporter: false,
     },
@@ -29,13 +28,17 @@ export const EditionList = props =>
           },
           [h(TextField, { source: "name" })]
         ),
-        h(TextField, { source: "subject" }, []),
-        h(
-          DateField,
-          { source: "publish_at", label: "Publish/Send at", showTime: true },
-          []
-        ),
-        // TODO: EditionPreviewButton
+        h(TextField, { source: "email_address" }),
+        h(TextField, { source: "name_first", label: "First name" }),
+        h(TextField, { source: "name_last", label: "Last name" }),
+        h(DateField, {
+          source: "subscribed_at",
+          showTime: true,
+        }),
+        h(DateField, {
+          source: "unsubscribed_at",
+          showTime: true,
+        }),
       ]),
     ]
   )

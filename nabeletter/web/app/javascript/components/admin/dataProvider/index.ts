@@ -1,24 +1,40 @@
-import jsonapiClient from "ra-jsonapi-client"
-import join from "lodash/join"
-import map from "lodash/map"
+import { DataProvider } from "ra-core"
+
+import jsonapiClient from "ra-jsonapi-client" // NOTE: fork https://git.io/JvnOF
 
 const apiHost = "" // same as asset server
 
-// TODO: transforms JSON:API errors into notification message
-// http://bit.ly/2S7QEDs
-const messageCreator = ({ errors }) => join(map(errors, "detail"), ", ")
-
 /// serializer configuration: https://git.io/JvGJK
 const keyForAttribute = "underscore_case"
+
+// relationship schemas
+const newsletter = {
+  // Th ID of child is given by its id field
+  ref: (parent, child) => child.id,
+}
+
 const settings = {
+  arrayFormat: "comma", // http://bit.ly/2UIFGY5
+  headers: {
+    Accept: "application/vnd.api+json",
+    "Content-Type": "application/vnd.api+json",
+  },
   deserializerOpts: {
     subscriptions: { keyForAttribute },
     editions: { keyForAttribute },
+    newsletters: { keyForAttribute },
   },
   serializerOpts: {
-    subscriptions: { keyForAttribute },
-    editions: { keyForAttribute },
+    subscriptions: {
+      keyForAttribute,
+      newsletter,
+    },
+    editions: {
+      keyForAttribute,
+      newsletter,
+    },
+    newsletters: { keyForAttribute },
   },
 }
 
-export const dataProvider = jsonapiClient(apiHost, settings)
+export const dataProvider: DataProvider = jsonapiClient(apiHost, settings)

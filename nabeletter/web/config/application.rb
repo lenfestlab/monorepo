@@ -32,5 +32,23 @@ module Web
     # Don't generate system test files.
     config.generators.system_tests = nil
 
+    # NOTE: require SSL in everywhere
+    config.force_ssl = true
+
+    # NOTE: all URL generators inherit from routes
+    # https://stackoverflow.com/a/36792962
+    env_url_options = {
+      protocol: (config.force_ssl ? :https : :http),
+      host: ENV["RAILS_HOST"],
+    }
+    if Rails.env.development?
+      env_url_options[:port] = ENV["PORT"]
+    end
+    routes.default_url_options.merge!(env_url_options)
+
+    # whitelist value of RAILS_HOST
+    # https://www.fngtps.com/2019/rails6-blocked-host/
+    config.hosts << env_url_options[:host]
+
   end
 end

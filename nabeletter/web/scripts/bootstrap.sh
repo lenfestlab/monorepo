@@ -6,7 +6,7 @@ asdf plugin-add ruby
 asdf plugin-add nodejs
 asdf install
 
-yarn --prefer-offline
+yarn install --prefer-offline --check-files
 
 gem install bundler
 bundle install

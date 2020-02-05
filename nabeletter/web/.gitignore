@@ -52,3 +52,6 @@ yarn-debug.log*
 
 # ignore brewfile lock
 *.lock.json
+
+# ignore local certs
+*.pem

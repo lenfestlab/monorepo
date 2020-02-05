@@ -11,7 +11,9 @@ class Edition < ApplicationRecord
   validates :publish_at,
     timeliness: {
     allow_nil: true, # optional; leaving blank or set in future ~= "draft"
-    on_or_after: lambda { Date.current }, type: :datetime
+    on_or_after: :now,
+    type: :datetime,
+    on_or_after_message: "must be in the future" # http://bit.ly/2vsBUay
   }
 
   validate :lock_once_delivered
@@ -59,7 +61,6 @@ class Edition < ApplicationRecord
     deliverer = DeliveryService.new
     # deliver!(edition: self)
     # TODO
-    print("TODO: deliver #{self}")
   end
 
 end

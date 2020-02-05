@@ -3,21 +3,21 @@ git_source(:github) { |repo| "https://github.com/#{repo}.git" }
 
 ruby '2.6.3'
 
-gem 'rails', '~> 6.0.2', '>= 6.0.2.1'
-gem 'pg'
-gem 'puma', '~> 4.1'
-gem 'webpacker', '~> 4.0'
-gem 'bootsnap', '>= 1.4.2', require: false
-gem 'slim-rails'
-gem 'active_model_serializers', '~> 0.10.0'
-gem 'validates_timeliness', '~> 5.0.0.alpha3'
 gem "sentry-raven"
 gem 'aasm'
 gem 'awesome_print'
+gem 'bootsnap', '>= 1.4.2', require: false
 gem 'httparty'
+gem 'jsonapi-resources', '~> 0.10.0'
+gem 'pg'
+gem 'puma', '~> 4.1'
+gem 'rails', '~> 6.0.2', '>= 6.0.2.1'
+gem 'slim-rails'
 gem 'timber'
 gem 'timber-rack'
-gem 'timber-rails', github: 'timberio/timber-ruby-rails', ref: '250326b'
+gem 'timber-rails', github: 'timberio/timber-ruby-rails', ref: '250326' # rails 6 support
+gem 'validates_timeliness', '~> 5.0.0.alpha3'
+gem 'webpacker', '~> 4.0'
 
 group :development do
   gem 'web-console', '>= 3.3.0'

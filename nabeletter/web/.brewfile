@@ -1,4 +1,6 @@
 brew "asdf"
 brew "heroku/brew/heroku"
+brew "mkcert"
 brew "postgresql"
+brew "puma/puma/puma-dev"
 brew "yarn"
