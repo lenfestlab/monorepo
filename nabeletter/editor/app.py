@@ -1,10 +1,6 @@
 from flask import Flask, render_template, jsonify
 import os
-import articles
-import events
-import weather
-import permits
-import tweets
+import api
 
 from dotenv import load_dotenv
 
@@ -33,27 +29,27 @@ def cms():
   
 @app.route("/datasource/permits.json", methods=['GET'])
 def fetch_permits():
-  results = permits.fetch()
+  results = api.permits.fetch()
   return jsonify(results)
     
 @app.route("/datasource/articles.json", methods=['GET'])
 def fetch_articles():
-  results = articles.fetch(app.config.get("ARC_API_KEY"))
+  results = api.articles.fetch(app.config.get("ARC_API_KEY"))
   return jsonify(results)
   
 @app.route("/datasource/events.json", methods=['GET'])
 def fetch_events():
-  results = events.fetch()
+  results = api.events.fetch()
   return jsonify(results)  
   
 @app.route("/datasource/weather.json", methods=['GET'])
 def fetch_weather():
-  results = weather.fetch(app.config.get("DARKSKY_API_KEY"))
+  results = api.weather.fetch(app.config.get("DARKSKY_API_KEY"))
   return jsonify(results)
   
 @app.route("/datasource/tweets.json", methods=['GET'])
 def fetch_tweets():
-  results = tweets.fetch(app.config.get("TWITTER_API_KEY"), app.config.get("TWITTER_API_SECRET"))
+  results = api.tweets.fetch(app.config.get("TWITTER_API_KEY"), app.config.get("TWITTER_API_SECRET"))
   return jsonify(results)
   
 if __name__ == "__main__":
