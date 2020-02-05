@@ -1,15 +1,13 @@
 import { h } from "@cycle/react"
 import {
   DateField,
+  TextField,
   ReferenceField,
   Show,
   SimpleShowLayout,
-  TextField,
 } from "react-admin"
 
-import { EditionPreviewField } from "./shared"
-
-export const EditionShow = props =>
+export const SubscriptionShow = props =>
   h(Show, { ...props }, [
     h(SimpleShowLayout, {}, [
       h(
@@ -21,16 +19,16 @@ export const EditionShow = props =>
         },
         [h(TextField, { source: "name" })]
       ),
-      h(TextField, { label: "Email subject", source: "subject" }),
+      h(TextField, { source: "email_address" }),
+      h(TextField, { source: "name_first", label: "First name" }),
+      h(TextField, { source: "name_last", label: "Last name" }),
       h(DateField, {
-        label: "Publish/send at",
-        source: "publish_at",
-        showTime: true,
+        label: "Subscribed at",
+        source: "subscribed_at",
       }),
-      h(EditionPreviewField, {
-        label: "Preview",
-        source: "body_html",
-        addLabel: true,
+      h(DateField, {
+        label: "Unsubscribed at",
+        source: "unsubscribed_at",
       }),
     ]),
   ])

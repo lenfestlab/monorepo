@@ -20,6 +20,13 @@ import {
 export const AdminApp = () =>
   h(Admin, { dataProvider, i18nProvider }, [
     h(Resource, {
+      name: "editions",
+      list: EditionList,
+      create: EditionCreate,
+      show: EditionShow,
+      edit: EditionEdit,
+    }),
+    h(Resource, {
       name: "newsletters",
       list: NewsletterList,
     }),
@@ -28,12 +35,5 @@ export const AdminApp = () =>
       list: SubscriptionList,
       create: SubscriptionCreate,
       show: SubscriptionShow,
-    }),
-    h(Resource, {
-      name: "editions",
-      list: EditionList,
-      create: EditionCreate,
-      show: EditionShow,
-      edit: EditionEdit,
     }),
   ])

@@ -6,12 +6,6 @@ Rails.application.configure do
   # since you don't have to restart the web server when you make code changes.
   config.cache_classes = false
 
-  # Do not eager load code on boot.
-  config.eager_load = false
-
-  # Show full error reports.
-  config.consider_all_requests_local = true
-
   # Enable/disable caching. By default caching is disabled.
   # Run rails dev:cache to toggle caching.
   if Rails.root.join('tmp', 'caching-dev.txt').exist?
@@ -55,5 +49,16 @@ Rails.application.configure do
 
   # NOTE: verbose logging preferred
   config.log_level = :debug
+
+  # NOTE: ignore this config advice:
+  # https://jsonapi-resources.com/v0.10/guide/basic_usage.html#Configure-Development-Environment
+  # It results in errors lacking stack traces for non-json requests:
+  # /admin -> 500 "We're sorry, but something went wrong."
+  config.consider_all_requests_local = true
+
+  # NOTE: format exceptions as json
+  config.debug_exception_response_format = :api
+
+  config.eager_load = false
 
 end

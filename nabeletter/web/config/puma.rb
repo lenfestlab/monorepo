@@ -10,7 +10,7 @@ threads min_threads_count, max_threads_count
 
 # Specifies the `port` that Puma will listen on to receive requests; default is 3000.
 #
-port        ENV.fetch("PORT") { 3000 }
+# port        ENV.fetch("PORT") { 3000 }
 
 # Specifies the `environment` that Puma will run in.
 #
@@ -36,3 +36,32 @@ pidfile ENV.fetch("PIDFILE") { "tmp/pids/server.pid" }
 
 # Allow puma to be restarted by `rails restart` command.
 plugin :tmp_restart
+
+
+ssl_key, ssl_cert = ENV.values_at(*%w{
+PATH_SSL_KEY
+PATH_SSL_CERT
+})
+if ssl_key && ssl_cert
+  ssl_bind '127.0.0.1', ENV.fetch("PORT_SSL"), {
+    key: ssl_key,
+    cert: ssl_cert
+  }
+else
+  port ENV.fetch("PORT")
+end
+
+
+# https://docs.sentry.io/clients/ruby/integrations/#configuration-2
+lowlevel_error_handler do |ex, env|
+  Rails.logger.debug "lowlevel_error_handler"
+  Rails.logger.debug ex
+  Rails.logger.debug env
+  Raven.capture_exception(
+    ex,
+    :message => ex.message,
+    :extra => { :puma => env },
+    :transaction => "Puma"
+  )
+  [500, {}, ["An error has occurred, and engineers have been informed. Please reload the page. If you continue to have problems, contact support@example.com\n"]]
+end
