@@ -14,7 +14,11 @@
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css" integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
 
     <!--- Bootstrap JS --->
-    <script src="https://code.jquery.com/jquery-3.2.1.slim.min.js" integrity="sha384-KJ3o2DKtIkvYIK3UENzmM7KCkRr/rE9/Qpg6aAZGJwFDMVNA/GpGFF93hXpG5KkN" crossorigin="anonymous"></script>
+    <script
+      src="https://code.jquery.com/jquery-3.4.1.js"
+      integrity="sha256-WpOohJOqMqqyKL9FccASB9O0KwACQJpFTUBLTYOVvVU="
+      crossorigin="anonymous"></script>
+    
     <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js" integrity="sha384-ApNbgh9B+Y1QKtv3Rn7W3mgPxhU9K/ScQsAP7hUibX39j7fakFPskvXusvfa0b4Q" crossorigin="anonymous"></script>
     <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js" integrity="sha384-JZR6Spejh4U02d8jOt6vLEHfe/JQGiRRSQQxSfFWpi1MquVdAyjUar5+76PVCmYl" crossorigin="anonymous"></script>
 
@@ -48,30 +52,9 @@
             <h2>
                 Summary of neighborhood headlines
             </h2>
-
-            <div class="container-fluid headlines">
-                <div class="row">
-                    <div class="col">
-                        <div class="input-group mb-3">
-                            <select class="custom-select" id="leftValues" size="5" multiple>
-                            </select>
-                        </div>
-                        <div class="input-group mb-3">
-                            <input type="text" class="form-control" placeholder="Article URL" aria-label="Article URL" aria-describedby="basic-addon2">
-                            <div class="input-group-append">
-                                <button class="btn btn-outline-secondary" type="button">Add</button>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="col-md-auto">
-                        <input class="btn btn-success btn-block btn-add" type="button" id="btnRight" value="+" />
-                        <input class="btn btn-danger btn-block btn-minus" type="button" id="btnLeft" value="-" />
-                    </div>
-                    <div class="col">
-                        <select class="custom-select" id="rightValues" size="8" multiple>
-                        </select>
-                    </div>
-                </div>
+            <div class="form-group">
+                <textarea class="form-control" id="headlineTextArea" rows="4">
+Story #1  Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod ter incididun. || Story #2 Lorem ipsum dolor sit amet, consectetur adipiscing elit || Story #3 Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididun.</textarea>
             </div>
         </div>
 
@@ -80,9 +63,7 @@
                 Weather Outlook
             </h2>
             <div class="form-group">
-                <textarea class="form-control" id="exampleFormControlTextarea1" rows="4">Thursday: Don’t forget your umbrella
-Friday: Trash pick-up is today, instead of Thursday, due to the MLK holiday
-Saturday: Sunshine will be out for the Farmers Market on Front Street</textarea>
+                <textarea class="form-control" id="weatherTextArea" rows="4"></textarea>
             </div>
         </div>
         <div class="section">
@@ -149,11 +130,44 @@ Saturday: Sunshine will be out for the Farmers Market on Front Street</textarea>
             <h2>
                 Fishtown Safety Watch
             </h2>
+            <div class="safety">
+              <div id="images">
+              </div>
+              <div class="input-group mb-3">
+                <div class="custom-file">
+                  <input type="file" class="custom-file-input" id="inputGroupFile">
+                  <label class="custom-file-label" for="input">Choose file</label>
+                </div>
+                <div class="input-group-append">
+                  <button class="input-group-text">Upload</button>
+                </div>
+              </div>
+              <div class="form-group">
+                  <textarea class="form-control" id="safetyTextArea" rows="3">Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut.</textarea>
+              </div>
+
+            </div>
         </div>
         <div class="section">
             <h2>
                 Fishtown History
             </h2>
+            <div class="history">
+              <div id="images">
+              </div>
+              <div class="input-group mb-3">
+                <div class="custom-file">
+                  <input type="file" class="custom-file-input" id="inputGroupFile">
+                  <label class="custom-file-label" for="input">Choose file</label>
+                </div>
+                <div class="input-group-append">
+                  <button class="input-group-text">Upload</button>
+                </div>
+              </div>
+              <div class="form-group">
+                  <textarea class="form-control" id="historyTextArea" rows="3">Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut.</textarea>
+              </div>
+            </div>            
         </div>
         <div class="section">
             <h2>
@@ -254,6 +268,30 @@ Saturday: Sunshine will be out for the Farmers Market on Front Street</textarea>
             <h2>
                 Permits Under Review
             </h2>
+            <div class="container-fluid reviews">
+                <div class="row">
+                    <div class="col">
+                        <div class="input-group mb-3">
+                            <select class="custom-select" id="leftValues" size="5" multiple>
+                            </select>
+                        </div>
+                        <div class="input-group mb-3">
+                            <input type="text" class="form-control" placeholder="Article URL" aria-label="Article URL" aria-describedby="basic-addon2">
+                            <div class="input-group-append">
+                                <button class="btn btn-outline-secondary" type="button">Add</button>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-auto">
+                        <input class="btn btn-success btn-block btn-add" type="button" id="btnRight" value="+" />
+                        <input class="btn btn-danger btn-block btn-minus" type="button" id="btnLeft" value="-" />
+                    </div>
+                    <div class="col">
+                        <select class="custom-select" id="rightValues" size="8" multiple>
+                        </select>
+                    </div>
+                </div>
+            </div>
         </div>
         <div class="section">
             <h2>

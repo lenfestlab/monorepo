@@ -31,8 +31,9 @@ function weather(results) {
     html += `</tr>`
   
     html += `<tr><td colspan=7>`
-    html += summary
     
+    html += `</td></tr></table>`
+    html += summary
     html += `</td></tr></table>`
 
     return html

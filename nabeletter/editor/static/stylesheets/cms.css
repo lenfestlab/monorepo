@@ -1,3 +1,16 @@
+.img-wrap {
+    position: relative;
+    margin: 0px 5px 10px 5px;
+    height: 160px;
+    min-width: 160px;
+}
+.img-wrap .btn-close {
+    position: absolute;
+    top: 4px;
+    right: 4px;
+    z-index: 100;
+}
+
 h1 {
     font-size: 18px;
 }
@@ -10,6 +23,14 @@ h2 {
 body {
     font-family: -apple-system, BlinkMacSystemFont, sans-serif;
     color: #000000;
+}
+
+#images {
+  text-align: center;
+}
+
+#images img {
+  text-align: center;
 }
 
 .header {
@@ -34,6 +55,10 @@ body {
 .main {
     border: 1px solid #d8d8d8;
     padding: 0px !important;
+}
+
+button:focus, textarea:focus, input:focus{
+    outline: none;
 }
 
 .btn:focus {

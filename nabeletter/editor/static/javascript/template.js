@@ -25,15 +25,17 @@ function markup(results, body = null) {
             sections.push(feedback(result));
         } else if (type == "tweets") {
             sections.push(tweets(result));
+        } else if (type == "neighborhood") {
+            sections.push(neighborhood(result));
+        } else if (type == "reviews") {
+            sections.push(reviews(result));
         }
-
     })
 
     const markup = `
         <table class="main" >
         <thead class="header"><tr><td>${header()}</td></tr></thead>
         ${sections.map(section => `<tr><td>${section}</td></tr>`).join('')}
-        </table>
         
         <tfoot class="footer"><tr><td>${footer()}</td></tr></tfoot>
         </table>

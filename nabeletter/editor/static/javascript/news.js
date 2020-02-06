@@ -14,6 +14,7 @@ function news(results) {
         html += `<tr><td><img src="${article.image}" ><td></tr>`
         html += `<tr><td class="newstitle">${article.title}<td></tr>`
         html += `<tr><td class="newscaption">${article.caption}<td></tr>`
+        html += `<tr><td><b>${article.source}</b><td></tr>`
         html += `</table>`
         html += `</a>`
         html += `</td>`

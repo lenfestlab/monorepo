@@ -1,3 +1,16 @@
+* {
+    margin: 0;
+    padding: 0;
+    font-size: small;
+}
+
+html,
+body {
+    height: 100%;
+    font-family: -apple-system, BlinkMacSystemFont, sans-serif;
+    color: #000000;
+}
+
 table {
     margin-left: auto;
     margin-right: auto;
@@ -9,14 +22,12 @@ table {
 
 .weather .day {
   font-weight: 500;
-  font-size: 12px;
   text-align: center;
 }
 
 .weather table {
   border: 0px solid black;
   margin: 0px 0px 10px 0px;
-  font-size: 10px;
 }
 
 .weather th, .weather td {
@@ -70,7 +81,7 @@ table {
 .header td {
     height: 75.5px;
     background-color: #d8d8d8;
-    font-size: 24px;
+    font-size: x-large;
     font-weight: normal;
     font-stretch: normal;
     font-style: normal;
@@ -80,12 +91,6 @@ table {
     color: #000000;
 }
 
-body {
-    font-family: -apple-system, BlinkMacSystemFont, sans-serif;
-    color: #000000;
-    font-size: 14px;
-}
-
 .header {
     height: 75px;
 }
@@ -93,7 +98,7 @@ body {
 
 .title {
     padding: 20px 0px 0px 12px;
-    font-size: 20px;
+    font-size: large;
     font-weight: 600;
     font-stretch: normal;
     font-style: normal;
@@ -107,7 +112,6 @@ body {
     height: 37px;
     width: 456px;
     height: 74px;
-    font-size: 14px;
     font-weight: normal;
     font-stretch: normal;
     font-style: normal;
@@ -120,7 +124,6 @@ body {
 
 .newstitle {
     height: 16px;
-    font-size: 14px;
     font-weight: 500;
     font-stretch: normal;
     font-style: normal;
@@ -131,7 +134,7 @@ body {
 
 .section {
     width: 100%;
-    padding: 10px;
+    padding: 10px 20px 0px 20px;
 }
 
 .section a:link {
@@ -148,13 +151,16 @@ body {
   word-wrap: break-word;
 }
 
+.tweet img { 
+  display:block; 
+}
+
 .tweet {
     word-wrap: break-word;
     background-color: #d8d8d8;
     margin: 6px;
     padding: 23px;
     font-weight: 500;
-    font-size: 12px;
     height: 100px;
 }
 
@@ -163,13 +169,11 @@ body {
     margin: 6px;
     padding: 23px;
     font-weight: 500;
-    font-size: 12px;
     height: 100px;
 }
 
 .newscaption {
     height: 16px;
-    font-size: 14px;
     font-weight: normal;
     font-stretch: normal;
     font-style: normal;
@@ -212,6 +216,16 @@ a.more {
     width: 351px;
     height: 24px;
     font-size: 20px;
+    font-weight: 500;
+    font-stretch: normal;
+    font-style: italic;
+    text-decoration: none;
+    color: #4a90e2;
+}
+
+.review a {
+    width: 351px;
+    height: 24px;
     font-weight: 500;
     font-stretch: normal;
     font-style: italic;
