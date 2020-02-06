@@ -1,4 +1,5 @@
 import requests
+import arrow
 
 def fetch(key):
 
@@ -43,6 +44,12 @@ def fetch(key):
 
   content_elements = data['content_elements']
   for element in data['content_elements']:
+    article = {}
+    
+    published = element.get("first_publish_date",{})
+    published = arrow.get(published)
+    article['published'] = str(published)
+    
     description = element.get("description",{})
     basic_description = description.get("basic","")
     
@@ -62,8 +69,7 @@ def fetch(key):
     if canonical_url is not None:
       source_url = "https://www.inquirer.com" + canonical_url
     
-    article = {}
-    article['source'] = "Inquirer"
+    article['source'] = "The Philadelphia Inquirer"
     article['image'] = image
     article['title'] = basic_headline
     article['url'] = source_url
