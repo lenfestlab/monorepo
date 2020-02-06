@@ -9,3 +9,4 @@ tweepy==3.8.0
 feedparser==5.2.1
 beautifulsoup4==4.8.2
 cloudinary==1.19.1
+gunicorn==19.9.0
