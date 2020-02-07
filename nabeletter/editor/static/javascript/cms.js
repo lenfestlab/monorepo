@@ -10,7 +10,7 @@ function uploadImage(file, success, error, width, height) {
   var form_data = new FormData();
   form_data.append('file', file);
   $.ajax({
-        url: 'http://localhost:9000/images/upload.json', // point to server-side controller method
+        url: 'images/upload.json', // point to server-side controller method
         headers: {
                 'width': width,
                 'height': height,
@@ -28,7 +28,7 @@ function uploadImage(file, success, error, width, height) {
 
 function destroyImage(public_id, success, error) {
   $.ajax({
-        url: `http://localhost:9000/images/${public_id}.json`, // point to server-side controller method
+        url: `images/${public_id}.json`, // point to server-side controller method
         dataType: 'json', // what to expect back from the server
         cache: false,
         contentType: false,
