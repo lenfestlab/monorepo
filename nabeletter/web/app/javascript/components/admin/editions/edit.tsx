@@ -91,6 +91,8 @@ const EditionSaveButton = ({ record, basePath }) => {
 const EditionEditToolbar = props =>
   h(Toolbar, { ...props }, [h(EditionSaveButton)])
 
+import { OpenEditionBodyEditorButton } from "./shared"
+
 export const EditionEdit = props =>
   h(Edit, { ...props, undoable: false, title: h(EditPostTitle) }, [
     h(
@@ -113,7 +115,7 @@ export const EditionEdit = props =>
           validate: [required("Publish date required.")],
           initialValue: addHours(startOfTomorrow(), 6),
         }),
-        h(EditionEditorInput, { source: "body_data" }),
+        h(OpenEditionBodyEditorButton, props),
       ]
     ),
   ])
