@@ -8,6 +8,7 @@ import {
 } from "react-admin"
 
 import { EditionPreviewField } from "./shared"
+import { OpenEditionBodyEditorButton } from "./shared"
 
 export const EditionShow = props =>
   h(Show, { ...props }, [
@@ -27,6 +28,7 @@ export const EditionShow = props =>
         source: "publish_at",
         showTime: true,
       }),
+      h(OpenEditionBodyEditorButton, props),
       h(EditionPreviewField, {
         label: "Preview",
         source: "body_html",
