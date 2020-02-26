@@ -7,6 +7,10 @@ var safetyImages = []
 var historyImages = []
 var statsImages = []
 
+function save() {
+  parent.save(jsonResults())
+}
+
 function removeSafetyImage(e) {
   var index = parseInt(e.id.replace('delete-safety-',''));
   var image = safetyImages[index]

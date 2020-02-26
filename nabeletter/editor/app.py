@@ -28,10 +28,10 @@ def allowed_file(filename):
 def create():
   return render_template('interactive.html')
   
-@app.route("/edition/<int:edition_id>/edit", methods=['GET'])
-def new():
-  return 'Edition %d' % edition_id
-  return render_template('hello.html', name=edition_id)
+@app.route("/editions/<int:edition_id>", methods=['GET'])
+def edit(edition_id):
+  # return 'Edition %d' % edition_id
+  return render_template('interactive.html', edition_id=edition_id)
   
 @app.route("/index.html", methods=['GET'])
 def index():
