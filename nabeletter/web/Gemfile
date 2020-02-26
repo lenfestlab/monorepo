@@ -18,6 +18,7 @@ gem 'timber-rack'
 gem 'timber-rails', github: 'timberio/timber-ruby-rails', ref: '250326' # rails 6 support
 gem 'validates_timeliness', '~> 5.0.0.alpha3'
 gem 'webpacker', '~> 4.0'
+gem 'rack-cors'
 
 group :development do
   gem 'web-console', '>= 3.3.0'
