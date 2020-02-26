@@ -59,8 +59,8 @@ class Edition < ApplicationRecord
 
   def deliver
     deliverer = DeliveryService.new
-    # deliver!(edition: self)
-    # TODO
+    deliverer.deliver!(edition: self)
+    return true # return truthy for AASM
   end
 
 end

@@ -44,7 +44,7 @@ class DeliveryService
       from: "Lenfest Local Lab <mail@#{list_domain}>",
       to: list_identifier,
       subject: edition.subject,
-      html: newsletter.body_html,
+      html: edition.body_html,
       # TODO
       # text:
       #"amp-html":
