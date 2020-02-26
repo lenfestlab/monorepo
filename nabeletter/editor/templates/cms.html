@@ -26,6 +26,7 @@
     <script src="https://d3js.org/d3.v5.js"></script>
 
     <!--- CMS --->
+    <script type="text/javascript" src="javascript/image.js"></script>
     <script type="text/javascript" src="javascript/cms.js"></script>
     <link rel="stylesheet" href="stylesheets/cms.css">
 
@@ -42,7 +43,7 @@
                     Neighborhood Newsletter “Core Plus”
                 </div>
                 <div class="col-2">
-                    <button type="button" class="btn btn-light btn-lg" onclick="parent.save()">Save</button>
+                    <button type="button" class="btn btn-light btn-lg" onclick="save()">Save</button>
                 </div>
             </div>
 
@@ -207,6 +208,21 @@ Story #1  Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmo
             <h2>
                 Fishtown Stats
             </h2>
+            
+            <div class="stats">
+              <div id="images">
+              </div>
+              <div class="input-group mb-3">
+                <div class="custom-file">
+                  <input type="file" class="custom-file-input" id="inputGroupFile">
+                  <label class="custom-file-label" for="input">Choose file</label>
+                </div>
+                <div class="input-group-append">
+                  <button class="input-group-text">Upload</button>
+                </div>
+              </div>
+            </div>
+            
         </div>
         <div class="section">
             <h2>

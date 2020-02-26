@@ -5,38 +5,10 @@ var headlines = []
 var weatherData = {}
 var safetyImages = []
 var historyImages = []
+var statsImages = []
 
-function uploadImage(file, success, error, width, height) {
-  var form_data = new FormData();
-  form_data.append('file', file);
-  $.ajax({
-        url: 'http://localhost:9000/images/upload.json', // point to server-side controller method
-        headers: {
-                'width': width,
-                'height': height,
-            },
-        dataType: 'json', // what to expect back from the server
-        cache: false,
-        contentType: false,
-        processData: false,
-        data: form_data,
-        type: 'post',
-        success: success,
-        error: error
-    });
-}
-
-function destroyImage(public_id, success, error) {
-  $.ajax({
-        url: `http://localhost:9000/images/${public_id}.json`, // point to server-side controller method
-        dataType: 'json', // what to expect back from the server
-        cache: false,
-        contentType: false,
-        processData: false,
-        type: 'delete',
-        success: success,
-        error: error
-    });
+function save() {
+  parent.save(jsonResults())
 }
 
 function removeSafetyImage(e) {
@@ -46,27 +18,25 @@ function removeSafetyImage(e) {
   
   const successHandler = function(response) {
     safetyImages.splice(index,1);
-    updateSafetyImages()
+    updateSafetyImages("safety")
   }
-  
-  const errorHandler = function(response) {
-    alert(response.responseJSON["error"])
-  }
-
-  destroyImage(public_id, successHandler, errorHandler)
+  destroyImage(public_id, successHandler)
 }
 
 function addSafetyImage(file) {  
   const successHandler = function(response) {
     safetyImages.push(response);
-    updateSafetyImages()
+    updateSafetyImages("safety")
   }
-  
-  const errorHandler = function(response) {
-    alert(response.responseJSON["error"])
+  uploadImage(file, successHandler, width=160, height=160)
+}
+
+function addStatsImage(file) {  
+  const successHandler = function(response) {
+    statsImages.push(response);
+    updateSafetyImages("safety")
   }
-  
-  uploadImage(file, successHandler, errorHandler, width=160, height=160)
+  uploadImage(file, successHandler, width=160, height=160)
 }
 
 function removeHistoryImage(e) {
@@ -76,82 +46,47 @@ function removeHistoryImage(e) {
   
   const successHandler = function(response) {
     historyImages.splice(index,1);
-    updateHistoryImages()
+    updateHistoryImages("history")
   }
-  
-  const errorHandler = function(response) {
-    alert(response.responseJSON["error"])
-  }
-
-  destroyImage(public_id, successHandler, errorHandler)
+  destroyImage(public_id, successHandler)
 }
 
 function addHistoryImage(file) {  
   const successHandler = function(response) {
     historyImages.push(response);
-    updateHistoryImages()
+    updateHistoryImages("history")
   }
-  
-  const errorHandler = function(response) {
-    alert(response.responseJSON["error"])
-  }
-  
-  uploadImage(file, successHandler, errorHandler, width=263, height=160)
+  uploadImage(file, successHandler, width=263, height=160)
 }
 
-function updateHistoryImages() {
-  var safetyHTML = "<table><tr>"
-    
-  safetyHTML += ''
-    
+function updateHistoryImages(id) {
+  var  html = "<table><tr>"    
   historyImages.forEach(function (image, index) {
-    safetyHTML += `<td><div class="img-wrap">`
-    safetyHTML += `<button type="button" id="delete-history-${index}" class="btn-close btn btn-danger btn-sm" onclick='removeHistoryImage(this)'>`
-    safetyHTML += `&times;`
-    safetyHTML += `</button>`
-    safetyHTML += `</span><img src="${image.url}">`
-    safetyHTML += `</div></td>`
+     html += `<td><div class="img-wrap">`
+     html += `<button type="button" id="delete-${id}-${index}" class="btn-close btn btn-danger btn-sm" onclick='removeHistoryImage(this)'>`
+     html += `&times;</button></span><img src="${image.url}"></div></td>`
   });
-  safetyHTML += ''
-    
-  safetyHTML += "</tr></table>"
-  $(".history #images").html(safetyHTML);
+  html += "</tr></table>"
+  $(`.${id} #images`).html( html);
   parent.refresh(jsonResults());
 }
 
-function updateSafetyImages() {
-  var safetyHTML = "<table><tr>"
-    
-  safetyHTML += ''
-    
+function updateSafetyImages(id) {
+  var  html = "<table><tr>" 
   safetyImages.forEach(function (image, index) {
-    safetyHTML += `<td><div class="img-wrap">`
-    safetyHTML += `<button type="button" id="delete-safety-${index}" class="btn-close btn btn-danger btn-sm" onclick='removeSafetyImage(this)'>`
-    safetyHTML += `&times;`
-    safetyHTML += `</button>`
-    safetyHTML += `</span><img src="${image.url}">`
-    safetyHTML += `</div></td>`
-  });
-  safetyHTML += ''
-    
-  safetyHTML += "</tr></table>"
-  $(".safety #images").html(safetyHTML);
+     html += `<td><div class="img-wrap">`
+     html += `<button type="button" id="delete-${id}-${index}" class="btn-close btn btn-danger btn-sm" onclick='removeSafetyImage(this)'>`
+     html += `&times;</button></span><img src="${image.url}"></div></td>`
+  });    
+  html += "</tr></table>"
+  $(`.${id} #images`).html( html);
   parent.refresh(jsonResults());
-
 }
 
 $(document).ready(function () {
   
-    Promise.all([
-      d3.json("datasource/articles.json"),
-      d3.json("datasource/events.json"),
-      d3.json("datasource/reviews.json"),
-      d3.json("datasource/weather.json"),
-      d3.json("datasource/permits.json"),
-      d3.json("datasource/tweets.json")
-    ]).then(function(results) {
-
-        articles = results[0]
+      d3.json("datasource/articles.json").then(function(results) {
+        articles = results
         articles.forEach(function (article, index) {
             var published = new Date(article.published)
             var option = document.createElement("option");
@@ -159,16 +94,24 @@ $(document).ready(function () {
             option.value = index;
             $(".news #leftValues").append(option);
         });
-
-        events = results[1]
+        
+        parent.refresh(jsonResults());
+      });
+      
+      d3.json("datasource/events.json").then(function(results) {
+        events = results
         events.forEach(function (event, index) {
             var option = document.createElement("option");
             option.text = `Event #${index}: ${event.datetime} - ${event.title}, ${event.about}`;
             option.value = index;
             $(".events #leftValues").append(option);
         });
-
-        reviews = results[2]
+        
+        parent.refresh(jsonResults());
+      });
+  
+      d3.json("datasource/reviews.json").then(function(results) {
+        reviews = results
         reviews.forEach(function (review, index) {
             var date = new Date(review.date.datetime)
             var option = document.createElement("option");
@@ -176,12 +119,20 @@ $(document).ready(function () {
             option.value = index;
             $(".reviews #leftValues").append(option);
         });
-
-        weather = results[3]
+        
+        parent.refresh(jsonResults());
+      });
+      
+      d3.json("datasource/weather.json").then(function(results) {
+        weather = results
         weatherData = weather['data']
         $('#weatherTextArea')[0].value = weather['summary'];
         
-        permits = results[4]
+        parent.refresh(jsonResults());
+      });
+  
+      d3.json("datasource/permits.json").then(function(results) {
+        permits = results
         permits.forEach(function (permit, index) {
             var option = document.createElement("option");
             option.text = `Permit #${index}: ${permit.type} - ${permit.address}, ${permit.description}`;
@@ -189,7 +140,11 @@ $(document).ready(function () {
             $(".permits #leftValues").append(option);
         });
         
-        tweets = results[5]
+        parent.refresh(jsonResults());
+      });
+  
+      d3.json("datasource/tweets.json").then(function(results) {
+        tweets = results
         tweets.forEach(function (tweet, index) {
             var option = document.createElement("option");
             option.text = `Tweet #${index}: ${tweet.user.screen_name} - ${tweet.text}`;
@@ -198,8 +153,7 @@ $(document).ready(function () {
         });
         
         parent.refresh(jsonResults());
-    });
-    
+      });    
 
     addListboxObserver(".news")
     addListboxObserver(".events")
@@ -214,6 +168,7 @@ $(document).ready(function () {
     
     addFileUploadObserver('.history', addHistoryImage);
     addFileUploadObserver('.safety', addSafetyImage);
+    addFileUploadObserver('.stats', addSafetyImage);
 })
 
 function addFileUploadObserver(className, addFunction) {
