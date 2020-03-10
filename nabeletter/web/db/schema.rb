@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2020_01_16_222357) do
+ActiveRecord::Schema.define(version: 2020_03_10_171802) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -20,10 +20,10 @@ ActiveRecord::Schema.define(version: 2020_01_16_222357) do
     t.integer "state"
     t.string "subject"
     t.text "body_html"
-    t.text "body_data", default: [], array: true
     t.bigint "newsletter_id"
     t.datetime "created_at", precision: 6, null: false
     t.datetime "updated_at", precision: 6, null: false
+    t.jsonb "body_data", default: {}
     t.index ["newsletter_id"], name: "index_editions_on_newsletter_id"
     t.index ["publish_at"], name: "index_editions_on_publish_at"
     t.index ["state"], name: "index_editions_on_state"
