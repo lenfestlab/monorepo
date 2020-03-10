@@ -1,5 +1,7 @@
 var articles = []
 var events = []
+var tweets = []
+var reviews = []
 var permits = []
 var headlines = []
 var weatherData = {}
@@ -85,39 +87,105 @@ function updateSafetyImages(id) {
 
 $(document).ready(function () {
   
+  d3.json("https://nabeletter.lenfestlab.org/editions/6.json").then(function(results) {
+    data = results['data']
+    attributes = data['attributes']
+    body_data = JSON.parse(attributes['body_data'])
+    body_data.forEach(function (data_item, index) {
+      
+      type = data_item['type']
+      if (type == 'neighborhood') {
+        text = data_item['text']
+        $('#headlineTextArea').val(text)
+      } else if (type == 'weather') {
+        summary = data_item['summary']
+        $('#weatherTextArea').val(summary)
+      } else if (type == 'news') {
+        articles = data_item['articles']            
+        articles.forEach(function (article, index) {
+            article.selected = true
+        });
+      } else if (type == 'safety') {
+        console.log(data_item)
+        caption = data_item['caption']
+        $('#safetyTextArea').val(caption)
+      } else if (type == 'history') {
+        console.log(data_item)
+        caption = data_item['caption']
+        $('#historyTextArea').val(caption)
+      } else if (type == 'tweets') {
+        tweets = data_item['data']            
+        tweets.forEach(function (tweet, index) {
+            tweet.selected = true
+        });
+      } else if (type == 'permits') {
+        permits = data_item['permits']            
+        permits.forEach(function (permit, index) {
+            permit.selected = true
+        });
+      } else if (type == 'reviews') {        
+        reviews = data_item['data']            
+        reviews.forEach(function (review, index) {
+            review.selected = true
+        });
+      } else {
+        console.log(data_item)
+      }
+    });
+
+    loadData()
+
+  });
+  
+})
+
+function loadData() {
+  
       d3.json("datasource/articles.json").then(function(results) {
-        articles = results
+        articles = articles.concat(results);
         articles.forEach(function (article, index) {
             var published = new Date(article.published)
             var option = document.createElement("option");
             option.text = `${published.toLocaleDateString("en-US")} - ${article.source} - ${article.title}, ${article.caption}`;
             option.value = index;
-            $(".news #leftValues").append(option);
+            if (article.selected) {
+              $(".news #rightValues").append(option);
+            } else {
+              $(".news #leftValues").append(option);              
+            }
         });
         
         parent.refresh(jsonResults());
       });
       
       d3.json("datasource/events.json").then(function(results) {
-        events = results
+        events = events.concat(results);        
         events.forEach(function (event, index) {
             var option = document.createElement("option");
-            option.text = `Event #${index}: ${event.datetime} - ${event.title}, ${event.about}`;
+            option.text = `${event.datetime} - ${event.title}, ${event.about}`;
             option.value = index;
-            $(".events #leftValues").append(option);
+            if (event.selected) {
+              $(".events #rightValues").append(option);
+            } else {
+              $(".events #leftValues").append(option);              
+            }
         });
         
         parent.refresh(jsonResults());
       });
   
       d3.json("datasource/reviews.json").then(function(results) {
-        reviews = results
+        reviews = reviews.concat(results);        
         reviews.forEach(function (review, index) {
             var date = new Date(review.date.datetime)
             var option = document.createElement("option");
             option.text = `${date.toLocaleDateString("en-US")} - ${review.title}, ${review.caption}`;
             option.value = index;
-            $(".reviews #leftValues").append(option);
+            if (review.selected) {
+              $(".reviews #rightValues").append(option);
+            } else {
+              $(".reviews #leftValues").append(option);              
+            }
         });
         
         parent.refresh(jsonResults());
@@ -132,24 +200,32 @@ $(document).ready(function () {
       });
   
       d3.json("datasource/permits.json").then(function(results) {
-        permits = results
+        permits = permits.concat(results);        
         permits.forEach(function (permit, index) {
-            var option = document.createElement("option");
-            option.text = `Permit #${index}: ${permit.type} - ${permit.address}, ${permit.description}`;
+          var option = document.createElement("option");
+            option.text = `${permit.type} - ${permit.address}, ${permit.description}`;
             option.value = index;
-            $(".permits #leftValues").append(option);
+            if (permit.selected) {
+              $(".permits #rightValues").append(option);
+            } else {
+              $(".permits #leftValues").append(option);              
+            }
         });
         
         parent.refresh(jsonResults());
       });
   
       d3.json("datasource/tweets.json").then(function(results) {
-        tweets = results
+        tweets = tweets.concat(results);        
         tweets.forEach(function (tweet, index) {
             var option = document.createElement("option");
-            option.text = `Tweet #${index}: ${tweet.user.screen_name} - ${tweet.text}`;
+            option.text = `${tweet.user.screen_name} - ${tweet.text}`;
             option.value = index;
-            $(".tweets #leftValues").append(option);
+            if (tweet.selected) {
+              $(".tweets #rightValues").append(option);
+            } else {
+              $(".tweets #leftValues").append(option);              
+            }
         });
         
         parent.refresh(jsonResults());
@@ -169,7 +245,7 @@ $(document).ready(function () {
     addFileUploadObserver('.history', addHistoryImage);
     addFileUploadObserver('.safety', addSafetyImage);
     addFileUploadObserver('.stats', addSafetyImage);
-})
+}
 
 function addFileUploadObserver(className, addFunction) {
   

@@ -36,13 +36,15 @@
         function save(jsonResults) {
           var text = document.getElementById("preview").contentDocument.documentElement.innerHTML;
           
+          var bodyData = JSON.stringify(jsonResults)
+          
           var modelData = {
             "data": {
               "type":"editions",
               "id":"{{edition_id}}",
               "attributes":{
-                "body_data": jsonResults,
-                "body_html":text
+                "body_data": bodyData,
+                "body_html": text
               }
             }
           }
