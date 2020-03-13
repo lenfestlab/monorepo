@@ -97,6 +97,10 @@ $(document).ready(function () {
     body_data.forEach(function (data_item, index) {
       
       type = data_item['type']
+      title = data_item['title']
+      titleInput =  $('.' + type + ' .title-input')
+      titleInput.val(title)
+      console.log(titleInput[0])
       if (type == 'neighborhood') {
         text = data_item['text']
         $('#headlineTextArea').val(text)
@@ -248,10 +252,8 @@ function loadData() {
     addListboxObserver(".permits")
     addListboxObserver(".tweets")
 
-    addTextAreaObserver('#weatherTextArea');
-    addTextAreaObserver('#headlineTextArea');
-    addTextAreaObserver('#historyTextArea');
-    addTextAreaObserver('#safetyTextArea');
+    addTextAreaObserver('.text-area');
+    addTextAreaObserver('.title-input');
     
     addFileUploadObserver('.history', addHistoryImage);
     addFileUploadObserver('.safety', addSafetyImage);
@@ -306,7 +308,7 @@ function jsonResults() {
     if (headlineSummary.length > 0) {
         results.push({
           "type": "neighborhood",
-          "title": "Summary of Neighborhood Headlines",
+          "title": $('.neighborhood .title-input')[0].value,
           "text": headlineSummary
   });
     }
@@ -314,7 +316,7 @@ function jsonResults() {
     if (weatherData.length > 0) {
         results.push({
             "type": "weather",
-            "title": "Weather Outlook",
+            "title": $('.weather .title-input')[0].value,
             "data": weatherData,
             "summary": $('#weatherTextArea')[0].value
         });
@@ -323,7 +325,7 @@ function jsonResults() {
     if (selectedArticles.length > 0) {
         results.push({
             "type": "news",
-            "title": "Fishtown News",
+            "title": $('.news .title-input')[0].value,
             "articles": selectedArticles
         });
     }
@@ -331,7 +333,7 @@ function jsonResults() {
     if (selectedEvents.length > 0) {
         results.push({
             "type": "events",
-            "title": "Fishtown Events",
+            "title": $('.events .title-input')[0].value,
             "events": selectedEvents
         });
     }
@@ -339,7 +341,7 @@ function jsonResults() {
     safetyText = $('#safetyTextArea')[0].value
     results.push({
         "type": "safety",
-        "title": "Fishtown Safety Watch",
+        "title": $('.safety .title-input')[0].value,
         "images": safetyImages,
         "caption": safetyText
     });
@@ -347,21 +349,21 @@ function jsonResults() {
     historyText = $('#historyTextArea')[0].value
     results.push({
         "type": "history",
-        "title": "Fishtown History",
+        "title": $('.history .title-input')[0].value,
         "images": historyImages,
         "caption": historyText
     })
     
     results.push({
         "type": "stats",
-        "title": "Fishtown Stats",
+        "title": $('.stats .title-input')[0].value,
         "images": statsImages,
     })
     
     if (selectedTweets.length > 0) {
         results.push({
             "type": "tweets",
-            "title": "Tweets from Local Officials",
+            "title": $('.tweets .title-input')[0].value,
             "data": selectedTweets
         });
     }
@@ -369,7 +371,7 @@ function jsonResults() {
     if (selectedPermits.length > 0) {
         results.push({
             "type": "permits",
-            "title": "New Construction & Demolition",
+            "title": $('.permits .title-input')[0].value,
             "permits": selectedPermits
         });
     }
@@ -378,7 +380,7 @@ function jsonResults() {
     if (selectedReviews.length > 0) {
         results.push({
             "type": "reviews",
-            "title": "Permits Under Review",
+            "title": $('.reviews .title-input')[0].value,
             "data": selectedReviews
         });
     }
@@ -390,9 +392,13 @@ function addTextAreaObserver(className) {
   const typeHandler = function(e) {
     parent.refresh(jsonResults());
   }
-  weatherTextArea = $(className)[0]
-  weatherTextArea.addEventListener('input', typeHandler) // register for oninput
-  weatherTextArea.addEventListener('propertychange', typeHandler) 
+  textAreas = $(className)
+  
+  textAreas.each(function (index) {
+    textArea = $(this)[0]
+    textArea.addEventListener('input', typeHandler) // register for oninput
+    textArea.addEventListener('propertychange', typeHandler) 
+  });
 }
 
 function addListboxObserver(className) {

@@ -53,8 +53,14 @@
             <h2>
                 Summary of neighborhood headlines
             </h2>
-            <div class="form-group">
-                <textarea class="form-control" id="headlineTextArea" rows="4"></textarea>
+            <div class="neighborhood">
+              <div class="form-group">
+                  <input type="text" class="form-control title-input" placeholder="Enter Title" value="Summary of neighborhood headlines">
+                  <small class="form-text text-muted"> Please enter the title for this section.</small>
+              </div>
+              <div class="form-group">
+                  <textarea class="form-control text-area" id="headlineTextArea" rows="4"></textarea>
+              </div>
             </div>
         </div>
 
@@ -62,16 +68,26 @@
             <h2>
                 Weather Outlook
             </h2>
-            <div class="form-group">
-                <textarea class="form-control" id="weatherTextArea" rows="4"></textarea>
+            <div class="weather">
+              <div class="form-group">
+                  <input type="text" class="form-control title-input" placeholder="Enter Title" value="Weather Outlook">
+                  <small class="form-text text-muted"> Please enter the title for this section.</small>
+              </div>
+              <div class="form-group">
+                  <textarea class="form-control text-area" id="weatherTextArea" rows="4"></textarea>
+              </div>
             </div>
         </div>
         <div class="section">
             <h2>
-                Fishtown Events
+                Events
             </h2>
 
-            <div class="container-fluid events">
+            <div class="events">
+              <div class="form-group">
+                  <input type="text" class="form-control title-input" placeholder="Enter Title" value="Fishtown Events">
+                  <small class="form-text text-muted"> Please enter the title for this section.</small>
+              </div>
                 <div class="row">
                     <div class="col">
                         <div class="input-group mb-3">
@@ -98,10 +114,14 @@
         </div>
         <div class="section">
             <h2>
-                Fishtown News
+                News
             </h2>
 
-            <div class="container-fluid news">
+            <div class="news">
+              <div class="form-group">
+                  <input type="text" class="form-control title-input" placeholder="Enter Title" value="Fishtown News">
+                  <small class="form-text text-muted"> Please enter the title for this section.</small>
+              </div>
                 <div class="row">
                     <div class="col">
                         <div class="input-group mb-3">
@@ -131,6 +151,10 @@
                 Fishtown Safety Watch
             </h2>
             <div class="safety">
+              <div class="form-group">
+                  <input type="text" class="form-control title-input" placeholder="Enter Title" value="Fishtown Safety Watch">
+                  <small class="form-text text-muted"> Please enter the title for this section.</small>
+              </div>
               <div id="images">
               </div>
               <div class="input-group mb-3">
@@ -143,29 +167,37 @@
                 </div>
               </div>
               <div class="form-group">
-                  <textarea class="form-control" id="safetyTextArea" rows="3">Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut.</textarea>
+                  <textarea class="form-control text-area" id="safetyTextArea" rows="3">Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut.</textarea>
               </div>
 
             </div>
         </div>
         <div class="section">
             <h2>
-                Fishtown History
+                History
             </h2>
             <div class="history">
+              <div class="form-group">
+                  <input type="text" class="form-control title-input" placeholder="Enter Title" value="Fishtown History">
+                  <small class="form-text text-muted"> Please enter the title for this section.</small>
+              </div>
               <div id="images">
               </div>
-              <div class="input-group mb-3">
-                <div class="custom-file">
-                  <input type="file" class="custom-file-input" id="inputGroupFile">
-                  <label class="custom-file-label" for="input">Choose file</label>
+              <div class="mb-3">
+                <div class="input-group">
+                  <div class="custom-file">
+                    <input type="file" class="custom-file-input" id="inputGroupFile">
+                    <label class="custom-file-label" for="input">Choose file</label>
+                  </div>
+                  <div class="input-group-append">
+                    <button class="input-group-text">Upload</button>
+                  </div>
                 </div>
-                <div class="input-group-append">
-                  <button class="input-group-text">Upload</button>
-                </div>
+                <small class="form-text text-muted"> Please select and upload images for this section (2 is reccommended).</small>
               </div>
+              
               <div class="form-group">
-                  <textarea class="form-control" id="historyTextArea" rows="3">Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut.</textarea>
+                  <textarea class="form-control text-area" id="historyTextArea" rows="3">Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut.</textarea>
               </div>
             </div>            
         </div>
@@ -176,10 +208,13 @@
         </div>
         <div class="section">
             <h2>
-                Tweets from Local Officials
+                Tweets
             </h2>
-            
-            <div class="container-fluid tweets">
+            <div class="tweets">
+              <div class="form-group">
+                  <input type="text" class="form-control title-input" placeholder="Enter Title" value="Tweets from Local Officials">
+                  <small class="form-text text-muted"> Please enter the title for this section.</small>
+              </div>
                 <div class="row">
                     <div class="col">
                         <div class="input-group mb-3">
@@ -205,10 +240,14 @@
         </div>
         <div class="section">
             <h2>
-                Fishtown Stats
+                Statistics
             </h2>
             
             <div class="stats">
+              <div class="form-group">
+                  <input type="text" class="form-control title-input" placeholder="Enter Title" value="Fishtown Stats">
+                  <small class="form-text text-muted"> Please enter the title for this section.</small>
+              </div>
               <div id="images">
               </div>
               <div class="input-group mb-3">
@@ -253,7 +292,11 @@
                 New Construction & Demolition
             </h2>
             
-            <div class="container-fluid permits">
+            <div class="permits">
+                <div class="form-group">
+                    <input type="text" class="form-control title-input" placeholder="Enter Title" value="New Construction & Demolition">
+                    <small class="form-text text-muted"> Please enter the title for this section.</small>
+                </div>
                 <div class="row">
                     <div class="col">
                         <div class="input-group mb-3">
@@ -283,7 +326,11 @@
             <h2>
                 Permits Under Review
             </h2>
-            <div class="container-fluid reviews">
+            <div class="reviews">
+                <div class="form-group">
+                    <input type="text" class="form-control title-input" placeholder="Enter Title" value="Permits Under Review">
+                    <small class="form-text text-muted"> Please enter the title for this section.</small>
+                </div>
                 <div class="row">
                     <div class="col">
                         <div class="input-group mb-3">
