@@ -19,6 +19,8 @@ function markup(results, body = null) {
             sections.push(safety(result));
         } else if (type == "history") {
           sections.push(history(result));
+        } else if (type == "stats") {
+          sections.push(stats(result));
         } else if (type == "permits") {
           sections.push(permits(result));
         } else if (type == "feedback") {

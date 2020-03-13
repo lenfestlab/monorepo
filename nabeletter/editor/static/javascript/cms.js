@@ -13,73 +13,76 @@ function save() {
   parent.save(jsonResults())
 }
 
-function removeSafetyImage(e) {
-  var index = parseInt(e.id.replace('delete-safety-',''));
-  var image = safetyImages[index]
+function removeImage(e, id, images, removeFunction) {
+  var replaceString = 'delete-' + id + '-'
+  var index = parseInt(e.id.replace(replaceString,''));
+  var image = images[index]
   var public_id = image['public_id']
   
   const successHandler = function(response) {
-    safetyImages.splice(index,1);
-    updateSafetyImages("safety")
+    images.splice(index,1);
+    updateImages(id, images, removeFunction);
   }
-  destroyImage(public_id, successHandler)
+  destroyImage(public_id, successHandler)  
 }
 
-function addSafetyImage(file) {  
-  const successHandler = function(response) {
-    safetyImages.push(response);
-    updateSafetyImages("safety")
-  }
-  uploadImage(file, successHandler, width=160, height=160)
+function removeStatsImage(e) {
+  var removeFunction = "removeStatsImage(this)"  
+  removeImage(e, 'stats', statsImages, removeFunction)
 }
 
-function addStatsImage(file) {  
-  const successHandler = function(response) {
-    statsImages.push(response);
-    updateSafetyImages("safety")
-  }
-  uploadImage(file, successHandler, width=160, height=160)
+function removeSafetyImage(e) {
+  var removeFunction = "removeSafetyImage(this)"
+  removeImage(e, 'safety', safetyImages, removeFunction)
 }
 
 function removeHistoryImage(e) {
-  var index = parseInt(e.id.replace('delete-history-',''));
-  var image = historyImages[index]
-  var public_id = image['public_id']
-  
-  const successHandler = function(response) {
-    historyImages.splice(index,1);
-    updateHistoryImages("history")
-  }
-  destroyImage(public_id, successHandler)
+  var removeFunction = "removeHistoryImage(this)"
+  removeImage(e, 'history', historyImages, removeFunction)
 }
 
-function addHistoryImage(file) {  
-  const successHandler = function(response) {
-    historyImages.push(response);
-    updateHistoryImages("history")
-  }
-  uploadImage(file, successHandler, width=263, height=160)
+function addSafetyImage(file) {  
+  var removeFunction = "removeSafetyImage(this)"
+  addImage(file, "safety", safetyImages, removeFunction, width=160, height=160) 
 }
 
-function updateHistoryImages(id) {
-  var  html = "<table><tr>"    
-  historyImages.forEach(function (image, index) {
+function addStatsImage(file) {  
+  var removeFunction = "removeStatsImage(this)"  
+  addImage(file, "stats", statsImages, removeFunction, width=160, height=160) 
+}
+
+function addHistoryImage(file) {
+  var removeFunction = "removeHistoryImage(this)"
+  addImage(file, "history", historyImages, removeFunction, width=263, height=160) 
+}
+
+function addImage(file, id, images, removeFunction, width, height) {
+  const successHandler = function(response) {
+    images.push(response);
+    updateImages(id, images, removeFunction);
+  }
+  uploadImage(file, successHandler, width=width, height=height)
+}
+
+function updateHistoryImages() {
+  updateImages("history", historyImages, "removeHistoryImage(this)");
+}
+
+function updateSafetyImages() {
+  updateImages("safety", safetyImages, "removeSafetyImage(this)");
+}
+
+function updateStatsImages() {
+  updateImages("stats", statsImages, "removeStatsImage(this)");
+}
+
+function updateImages(id, images, removeFunction) {
+  var  html = "<table><tr>" 
+  images.forEach(function (image, index) {
      html += `<td><div class="img-wrap">`
-     html += `<button type="button" id="delete-${id}-${index}" class="btn-close btn btn-danger btn-sm" onclick='removeHistoryImage(this)'>`
+     html += `<button type="button" id="delete-${id}-${index}" class="btn-close btn btn-danger btn-sm" onclick='${removeFunction}'>`
      html += `&times;</button></span><img src="${image.url}"></div></td>`
   });
-  html += "</tr></table>"
-  $(`.${id} #images`).html( html);
-  parent.refresh(jsonResults());
-}
-
-function updateSafetyImages(id) {
-  var  html = "<table><tr>" 
-  safetyImages.forEach(function (image, index) {
-     html += `<td><div class="img-wrap">`
-     html += `<button type="button" id="delete-${id}-${index}" class="btn-close btn btn-danger btn-sm" onclick='removeSafetyImage(this)'>`
-     html += `&times;</button></span><img src="${image.url}"></div></td>`
-  });    
   html += "</tr></table>"
   $(`.${id} #images`).html( html);
   parent.refresh(jsonResults());
@@ -108,11 +111,19 @@ $(document).ready(function () {
       } else if (type == 'safety') {
         console.log(data_item)
         caption = data_item['caption']
+        safetyImages = data_item['images'];
+        updateSafetyImages()
         $('#safetyTextArea').val(caption)
       } else if (type == 'history') {
         console.log(data_item)
         caption = data_item['caption']
+        historyImages = data_item['images'];
+        updateHistoryImages()
         $('#historyTextArea').val(caption)
+      } else if (type == 'stats') {
+        console.log(data_item)
+        statsImages = data_item['images'];
+        updateStatsImages()
       } else if (type == 'tweets') {
         tweets = data_item['data']            
         tweets.forEach(function (tweet, index) {
@@ -244,7 +255,7 @@ function loadData() {
     
     addFileUploadObserver('.history', addHistoryImage);
     addFileUploadObserver('.safety', addSafetyImage);
-    addFileUploadObserver('.stats', addSafetyImage);
+    addFileUploadObserver('.stats', addStatsImage);
 }
 
 function addFileUploadObserver(className, addFunction) {
@@ -339,6 +350,12 @@ function jsonResults() {
         "title": "Fishtown History",
         "images": historyImages,
         "caption": historyText
+    })
+    
+    results.push({
+        "type": "stats",
+        "title": "Fishtown Stats",
+        "images": statsImages,
     })
     
     if (selectedTweets.length > 0) {
