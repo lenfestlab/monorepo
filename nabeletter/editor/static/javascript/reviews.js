@@ -2,8 +2,12 @@ function reviews(results) {
     const reviews = results["data"]
     const title = results["title"]
 
+  content = `<table class="section">`;
+  content += `<tr><td class="title">${title}</td></tr>`;
+  content += `<tr><td class="content-47">`;
+  
     var html = `
-    <table class="section review">
+    <table class="review">
     <tbody>`
 
     reviews.forEach(function (review, index) {
@@ -22,5 +26,7 @@ function reviews(results) {
     });
 
     html += '</tbody></table>'
-    return html
+    content += html;
+    content += `</td></tr></table>`;
+    return content
 }

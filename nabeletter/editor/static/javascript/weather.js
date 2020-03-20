@@ -1,8 +1,13 @@
 function weather(results) {
   const data = results["data"]
   const summary = results["summary"]
+  const title = results["title"]
     
-  var html = `<table class="section"><tr><td>`
+  content = `<table class="section">`;
+  content += `<tr><td class="title">${title}</td></tr>`;
+  content += `<tr><td class="content-47">`;
+    
+  var html = `<table><tr><td>`
   html += `<table  class="weather"><tr>`
 
   html += ``
@@ -36,5 +41,7 @@ function weather(results) {
     html += summary
     html += `</td></tr></table>`
 
-    return html
+    content += html;
+    content += `</td></tr></table>`;
+    return content
 }

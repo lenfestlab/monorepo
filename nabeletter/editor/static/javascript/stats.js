@@ -2,7 +2,11 @@ function stats(result) {
     const title = result["title"]
     const images = result["images"]
 
-    html = `<table class="section"><tr>`
+  content = `<table class="section">`;
+  content += `<tr><td class="title">${title}</td></tr>`;
+  content += `<tr><td class="content">`;
+  
+    html = `<table><tr>`
 
     images.forEach(function (element, index) {
         html += `<td><img src="${element.url}"></td>`
@@ -14,5 +18,7 @@ function stats(result) {
 
     html += `</tr></table>`
 
-    return html
+    content += html;
+    content += `</td></tr></table>`;
+    return content
 }

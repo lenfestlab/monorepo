@@ -1,3 +1,3 @@
 function header() {
-    return `Logo/ Title/Date/ Lead Image`
+    return `Fishtown Neighborhood Newsletter`
 }

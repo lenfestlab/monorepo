@@ -8,41 +8,55 @@ function markup(results, body = null) {
         let type = result["type"];
         let title = result["title"];
 
-        sections.push(`<tr><td class="title">${title}</td></tr>`);
+        content = ``;
         if (type == "weather") {
-          sections.push(weather(result));
+          content += weather(result);
         } else if (type == "news") {
-            sections.push(news(result));
+            content += news(result);
         } else if (type == "events") {
-            sections.push(events(result));
+            content += events(result);
         } else if (type == "safety") {
-            sections.push(safety(result));
+            content += safety(result);
         } else if (type == "history") {
-          sections.push(history(result));
+          content += history(result);
+        } else if (type == "answer") {
+          content += answer(result);
         } else if (type == "stats") {
-          sections.push(stats(result));
+          content += stats(result);
         } else if (type == "permits") {
-          sections.push(permits(result));
+          content += permits(result);
         } else if (type == "feedback") {
-            sections.push(feedback(result));
+            content += feedback(result);
         } else if (type == "tweets") {
-            sections.push(tweets(result));
+            content += tweets(result);
         } else if (type == "neighborhood") {
-            sections.push(neighborhood(result));
+            content += neighborhood(result);
         } else if (type == "reviews") {
-            sections.push(reviews(result));
+            content += reviews(result);
         }
+        
+        sections.push(content)
     })
 
-    const markup = `
+    var html = `
         <table class="main" >
-        <thead class="header"><tr><td>${header()}</td></tr></thead>
-        ${sections.map(section => `<tr><td>${section}</td></tr>`).join('')}
-        
-        <tfoot class="footer"><tr><td>${footer()}</td></tr></tfoot>
-        </table>
+          <thead><tr><td>
+            <table id="inner" class="header"><tr><td>
+              <table id="inner" class="header-title"><tr><td>${header()}</td></tr></table>
+            </td></tr></table>
+          </td></tr></thead>
     `;
 
-    return markup;
+    sections.forEach(function (section, index) {
+        html += `<tr><td>`
+        html += `<table><tr><td>${section}</td></tr></table>`
+        html += `</td></tr>`
+
+    })
+
+    html += `<tfoot><tr><td>${footer()}</td></tr></tfoot>`
+    html += `</table>`
+
+    return html;
 
 }
