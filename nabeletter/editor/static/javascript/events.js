@@ -2,7 +2,11 @@ function events(results) {
     const events = results["events"]
     const title = results["title"]
 
-    var html = `<table class="section">`
+  content = `<table class="section">`;
+  content += `<tr><td class="title">${title}</td></tr>`;
+  content += `<tr><td class="content-47">`;
+  
+    var html = `<table>`
     html += `<tbody><tr><td><table>`
 
     width = 100/events.length
@@ -14,10 +18,16 @@ function events(results) {
         html += `</table></td>`
     })
 
-    html += `</table></td></tr></tbody>`
-    html += `<tfoot><tr><td colspan="3">`
+    html += `</table>`
+
+    html += `</td></tr></tbody>`
+    
+    html += `<tfoot><tr height=40><td>`
     html += `<a class="more" href="google.com">View More Events >></a>`
     html += `</td></tr></tfoot>`
+    
     html += `</table>`
-    return html
+    content += html;
+    content += `</td></tr></table>`;
+    return content
 }

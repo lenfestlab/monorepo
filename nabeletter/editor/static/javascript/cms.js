@@ -8,6 +8,7 @@ var weatherData = {}
 var safetyImages = []
 var historyImages = []
 var statsImages = []
+var answerImages = []
 
 function save() {
   parent.save(jsonResults())
@@ -27,18 +28,32 @@ function removeImage(e, id, images, removeFunction) {
 }
 
 function removeStatsImage(e) {
-  var removeFunction = "removeStatsImage(this)"  
+  var removeFunction = arguments.callee.name + "(this)"  
+  alert(removeFunction)
   removeImage(e, 'stats', statsImages, removeFunction)
 }
 
 function removeSafetyImage(e) {
-  var removeFunction = "removeSafetyImage(this)"
+  var removeFunction = arguments.callee.name + "(this)"  
+  alert(removeFunction)
   removeImage(e, 'safety', safetyImages, removeFunction)
 }
 
 function removeHistoryImage(e) {
-  var removeFunction = "removeHistoryImage(this)"
+  var removeFunction = arguments.callee.name + "(this)"  
+  alert(removeFunction)
   removeImage(e, 'history', historyImages, removeFunction)
+}
+
+function removeAnswerImage(e) {
+  var removeFunction = arguments.callee.name + "(this)"  
+  alert(removeFunction)
+  removeImage(e, 'history', historyImages, removeFunction)
+}
+
+function addAnswerImage(file) {  
+  var removeFunction = "removeAnswerImage(this)"
+  addImage(file, "answer", answerImages, removeFunction, width=160, height=160) 
 }
 
 function addSafetyImage(file) {  
@@ -46,7 +61,7 @@ function addSafetyImage(file) {
   addImage(file, "safety", safetyImages, removeFunction, width=160, height=160) 
 }
 
-function addStatsImage(file) {  
+function addStatsImage(file) {
   var removeFunction = "removeStatsImage(this)"  
   addImage(file, "stats", statsImages, removeFunction, width=160, height=160) 
 }
@@ -118,6 +133,12 @@ $(document).ready(function () {
         safetyImages = data_item['images'];
         updateSafetyImages()
         $('#safetyTextArea').val(caption)
+      } else if (type == 'events') {
+        console.log(data_item)
+        events = data_item['events'];
+        events.forEach(function (event, index) {
+            event.selected = true
+        });
       } else if (type == 'history') {
         console.log(data_item)
         caption = data_item['caption']
@@ -255,6 +276,7 @@ function loadData() {
     addTextAreaObserver('.text-area');
     addTextAreaObserver('.title-input');
     
+    addFileUploadObserver('.answer', addAnswerImage);
     addFileUploadObserver('.history', addHistoryImage);
     addFileUploadObserver('.safety', addSafetyImage);
     addFileUploadObserver('.stats', addStatsImage);
@@ -322,19 +344,19 @@ function jsonResults() {
         });
     }
 
-    if (selectedArticles.length > 0) {
-        results.push({
-            "type": "news",
-            "title": $('.news .title-input')[0].value,
-            "articles": selectedArticles
-        });
-    }
-
     if (selectedEvents.length > 0) {
         results.push({
             "type": "events",
             "title": $('.events .title-input')[0].value,
             "events": selectedEvents
+        });
+    }
+    
+    if (selectedArticles.length > 0) {
+        results.push({
+            "type": "news",
+            "title": $('.news .title-input')[0].value,
+            "articles": selectedArticles
         });
     }
 
@@ -350,6 +372,14 @@ function jsonResults() {
     results.push({
         "type": "history",
         "title": $('.history .title-input')[0].value,
+        "images": historyImages,
+        "caption": historyText
+    })
+    
+    historyText = $('.answer .text-area')[0].value
+    results.push({
+        "type": "answer",
+        "title": $('.answer .title-input')[0].value,
         "images": historyImages,
         "caption": historyText
     })

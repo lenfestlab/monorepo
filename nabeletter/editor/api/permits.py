@@ -54,7 +54,7 @@ def fetch():
   #   if canonical_url is not None:
   #     source_url = "https://www.inquirer.com" + canonical_url
   #
-    image_dimensions = '400x300'
+    image_dimensions = '505x240'
     permit = {}
     permit['address'] = title
     permit['image'] = "https://maps.googleapis.com/maps/api/streetview?key=AIzaSyA0zzOuoJnfsAJ1YIfPJ7RrtXeiYbdW-ZQ&size="+image_dimensions+"&location="+address

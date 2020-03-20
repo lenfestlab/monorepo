@@ -12,6 +12,7 @@
     <!--- D3 JS --->
     <script src="https://d3js.org/d3.v5.js"></script>
 
+    <script type="text/javascript" src="/javascript/answer.js"></script>
     <script type="text/javascript" src="/javascript/reviews.js"></script>
     <script type="text/javascript" src="/javascript/neighborhood.js"></script>
     <script type="text/javascript" src="/javascript/tweets.js"></script>
@@ -73,6 +74,7 @@
 
             $.get('/stylesheets/template.css', function(data) {
                 var head = $("#preview").contents().find("head")
+                head.append(`<link href="https://fonts.googleapis.com/css?family=Roboto|Roboto+Slab&display=swap" rel="stylesheet">`);
                 head.append(`<style>${data}</style>`);
             });
 

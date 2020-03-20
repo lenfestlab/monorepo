@@ -1,24 +1,18 @@
-function safety(results) {
-    const images = results["images"]
-    const caption = results["caption"]
-    const title = results["title"]
+function answer(result) {
+    const title = result["title"]
+    const images = result["images"]
+    const caption = result["caption"]
 
   content = `<table class="section">`;
   content += `<tr><td class="title">${title}</td></tr>`;
-  content += `<tr><td class="content-47">`;
+  content += `<tr><td class="content-28">`;
   
     html = `
 <table>
-<tbody>
 <tr>
 ${images.map(element => `<td><table><tr><td><img src="${element.url}"></td></tr></table></td>`).join('')}
 </tr>
-<tr>
-<td class="caption" colspan="3">
-${caption}
-</td>
-</tr>
-</tbody>
+<tr><td class="caption" colspan="2">${caption}</td></tr>
 </table>
 `
 
