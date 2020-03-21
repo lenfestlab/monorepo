@@ -9,13 +9,12 @@ function events(results) {
     var html = `<table>`
     html += `<tbody><tr><td><table>`
 
-    width = 100/events.length
     events.forEach(function (event, index) {
-        html += `<td width="${width}%"><table class="event" >`
+        html += `<tr><td><table class="event" >`
         html += `<tr><td>${event.title}</td></tr>`
         html += `<tr><td>${event.datetime}</td></tr>`
         html += `<tr><td>${event.about}</td></tr>`
-        html += `</table></td>`
+        html += `</table></td></tr>`
     })
 
     html += `</table>`
