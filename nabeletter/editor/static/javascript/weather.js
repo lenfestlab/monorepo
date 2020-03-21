@@ -3,6 +3,16 @@ function weather(results) {
   const summary = results["summary"]
   const title = results["title"]
     
+  assets = {
+    'cloudy' : 'https://res.cloudinary.com/dh5yeyrsc/image/upload/v1584782167/weather/cloudy-icon_scaz8x.png',
+    'lightning' : 'https://res.cloudinary.com/dh5yeyrsc/image/upload/v1584782167/weather/lightning-icon_p5mfco.png',
+    'snow' : 'https://res.cloudinary.com/dh5yeyrsc/image/upload/v1584782166/weather/snow-icon_wyugso.png',
+    'rain' : 'https://res.cloudinary.com/dh5yeyrsc/image/upload/v1584782167/weather/rain-icon_p3zrmg.png',
+    'fog' : 'https://res.cloudinary.com/dh5yeyrsc/image/upload/v1584782166/weather/fog-icon_x3crqn.png',
+    'clear-day' : 'https://res.cloudinary.com/dh5yeyrsc/image/upload/v1584782167/weather/sun-icon_utlwwb.png',
+    'partly-cloudy-day' : 'https://res.cloudinary.com/dh5yeyrsc/image/upload/v1584782166/weather/half-cloudy-icon_eltwzz.png',
+  }
+    
   content = `<table class="section">`;
   content += `<tr><td class="title">${title}</td></tr>`;
   content += `<tr><td class="content-47">`;
@@ -12,7 +22,7 @@ function weather(results) {
 
   html += ``
   
-    data.forEach(function (day_data, index) {
+    data.slice(0,  7).forEach(function (day_data, index) {
       
       day_data_icon = day_data['icon']
       day = day_data['dayofweek']
@@ -20,13 +30,19 @@ function weather(results) {
       html += `
           <td>
             <table>
-            <tr>
+            <tr> 
             <td>
-              ${day_data_icon}
+              <img src=${assets[day_data_icon]} >
             </td>
             </tr>
+            <tr> 
+            <td class="day">
+              ${day}
+            </td>
+            </tr>
+
+
             </table>
-            <div class="day">${day}</div>
           </td>
       `
 
@@ -38,6 +54,7 @@ function weather(results) {
     html += `<tr><td colspan=7>`
     
     html += `</td></tr></table>`
+    html += `<table><tr><td class="darksky">* Weather Data Powered by Dark Sky</tr></td></table>`
     html += summary
     html += `</td></tr></table>`
 

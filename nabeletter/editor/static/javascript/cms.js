@@ -228,9 +228,12 @@ function loadData() {
       });
       
       d3.json("datasource/weather.json").then(function(results) {
-        weather = results
-        weatherData = weather['data']
-        $('#weatherTextArea')[0].value = weather['summary'];
+        weather = results;
+        weatherData = weather['data'];
+        if ($('#weatherTextArea')[0].value.length == 0) {
+          summary = weather['summary'];
+          $('#weatherTextArea').val(summary);    
+        }
         
         parent.refresh(jsonResults());
       });
