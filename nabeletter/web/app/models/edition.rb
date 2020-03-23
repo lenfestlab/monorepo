@@ -16,6 +16,8 @@ class Edition < ApplicationRecord
     on_or_after_message: "must be in the future" # http://bit.ly/2vsBUay
   }
 
+  attr_accessor :deliver_test
+
   validate :lock_once_delivered
   def lock_once_delivered
     return unless delivered?

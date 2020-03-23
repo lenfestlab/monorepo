@@ -808,6 +808,11 @@
   resolved "https://registry.yarnpkg.com/@csstools/convert-colors/-/convert-colors-1.4.0.tgz#ad495dc41b12e75d588c6db8b9834f08fa131eb7"
   integrity sha512-5a6wqoJV/xEdbRNKVo6I4hO3VjyDq//8q2f9I6PBAvMesJHFauXDorcNCsr9RzvsZnaWi5NYCcfyqP1QeFHFbw==
 
+"@cycle/react-dom@~2.4.0":
+  version "2.4.0"
+  resolved "https://registry.yarnpkg.com/@cycle/react-dom/-/react-dom-2.4.0.tgz#25843f10f2a0ce73c3a35a48a8a6e051aff00ada"
+  integrity sha512-T2KtsoZ3Z9tfGmCB8nYWd1fCMv1VirxaOLykHNu9g8K0K0gT5eWo/Sq+rpcWGuCyfCbkK9zJF9W/47RnRbHImg==
+
 "@cycle/react@~2.6.0":
   version "2.6.0"
   resolved "https://registry.yarnpkg.com/@cycle/react/-/react-2.6.0.tgz#3e429585f1feee9043b56b563e234a1fcbc9fbff"
