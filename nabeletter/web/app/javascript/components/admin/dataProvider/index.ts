@@ -1,5 +1,3 @@
-import { DataProvider } from "ra-core"
-
 import jsonapiClient from "ra-jsonapi-client" // NOTE: fork https://git.io/JvnOF
 
 const apiHost = "" // same as asset server
@@ -23,6 +21,7 @@ const settings = {
     subscriptions: { keyForAttribute },
     editions: { keyForAttribute },
     newsletters: { keyForAttribute },
+    users: { keyForAttribute },
   },
   serializerOpts: {
     subscriptions: {
@@ -34,7 +33,8 @@ const settings = {
       newsletter,
     },
     newsletters: { keyForAttribute },
+    users: { keyForAttribute },
   },
 }
 
-export const dataProvider: DataProvider = jsonapiClient(apiHost, settings)
+export const dataProvider = jsonapiClient(apiHost, settings)

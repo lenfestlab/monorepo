@@ -1,2 +1,1 @@
-class SubscriptionsController < ApplicationController
-end
+class SubscriptionsController < ResourceController; end
