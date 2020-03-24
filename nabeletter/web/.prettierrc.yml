@@ -1,2 +1,8 @@
+# js/ts
 semi: false
 trailingComma: es5
+
+# ruby
+addTrailingCommas: true
+inlineConditionals: true
+preferSingleQuotes: false

@@ -1,2 +1,1 @@
-class NewslettersController < ApplicationController
-end
+class NewslettersController < ResourceController; end
