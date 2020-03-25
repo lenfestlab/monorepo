@@ -18,7 +18,6 @@ table {
 .darksky {
   width: 506px;
   height: 20px;
-  font-family: 'Roboto';
   font-size: 14px;
   font-weight: 500;
   font-stretch: normal;
@@ -45,7 +44,6 @@ table {
   text-align: center;
   padding: 8px 8px 8px 8px;
   
-  font-family: 'Roboto';
   font-size: 18px;
   font-weight: 500;
   font-stretch: normal;
@@ -92,7 +90,8 @@ table {
 }
 
 .links {
-  color: white;
+  color: #ffffff;
+  font-size: 14px;
 }
 
 .links a:link {
@@ -100,7 +99,7 @@ table {
 }
 
 .links a:visited { 
-  color: white;
+  color: #ffffff;
 }
 
 .links th, .links td {
