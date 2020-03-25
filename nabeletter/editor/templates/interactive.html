@@ -74,8 +74,6 @@
 
             $.get('/stylesheets/template.css', function(data) {
                 var head = $("#preview").contents().find("head")
-                head.append(`<style>@import url('https://fonts.googleapis.com/css?family=Roboto+Slab|Roboto:400,500&display=swap');</style>`)
-                // head.append(`<link href="https://fonts.googleapis.com/css?family=Roboto|Roboto+Slab&display=swap" rel="stylesheet">`);
                 head.append(`<style>${data}</style>`);
             });
 
