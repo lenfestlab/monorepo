@@ -91,9 +91,12 @@ table {
   padding: 10px 0px 10px 0px;
 }
 
+.links {
+  color: white;
+}
+
 .links a:link {
-    text-decoration: none;
-    color: white;
+ text-decoration: none;
 }
 
 .links a:visited { 

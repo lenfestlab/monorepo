@@ -32,11 +32,7 @@ Send your comments and questions to <a href="/ng">name@gmail.com</a>
   
   <table class="links">
   <tr><td>
-  <a href="">Link to Site</a>
-  </td><td>
-  <a href="">Copyright</a>
-  </td><td>
-  <a href="">Unsubscribe</a>
+  <a href="">Link to Site</a> | <a href="">Copyright</a> | <a href="">Unsubscribe</a>
   </tr></td>
   </table>
   
