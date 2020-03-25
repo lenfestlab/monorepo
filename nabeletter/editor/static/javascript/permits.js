@@ -21,7 +21,7 @@ function permits(results) {
         html += `<tr><td class="text-style-0">${permit.date}<td></tr>`
         html += `<tr><td class="text-style-0">${permit.description}<td></tr>`
         html += `<tr><td class="text-style-0"><b>Property Owner:</b> ${permit.property_owner}<td></tr>`
-        html += `<tr><td class="text-style-0"><b class="text-style-0">Contractor:</b> ${permit.contractor_name}<td></tr>`
+        html += `<tr><td class="text-style-0"><b>Contractor:</b> ${permit.contractor_name}<td></tr>`
         html += `</table>`
         html += `</table>`
         html += `</td>`
