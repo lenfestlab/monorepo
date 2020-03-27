@@ -5,9 +5,13 @@ extends:
   - "tslint-config-prettier"
 jsRules: {}
 rules:
+  variable-name:
+    options:
+      - allow-snake-case  # API params
+      - allow-pascal-case # functional components
+  no-shadowed-variable: false
   ordered-imports: true
-  object-literal-sort-keys: true
-  // avoid "interface name must start with capitalized I"
+  object-literal-sort-keys: false
   interface-name: false
   no-unused-variable:
     - true
