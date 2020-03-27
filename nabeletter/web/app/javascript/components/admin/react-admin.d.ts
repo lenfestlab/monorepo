@@ -1,1 +1,1 @@
-declare module 'react-admin';
+declare module "react-admin"

@@ -1,7 +1,13 @@
 import { h } from "@cycle/react"
 import { Button, useMutation } from "react-admin"
 
-export const EditionTestDeliveryButton = ({ record }) => {
+import { Record } from "components/admin/shared"
+
+interface Props {
+  record: Record
+}
+
+export const EditionTestDeliveryButton = ({ record }: Props) => {
   const [approve, { loading }] = useMutation({
     type: "update",
     resource: "editions",

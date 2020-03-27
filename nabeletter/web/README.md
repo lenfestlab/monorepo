@@ -31,3 +31,17 @@ heroku git:remote -r prod -a lenfestlab-nabeletter-prod
 heroku git:remote -r stag -a lenfestlab-nabeletter-stag
 (cd ../..; git push stag --force `git subtree split --prefix nabeletter/web HEAD`:refs/heads/master)
 ```
+
+## Replace local db w/ copy of remote database
+
+```
+DISABLE_DATABASE_ENVIRONMENT_CHECK=1 heroku local:run -e .env.dev bundle exec rails db:drop && \
+  heroku pg:pull DATABASE_URL nabeletter_development -r prod
+```
+
+## Replace stag db w/ a copy of your local db
+
+```
+heroku pg:reset -r stag
+heroku pg:push nabeletter_development DATABASE_URL -r stag
+```
