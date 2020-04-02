@@ -9,7 +9,7 @@ export const EditionPreviewField = ({
   record = {},
   addLabel = true,
 }) => {
-  const __html = get(record, source) || "<h1>WIP</h1>"
+  const __html = get(record, source)
   const doc = { __html }
   return <div dangerouslySetInnerHTML={doc} />
 }

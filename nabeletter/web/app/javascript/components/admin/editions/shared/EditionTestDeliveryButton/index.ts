@@ -7,9 +7,12 @@ export const EditionTestDeliveryButton = ({ record }) => {
     resource: "editions",
     payload: { id: record.id, data: { test: true } },
   })
+  const isDeliverable: boolean = record.body_html && true
   return h(Button, {
-    label: "Test delivery",
+    label: isDeliverable
+      ? "Test delivery"
+      : "Please edit body to test delivery",
     onClick: approve,
-    disabled: loading,
+    disabled: !isDeliverable || loading,
   })
 }
