@@ -8,7 +8,7 @@ import {
   TextField,
 } from "react-admin"
 
-export const EditionList = props =>
+export const EditionList = (props) =>
   h(
     List,
     {
