@@ -1,6 +1,5 @@
 import { AuthProvider } from "ra-core"
-
-const tokenKey: string = "token"
+import { addUserContext, removeUserContext, info } from "./logger"
 
 export const authProvider: AuthProvider = {
   login: ({ username, password }) => {
@@ -17,25 +16,34 @@ export const authProvider: AuthProvider = {
       }),
     })
     return fetch(request)
-      .then(response => {
+      .then((response) => {
         if (response.status < 200 || response.status >= 300) {
           throw new Error(response.statusText)
         }
         const headers = response.headers
         const authorization: string = headers.get("Authorization")
         const [kind, token] = authorization.split(" ")
-        return token
+        return response.json().then(function mergeToken(data) {
+          return { ...data, token }
+        })
       })
-      .then(token => {
-        localStorage.setItem(tokenKey, token)
+      .then(({ token, id, email }) => {
+        localStorage.setItem("token", token)
+        localStorage.setItem("user_id", id)
+        localStorage.setItem("user_email", email)
+        addUserContext()
+        return info("login")
       })
   },
-  logout: () => {
+  logout: async () => {
+    await info("logout")
+    removeUserContext()
     localStorage.clear()
-    return Promise.resolve()
   },
   checkError: () => Promise.resolve(),
-  checkAuth: () =>
-    localStorage.getItem(tokenKey) ? Promise.resolve() : Promise.reject(),
+  checkAuth: () => {
+    addUserContext()
+    return localStorage.getItem("token") ? Promise.resolve() : Promise.reject()
+  },
   getPermissions: () => Promise.reject("Unknown method"),
 }
