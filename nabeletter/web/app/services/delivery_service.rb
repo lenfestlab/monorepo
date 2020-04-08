@@ -36,7 +36,7 @@ class DeliveryService
     newsletter = edition.newsletter
     # NOTE: user only present if test delivery
     list_identifier = newsletter.mailgun_list_identifier
-    recipient = user.email_address || list_identifier
+    recipient = user.try(:email_address) || list_identifier
     list_name, list_domain = list_identifier.split("@")
     # https://documentation.mailgun.com/en/latest/api-sending.html#sending
     request_body = {
