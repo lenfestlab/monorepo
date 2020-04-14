@@ -17,9 +17,9 @@ end
 Timber.config.integrations.rack
   .user_context.custom_user_hash = lambda do |rack_env|
   # skip requests issued by external editor
-  referrer =
-    rack_env["HTTP_REFERRER"]
-  return nil if referrer && referrer.include?(ENV["EDITOR_HOST"])
+  from =
+    rack_env["HTTP_REFERER"]
+  return nil if from && from.include?(ENV["EDITOR_HOST"])
   # skip non-resource endpoints
   path = rack_env["PATH_INFO"]
   return nil if path.match(%r{^\/(tokens|admin)?$})
