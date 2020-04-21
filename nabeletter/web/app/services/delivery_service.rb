@@ -18,7 +18,7 @@ class DeliveryService
     request_body = {
       address: address,
       name: full_name,
-      vars: {},
+      vars: JSON.generate(subscriber_data),
       subscribed: true,
       upsert: true,
     }
@@ -34,19 +34,18 @@ class DeliveryService
 
   def deliver!(edition:, user: nil)
     newsletter = edition.newsletter
-    # NOTE: user only present if test delivery
     list_identifier = newsletter.mailgun_list_identifier
-    recipient = user.try(:email_address) || list_identifier
     list_name, list_domain = list_identifier.split("@")
-    # https://documentation.mailgun.com/en/latest/api-sending.html#sending
+    to = list_identifier
+    html = edition.body_html
+    subject = edition.subject
+    # NOTE: if admin user, override w/ their meta on test delivery
+    to = user.email_address if !Rails.env.production? && user.present?
     request_body = {
-      # TODO: plain text & amp payloads
-      # text:
-      #"amp-html":
       from: "Lenfest Local Lab <mail@#{list_domain}>",
-      to: recipient,
-      subject: edition.subject,
-      html: edition.body_html,
+      to: to,
+      subject: subject,
+      html: html,
     }
     Rails.logger.info("request_body #{request_body}")
     response =

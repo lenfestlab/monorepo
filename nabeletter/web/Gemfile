@@ -21,7 +21,6 @@ gem 'timber-rails', github: 'timberio/timber-ruby-rails', ref: '250326' # rails 
 gem 'validates_timeliness', '~> 5.0.0.alpha3'
 gem 'webpacker', '~> 4.0'
 
-
 group :development do
   gem 'web-console', '>= 3.3.0'
   gem 'listen', '>= 3.0.5', '< 3.2'
