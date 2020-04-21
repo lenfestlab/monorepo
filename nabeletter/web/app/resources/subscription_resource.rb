@@ -14,15 +14,4 @@ class SubscriptionResource < JSONAPI::Resource
     # disallow re-assigning subsciption to another newsletter
     super - %i[newsletter]
   end
-
-  after_create :add_to_list
-  def add_to_list
-    resource = @model
-    list_identifier = resource.newsletter.list_identifier
-    subscriber_data = resource.slice(*%i[email_address name_first name_last])
-    deliverer = DeliveryService.new
-    deliverer.subscribe!(
-      list_identifier: list_identifier, subscriber_data: subscriber_data,
-    )
-  end
 end
