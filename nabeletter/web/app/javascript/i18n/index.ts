@@ -1,0 +1,47 @@
+import { get } from "fp"
+
+export const translate = (key: string): string => {
+  const messages = {
+    // header
+    "header-title": `Fishtown Neighborhood Newsletter`,
+    // intro
+    "intro-input-header": "Intro",
+    "intro-input-title-placeholder": "Today's neighborhood headlines",
+    "intro-input-markdown-placeholder": markdownPlaceholder(),
+    "intro-field-markdown-placeholder": "TK",
+    // weather
+    "weather-input-header": "Weather",
+    "weather-input-title-placeholder": "Weather Outlook",
+    "weather-input-markdown-placeholder": markdownPlaceholder(),
+    "weather-field-markdown-placeholder": "TK",
+    "weather-field-vendor-attribution": "* Weather Data Powered by Dark Sky",
+    // tweets
+    "tweets-input-header": "Tweets",
+    "tweets-input-title-placeholder": "Tweets from Local Officials",
+    "tweets-input-url-placeholder":
+      "https://twitter.com/lenfestlab/status/1191710124752158720",
+    "tweets-input-url-add": "Add",
+    // instagram
+    "instagram-input-header": "Instagram",
+    "instagram-input-title-placeholder": "Instagram Photos from Local Business",
+    "instagram-input-url-placeholder":
+      "https://www.instagram.com/p/Bw2CLlzl6bP/",
+    "instagram-input-url-add": "Add",
+    // facebook
+    "facebook-input-header": "Facebook",
+    "facebook-input-title-placeholder": "Local Business Facebook Posts",
+    "facebook-input-url-placeholder":
+      "https://www.facebook.com/greensgrowfarms/posts/10158900860584769",
+    "facebook-input-url-add": "Add",
+  }
+  return get(messages, key)
+}
+
+function markdownPlaceholder() {
+  return `[Inline-style link](https://www.google.com)
+Emphasis, aka italics, with *asterisks* or _underscores_.
+Strong emphasis, aka bold, with **asterisks** or __underscores__.
+Combined emphasis with **asterisks and _underscores_**.
+Strikethrough uses two tildes. ~~Scratch this.~~
+`
+}

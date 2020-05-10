@@ -6,6 +6,7 @@ interface Props {}
 
 export const EditionPublishAtInput = (props: Props) =>
   h(DateTimeInput, {
+    ...props,
     label: "Publish/send at",
     source: "publish_at",
     validate: [required("Publish date required.")],

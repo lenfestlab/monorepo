@@ -1,6 +1,5 @@
 export { EditionBodyButton } from "./EditionBodyButton"
 export { EditionBodyInput } from "./EditionBodyInput"
-export { EditionPreviewField } from "./EditionPreviewField"
 export { EditionPublishAtInput } from "./EditionPublishAtInput"
 export { EditionSubjectInput } from "./EditionSubjectInput"
 export { EditionTestDeliveryButton } from "./EditionTestDeliveryButton"

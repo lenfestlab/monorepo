@@ -7,12 +7,10 @@ import {
   TextField,
 } from "react-admin"
 
-import { EditionPreviewField } from "./shared"
+import { EditionPreviewField } from "./EditionPreviewField"
 
-interface Props {}
-
-export const EditionShow = (props: Props) =>
-  h(Show, { ...props }, [
+export const EditionShow = (props: {}) =>
+  h(Show, props, [
     h(SimpleShowLayout, {}, [
       h(
         ReferenceField,

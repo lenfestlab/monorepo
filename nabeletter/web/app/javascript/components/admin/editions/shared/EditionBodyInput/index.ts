@@ -1,22 +1,55 @@
 import { h } from "@cycle/react"
 import { dataProvider } from "components/admin/providers"
-import React, { createRef, Fragment, RefObject } from "react"
-import { BehaviorSubject, from, Subscription } from "rxjs"
+import { Component, createRef, RefObject } from "react"
+import { BehaviorSubject, from, Subscription, zip } from "rxjs"
+import { tag } from "rxjs-spy/operators"
 import { debounceTime, share, skip, switchMap } from "rxjs/operators"
 
-import { Record } from "components/admin/shared"
-import { get, isEmpty } from "fp"
-import { tag } from "rxjs-spy/operators"
-import {
-  Field as SummaryField,
-  Input as SummaryInput,
-} from "./sections/summary"
+import { AnalyticsProps as AllAnalyticsProps } from "analytics"
+import { Record as ApiRecord } from "components/admin/shared"
+import { find, get, isEmpty, values } from "fp"
 
-type Kind = "summary"
+import { Editor } from "./Editor"
+import {
+  Field as FacebookField,
+  Input as FacebookInput,
+} from "./sections/facebook"
+import {
+  Field as InstagramField,
+  Input as InstagramInput,
+} from "./sections/facebook"
+import { Field as SummaryField, Input as SummaryInput } from "./sections/intro"
+import { Field as TweetsField, Input as TweetsInput } from "./sections/tweets"
+import {
+  Field as WeatherField,
+  Input as WeatherInput,
+} from "./sections/weather"
+import { PreviewRef, SectionField, SectionInput } from "./types"
+
+export const INTRO = "intro"
+export const WEATHER = "weather"
+export const TWEETS = "tweets"
+export const FACEBOOK = "facebook"
+export const INSTAGRAM = "instagram"
+const sectionNames = [INTRO, WEATHER, TWEETS, FACEBOOK, INSTAGRAM]
+export type Kind = "intro" | "weather" | "tweets" | "instagram" | "facebook"
+
+type AnalyticsProps = Omit<AllAnalyticsProps, "title">
+
 function getSectionComponents(kind: Kind) {
   switch (kind) {
-    case "summary":
+    case INTRO:
       return { field: SummaryField, input: SummaryInput }
+    case WEATHER:
+      return { field: WeatherField, input: WeatherInput }
+    case TWEETS:
+      return { field: TweetsField, input: TweetsInput }
+    case FACEBOOK:
+      return { field: FacebookField, input: FacebookInput }
+    case INSTAGRAM:
+      return { field: InstagramField, input: InstagramInput }
+    default:
+      throw new Error("Unsupported section")
   }
 }
 
@@ -31,121 +64,166 @@ interface BodyConfig {
   sections: SectionConfig[]
 }
 
-type SectionInput = React.ReactElement
-type SectionField = any
-
-type PreviewRef = RefObject<HTMLDivElement>
+interface SectionRefMap {
+  inputRef: RefObject<any>
+  fieldRef: RefObject<any>
+}
+type SectionRefsMap = Record<string, SectionRefMap>
 
 interface Props {
-  record?: Record
+  record?: ApiRecord
 }
 interface State {
   sections: SectionConfig[]
 }
-export class EditionBodyInput extends React.Component<Props, State> {
+export class EditionBodyInput extends Component<Props, State> {
   subscription: Subscription | null = null
   configs$ = new BehaviorSubject<SectionConfig[]>([])
   previewRef: PreviewRef = createRef<HTMLDivElement>()
+  sectionObserver: IntersectionObserver | null = null
+  sectionRefsMap: SectionRefsMap = {}
+
   constructor(props: Props) {
     super(props)
-    this.state = { sections: [] }
-  }
-  componentDidMount() {
-    // set record loaded from server
+    // NOTE: set state from server-side config
     const { record } = this.props
     let bodyConfig: BodyConfig = get(record, "body_data")
     if (isEmpty(bodyConfig)) {
       bodyConfig = {
-        sections: [{ kind: "summary", config: { markdown: "" } }],
+        sections: [
+          { kind: INTRO, config: {} },
+          { kind: WEATHER, config: {} },
+          { kind: TWEETS, config: {} },
+          { kind: FACEBOOK, config: {} },
+          { kind: INSTAGRAM, config: {} },
+        ],
       }
     }
     const sections: SectionConfig[] = get(bodyConfig, "sections", [])
-    this.setState({
-      sections,
-    })
-    // sync all changes back to server
-    this.subscription = this.configs$
-      .pipe(
-        skip(1),
-        debounceTime(1000),
-        tag("configs$"),
-        switchMap((sections) => {
-          const node = this.previewRef.current
-          const body_html = node?.innerHTML
-          const body_data = { sections }
-          const id = this.props.record?.id
-          const data = { body_data, body_html }
-          const request = dataProvider("UPDATE", "editions", { id, data })
-          return from(request)
-        }),
-        share()
-      )
-      .subscribe()
+    this.state = { sections }
+    // NOTE: sync section visibility
+    this.sectionRefsMap = sections.reduce<SectionRefsMap>(
+      (prior, current, _idx, _configs): SectionRefsMap => {
+        const inputRef = createRef<HTMLElement>()
+        const fieldRef = createRef()
+        const { kind } = current
+        const result: SectionRefsMap = {
+          ...prior,
+          [kind]: { inputRef, fieldRef },
+        }
+        return result
+      },
+      {}
+    )
+    this.sectionObserver = new IntersectionObserver(
+      (entries) => {
+        const firstIntersecting = find(
+          entries,
+          ({ isIntersecting }) => isIntersecting
+        )
+        // fetch field corresponding to this input
+        const target = firstIntersecting?.target
+        if (!target) {
+          // NOOP
+        } else {
+          const inputId: string = target.id
+          const fieldId = inputId.replace("input", "field")
+          const frame = document.getElementById(
+            "preview-frame"
+          ) as HTMLIFrameElement
+          const innerDoc = frame.contentWindow?.document
+          const field = innerDoc?.getElementById(fieldId)
+          if (field) {
+            field.scrollIntoView(true)
+          }
+        }
+      },
+      {
+        root: null, // viewport by default
+        threshold: 0.5,
+      }
+    )
   }
+
+  componentDidMount() {
+    // NOTE: sync section visibility
+    values(this.sectionRefsMap).forEach((refMap) => {
+      const { inputRef } = refMap
+      const node: Element = inputRef.current
+      this.sectionObserver?.observe(node)
+    })
+
+    // NOTE: sync sections' config & html with server
+    const syncConfigs$ = this.configs$.pipe(
+      skip(1),
+      debounceTime(1000),
+      tag("configs$"),
+      switchMap((sections) => {
+        const node = this.previewRef.current
+        const body_html = node?.innerHTML
+        const body_data = { sections }
+        const id = this.props.record?.id
+        const data = { body_data, body_html }
+        const request = dataProvider("UPDATE", "editions", { id, data })
+        return from(request)
+      }),
+      tag("syncConfigs$"),
+      share()
+    )
+
+    this.subscription = zip(syncConfigs$).subscribe()
+  }
+
   componentWillUnmount() {
     this.subscription?.unsubscribe()
+    this.sectionObserver?.disconnect()
   }
+
   shouldComponentUpdate() {
     return true
   }
+
   render() {
     const inputs: SectionInput[] = []
     const fields: SectionField[] = []
     const { sections } = this.state
     sections.forEach((sectionConfig: SectionConfig, idx: number) => {
       const kind = get(sectionConfig, "kind")
-      const config: any = get(sectionConfig, "config")
+      const config = get(sectionConfig, "config")
       // section input
       const setConfig: SetConfig = (config) => {
         const sections = this.state.sections
         sections[idx] = { kind, config }
         this.configs$.next(sections)
-        this.setState({
-          sections,
+        this.setState((prior) => {
+          return {
+            ...prior,
+            sections,
+          }
         })
       }
       const { input, field } = getSectionComponents(kind)
-      inputs.push(h(input, { config, setConfig }))
-      fields.push(h(field, { config }))
+      const { inputRef, fieldRef } = this.sectionRefsMap[kind]
+      const key = `section-${kind}`
+
+      const section = kind
+      const sectionRank = idx + 1
+      const edition = get(this.props.record, "id", "") as string
+      const analytics: AnalyticsProps = {
+        section,
+        sectionRank,
+        edition,
+      }
+      inputs.push(
+        // @ts-ignore
+        h(input, { key, kind, config, setConfig, inputRef, id: `${key}-input` })
+      )
+      fields.push(
+        // @ts-ignore
+        h(field, { key, kind, config, id: `${key}-field`, analytics })
+      )
     })
     const previewRef = this.previewRef
     return h(Editor, { inputs, fields, previewRef })
   }
-}
-
-import { div } from "@cycle/react-dom"
-import Grid from "@material-ui/core/Grid"
-import Paper from "@material-ui/core/Paper"
-import { makeStyles } from "@material-ui/core/styles"
-
-const useStyles = makeStyles((theme) => ({
-  root: {
-    flexGrow: 1,
-  },
-  paper: {
-    padding: theme.spacing(2),
-    color: theme.palette.text.secondary,
-  },
-}))
-
-interface EditorProps {
-  previewRef: PreviewRef
-  inputs: SectionInput[]
-  fields: SectionField[]
-}
-function Editor(props: EditorProps) {
-  const classes = useStyles()
-  const { inputs, fields, previewRef } = props
-  return div({ className: classes.root }, [
-    h(Grid, { container: true, spacing: 3 }, [
-      h(Grid, { item: true, xs: 6 }, [
-        h(Paper, { className: classes.paper, elevation: 0 }, inputs),
-      ]),
-      h(Grid, { item: true, xs: 6 }, [
-        h(Paper, { className: classes.paper }, [
-          div({ ref: previewRef }, fields),
-        ]),
-      ]),
-    ]),
-  ])
 }

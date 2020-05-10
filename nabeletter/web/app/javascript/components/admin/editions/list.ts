@@ -37,7 +37,6 @@ export const EditionList = (props: Props) =>
           { source: "publish_at", label: "Publish/Send at", showTime: true },
           []
         ),
-        // TODO: EditionPreviewButton
       ]),
     ]
   )
