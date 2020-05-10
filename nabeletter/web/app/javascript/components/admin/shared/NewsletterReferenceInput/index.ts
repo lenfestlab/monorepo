@@ -1,10 +1,12 @@
 import { h } from "@cycle/react"
-import { ReferenceInput, SelectInput, required } from "react-admin"
+import { ReferenceInput, required, SelectInput } from "react-admin"
 
-export const NewsletterReferenceInput = (props: object) =>
+interface Props {}
+export const NewsletterReferenceInput = (props: Props) =>
   h(
     ReferenceInput,
     {
+      ...props,
       label: "Newsletter",
       source: "newsletter.id",
       reference: "newsletters",

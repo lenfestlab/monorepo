@@ -7,8 +7,9 @@ jsRules: {}
 rules:
   variable-name:
     options:
-      - allow-snake-case  # API params
+      - allow-snake-case # API params
       - allow-pascal-case # functional components
+      - allow-leading-underscore
   no-shadowed-variable: false
   ordered-imports: true
   object-literal-sort-keys: false

@@ -1,6 +1,13 @@
 import { h } from "@cycle/react"
-import * as React from "react"
-import { Admin, Resource } from "react-admin"
+import React, { useEffect } from "react"
+import {
+  Admin,
+  AppBar as _AppBar,
+  Layout as _Layout,
+  Resource,
+  setSidebarVisibility,
+} from "react-admin"
+import { useDispatch } from "react-redux"
 
 import { create } from "rxjs-spy"
 const spy = create({ defaultLogger: console, sourceMaps: true })
@@ -21,8 +28,17 @@ import {
 } from "./subscriptions"
 import { UserList } from "./users"
 
+// NOTE: override layout to collapse nav by default
+const layout = (props: any) => {
+  const dispatch = useDispatch()
+  useEffect(() => {
+    dispatch(setSidebarVisibility(false))
+  }, [setSidebarVisibility])
+  return h(_Layout, { ...props })
+}
+
 export const AdminApp = () =>
-  h(Admin, { dataProvider, i18nProvider, authProvider }, [
+  h(Admin, { layout, dataProvider, i18nProvider, authProvider }, [
     h(Resource, {
       name: "editions",
       list: EditionList,

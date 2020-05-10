@@ -11,12 +11,12 @@ class EditionResource < JSONAPI::Resource
   def body_html
     body = @model.body_html
     user = @context[:current_user]
-    if !Rails.env.production? && (tid = ENV["GA_TID"]) && (uid = user.id)
+    if body && !Rails.env.production? && (tid = ENV["GA_TID"]) && (uid = user.id)
       subs = { "%recipient.tid%" => tid, "%recipient.uid%" => uid }
       re = Regexp.union(subs.keys)
       body.gsub(re, subs)
     else
-      @model.body_html
+      body
     end
   end
 end

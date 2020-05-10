@@ -1,24 +1,30 @@
 import { h } from "@cycle/react"
+import { Email } from "@material-ui/icons"
 import { Button, useMutation } from "react-admin"
 
-import { Record } from "components/admin/shared"
+import { Edition } from "components/admin/shared"
 
 interface Props {
-  record: Record
+  record: Edition
 }
 
 export const EditionTestDeliveryButton = ({ record }: Props) => {
+  if (!record) return null
   const [approve, { loading }] = useMutation({
     type: "update",
     resource: "editions",
     payload: { id: record.id, data: { test: true } },
   })
   const isDeliverable: boolean = record.body_html && true
-  return h(Button, {
-    label: isDeliverable
-      ? "Test delivery"
-      : "Please edit body to test delivery",
-    onClick: approve,
-    disabled: !isDeliverable || loading,
-  })
+  return h(
+    Button,
+    {
+      label: isDeliverable
+        ? "Test delivery"
+        : "Please edit body to test delivery",
+      onClick: approve,
+      disabled: !isDeliverable || loading,
+    },
+    [h(Email)]
+  )
 }

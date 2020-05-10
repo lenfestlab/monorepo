@@ -1,10 +1,10 @@
-import englishMessages from "ra-language-english"
 import polyglotI18nProvider from "ra-i18n-polyglot"
+import englishMessages from "ra-language-english"
 
 const messages: any = { en: englishMessages }
 
 export const i18nProvider = polyglotI18nProvider(
-  locale => messages[locale],
+  (locale) => messages[locale],
   "en",
   {
     allowMissing: true,
