@@ -10,13 +10,19 @@ import { createTypeStyle } from "typestyle"
 
 import { max, values } from "fp"
 import type { PreviewRef, SectionField } from "../../types"
-import { Body } from "./Body"
+import { AnalyticsProps, Body } from "./Body"
+export { AnalyticsProps }
 
 interface Props {
   previewRef?: PreviewRef
   fields: SectionField[]
+  analytics: AnalyticsProps
 }
-export const Preview = ({ fields: unstyledFields, previewRef: ref }: Props) => {
+export const Preview = ({
+  fields: unstyledFields,
+  previewRef: ref,
+  analytics,
+}: Props) => {
   const typestyle = createTypeStyle()
   // clone each field to merge in typestyle prop
   const fields: SectionField[] = unstyledFields.map(
@@ -117,7 +123,7 @@ export const Preview = ({ fields: unstyledFields, previewRef: ref }: Props) => {
                 dangerouslySetInnerHTML: { __html: css },
               }),
             ]),
-            h(Body, { fields, typestyle }),
+            h(Body, { fields, typestyle, analytics }),
           ]),
         ]
       ),

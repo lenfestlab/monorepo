@@ -31,8 +31,16 @@ export const WEATHER = "weather"
 export const TWEETS = "tweets"
 export const FACEBOOK = "facebook"
 export const INSTAGRAM = "instagram"
-const sectionNames = [INTRO, WEATHER, TWEETS, FACEBOOK, INSTAGRAM]
-export type Kind = "intro" | "weather" | "tweets" | "instagram" | "facebook"
+export const FOOTER = "footer"
+
+export type Kind =
+  | "header"
+  | "intro"
+  | "weather"
+  | "tweets"
+  | "instagram"
+  | "facebook"
+  | "footer"
 
 type AnalyticsProps = Omit<AllAnalyticsProps, "title">
 
@@ -134,7 +142,8 @@ export class EditionBodyInput extends Component<Props, State> {
           const innerDoc = frame.contentWindow?.document
           const field = innerDoc?.getElementById(fieldId)
           if (field) {
-            field.scrollIntoView(true)
+            // TODO: restore/ env-var scrollIntoView
+            // field.scrollIntoView(true)
           }
         }
       },
@@ -186,6 +195,7 @@ export class EditionBodyInput extends Component<Props, State> {
   render() {
     const inputs: SectionInput[] = []
     const fields: SectionField[] = []
+    const edition = get(this.props.record, "id", "") as string
     const { sections } = this.state
     sections.forEach((sectionConfig: SectionConfig, idx: number) => {
       const kind = get(sectionConfig, "kind")
@@ -208,8 +218,7 @@ export class EditionBodyInput extends Component<Props, State> {
 
       const section = kind
       const sectionRank = idx + 1
-      const edition = get(this.props.record, "id", "") as string
-      const analytics: AnalyticsProps = {
+      const fieldAnalytics: AnalyticsProps = {
         section,
         sectionRank,
         edition,
@@ -220,10 +229,17 @@ export class EditionBodyInput extends Component<Props, State> {
       )
       fields.push(
         // @ts-ignore
-        h(field, { key, kind, config, id: `${key}-field`, analytics })
+        h(field, {
+          key,
+          kind,
+          config,
+          id: `${key}-field`,
+          analytics: fieldAnalytics,
+        })
       )
     })
     const previewRef = this.previewRef
-    return h(Editor, { inputs, fields, previewRef })
+    const analytics = { edition }
+    return h(Editor, { inputs, fields, previewRef, analytics })
   }
 }

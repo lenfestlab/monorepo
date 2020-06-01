@@ -25,13 +25,15 @@ class AnalyticsController < ApplicationController
       Rails.logger.info(payload_data)
       response = HTTParty.post(analytics_url, {
         body: payload_data,
-        headers: {"User-Agent" => "nabeletter"},
+        headers: {"User-Agent" => "nabeletter-#{ENV["RACK_ENV"]}"},
       })
       Rails.logger.info("response.code #{response.code}")
       Rails.logger.info("response.success? #{response.success?}")
       raise(AnalyticsError, response["errors"]) unless response.success?
     end
-    redirect_to safe[:redirect]
+    redirect = safe[:redirect]
+    Rails.logger.info("response.redirect #{redirect}")
+    redirect_to redirect
   end
 
   protected

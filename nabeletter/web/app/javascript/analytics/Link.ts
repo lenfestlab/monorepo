@@ -5,9 +5,9 @@ import {
   rewriteURL,
   safeTitle,
 } from "analytics"
-import { FunctionComponent, ReactElement, SFC } from "react"
+import { FunctionComponent } from "react"
 
-type AnalyticsProps = Omit<AllAnalyticsProps, "title">
+export type AnalyticsProps = Omit<AllAnalyticsProps, "title">
 
 interface StandardProps {
   key?: string
@@ -32,5 +32,6 @@ export const Link: FunctionComponent<Props> = ({
     ...analytics,
   })
   const target = "_blank" // NOTE: always open new window
-  return a({ href, target, className }, [children])
+  const content = children ?? title
+  return a({ href, target, className }, [content])
 }
