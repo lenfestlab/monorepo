@@ -5,13 +5,17 @@ import { media, TypeStyle } from "typestyle"
 
 import { colors, queries } from "styles"
 import type { SectionField } from "../../../types"
+import { AnalyticsProps, Footer } from "./Footer"
 import { Header } from "./Header"
+
+export { AnalyticsProps }
 
 interface Props {
   fields: SectionField[]
   typestyle: TypeStyle
+  analytics: AnalyticsProps
 }
-export function Body({ fields, typestyle }: Props) {
+export function Body({ fields, typestyle, analytics }: Props) {
   const { cssRaw, cssRule, stylesheet } = typestyle
   cssRule("*", {
     margin: 0,
@@ -61,7 +65,8 @@ export function Body({ fields, typestyle }: Props) {
 
   return body({ key: "body" }, [
     table({ className: classNames.pseudoBody }, [
-      h(Header, { typestyle, mobile }),
+      h(Footer, { typestyle, analytics }),
+      h(Header, { typestyle }),
       tbody([
         ...fields.map((field) =>
           tr([

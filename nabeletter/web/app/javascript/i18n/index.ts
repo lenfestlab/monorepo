@@ -33,6 +33,13 @@ export const translate = (key: string): string => {
     "facebook-input-url-placeholder":
       "https://www.facebook.com/greensgrowfarms/posts/10158900860584769",
     "facebook-input-url-add": "Add",
+    // footer
+    "footer-feedback-prompt": "Have feedback?",
+    "footer-feedback-cta": "Send your comments and questions to ",
+    "footer-guide-nabe": "Fishtown New Neighbor Guide",
+    "footer-guide-restaurant": "Fishtown Restaurant Guide",
+    "footer-copyright": "2020 Lenfest Institute",
+    "footer-unsubscribe": "unsubscribe",
   }
   return get(messages, key)
 }

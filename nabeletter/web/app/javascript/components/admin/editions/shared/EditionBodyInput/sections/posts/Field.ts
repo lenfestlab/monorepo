@@ -45,12 +45,7 @@ export const Field = ({ config, typestyle, id, kind, analytics }: Props) => {
   return h(SectionField, { title, typestyle, id }, [
     map(posts, ({ url, screenshot_url: src }: Post, idx) => {
       const key = String(idx)
-      const title = url // NOTE: natural name for social media post?
-      // return a(
-      //   { key, href: url, target: "_blank", className: classNames?.link },
-      //   [img({ src, className: classNames?.image })]
-      // )
-
+      const title = url
       return h(
         Link,
         { key, url, className: classNames?.link, analytics, title },

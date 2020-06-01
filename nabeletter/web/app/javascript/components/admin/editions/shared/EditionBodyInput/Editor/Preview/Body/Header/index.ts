@@ -15,8 +15,8 @@ export const Header = ({ typestyle }: Props) => {
     header: {
       width: percent(100),
       borderRadius: px(3),
-      padding: "45px 140px 45px 140px",
       backgroundColor: colors.darkBlue,
+      padding: "45px 140px 45px 140px",
       ...media(queries.mobile, {
         padding: important(px(10)),
       }),

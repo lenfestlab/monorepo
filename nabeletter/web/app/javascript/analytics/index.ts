@@ -1,7 +1,6 @@
 import { stringifyUrl } from "query-string"
 export { Link } from "./Link"
 
-import type { Kind as SectionName } from "components/admin/editions/shared/EditionBodyInput/index"
 import { either } from "fp"
 
 export const safeTitle = (title: string | undefined | null) => either(title, "")
@@ -19,7 +18,7 @@ export interface AnalyticsProps {
   label?: Label
   neighborhood?: Neighborhood
   edition: UUID
-  section: SectionName
+  section: string
   sectionRank: number
   title: string
 }
@@ -35,7 +34,7 @@ export const rewriteURL = (redirect: string, props: AnalyticsProps): string => {
     sectionRank,
     title,
   } = props
-  const uid = "%recipient.uid%" // NOTE: email vendor swaps w/ recipient-id
+  const uid = "VAR-RECIPIENT-UID"
   const ga = stringifyUrl({
     url: "https://www.google-analytics.com/collect?v=1&t=event",
     query: {
@@ -48,10 +47,10 @@ export const rewriteURL = (redirect: string, props: AnalyticsProps): string => {
       // cd3: "WIP" // TODO: pending
       cd4: section,
       cd5: String(sectionRank),
-      cd6: redirect,
+      cd6: redirect, // TODO: preserve format
       cd7: title,
     },
   })
-  const url = `/analytics`
-  return stringifyUrl({ url, query: { redirect, ga } })
+  const url = `https://${process.env.RAILS_HOST}/analytics`
+  return stringifyUrl({ url, query: { ga, redirect } })
 }

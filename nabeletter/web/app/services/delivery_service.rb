@@ -37,8 +37,16 @@ class DeliveryService
     list_identifier = newsletter.mailgun_list_identifier
     list_name, list_domain = list_identifier.split("@")
     to = list_identifier
-    html = edition.body_html
     subject = edition.subject
+
+    # NOTE: interpolate mailgun vars
+    subs = {
+      "VAR-UNSUBSCRIBE-URL" => "%mailing_list_unsubscribe_url%",
+      "VAR-RECIPIENT-UID" => "%recipient.uid%"
+    }
+    re = Regexp.union(subs.keys)
+    html = edition.body_html.gsub(re, subs)
+
     # NOTE: if admin user, override w/ their meta on test delivery
     to = user.email_address if !Rails.env.production? && user.present?
     request_body = {
