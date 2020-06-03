@@ -9,12 +9,13 @@ type Ref = RefObject<HTMLButtonElement>
 interface Props {
   disabled: boolean
   pending: boolean
-  forwardRef?: Ref
   children?: ReactNode
+  forwardRef?: Ref
+  onClick?: (event: React.MouseEvent) => void
 }
 
 export const ProgressButton: FunctionComponent<Props> = (props) => {
-  const { children, disabled, pending, forwardRef: ref } = props
+  const { children, disabled, pending, forwardRef: ref, onClick } = props
 
   const classNames = stylesheet({
     root: {
@@ -43,6 +44,7 @@ export const ProgressButton: FunctionComponent<Props> = (props) => {
           color: "primary",
           disabled,
           ref,
+          onClick,
           variant: "contained",
         },
         [children]

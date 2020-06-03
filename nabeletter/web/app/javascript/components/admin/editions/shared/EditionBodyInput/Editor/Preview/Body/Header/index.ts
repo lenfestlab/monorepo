@@ -23,7 +23,7 @@ export const Header = ({ typestyle }: Props) => {
     },
     headerTitle: {
       textAlign: "center",
-      fontFamily: "Roboto Slab",
+      fontFamily: "Roboto Slab, Roboto, sans-serif",
       fontSize: px(24),
       fontWeight: 600,
       color: colors.white,

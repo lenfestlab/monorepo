@@ -10,6 +10,7 @@ import { Record as ApiRecord } from "components/admin/shared"
 import { find, get, isEmpty, values } from "fp"
 
 import { Editor } from "./Editor"
+import { Field as EventsField, Input as EventsInput } from "./sections/events"
 import {
   Field as FacebookField,
   Input as FacebookInput,
@@ -18,7 +19,13 @@ import {
   Field as InstagramField,
   Input as InstagramInput,
 } from "./sections/facebook"
+import {
+  Field as HistoryField,
+  Input as HistoryInput,
+} from "./sections/history"
 import { Field as SummaryField, Input as SummaryInput } from "./sections/intro"
+import { Field as NewsField, Input as NewsInput } from "./sections/news"
+import { Field as SafetyField, Input as SafetyInput } from "./sections/safety"
 import { Field as TweetsField, Input as TweetsInput } from "./sections/tweets"
 import {
   Field as WeatherField,
@@ -28,6 +35,10 @@ import { PreviewRef, SectionField, SectionInput } from "./types"
 
 export const INTRO = "intro"
 export const WEATHER = "weather"
+export const EVENTS = "events"
+export const NEWS = "news"
+export const SAFETY = "safety"
+export const HISTORY = "history"
 export const TWEETS = "tweets"
 export const FACEBOOK = "facebook"
 export const INSTAGRAM = "instagram"
@@ -37,6 +48,10 @@ export type Kind =
   | "header"
   | "intro"
   | "weather"
+  | "events"
+  | "news"
+  | "safety"
+  | "history"
   | "tweets"
   | "instagram"
   | "facebook"
@@ -50,6 +65,14 @@ function getSectionComponents(kind: Kind) {
       return { field: SummaryField, input: SummaryInput }
     case WEATHER:
       return { field: WeatherField, input: WeatherInput }
+    case EVENTS:
+      return { field: EventsField, input: EventsInput }
+    case NEWS:
+      return { field: NewsField, input: NewsInput }
+    case SAFETY:
+      return { field: SafetyField, input: SafetyInput }
+    case HISTORY:
+      return { field: HistoryField, input: HistoryInput }
     case TWEETS:
       return { field: TweetsField, input: TweetsInput }
     case FACEBOOK:
@@ -101,6 +124,10 @@ export class EditionBodyInput extends Component<Props, State> {
         sections: [
           { kind: INTRO, config: {} },
           { kind: WEATHER, config: {} },
+          { kind: EVENTS, config: {} },
+          { kind: NEWS, config: {} },
+          { kind: SAFETY, config: {} },
+          { kind: HISTORY, config: {} },
           { kind: TWEETS, config: {} },
           { kind: FACEBOOK, config: {} },
           { kind: INSTAGRAM, config: {} },
@@ -159,7 +186,7 @@ export class EditionBodyInput extends Component<Props, State> {
     values(this.sectionRefsMap).forEach((refMap) => {
       const { inputRef } = refMap
       const node: Element = inputRef.current
-      this.sectionObserver?.observe(node)
+      if (node) this.sectionObserver?.observe(node)
     })
 
     // NOTE: sync sections' config & html with server

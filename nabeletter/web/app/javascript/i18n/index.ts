@@ -13,8 +13,33 @@ export const translate = (key: string): string => {
     "weather-input-header": "Weather",
     "weather-input-title-placeholder": "Weather Outlook",
     "weather-input-markdown-placeholder": markdownPlaceholder(),
-    "weather-field-markdown-placeholder": "TK",
     "weather-field-vendor-attribution": "* Weather Data Powered by Dark Sky",
+    // events
+    "events-input-header": "Events",
+    "events-input-title-placeholder": "Fishtown events",
+    "events-input-url-placeholder":
+      "https://calendar.google.com/calendar/ical/.../basic.ics",
+    "events-input-download": "Load",
+    "events-field-more": "View more events >>",
+    // news
+    "news-input-header": "News",
+    "news-input-title-placeholder": "Neighborhood news",
+    "news-input-url-placeholder": "https://www.inquirer.com/...html",
+    "news-input-url-add": "Add",
+    // safety
+    "safety-input-header": "Safety watch",
+    "safety-input-title-placeholder": "Safety watch",
+    "safety-input-url-placeholder": "https://.../image.png",
+    "safety-input-caption-placeholder": "Image caption",
+    "safety-input-md-placeholder": "TK",
+    "safety-button-add": "Add",
+    // history
+    "history-input-header": "History",
+    "history-input-title-placeholder": "History",
+    "history-input-url-placeholder": "https://.../image.png",
+    "history-input-caption-placeholder": "Image caption",
+    "history-input-md-placeholder": "TK",
+    "history-button-add": "Add",
     // tweets
     "tweets-input-header": "Tweets",
     "tweets-input-title-placeholder": "Tweets from Local Officials",

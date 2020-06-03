@@ -38,8 +38,8 @@ import {
 import { either, find, omit, values } from "fp"
 import { translate } from "i18n"
 import type { Config, Post, PostMap, SetConfig, URL } from "."
+import { ProgressButton } from "../ProgressButton"
 import { SectionInput } from "../SectionInput"
-import { ProgressButton } from "./ProgressButton"
 
 type InputChangeEvent = React.ChangeEvent<HTMLInputElement>
 type ButtonEvent = React.MouseEvent<HTMLButtonElement>

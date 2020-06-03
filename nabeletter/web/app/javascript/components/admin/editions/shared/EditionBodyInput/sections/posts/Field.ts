@@ -4,7 +4,7 @@ import { important, percent, px } from "csx"
 import { media, TypeStyle } from "typestyle"
 
 import { AnalyticsProps as AllAnalyticsProps, Link } from "analytics"
-import { either, map, values } from "fp"
+import { either, isEmpty, map, values } from "fp"
 import { translate } from "i18n"
 import { queries } from "styles"
 import type { Config, Post } from "."
@@ -42,6 +42,7 @@ export const Field = ({ config, typestyle, id, kind, analytics }: Props) => {
       }),
     },
   })
+  if (isEmpty(posts)) return null
   return h(SectionField, { title, typestyle, id }, [
     map(posts, ({ url, screenshot_url: src }: Post, idx) => {
       const key = String(idx)
