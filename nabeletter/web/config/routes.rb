@@ -3,6 +3,8 @@ Rails.application.routes.draw do
 
   get "/admin", controller: :pages, action: :admin
   resources :analytics, only: :index
+  resources :events, only: :index
+  resources :articles, only: :index
 
   jsonapi_resources :newsletters, only: %i[index show]
   jsonapi_resources :editions, only: %i[index create update show]

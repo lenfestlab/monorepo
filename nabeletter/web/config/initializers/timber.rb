@@ -22,7 +22,7 @@ Timber.config.integrations.rack
   return nil if from && from.include?(ENV["EDITOR_HOST"])
   # skip non-resource endpoints
   path = rack_env["PATH_INFO"]
-  return nil if path.match(%r{^\/(tokens|admin|analytics)?$})
+  return nil if path.match(%r{^\/(tokens|admin|analytics|events|articles)?$})
   # authenticate
   proxy = rack_env["warden"]
   proxy.authenticate!(scope: :user)

@@ -1,7 +1,7 @@
 import { h } from "@cycle/react"
 import { TypeStyle } from "typestyle"
 
-import { either } from "fp"
+import { either, isEmpty } from "fp"
 import { translate } from "i18n"
 import { Config } from "."
 import { AnalyticsProps, MarkdownField } from "../MarkdownField"
@@ -15,10 +15,8 @@ export interface Props {
 }
 export const Field = ({ config, id, typestyle, analytics }: Props) => {
   const title = either(config.title, translate("intro-input-title-placeholder"))
-  const markdown = either(
-    config.markdown,
-    translate("intro-field-markdown-placeholder")
-  )
+  const markdown = config.markdown
+  if (isEmpty(markdown)) return null
   return h(SectionField, { title, typestyle, id }, [
     h(MarkdownField, { markdown, typestyle, analytics }),
   ])

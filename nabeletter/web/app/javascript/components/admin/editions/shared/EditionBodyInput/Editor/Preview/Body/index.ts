@@ -34,8 +34,6 @@ export function Body({ fields, typestyle, analytics }: Props) {
     `@import url('https://fonts.googleapis.com/css?family=Roboto|Roboto+Slab&display=swap');`
   )
 
-  const { mobile } = queries
-  const { maxWidth: width } = mobile
   const classNames = stylesheet({
     pseudoBody: {
       marginLeft: "auto",
@@ -43,43 +41,13 @@ export function Body({ fields, typestyle, analytics }: Props) {
       borderSpacing: "0px",
       backgroundColor: colors.lightGray,
     },
-    section: {
-      backgroundColor: colors.white,
-      borderRadius: "3px",
-      width,
-      marginTop: px(24),
-      marginBottom: px(0),
-      marginRight: px(24),
-      marginLeft: px(24),
-      padding: px(24),
-      ...media(mobile, {
-        width: important(percent(100)),
-        marginTop: important(px(12)),
-        marginBottom: important(px(12)),
-        marginRight: important(px(0)),
-        marginLeft: important(px(0)),
-        padding: important(px(10)),
-      }),
-    },
   })
 
   return body({ key: "body" }, [
     table({ className: classNames.pseudoBody }, [
-      h(Footer, { typestyle, analytics }),
       h(Header, { typestyle }),
-      tbody([
-        ...fields.map((field) =>
-          tr([
-            td([
-              table([
-                tbody([
-                  tr([td([table({ className: classNames.section }, [field])])]),
-                ]),
-              ]),
-            ]),
-          ])
-        ),
-      ]),
+      tbody(fields),
+      h(Footer, { typestyle, analytics }),
     ]),
   ])
 }

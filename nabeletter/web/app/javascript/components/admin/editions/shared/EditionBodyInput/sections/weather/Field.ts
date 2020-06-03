@@ -6,7 +6,7 @@ import { useAsync } from "react-use"
 import { media, TypeStyle } from "typestyle"
 
 import { Link } from "analytics"
-import { either } from "fp"
+import { either, isEmpty } from "fp"
 import { translate } from "i18n"
 import { colors, queries } from "styles"
 import { Config } from "."
@@ -46,10 +46,7 @@ export const Field = ({ config, typestyle, id, analytics }: Props) => {
     config.title,
     translate("weather-input-title-placeholder")
   )
-  const markdown = either(
-    config.markdown,
-    translate("weather-field-markdown-placeholder")
-  )
+  const markdown = either(config.markdown, "")
 
   const vendorURL = "https://darksky.net/poweredby"
   const endpoint = process.env.WEATHER_ENDPOINT
@@ -134,6 +131,8 @@ export const Field = ({ config, typestyle, id, analytics }: Props) => {
     cellPadding: 0,
     cellSpacing: 1,
   }
+  console.debug("weather.md", markdown)
+  if (isEmpty(markdown)) return null
   return h(SectionField, { title, typestyle, id }, [
     table({ className: "weather", ...tableProps }, [
       tbody([
