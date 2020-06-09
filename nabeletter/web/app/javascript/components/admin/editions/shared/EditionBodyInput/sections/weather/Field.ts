@@ -131,7 +131,6 @@ export const Field = ({ config, typestyle, id, analytics }: Props) => {
     cellPadding: 0,
     cellSpacing: 1,
   }
-  if (allEmpty([markdown, pre, post])) return null
   return h(SectionField, { title, pre, post, typestyle, id, analytics }, [
     table({ className: "weather", ...tableProps }, [
       tbody([
