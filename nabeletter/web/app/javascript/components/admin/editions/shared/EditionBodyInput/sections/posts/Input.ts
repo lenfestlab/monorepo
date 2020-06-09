@@ -39,6 +39,7 @@ import { either, find, omit, values } from "fp"
 import { translate } from "i18n"
 import type { Config, Post, PostMap, SetConfig, URL } from "."
 import { ProgressButton } from "../ProgressButton"
+import { QuickLinks } from "../QuickLinks"
 import { SectionInput } from "../SectionInput"
 
 type InputChangeEvent = React.ChangeEvent<HTMLInputElement>
@@ -56,6 +57,7 @@ export interface Props {
   inputRef: RefObject<HTMLDivElement>
   id: string
   kind: string
+  quickLinks?: string[]
 }
 interface State {
   disabled: boolean
@@ -254,7 +256,7 @@ export class Input extends Component<Props, State> {
 
   render() {
     const { refTitle, refURL, refAdd } = this
-    const { inputRef, id, kind } = this.props
+    const { inputRef, id, kind, quickLinks } = this.props
     const { disabled, pending, title, postmap, url, urlError } = this.state
     const posts = values(postmap)
 
@@ -273,6 +275,7 @@ export class Input extends Component<Props, State> {
         titlePlaceholder,
       },
       [
+        quickLinks && h(QuickLinks, { urls: quickLinks }),
         h(TextField, {
           ref: refURL,
           value: url,
