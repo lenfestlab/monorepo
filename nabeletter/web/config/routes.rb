@@ -5,6 +5,7 @@ Rails.application.routes.draw do
   resources :analytics, only: :index
   resources :events, only: :index
   resources :articles, only: :index
+  resources :permits, only: :index
 
   jsonapi_resources :newsletters, only: %i[index show]
   jsonapi_resources :editions, only: %i[index create update show]

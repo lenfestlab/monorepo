@@ -25,6 +25,10 @@ import {
 } from "./sections/history"
 import { Field as IntroField, Input as IntroInput } from "./sections/intro"
 import { Field as NewsField, Input as NewsInput } from "./sections/news"
+import {
+  Field as PermitsField,
+  Input as PermitsInput,
+} from "./sections/permits"
 import { Field as SafetyField, Input as SafetyInput } from "./sections/safety"
 import { Field as TweetsField, Input as TweetsInput } from "./sections/tweets"
 import {
@@ -42,6 +46,7 @@ export const HISTORY = "history"
 export const TWEETS = "tweets"
 export const FACEBOOK = "facebook"
 export const INSTAGRAM = "instagram"
+export const PERMITS = "permits"
 export const FOOTER = "footer"
 
 export type Kind =
@@ -53,8 +58,9 @@ export type Kind =
   | "safety"
   | "history"
   | "tweets"
-  | "instagram"
   | "facebook"
+  | "instagram"
+  | "permits"
   | "footer"
 
 type AnalyticsProps = Omit<AllAnalyticsProps, "title">
@@ -79,6 +85,8 @@ function getSectionComponents(kind: Kind) {
       return { field: FacebookField, input: FacebookInput }
     case INSTAGRAM:
       return { field: InstagramField, input: InstagramInput }
+    case PERMITS:
+      return { field: PermitsField, input: PermitsInput }
     default:
       throw new Error("Unsupported section")
   }
@@ -122,6 +130,7 @@ export class EditionBodyInput extends Component<Props, State> {
     if (isEmpty(bodyConfig)) {
       bodyConfig = {
         sections: [
+          { kind: PERMITS, config: {} },
           { kind: INTRO, config: {} },
           { kind: WEATHER, config: {} },
           { kind: EVENTS, config: {} },
