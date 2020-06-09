@@ -47,7 +47,7 @@ export const rewriteURL = (redirect: string, props: AnalyticsProps): string => {
       // cd3: "WIP" // TODO: pending
       cd4: section,
       cd5: String(sectionRank),
-      cd6: redirect, // TODO: preserve format
+      cd6: redirect,
       cd7: title,
     },
   })

@@ -131,7 +131,6 @@ export const Field = ({ config, typestyle, id, analytics }: Props) => {
     cellPadding: 0,
     cellSpacing: 1,
   }
-  console.debug("weather.md", markdown)
   if (isEmpty(markdown)) return null
   return h(SectionField, { title, typestyle, id }, [
     table({ className: "weather", ...tableProps }, [

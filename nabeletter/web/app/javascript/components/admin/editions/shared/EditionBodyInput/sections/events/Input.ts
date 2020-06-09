@@ -107,7 +107,7 @@ const events$: Observable<Event[]> = onErrorResumeNext(response$).pipe(
 const mapItems = (events: Event[]): Item[] =>
   events.map((event) => {
     const start = parseISO(event.start)
-    const formatted = format(start, "dd/mm/yyyy haa")
+    const formatted = format(start, "L/d/yy h':'mmaa")
     return { id: event.uid, title: `${formatted} ${event.summary}` }
   })
 

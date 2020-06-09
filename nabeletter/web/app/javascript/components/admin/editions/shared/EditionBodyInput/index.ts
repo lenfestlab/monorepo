@@ -168,10 +168,7 @@ export class EditionBodyInput extends Component<Props, State> {
           ) as HTMLIFrameElement
           const innerDoc = frame.contentWindow?.document
           const field = innerDoc?.getElementById(fieldId)
-          if (field) {
-            // TODO: restore/ env-var scrollIntoView
-            // field.scrollIntoView(true)
-          }
+          field?.scrollIntoView(true)
         }
       },
       {
