@@ -38,15 +38,25 @@ export const authProvider: AuthProvider = {
         return info("login")
       })
   },
+
   logout: async () => {
     await info("logout")
     removeUserContext()
     localStorage.clear()
   },
-  checkError: () => Promise.resolve(),
+
+  checkError: (error: Error) => {
+    if (error.message.includes("401")) {
+      localStorage.removeItem("token")
+      return Promise.reject()
+    }
+    return Promise.resolve()
+  },
+
   checkAuth: () => {
     addUserContext()
     return localStorage.getItem("token") ? Promise.resolve() : Promise.reject()
   },
+
   getPermissions: () => Promise.reject("Unknown method"),
 }

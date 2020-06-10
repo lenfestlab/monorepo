@@ -166,17 +166,19 @@ export const Footer: FunctionComponent<Props> = ({
               ),
             ]),
             tr({ className: classes(classNames.row, classNames.misc) }, [
-              span({
-                dangerouslySetInnerHTML: {
-                  __html: `&copy; ${translate("footer-copyright")} &nbsp;`,
-                },
-              }),
-              h(Link, {
-                className: classNames.unsubscribe,
-                analytics,
-                title: translate("footer-unsubscribe"),
-                url: "VAR-UNSUBSCRIBE-URL",
-              }),
+              td([
+                span({
+                  dangerouslySetInnerHTML: {
+                    __html: `&copy; ${translate("footer-copyright")} &nbsp;`,
+                  },
+                }),
+                h(Link, {
+                  className: classNames.unsubscribe,
+                  analytics,
+                  title: translate("footer-unsubscribe"),
+                  url: "VAR-UNSUBSCRIBE-URL",
+                }),
+              ]),
             ]),
           ]),
         ]),

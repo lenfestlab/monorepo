@@ -27,10 +27,10 @@ export const EditionShow = (props: {}) =>
         source: "publish_at",
         showTime: true,
       }),
-      h(EditionPreviewField, {
-        label: "Preview",
-        source: "body_html",
-        addLabel: true,
-      }),
+      // h(EditionPreviewField, {
+      // label: "Preview",
+      // source: "body_html",
+      // addLabel: true,
+      // }),
     ]),
   ])
