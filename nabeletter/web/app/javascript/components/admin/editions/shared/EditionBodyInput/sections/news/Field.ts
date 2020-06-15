@@ -5,11 +5,11 @@ import { format, parseISO } from "date-fns"
 import { classes, media, TypeStyle } from "typestyle"
 
 import { AnalyticsProps as AllAnalyticsProps, Link } from "analytics"
-import { chunk, either, isEmpty } from "fp"
+import { allEmpty, chunk, either, isEmpty } from "fp"
 import { translate } from "i18n"
 import { colors, queries } from "styles"
 import type { Article, Config } from "."
-import { SectionField } from "../SectionField"
+import { SectionField } from "../section/SectionField"
 
 export interface Props {
   kind: string
@@ -23,8 +23,8 @@ export const Field = ({ config, typestyle, id, kind, analytics }: Props) => {
     config.title,
     translate(`${kind}-input-title-placeholder`)
   )
-  const articles = config.articles
-  if (isEmpty(articles)) return null
+  const { articles, pre, post } = config
+  if (allEmpty([pre, post, articles])) return null
 
   const width: number = articles.length > 1 ? 50 : 100
   const classNames = typestyle?.stylesheet({
@@ -76,7 +76,7 @@ export const Field = ({ config, typestyle, id, kind, analytics }: Props) => {
       textDecoration: "underline",
     },
   })
-  return h(SectionField, { title, typestyle, id }, [
+  return h(SectionField, { title, typestyle, id, pre, post, analytics }, [
     table({ border: 0, cellPadding: 0, cellSpacing: 0 }, [
       tbody([
         ...chunk(articles).map((articlePair) => {

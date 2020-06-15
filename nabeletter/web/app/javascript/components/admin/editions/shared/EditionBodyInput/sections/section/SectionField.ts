@@ -1,20 +1,27 @@
+import { h } from "@cycle/react"
 import { table, tbody, td, tr } from "@cycle/react-dom"
 import { important, percent, px } from "csx"
 import { FunctionComponent } from "react"
 import { media, TypeStyle } from "typestyle"
 
 import { colors, queries } from "styles"
+import { SectionConfig } from "."
+import { AnalyticsProps, MarkdownField } from "../MarkdownField"
 
-export interface SectionFieldProps {
+export interface SectionFieldProps extends SectionConfig {
   id: string
-  title: string
   typestyle?: TypeStyle
+  analytics: AnalyticsProps
 }
+
 export const SectionField: FunctionComponent<SectionFieldProps> = ({
   id,
   title,
+  pre,
+  post,
   typestyle,
   children,
+  analytics,
 }) => {
   const { mobile } = queries
   const { maxWidth: width } = mobile
@@ -63,9 +70,21 @@ export const SectionField: FunctionComponent<SectionFieldProps> = ({
               table({ className: classNames?.section }, [
                 tbody({ id }, [
                   tr([td({ className: classNames?.sectionTitle }, title)]),
+                  pre &&
+                    tr([
+                      td({ className: classNames?.sectionContent }, [
+                        h(MarkdownField, { markdown: pre, analytics }),
+                      ]),
+                    ]),
                   tr([
                     td({ className: classNames?.sectionContent }, [children]),
                   ]),
+                  post &&
+                    tr([
+                      td({ className: classNames?.sectionContent }, [
+                        h(MarkdownField, { markdown: post, analytics }),
+                      ]),
+                    ]),
                 ]),
               ]),
             ]),

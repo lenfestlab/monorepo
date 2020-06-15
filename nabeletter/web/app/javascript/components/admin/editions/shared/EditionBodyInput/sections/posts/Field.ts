@@ -4,11 +4,11 @@ import { important, percent, px } from "csx"
 import { media, TypeStyle } from "typestyle"
 
 import { AnalyticsProps as AllAnalyticsProps, Link } from "analytics"
-import { either, isEmpty, map, values } from "fp"
+import { allEmpty, either, isEmpty, map, values } from "fp"
 import { translate } from "i18n"
 import { queries } from "styles"
 import type { Config, Post } from "."
-import { SectionField } from "../SectionField"
+import { SectionField } from "../section/SectionField"
 
 export interface Props {
   kind: string
@@ -22,6 +22,7 @@ export const Field = ({ config, typestyle, id, kind, analytics }: Props) => {
     config.title,
     translate(`${kind}-input-title-placeholder`)
   )
+  const { pre, post } = config
   const postMap = either(config.postmap, {})
   const posts = values(postMap)
 
@@ -42,8 +43,8 @@ export const Field = ({ config, typestyle, id, kind, analytics }: Props) => {
       }),
     },
   })
-  if (isEmpty(posts)) return null
-  return h(SectionField, { title, typestyle, id }, [
+  if (allEmpty([pre, post, posts])) return null
+  return h(SectionField, { title, pre, post, typestyle, id, analytics }, [
     map(posts, ({ url, screenshot_url: src }: Post, idx) => {
       const key = String(idx)
       const title = url

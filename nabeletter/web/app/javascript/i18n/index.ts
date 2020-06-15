@@ -4,6 +4,9 @@ export const translate = (key: string): string => {
   const messages = {
     // header
     "header-title": `Fishtown Neighborhood Newsletter`,
+    // sections
+    "section-pre": "Pre",
+    "section-post": "Post",
     // intro
     "intro-input-header": "Intro",
     "intro-input-title-placeholder": "Today's neighborhood headlines",

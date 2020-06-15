@@ -7,8 +7,8 @@ export interface Article {
   image: string
 }
 
-export interface Config {
-  title: string
+import { SectionConfig } from "../section"
+export interface Config extends SectionConfig {
   url: string
   articles: Article[]
 }

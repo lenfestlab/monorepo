@@ -4,7 +4,7 @@ import React, { RefObject, useEffect, useState } from "react"
 import { translate } from "i18n"
 import { Config, SetConfig } from "."
 import { MarkdownInput } from "../MarkdownInput"
-import { SectionInput } from "../SectionInput"
+import { SectionInput } from "../section/SectionInput"
 
 interface Props {
   config: Config
@@ -13,16 +13,17 @@ interface Props {
   id: string
 }
 export const Input = ({ config, setConfig, inputRef, id }: Props) => {
-  const [markdown, setMarkdown] = useState(config.markdown)
   const [title, setTitle] = useState(config.title)
+  const [pre, setPre] = useState(config.pre)
+  const [post, setPost] = useState(config.post)
+  const [markdown, setMarkdown] = useState(config.markdown)
 
   useEffect(() => {
-    setConfig({ title, markdown })
-  }, [title, markdown])
+    setConfig({ title, pre, post, markdown })
+  }, [title, pre, post, markdown])
 
   const headerText = translate("weather-input-header")
   const titlePlaceholder = translate("weather-input-title-placeholder")
-  const placeholder = translate("weather-input-markdown-placeholder")
   const onChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     setMarkdown(event.target.value as string)
   }
@@ -34,9 +35,13 @@ export const Input = ({ config, setConfig, inputRef, id }: Props) => {
       inputRef,
       title,
       setTitle,
+      pre,
+      setPre,
+      post,
+      setPost,
       headerText,
       titlePlaceholder,
     },
-    [h(MarkdownInput, { markdown, onChange, placeholder })]
+    [h(MarkdownInput, { markdown, onChange })]
   )
 }
