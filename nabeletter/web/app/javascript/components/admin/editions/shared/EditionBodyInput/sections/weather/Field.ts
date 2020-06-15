@@ -6,12 +6,12 @@ import { useAsync } from "react-use"
 import { media, TypeStyle } from "typestyle"
 
 import { Link } from "analytics"
-import { either, isEmpty } from "fp"
+import { allEmpty, either } from "fp"
 import { translate } from "i18n"
 import { colors, queries } from "styles"
 import { Config } from "."
 import { AnalyticsProps, MarkdownField } from "../MarkdownField"
-import { SectionField } from "../SectionField"
+import { SectionField } from "../section/SectionField"
 import { getIconURL } from "./util"
 
 interface ApiDatum {
@@ -46,7 +46,7 @@ export const Field = ({ config, typestyle, id, analytics }: Props) => {
     config.title,
     translate("weather-input-title-placeholder")
   )
-  const markdown = either(config.markdown, "")
+  const { markdown, pre, post } = config
 
   const vendorURL = "https://darksky.net/poweredby"
   const endpoint = process.env.WEATHER_ENDPOINT
@@ -131,8 +131,8 @@ export const Field = ({ config, typestyle, id, analytics }: Props) => {
     cellPadding: 0,
     cellSpacing: 1,
   }
-  if (isEmpty(markdown)) return null
-  return h(SectionField, { title, typestyle, id }, [
+  if (allEmpty([markdown, pre, post])) return null
+  return h(SectionField, { title, pre, post, typestyle, id, analytics }, [
     table({ className: "weather", ...tableProps }, [
       tbody([
         tr(

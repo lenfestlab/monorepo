@@ -40,7 +40,8 @@ import { translate } from "i18n"
 import type { Config, Post, PostMap, SetConfig, URL } from "."
 import { ProgressButton } from "../ProgressButton"
 import { QuickLinks } from "../QuickLinks"
-import { SectionInput } from "../SectionInput"
+import { SectionConfig } from "../section"
+import { SectionInput } from "../section/SectionInput"
 
 type InputChangeEvent = React.ChangeEvent<HTMLInputElement>
 type ButtonEvent = React.MouseEvent<HTMLButtonElement>
@@ -59,10 +60,9 @@ export interface Props {
   kind: string
   quickLinks?: string[]
 }
-interface State {
+interface State extends SectionConfig {
   disabled: boolean
   pending: boolean
-  title: string
   url: URL
   urlError: URLError
   postmap: PostMap
@@ -75,16 +75,21 @@ export class Input extends Component<Props, State> {
   refAdd = createRef<HTMLButtonElement>()
   remove$$ = new Subject<URL>()
   title$$ = new Subject<string>()
+  pre$$ = new Subject<string>()
+  post$$ = new Subject<string>()
 
   constructor(props: Props) {
     super(props)
     const { config } = props
     const title = either(config.title, "")
+    const { pre = "", post = "" } = config
     const postmap = either(config.postmap, {})
     this.state = {
+      title,
+      pre,
+      post,
       disabled: true,
       pending: false,
-      title,
       url: "",
       urlError: { error: false, helperText: "" },
       postmap,
@@ -92,11 +97,17 @@ export class Input extends Component<Props, State> {
   }
 
   componentDidMount() {
-    const { title, url, disabled, postmap } = this.state
+    const { title, pre, post, url, disabled, postmap } = this.state
 
     const title$ = this.title$$
       .asObservable()
       .pipe(startWith(title), tag("title$"), shareReplay())
+    const pre$ = this.pre$$
+      .asObservable()
+      .pipe(startWith(pre), tag("pre$"), shareReplay())
+    const post$ = this.post$$
+      .asObservable()
+      .pipe(startWith(post), tag("post$"), shareReplay())
 
     if (!this.refURL.current) {
       throw new Error("MIA: refUrl")
@@ -215,6 +226,8 @@ export class Input extends Component<Props, State> {
 
     const state$ = combineLatest([
       title$,
+      pre$,
+      post$,
       url$,
       disabled$,
       pending$,
@@ -222,11 +235,14 @@ export class Input extends Component<Props, State> {
       postmap$,
     ]).pipe(
       tag("combineLatest$"),
-      tap(([title, url, disabled, pending, urlError, postmap]) => {
+      tap(([title, pre, post, url, disabled, pending, urlError, postmap]) => {
+        // @ts-ignore
         this.setState((prior) => {
           const next = {
             ...prior,
             title,
+            pre,
+            post,
             url,
             disabled,
             pending,
@@ -240,9 +256,9 @@ export class Input extends Component<Props, State> {
       share()
     )
 
-    const sync$ = combineLatest(title$, postmap$).pipe(
-      tap(([title, postmap]) => {
-        this.props.setConfig({ title, postmap })
+    const sync$ = combineLatest(title$, pre$, post$, postmap$).pipe(
+      tap(([title, pre, post, postmap]) => {
+        this.props.setConfig({ title, pre, post, postmap })
       }),
       tag("sync$")
     )
@@ -257,10 +273,22 @@ export class Input extends Component<Props, State> {
   render() {
     const { refTitle, refURL, refAdd } = this
     const { inputRef, id, kind, quickLinks } = this.props
-    const { disabled, pending, title, postmap, url, urlError } = this.state
+    const {
+      disabled,
+      pending,
+      title,
+      pre,
+      post,
+      postmap,
+      url,
+      urlError,
+    } = this.state
     const posts = values(postmap)
 
-    const setTitle = (title: string) => this.title$$.next(title)
+    const setTitle = (value: string) => this.title$$.next(value)
+    const setPre = (value: string) => this.pre$$.next(value)
+    const setPost = (value: string) => this.post$$.next(value)
+
     const headerText = translate(`${kind}-input-header`)
     const titlePlaceholder = translate(`${kind}-input-title-placeholder`)
 
@@ -271,6 +299,10 @@ export class Input extends Component<Props, State> {
         inputRef,
         title,
         setTitle,
+        pre,
+        setPre,
+        post,
+        setPost,
         headerText,
         titlePlaceholder,
       },

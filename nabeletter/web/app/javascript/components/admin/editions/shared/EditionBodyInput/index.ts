@@ -23,7 +23,7 @@ import {
   Field as HistoryField,
   Input as HistoryInput,
 } from "./sections/history"
-import { Field as SummaryField, Input as SummaryInput } from "./sections/intro"
+import { Field as IntroField, Input as IntroInput } from "./sections/intro"
 import { Field as NewsField, Input as NewsInput } from "./sections/news"
 import { Field as SafetyField, Input as SafetyInput } from "./sections/safety"
 import { Field as TweetsField, Input as TweetsInput } from "./sections/tweets"
@@ -62,7 +62,7 @@ type AnalyticsProps = Omit<AllAnalyticsProps, "title">
 function getSectionComponents(kind: Kind) {
   switch (kind) {
     case INTRO:
-      return { field: SummaryField, input: SummaryInput }
+      return { field: IntroField, input: IntroInput }
     case WEATHER:
       return { field: WeatherField, input: WeatherInput }
     case EVENTS:

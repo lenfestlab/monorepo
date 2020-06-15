@@ -5,8 +5,8 @@ export interface Image {
   caption?: string
 }
 
-export interface Config {
-  title: string
+import { SectionConfig } from "../section"
+export interface Config extends SectionConfig {
   images?: Image[]
   markdown?: string
 }

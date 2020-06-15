@@ -44,7 +44,7 @@ import { translate } from "i18n"
 import { Article, Config, SetConfig } from "."
 import { ProgressButton } from "../ProgressButton"
 import { QuickLinks } from "../QuickLinks"
-import { SectionInput } from "../SectionInput"
+import { SectionInput } from "../section/SectionInput"
 
 type URL = string
 interface UrlError {
@@ -136,6 +136,8 @@ interface Props {
 }
 export const Input = ({ config, setConfig, inputRef, id, kind }: Props) => {
   const [title, setTitle] = useState(config.title)
+  const [pre, setPre] = useState(config.pre)
+  const [post, setPost] = useState(config.post)
   const url = useObservable(url$, "")
   const articles = useObservable(articles$, [])
   useMount(() => {
@@ -147,8 +149,8 @@ export const Input = ({ config, setConfig, inputRef, id, kind }: Props) => {
   const { error, helperText } = useObservable(error$, noError)
 
   useEffect(() => {
-    setConfig({ title, url, articles })
-  }, [title, url, articles])
+    setConfig({ title, pre, post, url, articles })
+  }, [title, pre, post, url, articles])
 
   const headerText = translate(`news-input-header`)
   const titlePlaceholder = translate(`news-input-title-placeholder`)
@@ -163,6 +165,10 @@ export const Input = ({ config, setConfig, inputRef, id, kind }: Props) => {
       inputRef,
       title,
       setTitle,
+      pre,
+      setPre,
+      post,
+      setPost,
       headerText,
       titlePlaceholder,
     },

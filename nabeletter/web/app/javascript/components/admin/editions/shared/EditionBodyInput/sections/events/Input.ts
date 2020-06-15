@@ -31,7 +31,7 @@ import { compact, either } from "fp"
 import { translate } from "i18n"
 import { Config, Event, SetConfig } from "."
 import { ProgressButton } from "../ProgressButton"
-import { SectionInput } from "../SectionInput"
+import { SectionInput } from "../section/SectionInput"
 import { Item, TransferList } from "../TransferList"
 
 interface UrlError {
@@ -144,6 +144,8 @@ interface Props {
 }
 export const Input = ({ config, setConfig, inputRef, id }: Props) => {
   const [title, setTitle] = useState(config.title)
+  const [pre, setPre] = useState(config.pre)
+  const [post, setPost] = useState(config.post)
   const webcal = useObservable(webcal$, either(config.webcal, ""))
   const selections = useObservable(selections$, config.selections ?? [])
   const pending = useObservable(pending$, false)
@@ -152,8 +154,10 @@ export const Input = ({ config, setConfig, inputRef, id }: Props) => {
   const left = useObservable(left$, [])
   const right = useObservable(right$, mapItems(selections))
 
-  useEffect(() => setConfig({ title, webcal, selections }), [
+  useEffect(() => setConfig({ title, pre, post, webcal, selections }), [
     title,
+    pre,
+    post,
     webcal,
     selections,
   ])
@@ -169,6 +173,10 @@ export const Input = ({ config, setConfig, inputRef, id }: Props) => {
       inputRef,
       title,
       setTitle,
+      pre,
+      setPre,
+      post,
+      setPost,
       headerText,
       titlePlaceholder,
     },

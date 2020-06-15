@@ -7,11 +7,11 @@ import { classes, media, TypeStyle } from "typestyle"
 
 import { AnalyticsProps as AllAnalyticsProps, Link } from "analytics"
 import { important, percent, px } from "csx"
-import { either, isEmpty, map, reduce, values } from "fp"
+import { allEmpty, either, isEmpty, map, reduce, values } from "fp"
 import { translate } from "i18n"
 import { colors, queries } from "styles"
 import { Config, Event } from "."
-import { SectionField } from "../SectionField"
+import { SectionField } from "../section/SectionField"
 
 interface Props {
   kind: string
@@ -34,6 +34,7 @@ export const Field: FunctionComponent<Props> = ({
   )
   const events = config.selections
   const publicURL = config.publicURL
+  const { pre, post } = config
 
   const classNames = typestyle?.stylesheet({
     eventContainer: {
@@ -86,8 +87,8 @@ export const Field: FunctionComponent<Props> = ({
     cellSpacing: 0,
     cellPadding: 0,
   }
-  if (isEmpty(events)) return null
-  return h(SectionField, { title, typestyle, id }, [
+  if (allEmpty([events, pre, post])) return null
+  return h(SectionField, { title, pre, post, typestyle, id, analytics }, [
     table(tableProps, [
       tbody([
         events.map((event) => {

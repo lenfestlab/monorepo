@@ -26,7 +26,8 @@ import { Config, Image, SetConfig, URL } from "."
 import { ImageList } from "../ImageList"
 import { MarkdownInput } from "../MarkdownInput"
 import { ProgressButton } from "../ProgressButton"
-import { SectionInput } from "../SectionInput"
+import { SectionConfig } from "../section"
+import { SectionInput } from "../section/SectionInput"
 
 type InputEvent = React.ChangeEvent<HTMLInputElement>
 type ButtonEvent = React.MouseEvent<HTMLButtonElement>
@@ -50,8 +51,7 @@ interface Props {
   captionsEnabled?: boolean
 }
 
-interface State {
-  title: string
+interface State extends SectionConfig {
   url: string
   caption: string
   error: UrlError
@@ -65,6 +65,14 @@ export class Input extends Component<Props, State> {
   title$$ = new BehaviorSubject<string>("")
   title$ = this.title$$.pipe(tag("title$"), shareReplay())
   setTitle = (title: string) => this.title$$.next(title)
+
+  pre$$ = new BehaviorSubject<string>("")
+  pre$ = this.pre$$.pipe(tag("pre$"), shareReplay())
+  setPre = (val: string) => this.pre$$.next(val)
+
+  post$$ = new BehaviorSubject<string>("")
+  post$ = this.post$$.pipe(tag("post$"), shareReplay())
+  setPost = (val: string) => this.post$$.next(val)
 
   markdown$$ = new BehaviorSubject<string>("")
   markdown$ = this.markdown$$.pipe(tag("markdown$"), shareReplay())
@@ -116,7 +124,7 @@ export class Input extends Component<Props, State> {
     this.url$.pipe(mapTo(noError)), // clear on touch
     this.addImage$.pipe(
       map((url) => {
-        const valid = /(png|jpg|jpeg)/.test(url)
+        const valid = true // /(png|jpg|jpeg)/.test(url)
         return valid
           ? noError
           : { error: true, helperText: "Invalid image URL" }
@@ -127,14 +135,18 @@ export class Input extends Component<Props, State> {
   constructor(props: Props) {
     super(props)
     const { config } = props
-    const { title, markdown: _md, images: _images } = config
+    const { title, pre, post, markdown: _md, images: _images } = config
     const images = _images ?? []
     const markdown = _md ?? ""
-    this.title$$.next(title)
+    this.title$$.next(title ?? "")
+    this.pre$$.next(pre ?? "")
+    this.post$$.next(post ?? "")
     this.images$$.next(images)
     this.markdown$$.next(markdown)
     this.state = {
       title,
+      pre,
+      post,
       url: "",
       caption: "",
       error: noError,
@@ -146,6 +158,8 @@ export class Input extends Component<Props, State> {
   componentDidMount() {
     const state$ = combineLatest([
       this.title$,
+      this.pre$,
+      this.post$,
       this.url$,
       this.caption$,
       this.error$,
@@ -153,11 +167,14 @@ export class Input extends Component<Props, State> {
       this.markdown$,
     ]).pipe(
       tag("combineLatest$"),
-      tap(([title, url, caption, error, images, markdown]) => {
+      tap(([title, pre, post, url, caption, error, images, markdown]) => {
+        // @ts-ignore
         this.setState((prior) => {
           const next = {
             ...prior,
             title,
+            pre,
+            post,
             url,
             caption,
             error,
@@ -173,11 +190,13 @@ export class Input extends Component<Props, State> {
 
     const sync$ = combineLatest(
       this.title$,
+      this.pre$,
+      this.post$,
       this.images$,
-      this.markdown$$
+      this.markdown$
     ).pipe(
-      tap(([title, images, markdown]) => {
-        this.props.setConfig({ title, images, markdown })
+      tap(([title, pre, post, images, markdown]) => {
+        this.props.setConfig({ title, pre, post, images, markdown })
       }),
       tag("sync$")
     )
@@ -191,8 +210,6 @@ export class Input extends Component<Props, State> {
 
   render() {
     const {
-      config,
-      setConfig,
       inputRef,
       id,
       urlPlaceholder,
@@ -205,6 +222,8 @@ export class Input extends Component<Props, State> {
 
     const {
       title,
+      pre,
+      post,
       markdown,
       url,
       caption,
@@ -218,6 +237,8 @@ export class Input extends Component<Props, State> {
 
     const {
       setTitle,
+      setPre,
+      setPost,
       onChangeCaption,
       onChangeURL,
       onClickAdd,
@@ -239,6 +260,10 @@ export class Input extends Component<Props, State> {
         inputRef,
         title,
         setTitle,
+        pre,
+        setPre,
+        post,
+        setPost,
         headerText,
         titlePlaceholder,
       },

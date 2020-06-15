@@ -9,8 +9,8 @@ export interface Post {
 
 export type PostMap = Record<URL, Post>
 
-export interface Config {
-  title: string
+import { SectionConfig } from "../section"
+export interface Config extends SectionConfig {
   postmap: PostMap
 }
 export type SetConfig = (config: Config) => void

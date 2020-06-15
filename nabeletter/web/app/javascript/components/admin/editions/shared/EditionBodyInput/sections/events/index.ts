@@ -1,3 +1,5 @@
+import { SectionConfig } from "../section"
+
 export interface Event {
   uid: string
   summary: string
@@ -8,8 +10,7 @@ export interface Event {
   end: string
 }
 
-export interface Config {
-  title: string
+export interface Config extends SectionConfig {
   webcal: string
   publicURL?: string
   selections: Event[]

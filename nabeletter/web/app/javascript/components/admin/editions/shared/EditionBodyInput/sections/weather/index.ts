@@ -1,5 +1,6 @@
-export interface Config {
-  title: string
+import { SectionConfig } from "../section"
+
+export interface Config extends SectionConfig {
   markdown?: string
 }
 export type SetConfig = (config: Config) => void

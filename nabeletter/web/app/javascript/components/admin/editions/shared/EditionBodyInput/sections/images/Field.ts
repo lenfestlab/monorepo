@@ -4,12 +4,11 @@ import { important, percent, px } from "csx"
 import { FunctionComponent } from "react"
 import { media, TypeStyle } from "typestyle"
 
-import { either, isEmpty } from "fp"
-import { translate } from "i18n"
+import { allEmpty, either, isEmpty } from "fp"
 import { queries } from "styles"
 import { Config, Image } from "."
 import { AnalyticsProps, MarkdownField } from "../MarkdownField"
-import { SectionField } from "../SectionField"
+import { SectionField } from "../section/SectionField"
 
 export interface Props {
   config: Config
@@ -26,7 +25,9 @@ export const Field: FunctionComponent<Props> = ({
   titlePlaceholder,
 }) => {
   const title = either(config.title, titlePlaceholder)
+  const { pre, post, markdown } = config
   const images: Image[] = either(config.images, [])
+  if (allEmpty([pre, post, markdown, images])) return null
 
   const classNames = typestyle?.stylesheet({
     item: {
@@ -56,9 +57,7 @@ export const Field: FunctionComponent<Props> = ({
     },
   })
 
-  const markdown = config.markdown
-  if (isEmpty(markdown) && isEmpty(images)) return null
-  return h(SectionField, { title, typestyle, id }, [
+  return h(SectionField, { title, pre, post, typestyle, id, analytics }, [
     table([
       tbody([
         tr([

@@ -8,13 +8,18 @@ import {
 } from "@material-ui/core"
 import React, { FunctionComponent, RefObject } from "react"
 
-export interface SectionInputProps {
+import { translate } from "i18n"
+import { SectionConfig } from "."
+import { MarkdownInput } from "../MarkdownInput"
+
+export interface SectionInputProps extends SectionConfig {
   inputRef: RefObject<HTMLDivElement>
   id: string
-  title: string
+  headerText: string
   setTitle: (title: string) => void
   titlePlaceholder: string
-  headerText: string
+  setPre: (title: string) => void
+  setPost: (title: string) => void
 }
 export const SectionInput: FunctionComponent<SectionInputProps> = ({
   id,
@@ -22,6 +27,10 @@ export const SectionInput: FunctionComponent<SectionInputProps> = ({
   title,
   setTitle,
   titlePlaceholder,
+  pre,
+  setPre,
+  post,
+  setPost,
   headerText,
   children,
 }) => {
@@ -40,7 +49,21 @@ export const SectionInput: FunctionComponent<SectionInputProps> = ({
             variant: "filled",
           },
         }),
+        h(MarkdownInput, {
+          markdown: pre,
+          placeholder: translate("section-pre"),
+          onChange: (event: React.ChangeEvent<HTMLInputElement>) => {
+            setPre(event.target.value as string)
+          },
+        }),
         h(React.Fragment, [children]),
+        h(MarkdownInput, {
+          markdown: post,
+          placeholder: translate("section-post"),
+          onChange: (event: React.ChangeEvent<HTMLInputElement>) => {
+            setPost(event.target.value as string)
+          },
+        }),
       ]),
     ]),
   ])
