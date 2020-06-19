@@ -17,7 +17,7 @@ interface StandardProps {
 type Props = StandardProps & {
   analytics: AnalyticsProps
   url: string
-  title: string
+  title?: string
 }
 
 export const Link: FunctionComponent<Props> = ({

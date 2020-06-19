@@ -16,12 +16,19 @@ const useStyles = makeStyles((theme) => ({
 }))
 
 interface Props {
-  previewRef?: PreviewRef
+  htmlRef?: PreviewRef
+  ampRef?: PreviewRef
   inputs: SectionInput[]
   fields: SectionField[]
   analytics: AnalyticsProps
 }
-export const Editor = ({ inputs, fields, previewRef, analytics }: Props) => {
+export const Editor = ({
+  inputs,
+  fields,
+  htmlRef,
+  ampRef,
+  analytics,
+}: Props) => {
   const css = useStyles()
   return div({ id: "editor" }, [
     h(
@@ -59,7 +66,7 @@ export const Editor = ({ inputs, fields, previewRef, analytics }: Props) => {
             className: css.panel,
             flex: "0 0 content",
           },
-          [h(Preview, { id: "preview", previewRef, fields, analytics })]
+          [h(Preview, { id: "preview", htmlRef, ampRef, fields, analytics })]
         ),
       ]
     ),

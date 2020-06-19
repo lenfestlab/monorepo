@@ -2,7 +2,7 @@ import { h } from "@cycle/react"
 import { table, tbody, td, tr } from "@cycle/react-dom"
 import { important, percent, px } from "csx"
 import { FunctionComponent } from "react"
-import { media, TypeStyle } from "typestyle"
+import { classes, media, TypeStyle } from "typestyle"
 
 import { colors, queries } from "styles"
 import { SectionConfig } from "."
@@ -59,6 +59,28 @@ export const SectionField: FunctionComponent<SectionFieldProps> = ({
       textAlign: "center",
       fontFamily: "Roboto",
     },
+    sectionPreOrPost: {
+      textAlign: "center",
+      fontFamily: "Roboto",
+      $nest: {
+        "& h2,h3,h4,h5,h6": {
+          fontSize: px(18),
+          paddingBottom: px(20),
+          ...media(queries.mobile, {
+            padding: important(px(10)),
+          }),
+        },
+        "& img": {
+          maxWidth: px(400),
+        },
+      },
+    },
+    sectionPre: {
+      paddingBottom: px(20),
+    },
+    sectionPost: {
+      paddingTop: px(20),
+    },
   })
 
   return tr([
@@ -72,18 +94,30 @@ export const SectionField: FunctionComponent<SectionFieldProps> = ({
                   tr([td({ className: classNames?.sectionTitle }, title)]),
                   pre &&
                     tr([
-                      td({ className: classNames?.sectionContent }, [
-                        h(MarkdownField, { markdown: pre, analytics }),
-                      ]),
+                      td(
+                        {
+                          className: classes(
+                            classNames?.sectionPreOrPost,
+                            classNames?.sectionPre
+                          ),
+                        },
+                        [h(MarkdownField, { markdown: pre, analytics })]
+                      ),
                     ]),
                   tr([
                     td({ className: classNames?.sectionContent }, [children]),
                   ]),
                   post &&
                     tr([
-                      td({ className: classNames?.sectionContent }, [
-                        h(MarkdownField, { markdown: post, analytics }),
-                      ]),
+                      td(
+                        {
+                          className: classes(
+                            classNames?.sectionPreOrPost,
+                            classNames?.sectionPost
+                          ),
+                        },
+                        [h(MarkdownField, { markdown: post, analytics })]
+                      ),
                     ]),
                 ]),
               ]),

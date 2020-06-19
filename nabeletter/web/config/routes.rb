@@ -18,4 +18,8 @@ Rails.application.routes.draw do
              path_names: { sign_in: "tokens", sign_out: "tokens" },
              controllers: { sessions: "sessions" },
              defaults: { format: :json }
+
+  # static pages
+  get "/privacy", to: redirect("privacy.html")
+
 end
