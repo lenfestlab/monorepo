@@ -46,12 +46,12 @@ const errorStart: UrlError = {
 
 type InputEvent = React.ChangeEvent<HTMLInputElement>
 
-const webcalDefault = process.env.SECTION_EVENTS_DEFAULT_WEBCAL ?? ""
+const webcalDefault = process.env.SECTION_MEETINGS_DEFAULT_WEBCAL ?? ""
 const webcal$$ = new BehaviorSubject<string>(webcalDefault)
 const onChange = (event: InputEvent) => webcal$$.next(event.target.value)
 const webcal$: Observable<string> = webcal$$.pipe(tag("webcal$"), shareReplay())
 
-const publicURLDefault = process.env.SECTION_EVENTS_DEFAULT_PUBLIC_URL ?? ""
+const publicURLDefault = process.env.SECTION_MEETINGS_DEFAULT_PUBLIC_URL ?? ""
 const publicURL$$ = new BehaviorSubject<string>(publicURLDefault)
 const onChangePublicURL = (event: InputEvent) =>
   publicURL$$.next(event.target.value)
@@ -173,8 +173,9 @@ export const Input = ({ config, setConfig, inputRef, id }: Props) => {
     [title, pre, post, webcal, publicURL, selections]
   )
 
-  const headerText = translate("events-input-header")
-  const titlePlaceholder = translate("events-input-title-placeholder")
+  const headerText = translate("meetings-input-header")
+  const titlePlaceholder = translate("meetings-input-title-placeholder")
+
   const placeholder = translate(`events-input-url-placeholder`)
 
   return h(

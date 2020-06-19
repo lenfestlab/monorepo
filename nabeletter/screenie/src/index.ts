@@ -12,6 +12,7 @@ import https from "https";
 import fetch from "node-fetch";
 import path from "path";
 import puppeteer from "puppeteer";
+import icalendar from "icalendar";
 
 const app = express();
 const port = process.env.PORT || 5000;
@@ -26,6 +27,28 @@ if (process.env.NODE_ENV === "production") {
   const cert = fs.readFileSync(path.resolve(process.env.PATH_SSL_CERT!));
   server = https.createServer({ key, cert }, app);
 }
+
+app.get("/ics", async (req, res) => {
+  try {
+    const { uid, summary, dstart, dend, description, location } = req.query;
+    var event = new icalendar.VEvent(uid);
+    event.setSummary(summary);
+    event.setDate(new Date(dstart as string), new Date(dend as string));
+    event.setDescription(description);
+    event.setLocation(location);
+    const body = event.toString();
+    const filename = "event.ics";
+    res.setHeader("Content-disposition", "attachment; filename=" + filename);
+    res.setHeader("Content-type", "text/calendar");
+    res.send(body);
+    res.useChunkedEncodingByDefault;
+  } catch (error) {
+    res.status(400).json({
+      error: true,
+      message: error.message,
+    });
+  }
+});
 
 interface OEmbed {
   html: string;
