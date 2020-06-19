@@ -18,6 +18,7 @@
     "cloudinary": "~1.21.0",
     "cors": "~2.8.5",
     "express": "~4.17.1",
+    "icalendar": "0.7.1",
     "node-fetch": "~2.6.0",
     "nodemon": "~2.0.4",
     "prettier": "~2.0.5",

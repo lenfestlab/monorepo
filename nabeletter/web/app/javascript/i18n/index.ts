@@ -88,6 +88,11 @@ export const translate = (key: string): string => {
     "answer-input-title-placeholder": "Answer from the editor",
     "answer-input-url-placeholder": "https://www.inquirer.com/...html",
     "answer-input-url-add": "Add",
+    // meetings
+    "meetings-input-header": "Meetings",
+    "meetings-input-title-placeholder": "Neighbors Association Meetings",
+    "meetings-field-zoom-link": "Zoom link",
+    "meetings-field-set-reminder": "Set reminder",
     // footer
     "footer-feedback-prompt": "Have feedback?",
     "footer-feedback-cta": "Send your comments and questions to ",

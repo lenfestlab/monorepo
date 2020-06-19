@@ -2,6 +2,7 @@ import chunk from "lodash/chunk"
 import compact from "lodash/compact"
 import every from "lodash/every"
 import find from "lodash/find"
+import first from "lodash/first"
 import get from "lodash/get"
 import isEmpty from "lodash/isEmpty"
 import isEqual from "lodash/isEqual"
@@ -37,6 +38,7 @@ export {
   chunk,
   compact,
   either,
+  first,
   find,
   get,
   isEmpty,

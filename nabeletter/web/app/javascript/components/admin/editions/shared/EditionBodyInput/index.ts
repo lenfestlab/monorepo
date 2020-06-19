@@ -29,6 +29,10 @@ import {
   Input as InstagramInput,
 } from "./sections/instagram"
 import { Field as IntroField, Input as IntroInput } from "./sections/intro"
+import {
+  Field as MeetingsField,
+  Input as MeetingsInput,
+} from "./sections/meetings"
 import { Field as NewsField, Input as NewsInput } from "./sections/news"
 import {
   Field as PermitsField,
@@ -59,6 +63,7 @@ export const INSTAGRAM = "instagram"
 export const PERMITS = "permits"
 export const ASK = "ask"
 export const ANSWER = "answer"
+export const MEETINGS = "meetings"
 export const FOOTER = "footer"
 
 export type Kind =
@@ -76,6 +81,7 @@ export type Kind =
   | "permits"
   | "ask"
   | "answer"
+  | "meetings"
   | "footer"
 
 type AnalyticsProps = Omit<AllAnalyticsProps, "title">
@@ -104,6 +110,8 @@ function getSectionComponents(kind: Kind) {
       return { field: FacebookField, input: FacebookInput }
     case INSTAGRAM:
       return { field: InstagramField, input: InstagramInput }
+    case MEETINGS:
+      return { field: MeetingsField, input: MeetingsInput }
     case PERMITS:
       return { field: PermitsField, input: PermitsInput }
     case ANSWER:
@@ -169,6 +177,7 @@ export class EditionBodyInput extends Component<Props, State> {
       FACEBOOK,
       INSTAGRAM,
       PERMITS,
+      MEETINGS,
       ASK,
       ANSWER,
       FOOTER,
