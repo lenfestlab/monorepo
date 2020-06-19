@@ -233,18 +233,7 @@ export class Input extends Component<Props, State> {
   }
 
   render() {
-    const {
-      inputRef,
-      id,
-      kind,
-      // TODO
-      // urlPlaceholder,
-      // headerText,
-      // titlePlaceholder,
-      // captionPlaceholder,
-      // markdownPlaceholder,
-      // captionsEnabled = false,
-    } = this.props
+    const { inputRef, id, kind } = this.props
 
     const {
       title,
@@ -266,12 +255,12 @@ export class Input extends Component<Props, State> {
       onClickDelete,
     } = this
 
-    const headerText = translate(`news-input-header`)
-    const titlePlaceholder = translate(`news-input-title-placeholder`)
-    const placeholder = translate(`news-input-url-placeholder`)
-    const urls = compact(
-      (process.env.SECTION_NEWS_SOURCE_URLS ?? "").split(/\s+/)
-    )
+    const headerText = translate(`answer-input-header`)
+    const titlePlaceholder = translate(`answer-input-title-placeholder`)
+    const placeholder = translate(`answer-input-url-placeholder`)
+    const addButtonText = translate(`answer-input-url-add`)
+    const urls: string[] = []
+
     return h(
       SectionInput,
       {
@@ -302,7 +291,7 @@ export class Input extends Component<Props, State> {
         h(
           ProgressButton,
           { disabled, pending, onClick: onClickAdd },
-          translate(`${kind}-input-url-add`)
+          addButtonText
         ),
         h(Grid, { item: true }, [
           h(

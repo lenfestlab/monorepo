@@ -14,8 +14,9 @@ interface Props {
   fields: SectionField[]
   typestyle: TypeStyle
   analytics: AnalyticsProps
+  isAmp?: boolean
 }
-export function Body({ fields, typestyle, analytics }: Props) {
+export function Body({ fields, typestyle, analytics, isAmp = false }: Props) {
   const { cssRaw, cssRule, stylesheet } = typestyle
   cssRule("*", {
     margin: 0,
@@ -30,9 +31,13 @@ export function Body({ fields, typestyle, analytics }: Props) {
     marginLeft: "auto",
     marginRight: "auto",
   })
-  cssRaw(
-    `@import url('https://fonts.googleapis.com/css?family=Roboto|Roboto+Slab&display=swap');`
-  )
+
+  // NOTE: AMP doesn't support custom fonts
+  if (!isAmp) {
+    cssRaw(
+      `@import url('https://fonts.googleapis.com/css?family=Roboto|Roboto+Slab&display=swap');`
+    )
+  }
 
   const classNames = stylesheet({
     pseudoBody: {

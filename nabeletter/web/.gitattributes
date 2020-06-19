@@ -1,3 +1,4 @@
 *.json binary
 *.lock binary
 *.js* binary
+*.html* binary

@@ -10,6 +10,8 @@ import { Record as ApiRecord } from "components/admin/shared"
 import { find, get, isEmpty, values } from "fp"
 
 import { Editor } from "./Editor"
+import { Field as AnswerField, Input as AnswerInput } from "./sections/answer"
+import { Field as AskField, Input as AskInput } from "./sections/ask"
 import { Field as EventsField, Input as EventsInput } from "./sections/events"
 import {
   Field as FacebookField,
@@ -47,6 +49,8 @@ export const TWEETS = "tweets"
 export const FACEBOOK = "facebook"
 export const INSTAGRAM = "instagram"
 export const PERMITS = "permits"
+export const ASK = "ask"
+export const ANSWER = "answer"
 export const FOOTER = "footer"
 
 export type Kind =
@@ -61,12 +65,18 @@ export type Kind =
   | "facebook"
   | "instagram"
   | "permits"
+  | "ask"
+  | "answer"
   | "footer"
 
 type AnalyticsProps = Omit<AllAnalyticsProps, "title">
 
 function getSectionComponents(kind: Kind) {
   switch (kind) {
+    case ANSWER:
+      return { field: AnswerField, input: AnswerInput }
+    case ASK:
+      return { field: AskField, input: AskInput }
     case INTRO:
       return { field: IntroField, input: IntroInput }
     case WEATHER:
@@ -118,7 +128,8 @@ interface State {
 export class EditionBodyInput extends Component<Props, State> {
   subscription: Subscription | null = null
   configs$ = new BehaviorSubject<SectionConfig[]>([])
-  previewRef: PreviewRef = createRef<HTMLDivElement>()
+  htmlRef: PreviewRef = createRef<HTMLDivElement>()
+  ampRef: PreviewRef = createRef<HTMLDivElement>()
   sectionObserver: IntersectionObserver | null = null
   sectionRefsMap: SectionRefsMap = {}
 
@@ -130,7 +141,6 @@ export class EditionBodyInput extends Component<Props, State> {
     if (isEmpty(bodyConfig)) {
       bodyConfig = {
         sections: [
-          { kind: PERMITS, config: {} },
           { kind: INTRO, config: {} },
           { kind: WEATHER, config: {} },
           { kind: EVENTS, config: {} },
@@ -140,6 +150,9 @@ export class EditionBodyInput extends Component<Props, State> {
           { kind: TWEETS, config: {} },
           { kind: FACEBOOK, config: {} },
           { kind: INSTAGRAM, config: {} },
+          { kind: PERMITS, config: {} },
+          { kind: ASK, config: {} },
+          { kind: ANSWER, config: {} },
         ],
       }
     }
@@ -201,11 +214,19 @@ export class EditionBodyInput extends Component<Props, State> {
       debounceTime(1000),
       tag("configs$"),
       switchMap((sections) => {
-        const node = this.previewRef.current
-        const body_html = node?.innerHTML
+        const body_html = this.htmlRef?.current?.innerHTML
+        let body_amp = this.ampRef?.current?.innerHTML
+        // NOTE: amp markup unsupported by React
+        if (body_amp) {
+          body_amp = body_amp
+            .replace("<html>", "<html amp4email>")
+            .replace("FIX_VISIBILITY", "hidden")
+            .replace(/\=\"true\"/g, "") // drop react cruft
+          body_amp = `<!doctype html>${body_amp}`
+        }
         const body_data = { sections }
         const id = this.props.record?.id
-        const data = { body_data, body_html }
+        const data = { body_data, body_html } // TODO: restore body_amp
         const request = dataProvider("UPDATE", "editions", { id, data })
         return from(request)
       }),
@@ -271,8 +292,8 @@ export class EditionBodyInput extends Component<Props, State> {
         })
       )
     })
-    const previewRef = this.previewRef
+    const { htmlRef, ampRef } = this
     const analytics = { edition }
-    return h(Editor, { inputs, fields, previewRef, analytics })
+    return h(Editor, { inputs, fields, htmlRef, ampRef, analytics })
   }
 }

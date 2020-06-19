@@ -64,6 +64,19 @@ export const translate = (key: string): string => {
     // permits
     "permits-input-header": "Permits under review",
     "permits-input-title-placeholder": "Permits under review",
+    // ask
+    "ask-input-header": "Ask the editor",
+    "ask-input-title-placeholder": "Ask the editor",
+    "ask-input-prompt-placeholder":
+      "What else do you want to know about your neighborhood?",
+    "ask-field-question-placeholder": "Type your question here...",
+    "ask-field-email-cta": "Email the editor",
+    "ask-field-email-subject": "Asking the editor:",
+    // answer
+    "answer-input-header": "Answer from the editor",
+    "answer-input-title-placeholder": "Answer from the editor",
+    "answer-input-url-placeholder": "https://www.inquirer.com/...html",
+    "answer-input-url-add": "Add",
     // footer
     "footer-feedback-prompt": "Have feedback?",
     "footer-feedback-cta": "Send your comments and questions to ",
