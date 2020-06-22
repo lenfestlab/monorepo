@@ -163,10 +163,6 @@ export const Field = ({ config, typestyle, id, analytics }: Props) => {
             ])
           })
         ),
-        // prettier-ignore
-        tr([td({ colSpan }, [
-          h(MarkdownField, { markdown, typestyle, analytics })
-        ])]),
         tr([
           td(
             {
@@ -181,6 +177,11 @@ export const Field = ({ config, typestyle, id, analytics }: Props) => {
               ),
             ]
           ),
+        ]),
+        tr([
+          td({ colSpan }, [
+            h(MarkdownField, { markdown, typestyle, analytics }),
+          ]),
         ]),
       ]),
     ]),
