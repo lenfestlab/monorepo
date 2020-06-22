@@ -11,7 +11,9 @@ import { useDispatch } from "react-redux"
 
 import { create } from "rxjs-spy"
 const spy = create({ defaultLogger: console, sourceMaps: true })
-spy.log() // no filter, logs everything
+if (process.env.DEBUG_RX) {
+  spy.log() // no filter, logs everything
+}
 
 import {
   EditionCreate,

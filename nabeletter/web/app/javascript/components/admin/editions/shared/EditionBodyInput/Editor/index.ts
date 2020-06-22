@@ -1,6 +1,6 @@
 import { h } from "@cycle/react"
 import { div } from "@cycle/react-dom"
-import { Box, Grid } from "@material-ui/core"
+import { Box, CircularProgress, Grid } from "@material-ui/core"
 import { makeStyles } from "@material-ui/core/styles"
 
 import { viewHeight } from "csx"
@@ -21,16 +21,38 @@ interface Props {
   inputs: SectionInput[]
   fields: SectionField[]
   analytics: AnalyticsProps
+  syncing: boolean
 }
+
 export const Editor = ({
   inputs,
   fields,
   htmlRef,
   ampRef,
   analytics,
+  syncing,
 }: Props) => {
   const css = useStyles()
   return div({ id: "editor" }, [
+    h(
+      Box,
+      {
+        id: "progress-indicator",
+        key: "progress-indicator",
+        display: "flex",
+        flexDirection: "row",
+        justifyContent: "center",
+        flexWrap: "nowrap",
+        height: 20,
+      },
+      [
+        syncing &&
+          h(CircularProgress, {
+            size: 20,
+            disableShrink: true,
+          }),
+      ]
+    ),
     h(
       Box,
       {
@@ -52,11 +74,9 @@ export const Editor = ({
             paddingRight: 2,
           },
           [
-            h(
-              Grid,
-              { container: true, direction: "column", spacing: 1 },
-              inputs
-            ),
+            h(Grid, { container: true, direction: "column", spacing: 1 }, [
+              ...inputs,
+            ]),
           ]
         ),
         h(
@@ -66,7 +86,15 @@ export const Editor = ({
             className: css.panel,
             flex: "0 0 content",
           },
-          [h(Preview, { id: "preview", htmlRef, ampRef, fields, analytics })]
+          [
+            h(Preview, {
+              id: "preview",
+              htmlRef,
+              ampRef,
+              fields,
+              analytics,
+            }),
+          ]
         ),
       ]
     ),
