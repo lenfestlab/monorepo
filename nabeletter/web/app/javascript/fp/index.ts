@@ -5,6 +5,7 @@ import find from "lodash/find"
 import get from "lodash/get"
 import isEmpty from "lodash/isEmpty"
 import isEqual from "lodash/isEqual"
+import keys from "lodash/keys"
 import map from "lodash/map"
 import max from "lodash/max"
 import omit from "lodash/omit"
@@ -39,6 +40,7 @@ export {
   get,
   isEmpty,
   isEqual,
+  keys,
   map,
   max,
   omit,
