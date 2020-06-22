@@ -7,7 +7,7 @@ import { debounceTime, share, skip, switchMap } from "rxjs/operators"
 
 import { AnalyticsProps as AllAnalyticsProps } from "analytics"
 import { Record as ApiRecord } from "components/admin/shared"
-import { find, get, isEmpty, values } from "fp"
+import { find, get, isEmpty, keys, values } from "fp"
 
 import { Editor } from "./Editor"
 import { Field as AnswerField, Input as AnswerInput } from "./sections/answer"
@@ -137,25 +137,28 @@ export class EditionBodyInput extends Component<Props, State> {
     super(props)
     // NOTE: set state from server-side config
     const { record } = this.props
-    let bodyConfig: BodyConfig = get(record, "body_data")
-    if (isEmpty(bodyConfig)) {
-      bodyConfig = {
-        sections: [
-          { kind: INTRO, config: {} },
-          { kind: WEATHER, config: {} },
-          { kind: EVENTS, config: {} },
-          { kind: NEWS, config: {} },
-          { kind: SAFETY, config: {} },
-          { kind: HISTORY, config: {} },
-          { kind: TWEETS, config: {} },
-          { kind: FACEBOOK, config: {} },
-          { kind: INSTAGRAM, config: {} },
-          { kind: PERMITS, config: {} },
-          { kind: ASK, config: {} },
-          { kind: ANSWER, config: {} },
-        ],
+    const bodyConfig: BodyConfig = get(record, "body_data") ?? { sections: [] }
+    const existingSectionKinds = keys(bodyConfig.sections)
+    const allKinds = [
+      INTRO,
+      WEATHER,
+      EVENTS,
+      NEWS,
+      SAFETY,
+      HISTORY,
+      TWEETS,
+      FACEBOOK,
+      INSTAGRAM,
+      PERMITS,
+      ASK,
+      ANSWER,
+    ]
+    allKinds.forEach((kind) => {
+      if (!existingSectionKinds.includes(kind)) {
+        bodyConfig.sections.push({ kind: kind as Kind, config: {} })
       }
-    }
+    })
+
     const sections: SectionConfig[] = get(bodyConfig, "sections", [])
     this.state = { sections }
     // NOTE: sync section visibility
