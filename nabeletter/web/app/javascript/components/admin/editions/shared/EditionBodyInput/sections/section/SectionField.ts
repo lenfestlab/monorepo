@@ -74,6 +74,8 @@ export const SectionField: FunctionComponent<SectionFieldProps> = ({
           maxWidth: px(400),
         },
       },
+      fontSize: important(px(16)),
+      color: important(colors.black),
     },
     sectionPre: {
       paddingBottom: px(20),
@@ -83,12 +85,12 @@ export const SectionField: FunctionComponent<SectionFieldProps> = ({
     },
   })
 
-  return tr([
+  return tr({ width: "100%" }, [
     td([
-      table([
-        tbody([
-          tr([
-            td([
+      table({ width: "100%" }, [
+        tbody({ width: "100%" }, [
+          tr({ width: "100%" }, [
+            td({ width: "100%" }, [
               table({ className: classNames?.section }, [
                 tbody({ id }, [
                   tr([td({ className: classNames?.sectionTitle }, title)]),

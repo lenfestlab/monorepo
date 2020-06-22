@@ -62,8 +62,8 @@ export const translate = (key: string): string => {
       "https://www.facebook.com/greensgrowfarms/posts/10158900860584769",
     "facebook-input-url-add": "Add",
     // permits
-    "permits-input-header": "Permits under review",
-    "permits-input-title-placeholder": "Permits under review",
+    "permits-input-header": "New construction & demolition",
+    "permits-input-title-placeholder": "New construction and demos",
     // ask
     "ask-input-header": "Ask the editor",
     "ask-input-title-placeholder": "Ask the editor",
