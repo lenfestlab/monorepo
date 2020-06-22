@@ -3,11 +3,19 @@ import { dataProvider } from "components/admin/providers"
 import { Component, createRef, RefObject } from "react"
 import { BehaviorSubject, from, Subscription, zip } from "rxjs"
 import { tag } from "rxjs-spy/operators"
-import { debounceTime, share, skip, switchMap } from "rxjs/operators"
+import {
+  debounceTime,
+  distinctUntilChanged,
+  share,
+  shareReplay,
+  skip,
+  switchMap,
+  tap,
+} from "rxjs/operators"
 
 import { AnalyticsProps as AllAnalyticsProps } from "analytics"
 import { Record as ApiRecord } from "components/admin/shared"
-import { find, get, isEmpty, keys, values } from "fp"
+import { find, get, map, values } from "fp"
 
 import { Editor } from "./Editor"
 import { Field as AnswerField, Input as AnswerInput } from "./sections/answer"
@@ -124,6 +132,7 @@ interface Props {
 }
 interface State {
   sections: SectionConfig[]
+  syncing: boolean
 }
 export class EditionBodyInput extends Component<Props, State> {
   subscription: Subscription | null = null
@@ -138,7 +147,7 @@ export class EditionBodyInput extends Component<Props, State> {
     // NOTE: set state from server-side config
     const { record } = this.props
     const bodyConfig: BodyConfig = get(record, "body_data") ?? { sections: [] }
-    const existingSectionKinds = keys(bodyConfig.sections)
+    const existingSectionKinds = map(bodyConfig.sections, "kind")
     const allKinds = [
       INTRO,
       WEATHER,
@@ -154,13 +163,13 @@ export class EditionBodyInput extends Component<Props, State> {
       ANSWER,
     ]
     allKinds.forEach((kind) => {
-      if (!existingSectionKinds.includes(kind)) {
+      if (!existingSectionKinds.includes(kind as Kind)) {
         bodyConfig.sections.push({ kind: kind as Kind, config: {} })
       }
     })
 
     const sections: SectionConfig[] = get(bodyConfig, "sections", [])
-    this.state = { sections }
+    this.state = { sections, syncing: false }
     // NOTE: sync section visibility
     this.sectionRefsMap = sections.reduce<SectionRefsMap>(
       (prior, current, _idx, _configs): SectionRefsMap => {
@@ -214,7 +223,15 @@ export class EditionBodyInput extends Component<Props, State> {
     // NOTE: sync sections' config & html with server
     const syncConfigs$ = this.configs$.pipe(
       skip(1),
-      debounceTime(1000),
+      tap((_) => {
+        this.setState((prior: State) => {
+          return {
+            ...prior,
+            syncing: true,
+          }
+        })
+      }),
+      debounceTime(500),
       tag("configs$"),
       switchMap((sections) => {
         const body_html = this.htmlRef?.current?.innerHTML
@@ -232,6 +249,14 @@ export class EditionBodyInput extends Component<Props, State> {
         const data = { body_data, body_html } // TODO: restore body_amp
         const request = dataProvider("UPDATE", "editions", { id, data })
         return from(request)
+      }),
+      tap((_) => {
+        this.setState((prior: State) => {
+          return {
+            ...prior,
+            syncing: false,
+          }
+        })
       }),
       tag("syncConfigs$"),
       share()
@@ -253,7 +278,7 @@ export class EditionBodyInput extends Component<Props, State> {
     const inputs: SectionInput[] = []
     const fields: SectionField[] = []
     const edition = get(this.props.record, "id", "") as string
-    const { sections } = this.state
+    const { sections, syncing } = this.state
     sections.forEach((sectionConfig: SectionConfig, idx: number) => {
       const kind = get(sectionConfig, "kind")
       const config = get(sectionConfig, "config")
@@ -297,6 +322,6 @@ export class EditionBodyInput extends Component<Props, State> {
     })
     const { htmlRef, ampRef } = this
     const analytics = { edition }
-    return h(Editor, { inputs, fields, htmlRef, ampRef, analytics })
+    return [h(Editor, { syncing, inputs, fields, htmlRef, ampRef, analytics })]
   }
 }
