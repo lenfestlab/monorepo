@@ -6,6 +6,7 @@ import get from "lodash/get"
 import isEmpty from "lodash/isEmpty"
 import isEqual from "lodash/isEqual"
 import keys from "lodash/keys"
+import last from "lodash/last"
 import map from "lodash/map"
 import max from "lodash/max"
 import omit from "lodash/omit"
@@ -41,13 +42,14 @@ export {
   isEmpty,
   isEqual,
   keys,
+  last,
   map,
   max,
   omit,
+  reduce,
   startsWith,
   union,
   unionWith,
   uniqBy,
   values,
-  reduce,
 }

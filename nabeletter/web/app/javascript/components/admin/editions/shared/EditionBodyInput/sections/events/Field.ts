@@ -7,7 +7,7 @@ import { classes, media, TypeStyle } from "typestyle"
 
 import { AnalyticsProps as AllAnalyticsProps, Link } from "analytics"
 import { important, percent, px } from "csx"
-import { allEmpty, either, isEmpty, map, reduce, values } from "fp"
+import { allEmpty, either, isEmpty, last, map, reduce, values } from "fp"
 import { translate } from "i18n"
 import { colors, queries } from "styles"
 import { Config, Event } from "."
@@ -93,10 +93,14 @@ export const Field: FunctionComponent<Props> = ({
       tbody([
         events.map((event) => {
           let description = event.description
-          const urls = Array.from(getUrls(description))
-          const images = urls.filter((token) => /(png|jpg)$/.test(token))
-          images.forEach((url) => (description = description.replace(url, "")))
-          // Sat, 08 Feb 2020 at 9am
+          const parser = new DOMParser()
+          const doc = parser.parseFromString(description, "text/html")
+          const links = doc.querySelectorAll("a")
+          const link = last(links)
+          const src = link?.href
+          // remove img link from description
+          link?.parentNode?.removeChild(link)
+          description = doc.documentElement.innerHTML
           const start = format(parseISO(event.start), "EEE, d LLL y' at 'p")
           return table(
             {
@@ -104,12 +108,7 @@ export const Field: FunctionComponent<Props> = ({
               className: classNames?.eventContainer,
             },
             [
-              thead(
-                {},
-                images.map((src) => {
-                  return img({ className: classNames?.image, src })
-                })
-              ),
+              thead({}, [img({ className: classNames?.image, src })]),
               tbody([
                 table(
                   {

@@ -26,7 +26,8 @@ class EventsController < ApplicationController
         start: event.dtstart,
         end: event.dtend,
         location: event.location,
-        url: event.url
+        url: event.url,
+        attach: event.attach
       }
     }
     render json: events

@@ -24,6 +24,10 @@ export const translate = (key: string): string => {
       "https://calendar.google.com/calendar/ical/.../basic.ics",
     "events-input-download": "Load",
     "events-field-more": "View more events >>",
+    "events-input-public-helper":
+      "Settings and sharing > Integrate calendar > Public URL to this calendar",
+    "events-input-webcal-helper":
+      "Settings and sharing > Integrate calendar > Public address in iCal format",
     // news
     "news-input-header": "News",
     "news-input-title-placeholder": "Neighborhood news",
