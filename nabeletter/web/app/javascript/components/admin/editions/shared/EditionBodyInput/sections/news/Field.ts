@@ -76,6 +76,7 @@ export const Field = ({ config, typestyle, id, kind, analytics }: Props) => {
       textDecoration: "underline",
     },
   })
+
   return h(SectionField, { title, typestyle, id, pre, post, analytics }, [
     table({ border: 0, cellPadding: 0, cellSpacing: 0 }, [
       tbody([
@@ -90,8 +91,10 @@ export const Field = ({ config, typestyle, id, kind, analytics }: Props) => {
                 image: src,
                 published_time,
               } = article
+
               const published =
-                published_time && format(parseISO(published_time), "MMMM L, y")
+                published_time && format(parseISO(published_time), "MMMM d, y")
+
               return td(
                 {
                   className: classNames?.article,
