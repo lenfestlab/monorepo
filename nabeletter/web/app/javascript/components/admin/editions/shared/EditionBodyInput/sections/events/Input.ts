@@ -39,6 +39,10 @@ interface UrlError {
   helperText: string
 }
 const noError: UrlError = { error: false, helperText: "" }
+const errorStart: UrlError = {
+  error: false,
+  helperText: translate("events-input-webcal-helper"),
+}
 
 type InputEvent = React.ChangeEvent<HTMLInputElement>
 
@@ -46,6 +50,15 @@ const webcalDefault = process.env.SECTION_EVENTS_DEFAULT_WEBCAL ?? ""
 const webcal$$ = new BehaviorSubject<string>(webcalDefault)
 const onChange = (event: InputEvent) => webcal$$.next(event.target.value)
 const webcal$: Observable<string> = webcal$$.pipe(tag("webcal$"), shareReplay())
+
+const publicURLDefault = process.env.SECTION_EVENTS_DEFAULT_PUBLIC_URL ?? ""
+const publicURL$$ = new BehaviorSubject<string>(publicURLDefault)
+const onChangePublicURL = (event: InputEvent) =>
+  publicURL$$.next(event.target.value)
+const publicURL$: Observable<string> = publicURL$$.pipe(
+  tag("publicURL$"),
+  shareReplay()
+)
 
 const download$$ = new Subject<void>()
 const onClick = (event: React.MouseEvent) => download$$.next()
@@ -97,7 +110,7 @@ const error$ = merge(
       }
     })
   )
-).pipe(startWith(noError), tag("error$"), share())
+).pipe(startWith(errorStart), tag("error$"), share())
 
 const events$: Observable<Event[]> = onErrorResumeNext(response$).pipe(
   tag("events$"),
@@ -147,6 +160,7 @@ export const Input = ({ config, setConfig, inputRef, id }: Props) => {
   const [pre, setPre] = useState(config.pre)
   const [post, setPost] = useState(config.post)
   const webcal = useObservable(webcal$, either(config.webcal, ""))
+  const publicURL = useObservable(publicURL$, either(config.publicURL, ""))
   const selections = useObservable(selections$, config.selections ?? [])
   const pending = useObservable(pending$, false)
   const disabled = useObservable(disabled$, true)
@@ -154,13 +168,10 @@ export const Input = ({ config, setConfig, inputRef, id }: Props) => {
   const left = useObservable(left$, [])
   const right = useObservable(right$, mapItems(selections))
 
-  useEffect(() => setConfig({ title, pre, post, webcal, selections }), [
-    title,
-    pre,
-    post,
-    webcal,
-    selections,
-  ])
+  useEffect(
+    () => setConfig({ title, pre, post, webcal, publicURL, selections }),
+    [title, pre, post, webcal, publicURL, selections]
+  )
 
   const headerText = translate("events-input-header")
   const titlePlaceholder = translate("events-input-title-placeholder")
@@ -203,6 +214,16 @@ export const Input = ({ config, setConfig, inputRef, id }: Props) => {
         onChange: (left: Item[], right: Item[]) => {
           setLeft(left)
           setRight(right)
+        },
+      }),
+      h(TextField, {
+        value: publicURL,
+        helperText: translate("events-input-public-helper"),
+        ...{
+          fullWidth: true,
+          onChange: onChangePublicURL,
+          placeholder,
+          variant: "filled",
         },
       }),
     ]

@@ -8,6 +8,7 @@ export interface Event {
   url: string
   start: string
   end: string
+  attach: string[]
 }
 
 export interface Config extends SectionConfig {
