@@ -38,6 +38,7 @@
     "@types/react-dom": "~16.9.5",
     "@types/react-redux": "~7.1.9",
     "@types/showdown": "~1.9.3",
+    "@types/underscore.string": "0.0.38",
     "babel-loader": "^8.1.0",
     "babel-plugin-transform-react-remove-prop-types": "0.4.24",
     "csstips": "~1.2.0",
@@ -69,6 +70,7 @@
     "turbolinks": "^5.2.0",
     "typescript": "~3.8.3",
     "typestyle": "~2.1.0",
+    "underscore.string": "3.3.5",
     "webpack-bundle-analyzer": "~3.7.0",
     "webpack-dev-server": "~3.10.3"
   }

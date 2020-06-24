@@ -67,7 +67,10 @@ export const translate = (key: string): string => {
     "facebook-input-url-add": "Add",
     // permits
     "permits-input-header": "New construction & demolition",
-    "permits-input-title-placeholder": "New construction and demos",
+    "permits-input-title-placeholder": "New construction and demolition",
+    "permits-field-date-issued": "Date issued: ",
+    "permits-field-owner": "Property owner: ",
+    "permits-field-contractor": "Contractor: ",
     // ask
     "ask-input-header": "Ask the editor",
     "ask-input-title-placeholder": "Ask the editor",
