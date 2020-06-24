@@ -2316,6 +2316,18 @@
   dependencies:
     source-map "^0.6.1"
 
+"@types/underscore.string@0.0.38":
+  version "0.0.38"
+  resolved "https://registry.yarnpkg.com/@types/underscore.string/-/underscore.string-0.0.38.tgz#4081755f005f5691fb7fbd4eff3aabe6066a6c63"
+  integrity sha512-QPMttDInBYkulH/3nON0KnYpEd/RlyE5kUrhuts5d76B/stpjXpDticq+iTluoAsVnVXuGECFhPtuX+aDJdx+A==
+  dependencies:
+    "@types/underscore" "*"
+
+"@types/underscore@*":
+  version "1.10.1"
+  resolved "https://registry.yarnpkg.com/@types/underscore/-/underscore-1.10.1.tgz#e37616e1013d486ee5e9a53c178becbaee2f781e"
+  integrity sha512-RRQWytGzPUhybKdf7jhfcySkdEHMDsVZ0gU3XVIxeqms1UKu3+ICaTXNaNGAkcUbIJ8SUKpmUIS1z9mDVc7seg==
+
 "@types/webpack-env@^1.15.0":
   version "1.15.1"
   resolved "https://registry.yarnpkg.com/@types/webpack-env/-/webpack-env-1.15.1.tgz#c8e84705e08eed430b5e15b39c65b0944e4d1422"
@@ -11726,6 +11738,11 @@ split-string@^3.0.1, split-string@^3.0.2:
   dependencies:
     extend-shallow "^3.0.0"
 
+sprintf-js@^1.0.3:
+  version "1.1.2"
+  resolved "https://registry.yarnpkg.com/sprintf-js/-/sprintf-js-1.1.2.tgz#da1765262bf8c0f571749f2ad6c26300207ae673"
+  integrity sha512-VE0SOVEHCk7Qc8ulkWw3ntAzXuqf7S2lvwQaDLRnUeIEaKNQJzV6BwmLKhOqT61aGhfUMrXeaBk+oDGCzvhcug==
+
 sprintf-js@~1.0.2:
   version "1.0.3"
   resolved "https://registry.yarnpkg.com/sprintf-js/-/sprintf-js-1.0.3.tgz#04e6926f662895354f3dd015203633b857297e2c"
@@ -12553,6 +12570,14 @@ ua-parser-js@^0.7.18:
   version "0.7.21"
   resolved "https://registry.yarnpkg.com/ua-parser-js/-/ua-parser-js-0.7.21.tgz#853cf9ce93f642f67174273cc34565ae6f308777"
   integrity sha512-+O8/qh/Qj8CgC6eYBVBykMrNtp5Gebn4dlGD/kKXVkJNDwyrAwSIqwz8CDf+tsAIWVycKcku6gIXJ0qwx/ZXaQ==
+
+underscore.string@3.3.5:
+  version "3.3.5"
+  resolved "https://registry.yarnpkg.com/underscore.string/-/underscore.string-3.3.5.tgz#fc2ad255b8bd309e239cbc5816fd23a9b7ea4023"
+  integrity sha512-g+dpmgn+XBneLmXXo+sGlW5xQEt4ErkS3mgeN2GFbremYeMBSJKr9Wf2KJplQVaiPY/f7FN6atosWYNm9ovrYg==
+  dependencies:
+    sprintf-js "^1.0.3"
+    util-deprecate "^1.0.2"
 
 unfetch@^4.1.0:
   version "4.1.0"
