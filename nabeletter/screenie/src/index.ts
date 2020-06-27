@@ -162,6 +162,58 @@ app.get("/darksky", async (req, res) => {
   }
 });
 
+interface ImageData {
+  id: string;
+  width: number;
+  height: number;
+  url: string;
+}
+
+app.get("/images", async (req, res) => {
+  try {
+    const url = req.query.url as string;
+    if (!url) throw new Error(`MIA: url param`);
+    const response = await fetch(url);
+    const buffer = await response.buffer();
+
+    const api = cloudinary.v2;
+    const public_id = crypto.createHash("md5").update(url).digest("hex");
+    const width = req.query.width as string;
+    const apiUploadOpts: UploadApiOptions = {
+      public_id,
+      overwrite: true,
+      transformation: [{ width, crop: "limit" }],
+    };
+    const data: ImageData = await new Promise<ImageData>((resolve, reject) => {
+      api.uploader
+        .upload_stream(
+          apiUploadOpts,
+          (
+            error: UploadApiErrorResponse | undefined,
+            result: UploadApiResponse | undefined
+          ) => {
+            if (error) reject(new Error(error.message));
+            if (result) {
+              const { public_id: id, secure_url: url, width, height } = result;
+              const image = { id, url, width, height };
+              if (!url) throw new Error("MIA: secure_url");
+              resolve(image);
+            }
+          }
+        )
+        .end(buffer);
+    });
+    console.info("response.data", data);
+    res.set("Cache-Control", "private, max-age=31557600, immutable");
+    res.status(200).json(data);
+  } catch (error) {
+    res.status(400).json({
+      error: true,
+      message: error.message,
+    });
+  }
+});
+
 app.get("/", (req, res) => {
   res.send("TODO");
 });
