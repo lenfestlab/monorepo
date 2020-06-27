@@ -81,10 +81,6 @@ type AnalyticsProps = Omit<AllAnalyticsProps, "title">
 
 function getSectionComponents(kind: Kind) {
   switch (kind) {
-    case ANSWER:
-      return { field: AnswerField, input: AnswerInput }
-    case ASK:
-      return { field: AskField, input: AskInput }
     case INTRO:
       return { field: IntroField, input: IntroInput }
     case WEATHER:
@@ -105,6 +101,10 @@ function getSectionComponents(kind: Kind) {
       return { field: InstagramField, input: InstagramInput }
     case PERMITS:
       return { field: PermitsField, input: PermitsInput }
+    case ANSWER:
+      return { field: AnswerField, input: AnswerInput }
+    case ASK:
+      return { field: AskField, input: AskInput }
     default:
       throw new Error("Unsupported section")
   }
@@ -149,9 +149,9 @@ export class EditionBodyInput extends Component<Props, State> {
     const bodyConfig: BodyConfig = get(record, "body_data") ?? { sections: [] }
     const existingSectionKinds = map(bodyConfig.sections, "kind")
     const allKinds = [
+      EVENTS,
       INTRO,
       WEATHER,
-      EVENTS,
       NEWS,
       SAFETY,
       HISTORY,

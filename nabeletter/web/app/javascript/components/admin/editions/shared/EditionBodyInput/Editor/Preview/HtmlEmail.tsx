@@ -27,6 +27,7 @@ export const HtmlEmail: FunctionComponent<Props> = ({
           name: "viewport",
           content: "minimum-scale=1, initial-scale=1, width=device-width",
         }),
+        meta({ name: "x-apple-disable-message-reformatting" }),
         style({
           type: "text/css",
           dangerouslySetInnerHTML: { __html: css },

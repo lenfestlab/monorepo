@@ -1,7 +1,6 @@
 import { h } from "@cycle/react"
 import { a, img, table, tbody, td, tfoot, thead, tr } from "@cycle/react-dom"
 import { format, parseISO } from "date-fns"
-import getUrls from "get-urls"
 import { FunctionComponent } from "react"
 import { classes, media, TypeStyle } from "typestyle"
 
@@ -11,6 +10,7 @@ import { allEmpty, either, isEmpty, last, map, reduce, values } from "fp"
 import { translate } from "i18n"
 import { colors, queries } from "styles"
 import { Config, Event } from "."
+import { CachedImage } from "../CachedImage"
 import { SectionField } from "../section/SectionField"
 
 interface Props {
@@ -101,14 +101,14 @@ export const Field: FunctionComponent<Props> = ({
           // remove img link from description
           link?.parentNode?.removeChild(link)
           description = doc.documentElement.innerHTML
-          const start = format(parseISO(event.start), "EEE, d LLL y' at 'p")
+          const startsAt = format(parseISO(event.dstart), "EEE, d LLL y' at 'p")
           return table(
             {
               ...tableProps,
               className: classNames?.eventContainer,
             },
             [
-              thead({}, [img({ className: classNames?.image, src })]),
+              thead({}, [img({ src, className: classNames?.image })]),
               tbody([
                 table(
                   {
@@ -120,7 +120,7 @@ export const Field: FunctionComponent<Props> = ({
                       tr([
                         td({ className: classNames?.title }, [event.summary]),
                       ]),
-                      tr([td({ className: classNames?.title }, [start])]),
+                      tr([td({ className: classNames?.title }, [startsAt])]),
                       tr([
                         td({
                           dangerouslySetInnerHTML: {

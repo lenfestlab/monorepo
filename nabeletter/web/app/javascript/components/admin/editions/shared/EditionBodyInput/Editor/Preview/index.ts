@@ -45,6 +45,7 @@ export const Preview = ({
       return React.cloneElement(child, {
         ...child.props,
         typestyle: ampTypestyle,
+        isAmp: true,
       })
     }
   )

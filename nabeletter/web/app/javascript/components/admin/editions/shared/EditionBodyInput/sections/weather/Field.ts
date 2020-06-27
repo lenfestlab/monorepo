@@ -40,8 +40,16 @@ export interface Props {
   typestyle?: TypeStyle
   id: string
   analytics: AnalyticsProps
+  isAmp?: boolean
 }
-export const Field = ({ config, typestyle, id, analytics }: Props) => {
+
+export const Field = ({
+  config,
+  typestyle,
+  id,
+  analytics,
+  isAmp = false,
+}: Props) => {
   const title = either(
     config.title,
     translate("weather-input-title-placeholder")
@@ -131,6 +139,8 @@ export const Field = ({ config, typestyle, id, analytics }: Props) => {
     cellPadding: 0,
     cellSpacing: 1,
   }
+  if (process.env.NODE_ENV === "development" && allEmpty([pre, post]))
+    return null
   return h(SectionField, { title, pre, post, typestyle, id, analytics }, [
     table({ className: "weather", ...tableProps }, [
       tbody([
@@ -141,7 +151,14 @@ export const Field = ({ config, typestyle, id, analytics }: Props) => {
               table({ ...tableProps }, [
                 tbody([
                   tr([td({ className: classNames?.dayOfWeek }, [dayOfWeek])]),
-                  tr([td([img({ src, className: classNames?.img })])]),
+                  tr([
+                    td([
+                      img({
+                        src,
+                        className: classNames?.img,
+                      }),
+                    ]),
+                  ]),
                   tr([
                     td({ className: classNames?.temps }, [
                       span({

@@ -118,10 +118,9 @@ const events$: Observable<Event[]> = onErrorResumeNext(response$).pipe(
 )
 
 const mapItems = (events: Event[]): Item[] =>
-  events.map((event) => {
-    const start = parseISO(event.start)
-    const formatted = format(start, "L/d/yy h':'mmaa")
-    return { id: event.uid, title: `${formatted} ${event.summary}` }
+  events.map(({ uid, summary, dstart }) => {
+    const starts = format(parseISO(dstart), "L/d/yy h':'mmaa")
+    return { id: uid, title: `${starts} ${summary}` }
   })
 
 const left$$ = new Subject<Item[]>()

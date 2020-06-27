@@ -6,8 +6,8 @@ export interface Event {
   description: string
   location: string
   url: string
-  start: string
-  end: string
+  dstart: string
+  dend: string
   attach: string[]
 }
 
