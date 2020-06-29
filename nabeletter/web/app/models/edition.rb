@@ -5,15 +5,6 @@ class Edition < ApplicationRecord
 
   validates :subject, presence: true, uniqueness: true, length: { in: 1...100 }
 
-  validates :publish_at,
-            timeliness: {
-              allow_nil: true,
-              # optional; leaving blank or set in future ~= "draft"
-              on_or_after: :now,
-              type: :datetime,
-              on_or_after_message: "must be in the future",
-            }
-
   attr_accessor :deliver_test
 
   validate :lock_once_delivered

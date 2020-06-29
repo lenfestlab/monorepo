@@ -1,11 +1,18 @@
 import { h } from "@cycle/react"
 import { div } from "@cycle/react-dom"
 import { makeStyles } from "@material-ui/core/styles"
+import { formatISO, parseISO, parseJSON } from "date-fns"
 import { ChangeEvent, useEffect } from "react"
 import { Edit, SimpleForm } from "react-admin"
-import { from, Subject, Subscription } from "rxjs"
+import { from, Observable, Subject, Subscription } from "rxjs"
 import { tag } from "rxjs-spy/operators"
-import { debounceTime, share, skip, switchMap } from "rxjs/operators"
+import {
+  catchError,
+  debounceTime,
+  share,
+  skip,
+  switchMap,
+} from "rxjs/operators"
 
 import {
   EditionBodyButton,
@@ -36,6 +43,10 @@ export const EditionEdit = (props: Props) => {
         switchMap((data: object) => {
           const request = dataProvider("UPDATE", "editions", { id, data })
           return from(request)
+        }),
+        catchError((error: Error, caught$: Observable<any>) => {
+          alert(JSON.stringify(error))
+          return caught$
         }),
         tag("data$"),
         share()
@@ -71,7 +82,12 @@ export const EditionEdit = (props: Props) => {
 
   const onChange = (event: ChangeEvent) => {
     const target = event.target as HTMLInputElement
-    const { name, value } = target
+    const name = target.name
+    let value = target.value
+    // coerce publish_at to iso8601 format for accurate tz rep
+    if (name === "publish_at") {
+      value = formatISO(parseISO(value))
+    }
     data$.next({ [name]: value })
   }
 
