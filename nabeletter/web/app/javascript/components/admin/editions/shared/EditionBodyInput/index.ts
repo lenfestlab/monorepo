@@ -146,12 +146,13 @@ export class EditionBodyInput extends Component<Props, State> {
     super(props)
     // NOTE: set state from server-side config
     const { record } = this.props
-    const bodyConfig: BodyConfig = get(record, "body_data") ?? { sections: [] }
-    const existingSectionKinds = map(bodyConfig.sections, "kind")
+    const bodyConfig: BodyConfig = get(record, "body_data") ?? {}
+    const sections: SectionConfig[] = get(bodyConfig, "sections", [])
+    const existingSectionKinds = map(sections, "kind")
     const allKinds = [
-      EVENTS,
       INTRO,
       WEATHER,
+      EVENTS,
       NEWS,
       SAFETY,
       HISTORY,
@@ -164,11 +165,10 @@ export class EditionBodyInput extends Component<Props, State> {
     ]
     allKinds.forEach((kind) => {
       if (!existingSectionKinds.includes(kind as Kind)) {
-        bodyConfig.sections.push({ kind: kind as Kind, config: {} })
+        sections.push({ kind: kind as Kind, config: {} })
       }
     })
 
-    const sections: SectionConfig[] = get(bodyConfig, "sections", [])
     this.state = { sections, syncing: false }
     // NOTE: sync section visibility
     this.sectionRefsMap = sections.reduce<SectionRefsMap>(

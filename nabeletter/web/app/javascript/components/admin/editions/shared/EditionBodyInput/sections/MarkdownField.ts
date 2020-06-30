@@ -2,7 +2,7 @@ import { h } from "@cycle/react"
 import { important, px } from "csx"
 import { ReactNode } from "react"
 import ReactMarkdown from "react-markdown"
-import { media, TypeStyle } from "typestyle"
+import { classes, media, TypeStyle } from "typestyle"
 
 import {
   AnalyticsProps as AllAnalyticsProps,
@@ -24,9 +24,15 @@ interface Props {
   placeholder?: string
   typestyle?: TypeStyle
   analytics: AnalyticsProps
+  className?: string
 }
 
-export const MarkdownField = ({ markdown, typestyle, analytics }: Props) => {
+export const MarkdownField = ({
+  markdown,
+  typestyle,
+  analytics,
+  className,
+}: Props) => {
   const source = markdown
   const classNames = typestyle?.stylesheet({
     markdown: {
@@ -49,7 +55,7 @@ export const MarkdownField = ({ markdown, typestyle, analytics }: Props) => {
   }
 
   return h(ReactMarkdown, {
-    className: classNames?.markdown,
+    className: classes(classNames?.markdown, className),
     source,
     escapeHtml: false,
     linkTarget: "_blank",
