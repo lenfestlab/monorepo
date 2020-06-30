@@ -6,7 +6,7 @@ import { media, TypeStyle } from "typestyle"
 import { AnalyticsProps as AllAnalyticsProps, Link } from "analytics"
 import { allEmpty, either, isEmpty, map, values } from "fp"
 import { translate } from "i18n"
-import { queries } from "styles"
+import { compileStyles, queries } from "styles"
 import type { Config, Post } from "."
 import { SectionField } from "../section/SectionField"
 
@@ -16,8 +16,17 @@ export interface Props {
   typestyle?: TypeStyle
   id: string
   analytics: Omit<AllAnalyticsProps, "title">
+  isAmp?: boolean
 }
-export const Field = ({ config, typestyle, id, kind, analytics }: Props) => {
+
+export const Field = ({
+  config,
+  typestyle,
+  id,
+  kind,
+  analytics,
+  isAmp,
+}: Props) => {
   const title = either(
     config.title,
     translate(`${kind}-input-title-placeholder`)
@@ -25,34 +34,44 @@ export const Field = ({ config, typestyle, id, kind, analytics }: Props) => {
   const { pre, post } = config
   const postMap = either(config.postmap, {})
   const posts = values(postMap)
+  if (allEmpty([pre, post, posts])) return null
 
-  const width: number = posts.length > 1 ? 45 : 90
-  const classNames = typestyle?.stylesheet({
+  const { styles, classNames } = compileStyles(typestyle!, {
     image: {
-      width: percent(width),
-      ...media(queries.mobile, {
-        width: important(percent(100)),
-      }),
+      display: "block",
+      width: percent(100),
     },
     link: {
+      display: "block",
       paddingTop: px(20),
-      paddingLeft: px(20),
-      ...media(queries.mobile, {
-        paddingTop: important(px(10)),
-        paddingLeft: important(px(0)),
-      }),
+      ...(!isAmp &&
+        media(queries.mobile, {
+          paddingTop: important(px(10)),
+          paddingLeft: important(px(0)),
+        })),
     },
   })
-  if (allEmpty([pre, post, posts])) return null
-  return h(SectionField, { title, pre, post, typestyle, id, analytics }, [
-    map(posts, ({ url, screenshot_url: src }: Post, idx) => {
-      const key = String(idx)
-      const title = url
-      return h(
-        Link,
-        { key, url, className: classNames?.link, analytics, title },
-        [img({ src, className: classNames?.image })]
-      )
-    }),
-  ])
+
+  return h(
+    SectionField,
+    { title, pre, post, typestyle, id, analytics, isAmp },
+    [
+      map(posts, ({ url, screenshot_url: src }: Post, idx) => {
+        const key = String(idx)
+        const title = url
+        return h(
+          Link,
+          {
+            key,
+            url,
+            style: styles.link,
+            className: classNames.link,
+            analytics,
+            title,
+          },
+          [img({ src, style: styles.image, className: classNames.image })]
+        )
+      }),
+    ]
+  )
 }

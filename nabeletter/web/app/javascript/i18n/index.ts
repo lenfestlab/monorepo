@@ -2,6 +2,10 @@ import { get } from "fp"
 
 export const translate = (key: string): string => {
   const messages = {
+    // preview
+    "preview-title": `Inbox preview`,
+    "preview-input-placeholder":
+      "Optional. If omitted, clients default to first ~90 characters of content.",
     // header
     "header-title": `Fishtown Neighborhood Newsletter`,
     // sections
@@ -90,7 +94,9 @@ export const translate = (key: string): string => {
     "footer-guide-nabe": "Fishtown New Neighbor Guide",
     "footer-guide-restaurant": "Fishtown Restaurant Guide",
     "footer-copyright": "2020 Lenfest Institute",
-    "footer-unsubscribe": "unsubscribe",
+    "footer-unsubscribe": "Unsubscribe",
+    "footer-attribution":
+      "This newsletter is brought to you by the Lenfest Lab, a project of The Lenfest Institute for Journalism, and The Philadelphia Inquirer.",
   }
   return get(messages, key)
 }

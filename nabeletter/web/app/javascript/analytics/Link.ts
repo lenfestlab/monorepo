@@ -9,23 +9,21 @@ import { FunctionComponent } from "react"
 
 export type AnalyticsProps = Omit<AllAnalyticsProps, "title">
 
-interface StandardProps {
-  key?: string
-  className?: string
-}
-
-type Props = StandardProps & {
+type Props = {
   analytics: AnalyticsProps
   url: string
   title?: string
+  className?: string
+  style?: object
 }
 
 export const Link: FunctionComponent<Props> = ({
   children,
-  className,
   analytics,
   url,
   title,
+  style,
+  className,
 }) => {
   const href = rewriteURL(url, {
     title: safeTitle(title),
@@ -33,5 +31,5 @@ export const Link: FunctionComponent<Props> = ({
   })
   const target = "_blank" // NOTE: always open new window
   const content = children ?? title
-  return a({ href, target, className }, [content])
+  return h("a", { href, target, className, style }, [content])
 }

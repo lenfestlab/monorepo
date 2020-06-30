@@ -74,6 +74,7 @@ GEM
     bootsnap (1.4.6)
       msgpack (~> 1.0)
     builder (3.2.4)
+    chronic (0.10.2)
     concurrent-ruby (1.1.6)
     crass (1.0.6)
     devise (4.7.1)
@@ -252,6 +253,7 @@ DEPENDENCIES
   aasm
   awesome_print
   bootsnap (>= 1.4.2)
+  chronic
   devise-jwt
   httparty
   icalendar

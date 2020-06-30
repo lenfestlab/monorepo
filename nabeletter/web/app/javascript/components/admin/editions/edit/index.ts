@@ -1,7 +1,7 @@
 import { h } from "@cycle/react"
 import { div } from "@cycle/react-dom"
 import { makeStyles } from "@material-ui/core/styles"
-import { formatISO, parseISO, parseJSON } from "date-fns"
+import { formatISO, parseISO } from "date-fns"
 import { ChangeEvent, useEffect } from "react"
 import { Edit, SimpleForm } from "react-admin"
 import { from, Observable, Subject, Subscription } from "rxjs"
@@ -21,7 +21,7 @@ import {
   EditionSubjectInput,
 } from "components/admin/editions/shared"
 import { dataProvider } from "components/admin/providers"
-import { Identifier, NewsletterReferenceInput } from "components/admin/shared"
+import { Identifier } from "components/admin/shared"
 import { px } from "csx"
 import { Actions } from "./actions"
 import { Title } from "./title"

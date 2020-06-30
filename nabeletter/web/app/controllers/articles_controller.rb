@@ -27,8 +27,13 @@ class ArticlesController < ApplicationController
       published_time = Date.parse(content) if content
     end
     if !published_time
-      date_str = body.match(/\d{4}[\/-]\d{2}[\/-]\d{2}/)[0]
-      published_time = Date.try(:parse, date_str)
+      date_str = body.match(/\d{4}[\/-]\d{2}[\/-]\d{2}/).try(:[], 0)
+      published_time = Date.try(:parse, date_str) if date_str
+    end
+    if !published_time
+      matches = body.match(/\d{1,2}[\/-]\d{1,2}[\/-]\d{4}$/)
+      date_str = matches.try(:[], 0)
+      published_time = Chronic.parse(date_str) if date_str
     end
 
     data = {

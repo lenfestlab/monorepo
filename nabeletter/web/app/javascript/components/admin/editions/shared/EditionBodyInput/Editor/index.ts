@@ -5,8 +5,7 @@ import { makeStyles } from "@material-ui/core/styles"
 
 import { viewHeight } from "csx"
 import type { PreviewRef, SectionField, SectionInput } from "../types"
-import { AnalyticsProps, Preview } from "./Preview"
-export { AnalyticsProps }
+import { Preview } from "./Preview"
 
 const useStyles = makeStyles((theme) => ({
   panel: {
@@ -20,18 +19,10 @@ interface Props {
   ampRef?: PreviewRef
   inputs: SectionInput[]
   fields: SectionField[]
-  analytics: AnalyticsProps
   syncing: boolean
 }
 
-export const Editor = ({
-  inputs,
-  fields,
-  htmlRef,
-  ampRef,
-  analytics,
-  syncing,
-}: Props) => {
+export const Editor = ({ inputs, fields, htmlRef, ampRef, syncing }: Props) => {
   const css = useStyles()
   return div({ id: "editor" }, [
     h(
@@ -92,7 +83,6 @@ export const Editor = ({
               htmlRef,
               ampRef,
               fields,
-              analytics,
             }),
           ]
         ),

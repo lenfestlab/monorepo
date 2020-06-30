@@ -1,4 +1,5 @@
 import { h } from "@cycle/react"
+import { span } from "@cycle/react-dom"
 import { important, px } from "csx"
 import { ReactNode } from "react"
 import ReactMarkdown from "react-markdown"
@@ -10,6 +11,7 @@ import {
   safeTitle,
 } from "analytics"
 import { queries } from "styles"
+import { StyleMap } from "styles"
 
 type TransformLinkUri = (
   uri: string,
@@ -25,6 +27,7 @@ interface Props {
   typestyle?: TypeStyle
   analytics: AnalyticsProps
   className?: string
+  isAmp?: boolean
 }
 
 export const MarkdownField = ({
@@ -32,18 +35,22 @@ export const MarkdownField = ({
   typestyle,
   analytics,
   className,
+  isAmp = false,
 }: Props) => {
   const source = markdown
-  const classNames = typestyle?.stylesheet({
+
+  const styles: StyleMap = {
     markdown: {
       fontSize: px(18),
       lineHeight: "1.44",
       fontWeight: "normal",
-      ...media(queries.mobile, {
-        fontWeight: important(300),
-      }),
+      ...(!isAmp &&
+        media(queries.mobile, {
+          fontWeight: important(300),
+        })),
     },
-  })
+  }
+  const classNames = typestyle?.stylesheet(styles)
 
   const transformLinkUri: TransformLinkUri = (url, children, title) => {
     const analyticsProps: AllAnalyticsProps = {
@@ -54,11 +61,13 @@ export const MarkdownField = ({
     return rewritten
   }
 
-  return h(ReactMarkdown, {
-    className: classes(classNames?.markdown, className),
-    source,
-    escapeHtml: false,
-    linkTarget: "_blank",
-    transformLinkUri,
-  })
+  const style = styles.markdown
+  return span({ style, className: classes(classNames?.markdown, className) }, [
+    h(ReactMarkdown, {
+      source,
+      escapeHtml: false,
+      linkTarget: "_blank",
+      transformLinkUri,
+    }),
+  ])
 }

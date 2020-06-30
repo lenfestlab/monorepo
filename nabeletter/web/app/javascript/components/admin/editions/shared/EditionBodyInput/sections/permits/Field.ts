@@ -1,12 +1,12 @@
 import { h } from "@cycle/react"
-import { b, img, table, tbody, td, tr } from "@cycle/react-dom"
+import { b, div, img, table, tbody, td, tr } from "@cycle/react-dom"
 import { TypeStyle } from "typestyle"
 
 import { AnalyticsProps as AllAnalyticsProps, Link } from "analytics"
 import { percent, px } from "csx"
 import { allEmpty, either } from "fp"
 import { translate } from "i18n"
-import { colors } from "styles"
+import { colors, compileStyles } from "styles"
 import { Config } from "."
 import { SectionField } from "../section/SectionField"
 
@@ -16,30 +16,43 @@ interface Props {
   typestyle?: TypeStyle
   id: string
   analytics: Omit<AllAnalyticsProps, "title">
+  isAmp?: boolean
 }
 
-export const Field = ({ config, typestyle, id, kind, analytics }: Props) => {
+export const Field = ({
+  config,
+  typestyle,
+  id,
+  kind,
+  analytics,
+  isAmp,
+}: Props) => {
   const { pre, post, selections: permits } = config
   const title = either(
     config.title,
     translate("permits-input-title-placeholder")
   )
+  if (allEmpty([pre, post, permits])) return null
 
-  const classNames = typestyle?.stylesheet({
+  const { styles, classNames } = compileStyles(typestyle!, {
     permits: {
       fontFamily: "Roboto",
       lineHeight: 1.7,
       color: colors.black,
     },
     permit: {
+      textAlign: "left",
       paddingBottom: px(15),
     },
     image: {
       width: percent(100),
+      display: "block",
+      paddingBottom: px(10),
     },
     primary: {
       fontSize: px(16),
       fontWeight: 500,
+      paddingTop: px(10),
     },
     secondary: {
       fontSize: px(14),
@@ -47,69 +60,88 @@ export const Field = ({ config, typestyle, id, kind, analytics }: Props) => {
     },
   })
 
-  return allEmpty([pre, post, permits])
-    ? null
-    : h(SectionField, { title, pre, post, typestyle, id, analytics }, [
-        table([
-          tbody({ className: classNames?.permits }, [
-            tr([
-              td([
-                ...permits.map(
-                  ({
-                    image,
-                    type,
-                    address,
-                    date,
-                    description,
-                    property_owner,
-                    contractor_name,
-                  }) =>
-                    table({ className: classNames?.permit }, [
-                      tr([
-                        td([img({ className: classNames?.image, src: image })]),
-                      ]),
-
-                      tr([
-                        td({ className: classNames?.primary }, [
-                          b(`${address} | ${type}`),
-                        ]),
-                      ]),
-
-                      date &&
-                        tr([
-                          td({ className: classNames?.secondary }, [
-                            b(translate("permits-field-date-issued")),
-                            date,
-                          ]),
-                        ]),
-
-                      description &&
-                        tr([
-                          td({ className: classNames?.secondary }, [
-                            description,
-                          ]),
-                        ]),
-
-                      property_owner &&
-                        tr([
-                          td({ className: classNames?.secondary }, [
-                            b(translate("permits-field-owner")),
-                            property_owner,
-                          ]),
-                        ]),
-
-                      contractor_name &&
-                        tr([
-                          td({ className: classNames?.secondary }, [
-                            b(translate("permits-field-contractor")),
-                            contractor_name,
-                          ]),
-                        ]),
-                    ])
-                ),
-              ]),
+  return h(
+    SectionField,
+    { title, pre, post, typestyle, id, analytics, isAmp },
+    [
+      table({ style: styles.permits, className: classNames.permits }, [
+        tbody([
+          tr([
+            td([
+              ...permits.map(
+                ({
+                  image,
+                  type,
+                  address,
+                  date,
+                  description,
+                  property_owner,
+                  contractor_name,
+                }) =>
+                  table([
+                    tr([
+                      td(
+                        { style: styles.permit, className: classNames.permit },
+                        [
+                          img({
+                            style: styles.image,
+                            className: classNames.image,
+                            src: image,
+                          }),
+                          div(
+                            {
+                              style: styles.primary,
+                              className: classNames.primary,
+                            },
+                            [b(`${address} | ${type}`)]
+                          ),
+                          date &&
+                            div(
+                              {
+                                style: styles.secondary,
+                                className: classNames.secondary,
+                              },
+                              [b(translate("permits-field-date-issued")), date]
+                            ),
+                          description &&
+                            div(
+                              {
+                                style: styles.secondary,
+                                className: classNames.secondary,
+                              },
+                              [description]
+                            ),
+                          property_owner &&
+                            div(
+                              {
+                                style: styles.secondary,
+                                className: classNames.secondary,
+                              },
+                              [
+                                b(translate("permits-field-owner")),
+                                property_owner,
+                              ]
+                            ),
+                          contractor_name &&
+                            div(
+                              {
+                                style: styles.secondary,
+                                className: classNames.secondary,
+                              },
+                              [
+                                b(translate("permits-field-contractor")),
+                                contractor_name,
+                              ]
+                            ),
+                        ]
+                      ),
+                    ]),
+                  ])
+              ),
             ]),
           ]),
         ]),
-      ])
+      ]),
+    ]
+  )
 }

@@ -1,12 +1,12 @@
 import { h } from "@cycle/react"
-import { a, img, table, tbody, td, tfoot, thead, tr } from "@cycle/react-dom"
+import { a, img, table, tbody, td, tr } from "@cycle/react-dom"
 import { important, percent, px } from "csx"
 import { TypeStyle } from "typestyle"
 
 import { Link } from "analytics"
 import { allEmpty, either } from "fp"
 import { translate } from "i18n"
-import { colors } from "styles"
+import { colors, compileStyles } from "styles"
 import { Config } from "."
 import { AnalyticsProps, MarkdownField } from "../MarkdownField"
 import { SectionField } from "../section/SectionField"
@@ -16,13 +16,15 @@ export interface Props {
   typestyle?: TypeStyle
   id: string
   analytics: AnalyticsProps
+  isAmp?: boolean
 }
 
-export const Field = ({ config, id, typestyle, analytics }: Props) => {
+export const Field = ({ config, id, typestyle, analytics, isAmp }: Props) => {
   const title = either(config.title, translate("ask-input-title-placeholder"))
   const { prompt = "", pre, post } = config
+  if (allEmpty([prompt, pre, post])) return null
 
-  const classNames = typestyle?.stylesheet({
+  const { styles, classNames } = compileStyles(typestyle!, {
     prompt: {
       textAlign: "center",
     },
@@ -31,13 +33,14 @@ export const Field = ({ config, id, typestyle, analytics }: Props) => {
     },
     link: {
       backgroundColor: colors.darkBlue,
-      color: important(colors.white), // important! else overwritten in gmail
+      color: colors.white,
       fontWeight: "bold",
       fontSize: px(18),
       textDecoration: "none",
       padding: "10px 20px 10px 20px",
       marginTop: px(20),
       display: "inline-block",
+      borderRadius: px(3),
     },
   })
 
@@ -45,29 +48,43 @@ export const Field = ({ config, id, typestyle, analytics }: Props) => {
   const emailSubject = translate("ask-field-email-subject")
   const mailto = `mailto:${emailAddress}?subject=${emailSubject}`
 
-  if (allEmpty([prompt, pre, post])) return null
-  return h(SectionField, { title, pre, post, typestyle, id, analytics }, [
-    table([
-      tbody([
-        tr({ className: classNames?.prompt }, [
-          td([
-            h(MarkdownField, {
-              markdown: prompt,
-              typestyle,
-              analytics,
-            }),
+  return h(
+    SectionField,
+    { title, pre, post, typestyle, id, analytics, isAmp },
+    [
+      table([
+        tbody([
+          tr({ style: styles.prompt, className: classNames.prompt }, [
+            td([
+              h(MarkdownField, {
+                markdown: prompt,
+                typestyle,
+                analytics,
+              }),
+            ]),
           ]),
-        ]),
-        tr({ className: classNames?.linkContainer }, [
-          td([
-            h(
-              Link,
-              { url: mailto, className: classNames?.link, analytics },
-              translate("ask-field-email-cta")
-            ),
-          ]),
+          tr(
+            {
+              style: styles.linkContainer,
+              className: classNames.linkContainer,
+            },
+            [
+              td([
+                h(
+                  Link,
+                  {
+                    url: mailto,
+                    style: styles.link,
+                    className: classNames.link,
+                    analytics,
+                  },
+                  translate("ask-field-email-cta")
+                ),
+              ]),
+            ]
+          ),
         ]),
       ]),
-    ]),
-  ])
+    ]
+  )
 }

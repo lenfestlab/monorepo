@@ -6,9 +6,10 @@ import { useAsync } from "react-use"
 import { media, TypeStyle } from "typestyle"
 
 import { Link } from "analytics"
+import { LayoutTable } from "components/table"
 import { allEmpty, either } from "fp"
 import { translate } from "i18n"
-import { colors, queries } from "styles"
+import { colors, compileStyles, queries } from "styles"
 import { Config } from "."
 import { AnalyticsProps, MarkdownField } from "../MarkdownField"
 import { SectionField } from "../section/SectionField"
@@ -84,7 +85,7 @@ export const Field = ({
   }, [url])
 
   const paddingBottom = px(12)
-  const classNames = typestyle?.stylesheet({
+  const { styles, classNames } = compileStyles(typestyle!, {
     vendorAttribution: {
       width: percent(100),
       fontFamily: "Roboto",
@@ -94,12 +95,10 @@ export const Field = ({
       color: colors.darkGray,
       textAlign: "right",
       padding: px(12),
-      $nest: {
-        "& a": {
-          color: "inherit",
-          textDecoration: "inherit",
-        },
-      },
+    },
+    vendorAttributionLink: {
+      color: colors.darkGray,
+      textDecoration: "none",
     },
     dayOfWeek: {
       textTransform: "capitalize",
@@ -113,9 +112,10 @@ export const Field = ({
     img: {
       paddingBottom,
       width: px(60),
-      ...media(queries.mobile, {
-        width: important(px(40)),
-      }),
+      ...(!isAmp &&
+        media(queries.mobile, {
+          width: important(px(40)),
+        })),
     },
     temps: {
       textAlign: "center",
@@ -129,10 +129,11 @@ export const Field = ({
       color: colors.darkGray,
       display: "inline",
       paddingLeft: px(5),
-      ...media(queries.mobile, {
-        display: "block",
-        paddingLeft: px(0),
-      }),
+      ...(!isAmp &&
+        media(queries.mobile, {
+          display: "block",
+          paddingLeft: px(0),
+        })),
     },
   })
 
@@ -142,7 +143,7 @@ export const Field = ({
     cellSpacing: 1,
   }
   return h(SectionField, { title, pre, post, typestyle, id, analytics }, [
-    table({ className: "weather", ...tableProps }, [
+    h(LayoutTable, { ...tableProps }, [
       tbody([
         tr(
           data.value?.map(({ dayOfWeek, imageURL, temp }) => {
@@ -150,25 +151,37 @@ export const Field = ({
             return td([
               table({ ...tableProps }, [
                 tbody([
-                  tr([td({ className: classNames?.dayOfWeek }, [dayOfWeek])]),
+                  tr([
+                    td(
+                      {
+                        style: styles.dayOfWeek,
+                        className: classNames.dayOfWeek,
+                      },
+                      [dayOfWeek]
+                    ),
+                  ]),
                   tr([
                     td([
                       img({
                         src,
-                        className: classNames?.img,
+                        alt: dayOfWeek,
+                        style: styles.img,
+                        className: classNames.img,
                       }),
                     ]),
                   ]),
                   tr([
-                    td({ className: classNames?.temps }, [
+                    td({ style: styles.temps, className: classNames.temps }, [
                       span({
-                        className: classNames?.tempHigh,
+                        style: styles.tempHigh,
+                        className: classNames.tempHigh,
                         dangerouslySetInnerHTML: {
                           __html: `${temp.high}&#176`,
                         },
                       }),
                       span({
-                        className: classNames?.tempLow,
+                        style: styles.tempLow,
+                        className: classNames.tempLow,
                         dangerouslySetInnerHTML: {
                           __html: `${temp.low}&#176;`,
                         },
@@ -184,12 +197,19 @@ export const Field = ({
           td(
             {
               colSpan,
-              className: classNames?.vendorAttribution,
+              style: styles.vendorAttribution,
+              className: classNames.vendorAttribution,
             },
             [
               h(
                 Link,
-                { url: vendorURL, title: "Powered by Dark Sky", analytics },
+                {
+                  url: vendorURL,
+                  title: "Powered by Dark Sky",
+                  analytics,
+                  style: styles.vendorAttributionLink,
+                  className: classNames.vendorAttributionLink,
+                },
                 [translate("weather-field-vendor-attribution")]
               ),
             ]

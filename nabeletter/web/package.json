@@ -56,6 +56,7 @@
     "react": "16.13.1",
     "react-admin": "~3.5.0",
     "react-dom": "16.13.1",
+    "react-html-comment": "~2.0.3",
     "react-jss": "~10.1.1",
     "react-markdown": "~4.3.1",
     "react-twitter-embed": "https://github.com/9renpoto/react-twitter-embed#feature/types",

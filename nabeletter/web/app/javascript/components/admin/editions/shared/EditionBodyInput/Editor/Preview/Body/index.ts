@@ -1,36 +1,23 @@
 import { h } from "@cycle/react"
 import { body, table, tbody, td, tr } from "@cycle/react-dom"
-import { important, percent, px } from "csx"
-import { media, TypeStyle } from "typestyle"
+import { percent, px } from "csx"
+import { TypeStyle } from "typestyle"
 
-import { colors, queries } from "styles"
+import { LayoutTable } from "components/table"
+import { colors, compileStyles, queries } from "styles"
 import type { SectionField } from "../../../types"
-import { AnalyticsProps, Footer } from "./Footer"
-import { Header } from "./Header"
-
-export { AnalyticsProps }
 
 interface Props {
   fields: SectionField[]
   typestyle: TypeStyle
-  analytics: AnalyticsProps
   isAmp?: boolean
 }
-export function Body({ fields, typestyle, analytics, isAmp = false }: Props) {
-  const { cssRaw, cssRule, stylesheet } = typestyle
-  cssRule("*", {
-    margin: 0,
-    padding: 0,
-  })
-  cssRule("html, body", {
-    height: percent(100),
-    fontFamily: "Roboto",
-    color: "#000",
-  })
-  cssRule("table", {
-    marginLeft: "auto",
-    marginRight: "auto",
-  })
+
+export function Body({ fields, typestyle, isAmp = false }: Props) {
+  const { cssRaw, cssRule } = typestyle
+  const {
+    mobile: { maxWidth },
+  } = queries
 
   // NOTE: AMP doesn't support custom fonts
   if (!isAmp) {
@@ -39,20 +26,37 @@ export function Body({ fields, typestyle, analytics, isAmp = false }: Props) {
     )
   }
 
-  const classNames = stylesheet({
-    pseudoBody: {
+  cssRule("*", {
+    margin: 0,
+    padding: 0,
+  })
+
+  cssRule("html, body", {
+    height: percent(100),
+    fontFamily: "Roboto",
+    color: "#000",
+  })
+
+  cssRule("table", {
+    marginLeft: "auto",
+    marginRight: "auto",
+  })
+
+  const { styles, classNames } = compileStyles(typestyle, {
+    body: {
       marginLeft: "auto",
       marginRight: "auto",
-      borderSpacing: "0px",
       backgroundColor: colors.lightGray,
     },
   })
 
   return body({ key: "body" }, [
-    table({ className: classNames.pseudoBody }, [
-      h(Header, { typestyle }),
-      tbody(fields),
-      h(Footer, { typestyle, analytics }),
+    h(LayoutTable, [
+      h(
+        LayoutTable,
+        { maxWidth, className: classNames.body, style: styles.body },
+        fields
+      ),
     ]),
   ])
 }

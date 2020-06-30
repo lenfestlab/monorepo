@@ -29,10 +29,14 @@ export const EditionTestDeliveryButton = ({ record }: Props) => {
 
   // recipients textfield
   const [value, setValue] = useState<string>(
-    localStorage.getItem("user_email") ?? ""
+    localStorage.getItem("edition.test.emails") ??
+      localStorage.getItem("user_email") ??
+      ""
   )
   const onChange = (event: ChangeEvent<HTMLTextAreaElement>) => {
-    setValue(event.target.value as string)
+    const newValue = event.target.value as string
+    localStorage.setItem("edition.test.emails", newValue)
+    setValue(newValue)
   }
   const placeholder = "foo@example.com, bar@example.com, ..."
 

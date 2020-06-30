@@ -3,21 +3,14 @@ import { dataProvider } from "components/admin/providers"
 import { Component, createRef, RefObject } from "react"
 import { BehaviorSubject, from, Subscription, zip } from "rxjs"
 import { tag } from "rxjs-spy/operators"
-import {
-  debounceTime,
-  distinctUntilChanged,
-  share,
-  shareReplay,
-  skip,
-  switchMap,
-  tap,
-} from "rxjs/operators"
+import { debounceTime, share, skip, switchMap, tap } from "rxjs/operators"
 
 import { AnalyticsProps as AllAnalyticsProps } from "analytics"
 import { Record as ApiRecord } from "components/admin/shared"
 import { find, get, map, values } from "fp"
-
 import { Editor } from "./Editor"
+import { PreviewRef, SectionField, SectionInput } from "./types"
+
 import { Field as AnswerField, Input as AnswerInput } from "./sections/answer"
 import { Field as AskField, Input as AskInput } from "./sections/ask"
 import { Field as EventsField, Input as EventsInput } from "./sections/events"
@@ -25,28 +18,35 @@ import {
   Field as FacebookField,
   Input as FacebookInput,
 } from "./sections/facebook"
-import {
-  Field as InstagramField,
-  Input as InstagramInput,
-} from "./sections/facebook"
+import { Field as FooterField, Input as FooterInput } from "./sections/footer"
+import { Field as HeaderField, Input as HeaderInput } from "./sections/header"
 import {
   Field as HistoryField,
   Input as HistoryInput,
 } from "./sections/history"
+import {
+  Field as InstagramField,
+  Input as InstagramInput,
+} from "./sections/instagram"
 import { Field as IntroField, Input as IntroInput } from "./sections/intro"
 import { Field as NewsField, Input as NewsInput } from "./sections/news"
 import {
   Field as PermitsField,
   Input as PermitsInput,
 } from "./sections/permits"
+import {
+  Field as PreviewField,
+  Input as PreviewInput,
+} from "./sections/preview"
 import { Field as SafetyField, Input as SafetyInput } from "./sections/safety"
 import { Field as TweetsField, Input as TweetsInput } from "./sections/tweets"
 import {
   Field as WeatherField,
   Input as WeatherInput,
 } from "./sections/weather"
-import { PreviewRef, SectionField, SectionInput } from "./types"
 
+export const PREVIEW = "preview"
+export const HEADER = "header"
 export const INTRO = "intro"
 export const WEATHER = "weather"
 export const EVENTS = "events"
@@ -62,6 +62,7 @@ export const ANSWER = "answer"
 export const FOOTER = "footer"
 
 export type Kind =
+  | "preview"
   | "header"
   | "intro"
   | "weather"
@@ -81,6 +82,10 @@ type AnalyticsProps = Omit<AllAnalyticsProps, "title">
 
 function getSectionComponents(kind: Kind) {
   switch (kind) {
+    case PREVIEW:
+      return { field: PreviewField, input: PreviewInput }
+    case HEADER:
+      return { field: HeaderField, input: HeaderInput }
     case INTRO:
       return { field: IntroField, input: IntroInput }
     case WEATHER:
@@ -105,6 +110,8 @@ function getSectionComponents(kind: Kind) {
       return { field: AnswerField, input: AnswerInput }
     case ASK:
       return { field: AskField, input: AskInput }
+    case FOOTER:
+      return { field: FooterField, input: FooterInput }
     default:
       throw new Error("Unsupported section")
   }
@@ -150,6 +157,8 @@ export class EditionBodyInput extends Component<Props, State> {
     const sections: SectionConfig[] = get(bodyConfig, "sections", [])
     const existingSectionKinds = map(sections, "kind")
     const allKinds = [
+      PREVIEW,
+      HEADER,
       INTRO,
       WEATHER,
       EVENTS,
@@ -162,6 +171,7 @@ export class EditionBodyInput extends Component<Props, State> {
       PERMITS,
       ASK,
       ANSWER,
+      FOOTER,
     ]
     allKinds.forEach((kind) => {
       if (!existingSectionKinds.includes(kind as Kind)) {
@@ -321,7 +331,6 @@ export class EditionBodyInput extends Component<Props, State> {
       )
     })
     const { htmlRef, ampRef } = this
-    const analytics = { edition }
-    return [h(Editor, { syncing, inputs, fields, htmlRef, ampRef, analytics })]
+    return [h(Editor, { syncing, inputs, fields, htmlRef, ampRef })]
   }
 }

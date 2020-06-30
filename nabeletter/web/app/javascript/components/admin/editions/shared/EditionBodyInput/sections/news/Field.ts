@@ -1,13 +1,14 @@
 import { h } from "@cycle/react"
-import { a, div, img, span, table, tbody, td, tr } from "@cycle/react-dom"
+import { a, div, i, img, span, table, tbody, td, tr } from "@cycle/react-dom"
 import { important, percent, px } from "csx"
 import { format, parseISO } from "date-fns"
 import { classes, media, TypeStyle } from "typestyle"
 
 import { AnalyticsProps as AllAnalyticsProps, Link } from "analytics"
+import { LayoutTable } from "components/table"
 import { allEmpty, chunk, either, isEmpty } from "fp"
 import { translate } from "i18n"
-import { colors, queries } from "styles"
+import { colors, compileStyles, queries } from "styles"
 import type { Article, Config } from "."
 import { SectionField } from "../section/SectionField"
 
@@ -17,8 +18,17 @@ export interface Props {
   typestyle?: TypeStyle
   id: string
   analytics: Omit<AllAnalyticsProps, "title">
+  isAmp?: boolean
 }
-export const Field = ({ config, typestyle, id, kind, analytics }: Props) => {
+
+export const Field = ({
+  config,
+  typestyle,
+  id,
+  kind,
+  analytics,
+  isAmp,
+}: Props) => {
   const title = either(
     config.title,
     translate(`${kind}-input-title-placeholder`)
@@ -27,17 +37,19 @@ export const Field = ({ config, typestyle, id, kind, analytics }: Props) => {
   if (allEmpty([pre, post, articles])) return null
 
   const width: number = articles.length > 1 ? 50 : 100
-  const classNames = typestyle?.stylesheet({
+  const { styles, classNames } = compileStyles(typestyle!, {
     article: {
       paddingBottom: px(20),
       width: percent(width),
-      ...media(queries.mobile, {
-        width: important(percent(100)),
-      }),
+      ...(!isAmp &&
+        media(queries.mobile, {
+          width: important(percent(100)),
+        })),
     },
     image: {
       objectFit: "cover",
       width: percent(100),
+      display: "block",
     },
     link: {
       color: colors.black,
@@ -50,11 +62,13 @@ export const Field = ({ config, typestyle, id, kind, analytics }: Props) => {
       },
     },
     title: {
+      paddingTop: px(5),
       fontWeight: 500,
       fontSize: px(16),
-      ...media(queries.mobile, {
-        fontSize: important(px(18)),
-      }),
+      ...(!isAmp &&
+        media(queries.mobile, {
+          fontSize: important(px(18)),
+        })),
     },
     published: {
       fontWeight: "normal",
@@ -65,10 +79,11 @@ export const Field = ({ config, typestyle, id, kind, analytics }: Props) => {
       fontWeight: 300,
       lineHeight: "normal",
       color: colors.black,
-      ...media(queries.mobile, {
-        fontSize: important(px(16)),
-        lineHeight: important(1.5),
-      }),
+      ...(!isAmp &&
+        media(queries.mobile, {
+          fontSize: important(px(16)),
+          lineHeight: important(1.5),
+        })),
     },
     site: {
       fontWeight: 500,
@@ -78,7 +93,7 @@ export const Field = ({ config, typestyle, id, kind, analytics }: Props) => {
   })
 
   return h(SectionField, { title, typestyle, id, pre, post, analytics }, [
-    table({ border: 0, cellPadding: 0, cellSpacing: 0 }, [
+    h(LayoutTable, [
       tbody([
         ...chunk(articles).map((articlePair) => {
           return tr([
@@ -97,7 +112,8 @@ export const Field = ({ config, typestyle, id, kind, analytics }: Props) => {
 
               return td(
                 {
-                  className: classNames?.article,
+                  style: styles.article,
+                  className: classNames.article,
                 },
                 [
                   h(
@@ -106,20 +122,49 @@ export const Field = ({ config, typestyle, id, kind, analytics }: Props) => {
                       url,
                       analytics,
                       title,
-                      className: classNames?.link,
+                      style: styles.link,
+                      className: classNames.link,
                     },
                     [
-                      src && img({ className: classNames?.image, src }),
-                      title && div({ className: classNames?.title }, title),
+                      // TODO: cached image
+                      src &&
+                        img({
+                          src,
+                          style: styles.image,
+                          className: classNames.image,
+                        }),
+                      title &&
+                        div(
+                          {
+                            style: styles.title,
+                            className: classNames.title,
+                          },
+                          title
+                        ),
                       published &&
-                        div({ className: classNames?.published }, published),
+                        div(
+                          {
+                            style: styles.published,
+                            className: classNames.published,
+                          },
+                          [i(published)]
+                        ),
                       description &&
                         div(
-                          { className: classNames?.description },
+                          {
+                            style: styles.description,
+                            className: classNames.description,
+                          },
                           description
                         ),
                       site_name &&
-                        div({ className: classNames?.site }, site_name),
+                        div(
+                          {
+                            style: styles.site,
+                            className: classNames.site,
+                          },
+                          site_name
+                        ),
                     ]
                   ),
                 ]
