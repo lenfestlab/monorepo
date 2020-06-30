@@ -17,7 +17,15 @@ export const Field = ({ config, id, typestyle, analytics }: Props) => {
   const title = either(config.title, translate("intro-input-title-placeholder"))
   const { markdown, pre, post } = config
   if (allEmpty([markdown, pre, post])) return null
+
+  const classNames = typestyle?.stylesheet({
+    main: {
+      textAlign: "left",
+    },
+  })
+  const className = classNames?.main
+
   return h(SectionField, { title, pre, post, typestyle, id, analytics }, [
-    h(MarkdownField, { markdown, typestyle, analytics }),
+    h(MarkdownField, { markdown, typestyle, analytics, className }),
   ])
 }

@@ -60,7 +60,7 @@ export const SectionField: FunctionComponent<SectionFieldProps> = ({
       fontFamily: "Roboto",
     },
     sectionPreOrPost: {
-      textAlign: "center",
+      textAlign: "left",
       fontFamily: "Roboto",
       $nest: {
         "& h2,h3,h4,h5,h6": {
