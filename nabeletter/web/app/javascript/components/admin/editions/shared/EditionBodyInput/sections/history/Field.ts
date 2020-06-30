@@ -11,6 +11,7 @@ export interface Props {
   typestyle?: TypeStyle
   id: string
   analytics: AnalyticsProps
+  isAmp?: boolean
 }
 export const Field: FunctionComponent<Props> = (props) => {
   const titlePlaceholder = translate("history-input-title-placeholder")

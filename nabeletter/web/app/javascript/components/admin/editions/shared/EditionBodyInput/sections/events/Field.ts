@@ -1,14 +1,15 @@
 import { h } from "@cycle/react"
 import { a, img, table, tbody, td, tfoot, thead, tr } from "@cycle/react-dom"
 import { format, parseISO } from "date-fns"
-import { FunctionComponent } from "react"
+import { Fragment, FunctionComponent } from "react"
 import { classes, media, TypeStyle } from "typestyle"
 
 import { AnalyticsProps as AllAnalyticsProps, Link } from "analytics"
-import { important, percent, px } from "csx"
+import { LayoutTable } from "components/table"
+import { percent, px } from "csx"
 import { allEmpty, either, isEmpty, last, map, reduce, values } from "fp"
 import { translate } from "i18n"
-import { colors, queries } from "styles"
+import { colors, compileStyles, queries, StyleMap } from "styles"
 import { Config, Event } from "."
 import { CachedImage } from "../CachedImage"
 import { SectionField } from "../section/SectionField"
@@ -32,23 +33,19 @@ export const Field: FunctionComponent<Props> = ({
     config.title,
     translate(`${kind}-input-title-placeholder`)
   )
+  const { pre, post } = config
   const events = config.selections
   const publicURL = config.publicURL
-  const { pre, post } = config
+  if (allEmpty([events, pre, post])) return null
 
-  const classNames = typestyle?.stylesheet({
+  const { styles, classNames } = compileStyles(typestyle!, {
     eventContainer: {
       padding: "2px 0px 0px 0px",
       margin: px(0),
     },
     image: {
       width: percent(100),
-      // hide image download button on gmail - https://bit.ly/3eWuLkg
-      $nest: {
-        "& div": {
-          display: "none",
-        },
-      },
+      display: "block", // https://bit.ly/2VUo8rP
     },
     event: {
       width: percent(100),
@@ -81,15 +78,10 @@ export const Field: FunctionComponent<Props> = ({
   })
 
   const moreTitle = translate("events-field-more")
-  const tableProps = {
-    width: "100%",
-    border: 0,
-    cellSpacing: 0,
-    cellPadding: 0,
-  }
-  if (allEmpty([events, pre, post])) return null
+  const maxWidth = queries.mobile.maxWidth - 2 * 24
+
   return h(SectionField, { title, pre, post, typestyle, id, analytics }, [
-    table(tableProps, [
+    h(LayoutTable, [
       tbody([
         events.map((event) => {
           let description = event.description
@@ -102,61 +94,84 @@ export const Field: FunctionComponent<Props> = ({
           link?.parentNode?.removeChild(link)
           description = doc.documentElement.innerHTML
           const startsAt = format(parseISO(event.dstart), "EEE, d LLL y' at 'p")
-          return table(
+
+          return h(
+            LayoutTable,
             {
-              ...tableProps,
-              className: classNames?.eventContainer,
+              style: styles.eventContainer,
+              className: classNames.eventContainer,
             },
             [
-              thead({}, [img({ src, className: classNames?.image })]),
-              tbody([
-                table(
-                  {
-                    ...tableProps,
-                    className: classNames?.event,
-                  },
-                  [
-                    tbody([
+              tr([
+                td([
+                  src &&
+                    h(CachedImage, {
+                      src,
+                      alt: event.summary,
+                      style: styles.image,
+                      className: classNames.image,
+                      maxWidth,
+                    }),
+                  h(
+                    LayoutTable,
+                    { style: styles.event, className: classNames.event },
+                    [
                       tr([
-                        td({ className: classNames?.title }, [event.summary]),
-                      ]),
-                      tr([td({ className: classNames?.title }, [startsAt])]),
-                      tr([
-                        td({
-                          dangerouslySetInnerHTML: {
-                            __html: `&nbsp;`,
+                        td(
+                          {
+                            style: styles.title,
+                            className: classNames.title,
                           },
-                        }),
+                          [event.summary]
+                        ),
                       ]),
                       tr([
-                        td({
-                          className: classNames?.description,
-                          dangerouslySetInnerHTML: {
-                            __html: description,
+                        td(
+                          {
+                            style: styles.title,
+                            className: classNames.title,
                           },
-                        }),
+                          [startsAt]
+                        ),
                       ]),
-                    ]),
-                  ]
-                ),
+                      description &&
+                        tr([
+                          td({
+                            dangerouslySetInnerHTML: {
+                              __html: `&nbsp;`,
+                            },
+                          }),
+                        ]),
+                      description &&
+                        tr([
+                          td({
+                            style: styles.description,
+                            className: classNames.description,
+                            dangerouslySetInnerHTML: {
+                              __html: description,
+                            },
+                          }),
+                        ]),
+                    ]
+                  ),
+                ]),
               ]),
             ]
           )
         }),
-      ]),
-      publicURL &&
-        tfoot([
-          tr({ height: 40 }, [
+        publicURL &&
+          tr({ height: 40, style: { textAlign: "left" } }, [
             td([
               h(Link, {
                 analytics,
+                style: styles.more,
                 className: classNames?.more,
                 url: publicURL,
                 title: moreTitle,
               }),
             ]),
           ]),
-        ]),
+      ]),
     ]),
   ])
 }

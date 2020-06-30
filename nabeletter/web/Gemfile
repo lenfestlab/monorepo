@@ -23,6 +23,7 @@ gem 'timber-rails', github: 'timberio/timber-ruby-rails', ref: '250326' # rails 
 gem 'validates_timeliness', '~> 5.0.0.alpha3'
 gem 'webpacker', '~> 4.0'
 gem 'open_graph_reader'
+gem 'chronic'
 
 group :development do
   gem 'web-console', '>= 3.3.0'

@@ -10490,6 +10490,13 @@ react-hotkeys@2.0.0:
   dependencies:
     prop-types "^15.6.1"
 
+react-html-comment@~2.0.3:
+  version "2.0.3"
+  resolved "https://registry.yarnpkg.com/react-html-comment/-/react-html-comment-2.0.3.tgz#95972bc011ce9f6d4ccf301f5b98145c09a77ae7"
+  integrity sha512-2nxXL69aIq9d+NExyT9uA0R6izKBk2qM3TOLuQK34oKUgmEZayptK5MITWhKh0GAl2q0snk67f46xkOSN1HLkA==
+  dependencies:
+    prop-types "^15.7.2"
+
 react-inspector@^4.0.0:
   version "4.0.1"
   resolved "https://registry.yarnpkg.com/react-inspector/-/react-inspector-4.0.1.tgz#0f888f78ff7daccbc7be5d452b20c96dc6d5fbb8"

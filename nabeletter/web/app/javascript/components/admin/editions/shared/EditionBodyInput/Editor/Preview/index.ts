@@ -8,27 +8,19 @@ import { rgb } from "csx"
 import React, { Fragment, useEffect, useState } from "react"
 import { createTypeStyle } from "typestyle"
 
-import { max, values } from "fp"
+import { isEmpty, max, values } from "fp"
 import type { PreviewRef, SectionField } from "../../types"
 import { AmpEmail } from "./AmpEmail"
-import { AnalyticsProps, Body } from "./Body"
+import { Body } from "./Body"
 import { HtmlEmail } from "./HtmlEmail"
-
-export { AnalyticsProps }
 
 interface Props {
   htmlRef?: PreviewRef
   ampRef?: PreviewRef
   fields: SectionField[]
-  analytics: AnalyticsProps
 }
 
-export const Preview = ({
-  fields: unstyledFields,
-  htmlRef,
-  ampRef,
-  analytics,
-}: Props) => {
+export const Preview = ({ fields: unstyledFields, htmlRef, ampRef }: Props) => {
   // clone each field to merge in typestyle prop
   const htmlTypestyle = createTypeStyle()
   const htmlFields: SectionField[] = unstyledFields.map(
@@ -65,7 +57,7 @@ export const Preview = ({
   })
 
   const desktop = 640
-  const iphone = 320 // iPhone 5
+  const iphone = 375 // iPhone SE 2020
   const widths = { desktop, mobile: iphone }
   const [width, setWidth] = useState(widths.desktop)
   const onChange = (event: React.MouseEvent<HTMLElement>, newWidth: number) =>
@@ -81,8 +73,8 @@ export const Preview = ({
     newFormat: string
   ) => setFormat(newFormat ?? formats.amp)
 
-  const ampEnabled = false // TODO
-  const isAmp = format === formats.amp
+  const ampEnabled = !!process.env.AMP_ENABLED
+  const ampFocused = format === formats.amp
 
   return h(
     Box,
@@ -167,14 +159,13 @@ export const Preview = ({
               {
                 forwardRef: ampRef,
                 css: ampCss,
-                visible: isAmp,
+                visible: ampFocused,
               },
               [
                 h(Body, {
                   fields: ampFields,
                   typestyle: ampTypestyle,
-                  analytics,
-                  isAmp,
+                  isAmp: true,
                 }),
               ]
             ),
@@ -184,13 +175,12 @@ export const Preview = ({
               {
                 forwardRef: htmlRef,
                 css: htmlCss,
-                visible: !isAmp,
+                visible: !ampFocused,
               },
               [
                 h(Body, {
                   fields: htmlFields,
                   typestyle: htmlTypestyle,
-                  analytics,
                 }),
               ]
             ),
