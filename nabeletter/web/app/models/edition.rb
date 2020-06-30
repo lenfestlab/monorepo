@@ -55,9 +55,9 @@ class Edition < ApplicationRecord
   ## Email delivery
   #
 
-  def deliver(user: nil)
+  def deliver(recipients: [], current_user: nil)
     deliverer = DeliveryService.new
-    deliverer.deliver!(edition: self, user: user)
+    deliverer.deliver!(edition: self, recipients: recipients, current_user: current_user)
     return true # return truthy for AASM
   end
 end

@@ -55,6 +55,8 @@ export const Field = ({
     translate("weather-input-title-placeholder")
   )
   const { markdown, pre, post } = config
+  if (process.env.NODE_ENV === "development" && allEmpty([pre, post]))
+    return null
 
   const vendorURL = "https://darksky.net/poweredby"
   const endpoint = process.env.WEATHER_ENDPOINT
@@ -139,8 +141,6 @@ export const Field = ({
     cellPadding: 0,
     cellSpacing: 1,
   }
-  if (process.env.NODE_ENV === "development" && allEmpty([pre, post]))
-    return null
   return h(SectionField, { title, pre, post, typestyle, id, analytics }, [
     table({ className: "weather", ...tableProps }, [
       tbody([

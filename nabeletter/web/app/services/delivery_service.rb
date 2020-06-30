@@ -32,14 +32,26 @@ class DeliveryService
     raise(DeliveryError, response["errors"]) unless response.success?
   end
 
-  def deliver!(edition:, user: nil)
+  def deliver!(edition:, recipients: [], current_user: nil)
+    # NOTE: "to" default is edition's list address
     newsletter = edition.newsletter
     list_identifier = newsletter.mailgun_list_identifier
     list_name, list_domain = list_identifier.split("@")
     to = list_identifier
     subject = edition.subject
+    html = edition.body_html
 
-    # NOTE: interpolate mailgun vars
+    # override "to" w/ the recipients, if provided
+    to = recipients.join(", ") if recipients.present?
+
+    # override "to" w/ the current admin, if sole recipient
+    user = nil
+    if (recipients.count == 1 && (recipients.first == current_user.email))
+      user = current_user
+    end
+    # if admin user recipient, override w/ their meta on test delivery
+    to = user.email_address if !Rails.env.production? && user.present?
+    # interpolate mailgun vars if sole recipient is current_user
     subs = {
       "VAR-UNSUBSCRIBE-URL" => (user.present? ? ENV["RAILS_HOST"] : "%mailing_list_unsubscribe_url%"),
       "VAR-RECIPIENT-UID" => (user.present? ? "RECIPIENT_UID" : "%recipient.uid%")
@@ -47,8 +59,6 @@ class DeliveryService
     re = Regexp.union(subs.keys)
     html = edition.body_html.gsub(re, subs)
 
-    # NOTE: if admin user, override w/ their meta on test delivery
-    to = user.email_address if !Rails.env.production? && user.present?
     request_body = {
       from: "Lenfest Local Lab <mail@#{list_domain}>",
       to: to,
