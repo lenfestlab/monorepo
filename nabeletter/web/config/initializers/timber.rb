@@ -1,4 +1,6 @@
-if (api_key = ENV["TIMBER_API_KEY"]) && (source_id = ENV["TIMBER_SOURCE_ID"])
+debug_timber = ENV["TIMBER_DEBUG"].present?
+
+if (debug_timber && api_key = ENV["TIMBER_API_KEY"]) && (source_id = ENV["TIMBER_SOURCE_ID"])
   http_device = Timber::LogDevices::HTTP.new(api_key, source_id)
   Rails.logger = Timber::Logger.new(http_device, STDOUT)
 end
@@ -10,7 +12,7 @@ Timber.config.integrations.rack
 end
 
 # https://docs.timber.io/setup/languages/ruby#troubleshooting
-if Rails.env.development? && ENV["TIMBER_DEBUG"].present?
+if Rails.env.development? && debug_timber
   Timber::Config.instance.debug_to_stdout!
 end
 

@@ -13,10 +13,7 @@ class EventsController < ApplicationController
   def index
     url = safe[:url]
     response = HTTParty.get url
-    Rails.logger.info("response.code #{response.code}")
-    Rails.logger.info("response.success? #{response.success?}")
     raise(EventsError, response["errors"]) unless response.success?
-    Rails.logger.info("response.body", response.body)
     icals = Icalendar::Calendar.parse response.body
     ical = icals.first
     events = ical.events.reduce([]) do |coll, event|
@@ -35,7 +32,6 @@ class EventsController < ApplicationController
       end
       coll.concat(flattened_events)
     end
-    ap events
     render json: events
   end
 
