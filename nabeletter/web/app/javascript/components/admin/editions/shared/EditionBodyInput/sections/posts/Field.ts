@@ -1,22 +1,18 @@
 import { h } from "@cycle/react"
 import { a, img, table, tbody, td, tr } from "@cycle/react-dom"
 import { important, percent, px } from "csx"
-import { media, TypeStyle } from "typestyle"
+import { media } from "typestyle"
 
 import { AnalyticsProps as AllAnalyticsProps, Link } from "analytics"
 import { allEmpty, either, isEmpty, map, values } from "fp"
 import { translate } from "i18n"
 import { compileStyles, queries } from "styles"
 import type { Config, Post } from "."
-import { SectionField } from "../section/SectionField"
+import { SectionField, SectionFieldProps } from "../section/SectionField"
 
-export interface Props {
+export interface Props extends SectionFieldProps {
   kind: string
   config: Config
-  typestyle?: TypeStyle
-  id: string
-  analytics: Omit<AllAnalyticsProps, "title">
-  isAmp?: boolean
 }
 
 export const Field = ({

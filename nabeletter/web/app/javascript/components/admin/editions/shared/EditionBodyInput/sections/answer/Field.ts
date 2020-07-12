@@ -11,16 +11,13 @@ import { translate } from "i18n"
 import { colors, compileStyles, queries } from "styles"
 import type { Article, Config } from "."
 import { CachedImage } from "../CachedImage"
-import { SectionField } from "../section/SectionField"
+import { SectionField, SectionFieldProps } from "../section/SectionField"
 
-export interface Props {
+export interface Props extends SectionFieldProps {
   kind: string
   config: Config
-  typestyle?: TypeStyle
-  id: string
-  analytics: Omit<AllAnalyticsProps, "title">
-  isAmp?: boolean
 }
+
 export const Field = ({
   config,
   typestyle,

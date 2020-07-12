@@ -28,6 +28,7 @@ export const Preview = ({ fields: unstyledFields, htmlRef, ampRef }: Props) => {
       return React.cloneElement(child, {
         ...child.props,
         typestyle: htmlTypestyle,
+        isAmp: false,
       })
     }
   )

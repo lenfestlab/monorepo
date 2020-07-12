@@ -12,15 +12,11 @@ import { allEmpty, either, first, isEmpty, last, map, reduce, values } from "fp"
 import { translate } from "i18n"
 import { colors, compileStyles, queries, StyleMap } from "styles"
 import { Config, Event } from "."
-import { CachedImage } from "../CachedImage"
-import { SectionField } from "../section/SectionField"
+import { SectionField, SectionFieldProps } from "../section/SectionField"
 
-interface Props {
+interface Props extends SectionFieldProps {
   kind: string
   config: Config
-  typestyle?: TypeStyle
-  id: string
-  analytics: Omit<AllAnalyticsProps, "title">
 }
 
 export const Field: FunctionComponent<Props> = ({
@@ -29,6 +25,7 @@ export const Field: FunctionComponent<Props> = ({
   id,
   kind,
   analytics,
+  isAmp,
 }) => {
   const title = either(
     config.title,
@@ -59,75 +56,82 @@ export const Field: FunctionComponent<Props> = ({
     },
   })
 
-  return h(SectionField, { title, pre, post, typestyle, id, analytics }, [
-    h(LayoutTable, [
-      tbody([
-        events.map((event) => {
-          const title = event.summary
-          const description = event.description
-          const startsAt = format(parseISO(event.dstart), "EEE, d LLL y' at 'p")
+  return h(
+    SectionField,
+    { title, pre, post, typestyle, id, analytics, isAmp },
+    [
+      h(LayoutTable, [
+        tbody([
+          events.map((event) => {
+            const title = event.summary
+            const description = event.description
+            const startsAt = format(
+              parseISO(event.dstart),
+              "EEE, d LLL y' at 'p"
+            )
 
-          const location = event.location.includes("zoom")
-            ? translate("meetings-field-zoom-link")
-            : first(event.location?.split(","))
+            const location = event.location.includes("zoom")
+              ? translate("meetings-field-zoom-link")
+              : first(event.location?.split(","))
 
-          const endpoint = process.env.ICS_ENDPOINT!
-          const url = stringifyUrl({
-            url: endpoint,
-            query: {
-              ...event,
-            },
-          })
+            const endpoint = process.env.ICS_ENDPOINT!
+            const url = stringifyUrl({
+              url: endpoint,
+              query: {
+                ...event,
+              },
+            })
 
-          return h(
-            LayoutTable,
-            {
-              style: styles.eventContainer,
-              className: classNames.eventContainer,
-            },
-            [
-              tr([
-                td({ style: styles.event, className: classNames.event }, [
-                  div(
-                    {
-                      style: styles.title,
-                      className: classNames.title,
-                    },
-                    [title]
-                  ),
-                  div(
-                    {
-                      style: styles.title,
-                      className: classNames.title,
-                    },
-                    [startsAt]
-                  ),
-                  div({
-                    style: styles.description,
-                    className: classNames.description,
-                    dangerouslySetInnerHTML: {
-                      __html: description,
-                    },
-                  }),
+            return h(
+              LayoutTable,
+              {
+                style: styles.eventContainer,
+                className: classNames.eventContainer,
+              },
+              [
+                tr([
+                  td({ style: styles.event, className: classNames.event }, [
+                    div(
+                      {
+                        style: styles.title,
+                        className: classNames.title,
+                      },
+                      [title]
+                    ),
+                    div(
+                      {
+                        style: styles.title,
+                        className: classNames.title,
+                      },
+                      [startsAt]
+                    ),
+                    div({
+                      style: styles.description,
+                      className: classNames.description,
+                      dangerouslySetInnerHTML: {
+                        __html: description,
+                      },
+                    }),
+                  ]),
                 ]),
-              ]),
-              tr([
-                td([
-                  b(location),
-                  br(),
-                  h(Link, {
-                    analytics,
-                    url,
-                    style: styles.reminderLink,
-                    className: classNames.reminderLink,
-                    title: translate("meetings-field-set-reminder"),
-                  }),
+                tr([
+                  td([
+                    b(location),
+                    br(),
+                    h(Link, {
+                      analytics,
+                      url,
+                      style: styles.reminderLink,
+                      className: classNames.reminderLink,
+                      title: translate("meetings-field-set-reminder"),
+                    }),
+                  ]),
                 ]),
-              ]),
-            ]
-          )
-        }),
+              ]
+            )
+          }),
+        ]),
       ]),
-    ]),
-  ])
+    ]
+  )
 }

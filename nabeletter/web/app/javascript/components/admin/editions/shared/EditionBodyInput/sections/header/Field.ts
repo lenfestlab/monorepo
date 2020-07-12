@@ -8,13 +8,10 @@ import { translate } from "i18n"
 import { compileStyles } from "styles"
 import { colors, queries } from "styles"
 import { Config } from "."
+import { SectionFieldProps } from "../section/SectionField"
 
-interface Props {
+interface Props extends SectionFieldProps {
   config: Config
-  typestyle?: TypeStyle
-  id: string
-  analytics: AnalyticsProps
-  isAmp?: boolean
 }
 
 export const Field = ({ typestyle, isAmp }: Props) => {
