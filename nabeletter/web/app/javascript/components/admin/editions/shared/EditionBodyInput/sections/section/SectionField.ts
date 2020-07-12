@@ -13,7 +13,7 @@ export interface SectionFieldProps extends SectionConfig {
   id: string
   typestyle?: TypeStyle
   analytics: AnalyticsProps
-  isAmp?: boolean
+  isAmp: boolean
   outerWidth?: number
 }
 
@@ -25,7 +25,7 @@ export const SectionField: FunctionComponent<SectionFieldProps> = ({
   typestyle,
   children,
   analytics,
-  isAmp = false,
+  isAmp,
   outerWidth = 600,
 }) => {
   const { mobile } = queries
@@ -123,7 +123,7 @@ export const SectionField: FunctionComponent<SectionFieldProps> = ({
                       classNames.sectionPre
                     ),
                   },
-                  [h(MarkdownField, { markdown: pre, analytics })]
+                  [h(MarkdownField, { markdown: pre, analytics, isAmp })]
                 ),
               ]),
             tr([
@@ -148,7 +148,7 @@ export const SectionField: FunctionComponent<SectionFieldProps> = ({
                       classNames.sectionPost
                     ),
                   },
-                  [h(MarkdownField, { markdown: post, analytics })]
+                  [h(MarkdownField, { markdown: post, analytics, isAmp })]
                 ),
               ]),
           ]),

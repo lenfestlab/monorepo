@@ -187,9 +187,9 @@ export const Field: FunctionComponent<Props> = ({
                       src,
                       maxWidth: 30,
                       placeholderHeight: 30,
-                      isAmp,
                       style: styles.socialIcon,
                       className: classNames.socialIcon,
+                      isAmp,
                     }),
                   ]
                 )

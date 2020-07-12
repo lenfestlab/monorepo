@@ -3,7 +3,8 @@ import { img, span, table, tbody, td, tr } from "@cycle/react-dom"
 import { important, percent, px } from "csx"
 import { format, fromUnixTime } from "date-fns"
 import { useAsync } from "react-use"
-import { media, TypeStyle } from "typestyle"
+import { media } from "typestyle"
+import { CachedImage } from "../CachedImage"
 
 import { Link } from "analytics"
 import { LayoutTable } from "components/table"
@@ -11,8 +12,8 @@ import { allEmpty, either } from "fp"
 import { translate } from "i18n"
 import { colors, compileStyles, queries } from "styles"
 import { Config } from "."
-import { AnalyticsProps, MarkdownField } from "../MarkdownField"
-import { SectionField } from "../section/SectionField"
+import { MarkdownField } from "../MarkdownField"
+import { SectionField, SectionFieldProps } from "../section/SectionField"
 import { getIconURL } from "./util"
 
 interface ApiDatum {
@@ -21,6 +22,7 @@ interface ApiDatum {
   temperatureHigh: number
   temperatureLow: number
 }
+
 interface ApiResponseJSON {
   daily: {
     data: ApiDatum[]
@@ -36,27 +38,17 @@ interface Day {
   }
 }
 
-export interface Props {
+export interface Props extends SectionFieldProps {
   config: Config
-  typestyle?: TypeStyle
-  id: string
-  analytics: AnalyticsProps
-  isAmp?: boolean
 }
 
-export const Field = ({
-  config,
-  typestyle,
-  id,
-  analytics,
-  isAmp = false,
-}: Props) => {
+export const Field = ({ config, typestyle, id, analytics, isAmp }: Props) => {
   const title = either(
     config.title,
     translate("weather-input-title-placeholder")
   )
   const { markdown, pre, post } = config
-  if (process.env.NODE_ENV === "development" && allEmpty([pre, post]))
+  if (process.env.NODE_ENV === "development" && allEmpty([pre, markdown, post]))
     return null
 
   const vendorURL = "https://darksky.net/poweredby"
@@ -142,85 +134,90 @@ export const Field = ({
     cellPadding: 0,
     cellSpacing: 1,
   }
-  return h(SectionField, { title, pre, post, typestyle, id, analytics }, [
-    h(LayoutTable, { ...tableProps }, [
-      tbody([
-        tr(
-          data.value?.map(({ dayOfWeek, imageURL, temp }) => {
-            const src = imageURL
-            return td([
-              table({ ...tableProps }, [
-                tbody([
-                  tr([
-                    td(
-                      {
-                        style: styles.dayOfWeek,
-                        className: classNames.dayOfWeek,
-                      },
-                      [dayOfWeek]
-                    ),
-                  ]),
-                  tr([
-                    td([
-                      img({
-                        src,
-                        alt: dayOfWeek,
-                        style: styles.img,
-                        className: classNames.img,
-                      }),
+  return h(
+    SectionField,
+    { title, pre, post, typestyle, id, analytics, isAmp },
+    [
+      h(LayoutTable, { ...tableProps }, [
+        tbody([
+          tr(
+            data.value?.map(({ dayOfWeek, imageURL, temp }) => {
+              const src = imageURL
+              return td([
+                table({ ...tableProps }, [
+                  tbody([
+                    tr([
+                      td(
+                        {
+                          style: styles.dayOfWeek,
+                          className: classNames.dayOfWeek,
+                        },
+                        [dayOfWeek]
+                      ),
                     ]),
-                  ]),
-                  tr([
-                    td({ style: styles.temps, className: classNames.temps }, [
-                      span({
-                        style: styles.tempHigh,
-                        className: classNames.tempHigh,
-                        dangerouslySetInnerHTML: {
-                          __html: `${temp.high}&#176`,
-                        },
-                      }),
-                      span({
-                        style: styles.tempLow,
-                        className: classNames.tempLow,
-                        dangerouslySetInnerHTML: {
-                          __html: `${temp.low}&#176;`,
-                        },
-                      }),
+                    tr([
+                      td([
+                        h(CachedImage, {
+                          src,
+                          alt: dayOfWeek,
+                          style: styles.img,
+                          className: classNames.img,
+                          isAmp,
+                        }),
+                      ]),
+                    ]),
+                    tr([
+                      td({ style: styles.temps, className: classNames.temps }, [
+                        span({
+                          style: styles.tempHigh,
+                          className: classNames.tempHigh,
+                          dangerouslySetInnerHTML: {
+                            __html: `${temp.high}&#176`,
+                          },
+                        }),
+                        span({
+                          style: styles.tempLow,
+                          className: classNames.tempLow,
+                          dangerouslySetInnerHTML: {
+                            __html: `${temp.low}&#176;`,
+                          },
+                        }),
+                      ]),
                     ]),
                   ]),
                 ]),
-              ]),
-            ])
-          })
-        ),
-        tr([
-          td(
-            {
-              colSpan,
-              style: styles.vendorAttribution,
-              className: classNames.vendorAttribution,
-            },
-            [
-              h(
-                Link,
-                {
-                  url: vendorURL,
-                  title: "Powered by Dark Sky",
-                  analytics,
-                  style: styles.vendorAttributionLink,
-                  className: classNames.vendorAttributionLink,
-                },
-                [translate("weather-field-vendor-attribution")]
-              ),
-            ]
+              ])
+            })
           ),
-        ]),
-        tr([
-          td({ colSpan }, [
-            h(MarkdownField, { markdown, typestyle, analytics }),
+          tr([
+            td(
+              {
+                colSpan,
+                style: styles.vendorAttribution,
+                className: classNames.vendorAttribution,
+              },
+              [
+                h(
+                  Link,
+                  {
+                    url: vendorURL,
+                    title: "Powered by Dark Sky",
+                    analytics,
+                    style: styles.vendorAttributionLink,
+                    className: classNames.vendorAttributionLink,
+                  },
+                  [translate("weather-field-vendor-attribution")]
+                ),
+              ]
+            ),
+          ]),
+          tr([
+            td({ colSpan }, [
+              h(MarkdownField, { markdown, typestyle, analytics, isAmp }),
+            ]),
           ]),
         ]),
       ]),
-    ]),
-  ])
+    ]
+  )
 }

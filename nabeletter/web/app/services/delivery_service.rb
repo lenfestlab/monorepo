@@ -1,3 +1,6 @@
+require 'rubygems'
+require 'nokogiri'
+
 class DeliveryError < StandardError
   def initialize(msg = "Unidentified")
     super
@@ -40,6 +43,8 @@ class DeliveryService
     to = list_identifier
     subject = edition.subject
     html = edition.body_html
+    amp = edition.body_amp
+    text = Nokogiri::HTML(html).text
 
     # override "to" w/ the recipients, if provided
     to = recipients.join(", ") if recipients.present?
@@ -64,6 +69,8 @@ class DeliveryService
       to: to,
       subject: subject,
       html: html,
+      text: text,
+      "amp-html": amp,
     }
     Rails.logger.info("request_body #{request_body}")
     response =

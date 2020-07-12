@@ -1,23 +1,19 @@
 import { h } from "@cycle/react"
 import { div, img, table, tbody, td, tr } from "@cycle/react-dom"
 import { important, percent, px } from "csx"
-import { Fragment, FunctionComponent } from "react"
-import { media, TypeStyle } from "typestyle"
+import { FunctionComponent } from "react"
+import { media } from "typestyle"
 
 import { LayoutTable } from "components/table"
 import { allEmpty, chunk, either, isEmpty } from "fp"
 import { compileStyles, queries } from "styles"
 import { Config, Image } from "."
-import { AnalyticsProps, MarkdownField } from "../MarkdownField"
-import { SectionField } from "../section/SectionField"
+import { MarkdownField } from "../MarkdownField"
+import { SectionField, SectionFieldProps } from "../section/SectionField"
 
-export interface Props {
+export interface Props extends SectionFieldProps {
   config: Config
-  typestyle?: TypeStyle
-  id: string
-  analytics: AnalyticsProps
   titlePlaceholder: string
-  isAmp?: boolean
 }
 
 export const Field: FunctionComponent<Props> = ({
@@ -109,7 +105,7 @@ export const Field: FunctionComponent<Props> = ({
                 style: styles.markdown,
                 className: classNames.markdown,
               },
-              [h(MarkdownField, { markdown, typestyle, analytics })]
+              [h(MarkdownField, { markdown, typestyle, analytics, isAmp })]
             ),
           ]),
         ]),

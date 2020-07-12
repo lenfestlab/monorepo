@@ -1,5 +1,5 @@
 class EditionResource < JSONAPI::Resource
-  attributes(*%i[subject publish_at body_data body_html])
+  attributes(*%i[subject publish_at body_data body_html body_amp])
 
   has_one :newsletter
 

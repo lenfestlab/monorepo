@@ -12,14 +12,11 @@ import { translate } from "i18n"
 import { colors, compileStyles, queries, StyleMap } from "styles"
 import { Config, Event } from "."
 import { CachedImage } from "../CachedImage"
-import { SectionField } from "../section/SectionField"
+import { SectionField, SectionFieldProps } from "../section/SectionField"
 
-interface Props {
+interface Props extends SectionFieldProps {
   kind: string
   config: Config
-  typestyle?: TypeStyle
-  id: string
-  analytics: Omit<AllAnalyticsProps, "title">
 }
 
 export const Field: FunctionComponent<Props> = ({
@@ -28,6 +25,7 @@ export const Field: FunctionComponent<Props> = ({
   id,
   kind,
   analytics,
+  isAmp,
 }) => {
   const title = either(
     config.title,
@@ -80,98 +78,106 @@ export const Field: FunctionComponent<Props> = ({
   const moreTitle = translate("events-field-more")
   const maxWidth = queries.mobile.maxWidth - 2 * 24
 
-  return h(SectionField, { title, pre, post, typestyle, id, analytics }, [
-    h(LayoutTable, [
-      tbody([
-        events.map((event) => {
-          let description = event.description
-          const parser = new DOMParser()
-          const doc = parser.parseFromString(description, "text/html")
-          const links = doc.querySelectorAll("a")
-          const link = last(links)
-          const src = link?.href
-          // remove img link from description
-          link?.parentNode?.removeChild(link)
-          description = doc.documentElement.innerHTML
-          const startsAt = format(parseISO(event.dstart), "EEE, d LLL y' at 'p")
+  return h(
+    SectionField,
+    { title, pre, post, typestyle, id, analytics, isAmp },
+    [
+      h(LayoutTable, [
+        tbody([
+          events.map((event) => {
+            let description = event.description
+            const parser = new DOMParser()
+            const doc = parser.parseFromString(description, "text/html")
+            const links = doc.querySelectorAll("a")
+            const link = last(links)
+            const src = link?.href
+            // remove img link from description
+            link?.parentNode?.removeChild(link)
+            description = doc.documentElement.innerHTML
+            const startsAt = format(
+              parseISO(event.dstart),
+              "EEE, d LLL y' at 'p"
+            )
 
-          return h(
-            LayoutTable,
-            {
-              style: styles.eventContainer,
-              className: classNames.eventContainer,
-            },
-            [
-              tr([
-                td([
-                  src &&
-                    h(CachedImage, {
-                      src,
-                      alt: event.summary,
-                      style: styles.image,
-                      className: classNames.image,
-                      maxWidth,
-                    }),
-                  h(
-                    LayoutTable,
-                    { style: styles.event, className: classNames.event },
-                    [
-                      tr([
-                        td(
-                          {
-                            style: styles.title,
-                            className: classNames.title,
-                          },
-                          [event.summary]
-                        ),
-                      ]),
-                      tr([
-                        td(
-                          {
-                            style: styles.title,
-                            className: classNames.title,
-                          },
-                          [startsAt]
-                        ),
-                      ]),
-                      description &&
+            return h(
+              LayoutTable,
+              {
+                style: styles.eventContainer,
+                className: classNames.eventContainer,
+              },
+              [
+                tr([
+                  td([
+                    src &&
+                      h(CachedImage, {
+                        src,
+                        alt: event.summary,
+                        style: styles.image,
+                        className: classNames.image,
+                        maxWidth,
+                        isAmp,
+                      }),
+                    h(
+                      LayoutTable,
+                      { style: styles.event, className: classNames.event },
+                      [
                         tr([
-                          td({
-                            dangerouslySetInnerHTML: {
-                              __html: `&nbsp;`,
+                          td(
+                            {
+                              style: styles.title,
+                              className: classNames.title,
                             },
-                          }),
+                            [event.summary]
+                          ),
                         ]),
-                      description &&
                         tr([
-                          td({
-                            style: styles.description,
-                            className: classNames.description,
-                            dangerouslySetInnerHTML: {
-                              __html: description,
+                          td(
+                            {
+                              style: styles.title,
+                              className: classNames.title,
                             },
-                          }),
+                            [startsAt]
+                          ),
                         ]),
-                    ]
-                  ),
+                        description &&
+                          tr([
+                            td({
+                              dangerouslySetInnerHTML: {
+                                __html: `&nbsp;`,
+                              },
+                            }),
+                          ]),
+                        description &&
+                          tr([
+                            td({
+                              style: styles.description,
+                              className: classNames.description,
+                              dangerouslySetInnerHTML: {
+                                __html: description,
+                              },
+                            }),
+                          ]),
+                      ]
+                    ),
+                  ]),
                 ]),
+              ]
+            )
+          }),
+          publicURL &&
+            tr({ height: 40, style: { textAlign: "left" } }, [
+              td([
+                h(Link, {
+                  analytics,
+                  style: styles.more,
+                  className: classNames?.more,
+                  url: publicURL,
+                  title: moreTitle,
+                }),
               ]),
-            ]
-          )
-        }),
-        publicURL &&
-          tr({ height: 40, style: { textAlign: "left" } }, [
-            td([
-              h(Link, {
-                analytics,
-                style: styles.more,
-                className: classNames?.more,
-                url: publicURL,
-                title: moreTitle,
-              }),
             ]),
-          ]),
+        ]),
       ]),
-    ]),
-  ])
+    ]
+  )
 }

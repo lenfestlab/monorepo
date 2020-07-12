@@ -2,23 +2,19 @@ import { h } from "@cycle/react"
 import { a, div, i, img, span, table, tbody, td, tr } from "@cycle/react-dom"
 import { important, percent, px } from "csx"
 import { format, parseISO } from "date-fns"
-import { classes, media, TypeStyle } from "typestyle"
+import { media, TypeStyle } from "typestyle"
 
 import { AnalyticsProps as AllAnalyticsProps, Link } from "analytics"
 import { LayoutTable } from "components/table"
 import { allEmpty, chunk, either, isEmpty } from "fp"
 import { translate } from "i18n"
 import { colors, compileStyles, queries } from "styles"
-import type { Article, Config } from "."
-import { SectionField } from "../section/SectionField"
+import type { Config } from "."
+import { SectionField, SectionFieldProps } from "../section/SectionField"
 
-export interface Props {
+export interface Props extends SectionFieldProps {
   kind: string
   config: Config
-  typestyle?: TypeStyle
-  id: string
-  analytics: Omit<AllAnalyticsProps, "title">
-  isAmp?: boolean
 }
 
 export const Field = ({
@@ -92,87 +88,92 @@ export const Field = ({
     },
   })
 
-  return h(SectionField, { title, typestyle, id, pre, post, analytics }, [
-    h(LayoutTable, [
-      tbody([
-        ...chunk(articles).map((articlePair) => {
-          return tr([
-            ...articlePair.map((article) => {
-              const {
-                url,
-                title,
-                description,
-                site_name,
-                image: src,
-                published_time,
-              } = article
+  return h(
+    SectionField,
+    { title, typestyle, id, pre, post, analytics, isAmp },
+    [
+      h(LayoutTable, [
+        tbody([
+          ...chunk(articles).map((articlePair) => {
+            return tr([
+              ...articlePair.map((article) => {
+                const {
+                  url,
+                  title,
+                  description,
+                  site_name,
+                  image: src,
+                  published_time,
+                } = article
 
-              const published =
-                published_time && format(parseISO(published_time), "MMMM d, y")
+                const published =
+                  published_time &&
+                  format(parseISO(published_time), "MMMM d, y")
 
-              return td(
-                {
-                  style: styles.article,
-                  className: classNames.article,
-                },
-                [
-                  h(
-                    Link,
-                    {
-                      url,
-                      analytics,
-                      title,
-                      style: styles.link,
-                      className: classNames.link,
-                    },
-                    [
-                      // TODO: cached image
-                      src &&
-                        img({
-                          src,
-                          style: styles.image,
-                          className: classNames.image,
-                        }),
-                      title &&
-                        div(
-                          {
-                            style: styles.title,
-                            className: classNames.title,
-                          },
-                          title
-                        ),
-                      published &&
-                        div(
-                          {
-                            style: styles.published,
-                            className: classNames.published,
-                          },
-                          [i(published)]
-                        ),
-                      description &&
-                        div(
-                          {
-                            style: styles.description,
-                            className: classNames.description,
-                          },
-                          description
-                        ),
-                      site_name &&
-                        div(
-                          {
-                            style: styles.site,
-                            className: classNames.site,
-                          },
-                          site_name
-                        ),
-                    ]
-                  ),
-                ]
-              )
-            }),
-          ])
-        }),
+                return td(
+                  {
+                    style: styles.article,
+                    className: classNames.article,
+                  },
+                  [
+                    h(
+                      Link,
+                      {
+                        url,
+                        analytics,
+                        title,
+                        style: styles.link,
+                        className: classNames.link,
+                      },
+                      [
+                        // TODO: cached image
+                        src &&
+                          img({
+                            src,
+                            style: styles.image,
+                            className: classNames.image,
+                          }),
+                        title &&
+                          div(
+                            {
+                              style: styles.title,
+                              className: classNames.title,
+                            },
+                            title
+                          ),
+                        published &&
+                          div(
+                            {
+                              style: styles.published,
+                              className: classNames.published,
+                            },
+                            [i(published)]
+                          ),
+                        description &&
+                          div(
+                            {
+                              style: styles.description,
+                              className: classNames.description,
+                            },
+                            description
+                          ),
+                        site_name &&
+                          div(
+                            {
+                              style: styles.site,
+                              className: classNames.site,
+                            },
+                            site_name
+                          ),
+                      ]
+                    ),
+                  ]
+                )
+              }),
+            ])
+          }),
+        ]),
       ]),
-    ]),
-  ])
+    ]
+  )
 }

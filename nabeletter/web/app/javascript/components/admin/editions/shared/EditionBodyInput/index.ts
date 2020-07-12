@@ -265,7 +265,7 @@ export class EditionBodyInput extends Component<Props, State> {
         }
         const body_data = { sections }
         const id = this.props.record?.id
-        const data = { body_data, body_html } // TODO: restore body_amp
+        const data = { body_data, body_html, body_amp }
         const request = dataProvider("UPDATE", "editions", { id, data })
         return from(request)
       }),

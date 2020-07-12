@@ -35,7 +35,7 @@ export const MarkdownField = ({
   typestyle,
   analytics,
   className,
-  isAmp = false,
+  isAmp,
 }: Props) => {
   const source = markdown
 

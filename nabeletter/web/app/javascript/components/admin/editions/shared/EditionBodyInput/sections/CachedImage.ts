@@ -1,4 +1,5 @@
 import { h } from "@cycle/react"
+import { img } from "@cycle/react-dom"
 import { Typography } from "@material-ui/core"
 import { Skeleton } from "@material-ui/lab"
 import { stringifyUrl } from "query-string"
@@ -21,7 +22,7 @@ interface Props {
   src: URL
   maxWidth?: number
   placeholderHeight?: number
-  isAmp?: boolean
+  isAmp: boolean
   style?: object
   className?: string
 }
@@ -35,7 +36,7 @@ export const CachedImage = ({
   placeholderHeight = 250,
   style,
   className,
-  isAmp = false,
+  isAmp,
 }: Props) => {
   const { loading, value: image, error } = useAsync(async () => {
     const url = originalURL
@@ -57,15 +58,25 @@ export const CachedImage = ({
   }
   if (image) {
     const { id, url: src, width, height } = image
-    // @ts-ignore - amp-img tag currently unsupported
-    return h(isAmp ? "amp-img" : "img", {
-      className,
-      style,
-      src,
-      width,
-      height: isAmp ? height : null,
-      alt,
-    })
+    if (isAmp) {
+      // @ts-ignore - amp-img tag currently unsupported
+      return h("amp-img", {
+        class: className,
+        style,
+        src,
+        width,
+        height,
+        alt,
+      })
+    } else {
+      return img({
+        className,
+        style,
+        src,
+        width,
+        alt,
+      })
+    }
   } else {
     return h(Typography, { color: "error" }, JSON.stringify(error))
   }

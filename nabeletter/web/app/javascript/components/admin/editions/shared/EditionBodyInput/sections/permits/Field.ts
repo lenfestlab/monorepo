@@ -1,32 +1,19 @@
 import { h } from "@cycle/react"
 import { b, div, img, table, tbody, td, tr } from "@cycle/react-dom"
-import { TypeStyle } from "typestyle"
 
-import { AnalyticsProps as AllAnalyticsProps, Link } from "analytics"
 import { percent, px } from "csx"
 import { allEmpty, either } from "fp"
 import { translate } from "i18n"
 import { colors, compileStyles } from "styles"
 import { Config } from "."
-import { SectionField } from "../section/SectionField"
+import { SectionField, SectionFieldProps } from "../section/SectionField"
 
-interface Props {
+interface Props extends SectionFieldProps {
   kind: string
   config: Config
-  typestyle?: TypeStyle
-  id: string
-  analytics: Omit<AllAnalyticsProps, "title">
-  isAmp?: boolean
 }
 
-export const Field = ({
-  config,
-  typestyle,
-  id,
-  kind,
-  analytics,
-  isAmp,
-}: Props) => {
+export const Field = ({ config, typestyle, id, analytics, isAmp }: Props) => {
   const { pre, post, selections: permits } = config
   const title = either(
     config.title,
