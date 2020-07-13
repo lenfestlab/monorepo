@@ -13,6 +13,7 @@ import max from "lodash/max"
 import omit from "lodash/omit"
 import reduce from "lodash/reduce"
 import some from "lodash/some"
+import sortBy from "lodash/sortBy"
 import startsWith from "lodash/startsWith"
 import union from "lodash/union"
 import unionWith from "lodash/unionWith"
@@ -50,6 +51,7 @@ export {
   omit,
   reduce,
   startsWith,
+  sortBy,
   union,
   unionWith,
   uniqBy,

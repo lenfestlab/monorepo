@@ -11,6 +11,9 @@ import Paper from "@material-ui/core/Paper"
 import { createStyles, makeStyles, Theme } from "@material-ui/core/styles"
 import React, { FunctionComponent } from "react"
 
+import { IconButton, ListItemSecondaryAction } from "@material-ui/core"
+import { Edit } from "@material-ui/icons"
+
 import { map } from "fp"
 
 const useStyles = makeStyles((theme: Theme) =>
@@ -37,17 +40,24 @@ function intersection(a: Item[], b: Item[]) {
   return a.filter((value) => b.indexOf(value) !== -1)
 }
 
+type ID = string
+
 export interface Item {
-  id: string
+  id: ID
   title: string
 }
+
+type OnClickEdit = (id: ID) => void
+
 interface Props {
   left: Item[]
   right: Item[]
   onChange: (left: Item[], right: Item[]) => void
+  onClickEdit?: OnClickEdit
 }
+
 export const TransferList: FunctionComponent<Props> = (props) => {
-  const { left: _left, right, onChange } = props
+  const { left: _left, right, onChange, onClickEdit } = props
   const left = _left.filter((item) => !map(right, "id").includes(item.id))
   const [checked, setChecked] = React.useState<Item[]>([])
 
@@ -87,12 +97,14 @@ export const TransferList: FunctionComponent<Props> = (props) => {
   }
 
   const classes = useStyles()
-  const customList = (items: Item[]) => (
+  const customList = (items: Item[], onClickEdit?: OnClickEdit) => (
     <Paper className={classes.paper}>
       <List dense={true} component="div" role="list">
         {items.map((value: Item, idx: number) => {
+          const onClick = (_event: React.MouseEvent) => {
+            onClickEdit && onClickEdit(value.id)
+          }
           const labelId = `transfer-list-item-${value.id}-label`
-
           return (
             <ListItem
               key={idx}
@@ -109,6 +121,13 @@ export const TransferList: FunctionComponent<Props> = (props) => {
                 />
               </ListItemIcon>
               <ListItemText id={labelId} primary={value.title} />
+              {onClickEdit && (
+                <ListItemSecondaryAction>
+                  <IconButton edge="end" onClick={onClick}>
+                    <Edit />
+                  </IconButton>
+                </ListItemSecondaryAction>
+              )}
             </ListItem>
           )
         })}
@@ -170,7 +189,7 @@ export const TransferList: FunctionComponent<Props> = (props) => {
           </Button>
         </Grid>
       </Grid>
-      <Grid item={true}>{customList(right)}</Grid>
+      <Grid item={true}>{customList(right, onClickEdit)}</Grid>
     </Grid>
   )
 }

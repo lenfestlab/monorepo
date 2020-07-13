@@ -61,11 +61,13 @@ export const Field = ({ config, typestyle, id, analytics, isAmp }: Props) => {
                   type,
                   address,
                   date,
-                  description,
+                  description: defaultDescription,
+                  description_custom,
                   property_owner,
                   contractor_name,
-                }) =>
-                  table([
+                }) => {
+                  const description = description_custom ?? defaultDescription
+                  return table([
                     tr([
                       td(
                         { style: styles.permit, className: classNames.permit },
@@ -124,6 +126,7 @@ export const Field = ({ config, typestyle, id, analytics, isAmp }: Props) => {
                       ),
                     ]),
                   ])
+                }
               ),
             ]),
           ]),
