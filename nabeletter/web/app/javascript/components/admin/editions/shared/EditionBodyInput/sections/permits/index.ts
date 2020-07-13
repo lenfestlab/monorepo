@@ -23,10 +23,14 @@ export interface Permit {
   contractor_name: string // "City Plumbing Llc",
 }
 
+export interface EditablePermit extends Permit {
+  description_custom?: string | null
+}
+
 import { SectionConfig } from "../section"
 
 export interface Config extends SectionConfig {
-  selections: Permit[]
+  selections: EditablePermit[]
 }
 export type SetConfig = (config: Config) => void
 
