@@ -1,3 +1,4 @@
+import capitalize from "lodash/capitalize"
 import chunk from "lodash/chunk"
 import compact from "lodash/compact"
 import every from "lodash/every"
@@ -36,6 +37,7 @@ export {
   allEmpty,
   anyEmpty,
   anyPresent,
+  capitalize,
   chunk,
   compact,
   either,

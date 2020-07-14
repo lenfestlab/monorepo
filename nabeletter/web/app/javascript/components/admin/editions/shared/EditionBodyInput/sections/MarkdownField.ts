@@ -24,7 +24,7 @@ export type AnalyticsProps = Omit<AllAnalyticsProps, "title">
 interface Props {
   markdown?: string
   placeholder?: string
-  typestyle?: TypeStyle
+  typestyle: TypeStyle
   analytics: AnalyticsProps
   className?: string
   isAmp?: boolean
@@ -48,9 +48,14 @@ export const MarkdownField = ({
         media(queries.mobile, {
           fontWeight: important(300),
         })),
+      $nest: {
+        "& p": {
+          paddingBottom: px(20),
+        },
+      },
     },
   }
-  const classNames = typestyle?.stylesheet(styles)
+  const classNames = typestyle.stylesheet(styles)
 
   const transformLinkUri: TransformLinkUri = (url, children, title) => {
     const analyticsProps: AllAnalyticsProps = {

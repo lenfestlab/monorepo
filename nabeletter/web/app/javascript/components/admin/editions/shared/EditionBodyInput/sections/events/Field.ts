@@ -4,7 +4,11 @@ import { format, parseISO } from "date-fns"
 import { Fragment, FunctionComponent } from "react"
 import { classes, media, TypeStyle } from "typestyle"
 
-import { AnalyticsProps as AllAnalyticsProps, Link } from "analytics"
+import {
+  AnalyticsProps as AllAnalyticsProps,
+  Link,
+  rewriteURL,
+} from "analytics"
 import { LayoutTable } from "components/table"
 import { percent, px } from "csx"
 import { allEmpty, either, isEmpty, last, map, reduce, values } from "fp"
@@ -50,13 +54,14 @@ export const Field: FunctionComponent<Props> = ({
       textAlign: "left",
       backgroundColor: colors.darkBlue,
       color: colors.white,
-      fontSize: px(18),
-      fontWeight: "normal",
+      fontSize: px(16),
+      fontWeight: 300,
       padding: "12px 24px 12px 24px",
     },
     title: {
-      fontWeight: 900,
+      fontWeight: 500,
     },
+    starts: {},
     description: {
       $nest: {
         "& a": {
@@ -93,10 +98,19 @@ export const Field: FunctionComponent<Props> = ({
             const src = link?.href
             // remove img link from description
             link?.parentNode?.removeChild(link)
+            // replace all links w/ analytics links
+            doc.querySelectorAll("a").forEach((link) => {
+              const href = rewriteURL(link.href, {
+                ...analytics,
+                title: link.innerHTML,
+              })
+              link.target = "_blank"
+              link.href = href
+            })
             description = doc.documentElement.innerHTML
             const startsAt = format(
               parseISO(event.dstart),
-              "EEE, d LLL y' at 'p"
+              "EEEE, LLLL d @ h aaaa"
             )
 
             return h(
@@ -133,8 +147,8 @@ export const Field: FunctionComponent<Props> = ({
                         tr([
                           td(
                             {
-                              style: styles.title,
-                              className: classNames.title,
+                              style: styles.starts,
+                              className: classNames.starts,
                             },
                             [startsAt]
                           ),

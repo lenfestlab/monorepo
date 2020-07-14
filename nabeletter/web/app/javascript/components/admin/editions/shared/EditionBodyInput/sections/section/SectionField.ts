@@ -11,7 +11,7 @@ import { AnalyticsProps, MarkdownField } from "../MarkdownField"
 
 export interface SectionFieldProps extends SectionConfig {
   id: string
-  typestyle?: TypeStyle
+  typestyle: TypeStyle
   analytics: AnalyticsProps
   isAmp: boolean
   outerWidth?: number
@@ -31,7 +31,7 @@ export const SectionField: FunctionComponent<SectionFieldProps> = ({
   const { mobile } = queries
   const { maxWidth: width } = mobile
   const hMargin = 24
-  const { styles, classNames } = compileStyles(typestyle!, {
+  const { styles, classNames } = compileStyles(typestyle, {
     section: {
       backgroundColor: colors.white,
       borderRadius: "3px",
@@ -123,7 +123,14 @@ export const SectionField: FunctionComponent<SectionFieldProps> = ({
                       classNames.sectionPre
                     ),
                   },
-                  [h(MarkdownField, { markdown: pre, analytics, isAmp })]
+                  [
+                    h(MarkdownField, {
+                      typestyle,
+                      markdown: pre,
+                      analytics,
+                      isAmp,
+                    }),
+                  ]
                 ),
               ]),
             tr([
@@ -148,7 +155,14 @@ export const SectionField: FunctionComponent<SectionFieldProps> = ({
                       classNames.sectionPost
                     ),
                   },
-                  [h(MarkdownField, { markdown: post, analytics, isAmp })]
+                  [
+                    h(MarkdownField, {
+                      typestyle,
+                      markdown: post,
+                      analytics,
+                      isAmp,
+                    }),
+                  ]
                 ),
               ]),
           ]),
