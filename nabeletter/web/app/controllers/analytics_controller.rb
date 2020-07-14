@@ -11,7 +11,9 @@ class AnalyticsController < ApplicationController
 
   def index
     ga = safe[:ga]
-    Rails.logger.info(ga)
+    redirect = safe[:redirect]
+    Rails.logger.info("params.ga #{ga}")
+    Rails.logger.info("params.redirect #{redirect}")
     if ga.present?
       uri = URI(ga)
       Rails.logger.info(ga)
@@ -31,8 +33,6 @@ class AnalyticsController < ApplicationController
       Rails.logger.info("response.success? #{response.success?}")
       raise(AnalyticsError, response["errors"]) unless response.success?
     end
-    redirect = safe[:redirect]
-    Rails.logger.info("response.redirect #{redirect}")
     redirect_to redirect
   end
 

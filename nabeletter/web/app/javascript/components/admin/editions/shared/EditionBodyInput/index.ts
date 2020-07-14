@@ -7,7 +7,7 @@ import { debounceTime, share, skip, switchMap, tap } from "rxjs/operators"
 
 import { AnalyticsProps as AllAnalyticsProps } from "analytics"
 import { Record as ApiRecord } from "components/admin/shared"
-import { find, get, map, values } from "fp"
+import { find, get, map, values, isEmpty } from "fp"
 import { Editor } from "./Editor"
 import { PreviewRef, SectionField, SectionInput } from "./types"
 
@@ -254,7 +254,8 @@ export class EditionBodyInput extends Component<Props, State> {
       tag("configs$"),
       switchMap((sections) => {
         const body_html = this.htmlRef?.current?.innerHTML
-        let body_amp = this.ampRef?.current?.innerHTML
+        let body_amp =
+          !isEmpty(process.env.AMP_ENABLED!) && this.ampRef?.current?.innerHTML
         // NOTE: amp markup unsupported by React
         if (body_amp) {
           body_amp = body_amp

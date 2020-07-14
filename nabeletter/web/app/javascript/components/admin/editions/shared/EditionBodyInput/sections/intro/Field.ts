@@ -16,7 +16,7 @@ export const Field = ({ config, id, typestyle, analytics, isAmp }: Props) => {
   const { markdown, pre, post } = config
   if (allEmpty([markdown, pre, post])) return null
 
-  const { styles, classNames } = compileStyles(typestyle!, {
+  const { styles, classNames } = compileStyles(typestyle, {
     main: {
       textAlign: "left",
     },

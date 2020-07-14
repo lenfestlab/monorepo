@@ -11,6 +11,7 @@ class ArticlesController < ApplicationController
 
   def index
     url = safe[:url]
+    Rails.logger.info("params.url #{url}")
     response = HTTParty.get url
     raise(StandardError, response["errors"]) unless response.success?
     body = response.body
@@ -37,7 +38,7 @@ class ArticlesController < ApplicationController
     end
 
     data = {
-      url: og.url,
+      url: url,
       title: og.title,
       description: og.description,
       published_time: published_time,

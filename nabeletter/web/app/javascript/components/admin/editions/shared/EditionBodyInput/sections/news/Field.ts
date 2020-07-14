@@ -6,7 +6,7 @@ import { media, TypeStyle } from "typestyle"
 
 import { AnalyticsProps as AllAnalyticsProps, Link } from "analytics"
 import { LayoutTable } from "components/table"
-import { allEmpty, chunk, either, isEmpty } from "fp"
+import { allEmpty, capitalize, chunk, either, isEmpty } from "fp"
 import { translate } from "i18n"
 import { colors, compileStyles, queries } from "styles"
 import type { Config } from "."
@@ -41,6 +41,10 @@ export const Field = ({
         media(queries.mobile, {
           width: important(percent(100)),
         })),
+      fontFamily: "Roboto",
+      fontSize: px(14),
+      fontWeight: 300,
+      color: colors.black,
     },
     image: {
       objectFit: "cover",
@@ -61,6 +65,8 @@ export const Field = ({
       paddingTop: px(5),
       fontWeight: 500,
       fontSize: px(16),
+      color: colors.darkBlue,
+      textDecoration: "underline",
       ...(!isAmp &&
         media(queries.mobile, {
           fontSize: important(px(18)),
@@ -71,10 +77,6 @@ export const Field = ({
       fontStyle: "itallic",
     },
     description: {
-      fontSize: px(14),
-      fontWeight: 300,
-      lineHeight: "normal",
-      color: colors.black,
       ...(!isAmp &&
         media(queries.mobile, {
           fontSize: important(px(16)),
@@ -82,9 +84,8 @@ export const Field = ({
         })),
     },
     site: {
-      fontWeight: 500,
-      color: colors.darkBlue,
-      textDecoration: "underline",
+      lineHeight: "normal",
+      fontWeight: "normal",
     },
   })
 
@@ -101,10 +102,15 @@ export const Field = ({
                   url,
                   title,
                   description,
-                  site_name,
+                  site_name: _site_name,
                   image: src,
                   published_time,
                 } = article
+
+                // "http://www.inquirer.com" => "Inquirer.com"
+                const site_name = capitalize(
+                  _site_name.split(".").slice(-2).join(".")
+                )
 
                 const published =
                   published_time &&
@@ -126,7 +132,6 @@ export const Field = ({
                         className: classNames.link,
                       },
                       [
-                        // TODO: cached image
                         src &&
                           img({
                             src,
