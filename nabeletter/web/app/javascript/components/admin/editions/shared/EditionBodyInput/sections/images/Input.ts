@@ -103,6 +103,8 @@ export class Input extends Component<Props, State> {
     tap((url) => {
       const image = { url, caption: this.caption$$.value }
       this.images$$.next(uniqBy(this.images$$.value.concat([image]), "url"))
+      this.url$$.next("")
+      this.caption$$.next("")
     }),
     tag("addImage$"),
     share()
