@@ -5,6 +5,8 @@ class Error < StandardError
     super
   end
 end
+class ArticleFetchError < Error
+end
 
 class ArticlesController < ApplicationController
   layout false
@@ -13,7 +15,11 @@ class ArticlesController < ApplicationController
     url = safe[:url]
     Rails.logger.info("params.url #{url}")
     response = HTTParty.get url
-    raise(StandardError, response["errors"]) unless response.success?
+    unless response.success?
+      message = response.message
+      Rails.logger.error(message)
+      raise(ArticleFetchError, message)
+    end
     body = response.body
     OpenGraphReader.parse!(body)
     object = OpenGraphReader.fetch! url
