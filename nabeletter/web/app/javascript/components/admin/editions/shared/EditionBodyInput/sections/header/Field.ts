@@ -1,12 +1,12 @@
 import { table, tbody, td, thead, tr } from "@cycle/react-dom"
+import { AnalyticsProps } from "analytics"
 import { percent, px } from "csx"
 import { important } from "csx"
-import { media, TypeStyle } from "typestyle"
-
-import { AnalyticsProps } from "analytics"
 import { translate } from "i18n"
+import { queries } from "styles"
 import { compileStyles } from "styles"
-import { colors, queries } from "styles"
+import { colors, fonts } from "styles"
+import { media, TypeStyle } from "typestyle"
 import { Config } from "."
 import { SectionFieldProps } from "../section/SectionField"
 

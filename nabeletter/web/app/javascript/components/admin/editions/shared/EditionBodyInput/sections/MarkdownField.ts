@@ -10,7 +10,7 @@ import {
   rewriteURL,
   safeTitle,
 } from "analytics"
-import { queries } from "styles"
+import { colors, queries } from "styles"
 import { StyleMap } from "styles"
 
 type TransformLinkUri = (
@@ -45,7 +45,7 @@ export const MarkdownField = ({
       lineHeight: "1.44",
       fontWeight: "normal",
       ...(!isAmp &&
-        media(queries.mobile, {
+        media(queries.desktop, {
           fontWeight: important(300),
         })),
       $nest: {
@@ -75,4 +75,54 @@ export const MarkdownField = ({
       transformLinkUri,
     }),
   ])
+}
+
+import { renderToStaticMarkup } from "react-dom/server"
+
+interface MdProps {
+  analytics: AnalyticsProps
+  markdown?: string
+  typestyle: TypeStyle
+}
+export const md = ({ markdown, analytics, typestyle }: MdProps): string => {
+  const transformLinkUri: TransformLinkUri = (url, children, title) => {
+    const analyticsProps: AllAnalyticsProps = {
+      ...analytics,
+      title: safeTitle(title),
+    }
+    const rewritten = rewriteURL(url, analyticsProps)
+    return rewritten
+  }
+
+  const styles: StyleMap = {
+    markdown: {
+      lineHeight: 1.5,
+      $nest: {
+        "& a": {
+          color: colors.darkBlue,
+        },
+        "& h1,h2,h3,h4,h5,h6": {
+          paddingBottom: px(20),
+        },
+        "& h2,h3,h4,h5,h6": {
+          fontSize: px(18),
+        },
+      },
+    },
+  }
+  const classNames = typestyle.stylesheet(styles)
+
+  const style = styles.markdown
+  const className = classNames.markdown
+
+  return renderToStaticMarkup(
+    span({ className }, [
+      h(ReactMarkdown, {
+        source: markdown,
+        escapeHtml: false,
+        linkTarget: "_blank",
+        transformLinkUri,
+      }),
+    ])
+  )
 }

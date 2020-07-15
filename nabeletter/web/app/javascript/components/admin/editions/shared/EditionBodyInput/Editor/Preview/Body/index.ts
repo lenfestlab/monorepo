@@ -16,7 +16,7 @@ interface Props {
 export function Body({ fields, typestyle, isAmp = false }: Props) {
   const { cssRaw, cssRule } = typestyle
   const {
-    mobile: { maxWidth },
+    desktop: { maxWidth },
   } = queries
 
   // NOTE: AMP doesn't support custom fonts
