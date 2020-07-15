@@ -41,6 +41,7 @@
     "@types/underscore.string": "0.0.38",
     "babel-loader": "^8.1.0",
     "babel-plugin-transform-react-remove-prop-types": "0.4.24",
+    "change-case": "~4.1.1",
     "csstips": "~1.2.0",
     "csx": "~10.0.1",
     "date-fns": "~2.12.0",

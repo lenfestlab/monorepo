@@ -1,10 +1,11 @@
 import { h } from "@cycle/react"
-import { img } from "@cycle/react-dom"
+import { a, img } from "@cycle/react-dom"
 import { Typography } from "@material-ui/core"
 import { Skeleton } from "@material-ui/lab"
 import { stringifyUrl } from "query-string"
 import { useAsync } from "react-use"
 
+import { renderToStaticMarkup } from "react-dom/server"
 import { queries } from "styles"
 const { mobile } = queries
 
@@ -80,4 +81,14 @@ export const CachedImage = ({
   } else {
     return h(Typography, { color: "error" }, JSON.stringify(error))
   }
+}
+
+interface ImgProps {
+  alt: string
+  src: string
+  width?: string | number // px | int
+  style?: object
+}
+export const image = ({ alt, src, width, style }: ImgProps) => {
+  return renderToStaticMarkup(img({ alt, src, width, style }))
 }

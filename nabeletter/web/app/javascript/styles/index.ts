@@ -1,15 +1,22 @@
 import { media, types, TypeStyle } from "typestyle"
 
+export const fonts = {
+  roboto: "Roboto, sans-serif",
+  robotoSlab: "Roboto Slab, Roboto, sans-serif",
+}
+
 export const colors = {
   black: "#000",
   darkBlue: "#0066aa", // https://www.colorhexa.com/0066aa
   darkGray: "#9b9b9b", // https://www.colorhexa.com/9b9b9b
   lightGray: "#d3d3d3", // https://www.colorhexa.com/d3d3d3
+  veryLightGray: "#e9e9e9",
   white: "#fff",
 }
 
 export const queries = {
-  mobile: { maxWidth: 600 },
+  desktop: { maxWidth: 600 },
+  mobile: { maxWidth: 375 },
 }
 
 export type Style = types.NestedCSSProperties

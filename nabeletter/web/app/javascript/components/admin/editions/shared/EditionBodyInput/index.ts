@@ -1,54 +1,108 @@
 import { h } from "@cycle/react"
 import { dataProvider } from "components/admin/providers"
+import { body, mj, mjml, Node } from "mj"
 import { Component, createRef, RefObject } from "react"
-import { BehaviorSubject, from, Subscription, zip } from "rxjs"
+import { BehaviorSubject, from, Subject, Subscription, zip } from "rxjs"
 import { tag } from "rxjs-spy/operators"
-import { debounceTime, share, skip, switchMap, tap } from "rxjs/operators"
+import {
+  debounceTime,
+  distinctUntilChanged,
+  share,
+  skip,
+  switchMap,
+  tap,
+} from "rxjs/operators"
+import { colors, fonts } from "styles"
 
 import { AnalyticsProps as AllAnalyticsProps } from "analytics"
 import { Record as ApiRecord } from "components/admin/shared"
-import { find, get, isEmpty, map, values } from "fp"
+import { compact, find, get, isEmpty, map, values } from "fp"
 import { Editor } from "./Editor"
 import { PreviewRef, SectionField, SectionInput } from "./types"
 
-import { Field as AnswerField, Input as AnswerInput } from "./sections/answer"
-import { Field as AskField, Input as AskInput } from "./sections/ask"
-import { Field as EventsField, Input as EventsInput } from "./sections/events"
+import { px } from "csx"
+import { createTypeStyle } from "typestyle"
+import {
+  Field as AnswerField,
+  Input as AnswerInput,
+  node as answerNode,
+} from "./sections/answer"
+import {
+  Field as AskField,
+  Input as AskInput,
+  node as askNode,
+} from "./sections/ask"
+import {
+  Field as EventsField,
+  Input as EventsInput,
+  node as eventsNode,
+} from "./sections/events"
 import {
   Field as FacebookField,
   Input as FacebookInput,
+  node as facebookNode,
 } from "./sections/facebook"
-import { Field as FooterField, Input as FooterInput } from "./sections/footer"
-import { Field as HeaderField, Input as HeaderInput } from "./sections/header"
+import {
+  Field as FooterField,
+  Input as FooterInput,
+  node as footerNode,
+} from "./sections/footer"
+import {
+  Field as HeaderField,
+  Input as HeaderInput,
+  node as headerNode,
+} from "./sections/header"
 import {
   Field as HistoryField,
   Input as HistoryInput,
+  node as historyNode,
 } from "./sections/history"
 import {
   Field as InstagramField,
   Input as InstagramInput,
+  node as instagramNode,
 } from "./sections/instagram"
-import { Field as IntroField, Input as IntroInput } from "./sections/intro"
+import {
+  Field as IntroField,
+  Input as IntroInput,
+  node as introNode,
+} from "./sections/intro"
 import {
   Field as MeetingsField,
   Input as MeetingsInput,
+  node as meetingsNode,
 } from "./sections/meetings"
-import { Field as NewsField, Input as NewsInput } from "./sections/news"
+import {
+  Field as NewsField,
+  Input as NewsInput,
+  node as newsNode,
+} from "./sections/news"
 import {
   Field as PermitsField,
   Input as PermitsInput,
+  node as permitsNode,
 } from "./sections/permits"
 import {
   Field as PreviewField,
   Input as PreviewInput,
+  node as previewNode,
 } from "./sections/preview"
-import { SaleField, SaleInput } from "./sections/properties"
-import { SoldField, SoldInput } from "./sections/properties"
-import { Field as SafetyField, Input as SafetyInput } from "./sections/safety"
-import { Field as TweetsField, Input as TweetsInput } from "./sections/tweets"
+import { SaleField, SaleInput, saleNode } from "./sections/properties"
+import { SoldField, SoldInput, soldNode } from "./sections/properties"
+import {
+  Field as SafetyField,
+  Input as SafetyInput,
+  node as safetyNode,
+} from "./sections/safety"
+import {
+  Field as TweetsField,
+  Input as TweetsInput,
+  node as twitterNode,
+} from "./sections/tweets"
 import {
   Field as WeatherField,
   Input as WeatherInput,
+  node as weatherNode,
 } from "./sections/weather"
 
 export const PREVIEW = "preview"
@@ -95,41 +149,45 @@ type AnalyticsProps = Omit<AllAnalyticsProps, "title">
 function getSectionComponents(kind: Kind) {
   switch (kind) {
     case PREVIEW:
-      return { field: PreviewField, input: PreviewInput }
+      return { field: PreviewField, input: PreviewInput, node: previewNode }
     case HEADER:
-      return { field: HeaderField, input: HeaderInput }
+      return { field: HeaderField, input: HeaderInput, node: headerNode }
     case INTRO:
-      return { field: IntroField, input: IntroInput }
+      return { field: IntroField, input: IntroInput, node: introNode }
     case WEATHER:
-      return { field: WeatherField, input: WeatherInput }
+      return { field: WeatherField, input: WeatherInput, node: weatherNode }
     case EVENTS:
-      return { field: EventsField, input: EventsInput }
+      return { field: EventsField, input: EventsInput, node: eventsNode }
     case NEWS:
-      return { field: NewsField, input: NewsInput }
+      return { field: NewsField, input: NewsInput, node: newsNode }
     case SAFETY:
-      return { field: SafetyField, input: SafetyInput }
+      return { field: SafetyField, input: SafetyInput, node: safetyNode }
     case HISTORY:
-      return { field: HistoryField, input: HistoryInput }
+      return { field: HistoryField, input: HistoryInput, node: historyNode }
     case TWEETS:
-      return { field: TweetsField, input: TweetsInput }
+      return { field: TweetsField, input: TweetsInput, node: twitterNode }
     case FACEBOOK:
-      return { field: FacebookField, input: FacebookInput }
+      return { field: FacebookField, input: FacebookInput, node: facebookNode }
     case INSTAGRAM:
-      return { field: InstagramField, input: InstagramInput }
-    case MEETINGS:
-      return { field: MeetingsField, input: MeetingsInput }
+      return {
+        field: InstagramField,
+        input: InstagramInput,
+        node: instagramNode,
+      }
     case PERMITS:
-      return { field: PermitsField, input: PermitsInput }
+      return { field: PermitsField, input: PermitsInput, node: permitsNode }
+    case MEETINGS:
+      return { field: MeetingsField, input: MeetingsInput, node: meetingsNode }
     case ANSWER:
-      return { field: AnswerField, input: AnswerInput }
+      return { field: AnswerField, input: AnswerInput, node: answerNode }
     case ASK:
-      return { field: AskField, input: AskInput }
+      return { field: AskField, input: AskInput, node: askNode }
     case PROPERTIES_SALE:
-      return { field: SaleField, input: SaleInput }
+      return { field: SaleField, input: SaleInput, node: saleNode }
     case PROPERTIES_SOLD:
-      return { field: SoldField, input: SoldInput }
+      return { field: SoldField, input: SoldInput, node: soldNode }
     case FOOTER:
-      return { field: FooterField, input: FooterInput }
+      return { field: FooterField, input: FooterInput, node: footerNode }
     default:
       throw new Error("Unsupported section")
   }
@@ -162,6 +220,7 @@ interface State {
 export class EditionBodyInput extends Component<Props, State> {
   subscription: Subscription | null = null
   configs$ = new BehaviorSubject<SectionConfig[]>([])
+  html$$ = new Subject<string>()
   htmlRef: PreviewRef = createRef<HTMLDivElement>()
   ampRef: PreviewRef = createRef<HTMLDivElement>()
   sectionObserver: IntersectionObserver | null = null
@@ -253,6 +312,7 @@ export class EditionBodyInput extends Component<Props, State> {
 
     // NOTE: sync sections' config & html with server
     const syncConfigs$ = this.configs$.pipe(
+      tag("configs$"),
       skip(1),
       tap((_) => {
         this.setState((prior: State) => {
@@ -263,22 +323,10 @@ export class EditionBodyInput extends Component<Props, State> {
         })
       }),
       debounceTime(500),
-      tag("configs$"),
       switchMap((sections) => {
-        const body_html = this.htmlRef?.current?.innerHTML
-        let body_amp =
-          !isEmpty(process.env.AMP_ENABLED!) && this.ampRef?.current?.innerHTML
-        // NOTE: amp markup unsupported by React
-        if (body_amp) {
-          body_amp = body_amp
-            .replace("<html>", "<html amp4email>")
-            .replace("FIX_VISIBILITY", "hidden")
-            .replace(/\=\"true\"/g, "") // drop react cruft
-          body_amp = `<!doctype html>${body_amp}`
-        }
         const body_data = { sections }
         const id = this.props.record?.id
-        const data = { body_data, body_html, body_amp }
+        const data = { body_data }
         const request = dataProvider("UPDATE", "editions", { id, data })
         return from(request)
       }),
@@ -294,7 +342,20 @@ export class EditionBodyInput extends Component<Props, State> {
       share()
     )
 
-    this.subscription = zip(syncConfigs$).subscribe()
+    // NOTE: sync sections' config & html with server
+    const syncHTML$ = this.html$$.pipe(
+      debounceTime(500),
+      distinctUntilChanged(),
+      switchMap((html) => {
+        const id = this.props.record?.id
+        const data = { body_html: html }
+        const request = dataProvider("UPDATE", "editions", { id, data })
+        return from(request)
+      }),
+      share()
+    )
+
+    this.subscription = zip(syncConfigs$, syncHTML$).subscribe()
   }
 
   componentWillUnmount() {
@@ -309,8 +370,11 @@ export class EditionBodyInput extends Component<Props, State> {
   render() {
     const inputs: SectionInput[] = []
     const fields: SectionField[] = []
+    const nodes: Node[] = []
     const edition = get(this.props.record, "id", "") as string
     const { sections, syncing } = this.state
+    let previewText: string | null = null
+    const typestyle = createTypeStyle()
     sections.forEach((sectionConfig: SectionConfig, idx: number) => {
       const kind = get(sectionConfig, "kind")
       const config = get(sectionConfig, "config")
@@ -326,33 +390,86 @@ export class EditionBodyInput extends Component<Props, State> {
           }
         })
       }
-      const { input, field } = getSectionComponents(kind)
+      const { input, field, node: makeNode } = getSectionComponents(kind)
       const { inputRef, fieldRef } = this.sectionRefsMap[kind]
       const key = `section-${kind}`
 
       const section = kind
       const sectionRank = idx + 1
-      const fieldAnalytics: AnalyticsProps = {
+      const analytics: AnalyticsProps = {
         section,
-        sectionRank,
+        sectionRank, // TODO: verify sectionRank
         edition,
       }
+
       inputs.push(
         // @ts-ignore
         h(input, { key, kind, config, setConfig, inputRef, id: `${key}-input` })
       )
-      fields.push(
-        // @ts-ignore
-        h(field, {
-          key,
-          kind,
-          config,
-          id: `${key}-field`,
-          analytics: fieldAnalytics,
-        })
-      )
+
+      // fields.push(
+      //   // @ts-ignore
+      //   h(field, {
+      //     key,
+      //     kind,
+      //     config,
+      //     id: `${key}-field`,
+      //     analytics,
+      //   })
+      // )
+
+      if (kind === PREVIEW) {
+        previewText = get(config, "text")
+      } else {
+        if (makeNode) {
+          // @ts-ignore
+          const node = makeNode({ analytics, config, typestyle })
+          if (node) nodes.push(node)
+        }
+      }
     })
+
+    const mjNode: Node = mjml([
+      mj(
+        "mj-head",
+        {},
+        compact([
+          mj("mj-font", {
+            href:
+              "https://fonts.googleapis.com/css?family=Roboto|Roboto+Slab&display=swap",
+          }),
+          mj("mj-attributes", {}, [
+            mj("mj-text", {
+              paddingTop: px(0),
+              paddingBottom: px(0),
+              lineHeight: 1.5,
+            }),
+            mj("mj-image", { padding: px(0) }),
+            mj("mj-column", { padding: px(0) }),
+            mj("mj-section", { padding: px(0) }),
+            mj("mj-all", {
+              fontFamily: fonts.roboto,
+              fontSize: px(16) as string,
+            }),
+          ]),
+          mj("mj-style", { inline: true }, typestyle.getStyles()),
+          !isEmpty(previewText) &&
+            mj("mj-preview", {}, `${previewText} ${`&nbsp;&zwnj;`.repeat(90)}`),
+        ])
+      ),
+      body(
+        {
+          backgroundColor: colors.veryLightGray,
+          width: "600px",
+        },
+        nodes
+      ),
+    ])
+
     const { htmlRef, ampRef } = this
-    return [h(Editor, { syncing, inputs, fields, htmlRef, ampRef })]
+    const html$$ = this.html$$
+    return [
+      h(Editor, { syncing, inputs, fields, htmlRef, ampRef, mjNode, html$$ }),
+    ]
   }
 }

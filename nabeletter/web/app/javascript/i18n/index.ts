@@ -24,7 +24,7 @@ export const translate = (key: string): string => {
     "preview-input-placeholder":
       "Optional. If omitted, clients default to first ~90 characters of content.",
     // header
-    "header-title": `Fishtown Neighborhood Newsletter`,
+    "header-title": "Fishtown Neighborhood Newsletter",
     // sections
     "section-pre": "Pre",
     "section-post": "Post",

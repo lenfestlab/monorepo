@@ -15,9 +15,16 @@ import puppeteer from "puppeteer";
 import icalendar from "icalendar";
 import { JSDOM } from "jsdom";
 import parseMoney from "parse-money";
+import mjml2html from "mjml";
+import util from "util";
+import bodyParser from "body-parser";
 
 const app = express();
 const port = process.env.PORT || 5000;
+
+app.use(bodyParser.urlencoded({ extended: true }));
+app.use(bodyParser.json());
+app.use(bodyParser.raw());
 
 app.use(cors());
 
@@ -29,6 +36,21 @@ if (process.env.NODE_ENV === "production") {
   const cert = fs.readFileSync(path.resolve(process.env.PATH_SSL_CERT!));
   server = https.createServer({ key, cert }, app);
 }
+
+app.post("/mjml", (req, res) => {
+  try {
+    const mjml = req.body.mjml;
+    console.dir(mjml, { depth: null, colors: true });
+    const result = mjml2html(mjml, { minify: true, validationLevel: "strict" });
+    res.status(200).json(result);
+  } catch (error) {
+    console.error(error);
+    res.status(400).json({
+      error: true,
+      message: error.message,
+    });
+  }
+});
 
 app.get("/properties", async (req, res) => {
   const get = (

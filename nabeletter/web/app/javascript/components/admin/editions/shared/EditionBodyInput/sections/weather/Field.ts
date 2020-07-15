@@ -14,7 +14,7 @@ import { colors, compileStyles, queries } from "styles"
 import { Config } from "."
 import { MarkdownField } from "../MarkdownField"
 import { SectionField, SectionFieldProps } from "../section/SectionField"
-import { getIconURL } from "./util"
+import { getIconURLs } from "./node"
 
 interface ApiDatum {
   icon: string
@@ -65,7 +65,7 @@ export const Field = ({ config, typestyle, id, analytics, isAmp }: Props) => {
       .map(({ time, icon, temperatureHigh, temperatureLow }: ApiDatum) => {
         const day: Day = {
           dayOfWeek: format(fromUnixTime(time), "eee"),
-          imageURL: getIconURL(icon),
+          imageURL: getIconURLs(icon)[60],
           temp: {
             high: round(temperatureHigh),
             low: round(temperatureLow),

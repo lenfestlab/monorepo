@@ -81,7 +81,7 @@ export const Field: FunctionComponent<Props> = ({
   })
 
   const moreTitle = translate("events-field-more")
-  const maxWidth = queries.mobile.maxWidth - 2 * 24
+  const maxWidth = queries.desktop.maxWidth - 2 * 24
 
   return h(
     SectionField,

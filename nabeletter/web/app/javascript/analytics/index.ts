@@ -1,5 +1,5 @@
 import { stringifyUrl } from "query-string"
-export { Link } from "./Link"
+export { Link, link } from "./Link"
 
 import { either } from "fp"
 
@@ -52,5 +52,7 @@ export const rewriteURL = (redirect: string, props: AnalyticsProps): string => {
     },
   })
   const url = `https://${process.env.RAILS_HOST}/analytics`
-  return stringifyUrl({ url, query: { ga, redirect } })
+  // TODO: use shortlink in lieu of "ga" param
+  // return stringifyUrl({ url, query: { ga, redirect } })
+  return redirect
 }

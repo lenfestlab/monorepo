@@ -28,8 +28,8 @@ export const SectionField: FunctionComponent<SectionFieldProps> = ({
   isAmp,
   outerWidth = 600,
 }) => {
-  const { mobile } = queries
-  const { maxWidth: width } = mobile
+  const { desktop } = queries
+  const { maxWidth: width } = desktop
   const hMargin = 24
   const { styles, classNames } = compileStyles(typestyle, {
     section: {
@@ -42,7 +42,7 @@ export const SectionField: FunctionComponent<SectionFieldProps> = ({
       marginLeft: px(hMargin),
       padding: px(24),
       ...(!isAmp &&
-        media(mobile, {
+        media(desktop, {
           width: important(percent(100)),
           marginTop: important(px(12)),
           marginBottom: important(px(12)),
