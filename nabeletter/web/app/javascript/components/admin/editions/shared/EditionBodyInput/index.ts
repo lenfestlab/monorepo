@@ -7,7 +7,7 @@ import { debounceTime, share, skip, switchMap, tap } from "rxjs/operators"
 
 import { AnalyticsProps as AllAnalyticsProps } from "analytics"
 import { Record as ApiRecord } from "components/admin/shared"
-import { find, get, map, values, isEmpty } from "fp"
+import { find, get, isEmpty, map, values } from "fp"
 import { Editor } from "./Editor"
 import { PreviewRef, SectionField, SectionInput } from "./types"
 
@@ -42,6 +42,8 @@ import {
   Field as PreviewField,
   Input as PreviewInput,
 } from "./sections/preview"
+import { SaleField, SaleInput } from "./sections/properties"
+import { SoldField, SoldInput } from "./sections/properties"
 import { Field as SafetyField, Input as SafetyInput } from "./sections/safety"
 import { Field as TweetsField, Input as TweetsInput } from "./sections/tweets"
 import {
@@ -64,6 +66,8 @@ export const PERMITS = "permits"
 export const ASK = "ask"
 export const ANSWER = "answer"
 export const MEETINGS = "meetings"
+export const PROPERTIES_SALE = "properties_sale"
+export const PROPERTIES_SOLD = "properties_sold"
 export const FOOTER = "footer"
 
 export type Kind =
@@ -82,6 +86,8 @@ export type Kind =
   | "ask"
   | "answer"
   | "meetings"
+  | "properties_sale"
+  | "properties_sold"
   | "footer"
 
 type AnalyticsProps = Omit<AllAnalyticsProps, "title">
@@ -118,6 +124,10 @@ function getSectionComponents(kind: Kind) {
       return { field: AnswerField, input: AnswerInput }
     case ASK:
       return { field: AskField, input: AskInput }
+    case PROPERTIES_SALE:
+      return { field: SaleField, input: SaleInput }
+    case PROPERTIES_SOLD:
+      return { field: SoldField, input: SoldInput }
     case FOOTER:
       return { field: FooterField, input: FooterInput }
     default:
@@ -178,6 +188,8 @@ export class EditionBodyInput extends Component<Props, State> {
       INSTAGRAM,
       PERMITS,
       MEETINGS,
+      PROPERTIES_SALE,
+      PROPERTIES_SOLD,
       ASK,
       ANSWER,
       FOOTER,

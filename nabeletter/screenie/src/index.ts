@@ -13,6 +13,8 @@ import fetch from "node-fetch";
 import path from "path";
 import puppeteer from "puppeteer";
 import icalendar from "icalendar";
+import { JSDOM } from "jsdom";
+import parseMoney from "parse-money";
 
 const app = express();
 const port = process.env.PORT || 5000;
@@ -27,6 +29,77 @@ if (process.env.NODE_ENV === "production") {
   const cert = fs.readFileSync(path.resolve(process.env.PATH_SSL_CERT!));
   server = https.createServer({ key, cert }, app);
 }
+
+app.get("/properties", async (req, res) => {
+  const get = (
+    outerEle: HTMLElement,
+    sel: string,
+    attr: string
+  ): string | null | undefined => {
+    const element = outerEle.querySelector(sel);
+    if (!element) console.error("MIA: element", element);
+    const attribute = element?.getAttribute(attr);
+    if (!attribute) console.error("MIA: attribute", attribute);
+    return attribute;
+  };
+
+  try {
+    const _url = req.query.url as string;
+    if (!_url) throw new Error(`MIA: url param`);
+    const dom = await JSDOM.fromURL(_url, { runScripts: "dangerously" });
+    const doc = dom.window.document;
+    const head = doc.head;
+    const body = doc.body;
+    // sold-on date
+    let sold_on = null;
+    const matches = body.innerHTML.match(/\d{2}\/\d{2}\/\d{2}/);
+    if (matches) sold_on = matches[0];
+    // <meta property="og:url" content="https://www.zillow.com:443/homedetails/.."
+    const url = get(head, `meta[property="og:url"]`, "content");
+    // <meta property="og:image" content="https://....jpg">
+    const image = get(head, `meta[property="og:image"]`, "content");
+    // <meta property="og:zillow_fb:address" content="420 E Thompson St, Philadelphia, PA 19125">
+    const address = get(
+      head,
+      `meta[property="og:zillow_fb:address"]`,
+      "content"
+    );
+    // <meta property="zillow_fb:beds" content="3">
+    const beds = get(head, `meta[property="zillow_fb:beds"]`, "content");
+    // <meta property="zillow_fb:baths" content="2">
+    const baths = get(head, `meta[property="zillow_fb:baths"]`, "content");
+    // <meta property="zillow_fb:description" content="For sale...
+    const description = get(
+      head,
+      `meta[property="zillow_fb:description"]`,
+      "content"
+    );
+    // meta property="product:price:amount" content="339000.00"/>
+    let price = null;
+    price = get(head, `meta[property='product:price:amount']`, "content");
+    if (!price && description) {
+      const money = parseMoney(description);
+      if (money) price = money.amount.toString();
+    }
+    const data = {
+      url,
+      price,
+      image,
+      address,
+      beds,
+      baths,
+      description,
+      sold_on,
+    };
+    console.debug("data", data);
+    res.status(200).json(data);
+  } catch (error) {
+    res.status(400).json({
+      error: true,
+      message: error.message,
+    });
+  }
+});
 
 app.get("/ics", async (req, res) => {
   try {
