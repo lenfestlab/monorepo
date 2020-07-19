@@ -1,7 +1,24 @@
+// import { createMoneyIntlFormatter } from "@easymoney/formatter"
+// import { createMoney } from "@easymoney/money"
 import { get } from "fp"
+
+export const currency = (amount: number) => {
+  const formatter = new Intl.NumberFormat("en-US", {
+    style: "currency",
+    currency: "USD",
+  })
+  return formatter.format(amount).replace(/\D00(?=\D*$)/, "") // https://bit.ly/3fPs70s
+}
 
 export const translate = (key: string): string => {
   const messages = {
+    // properties
+    "properties-input-url-placeholder": "https://www.zillow.com/homedetails...",
+    "properties-input-url-add": "Add",
+    "properties_sale-input-header": "Properties for sale",
+    "properties_sale-input-title-placeholder": "Properties for sale",
+    "properties_sold-input-header": "Properties sold",
+    "properties_sold-input-title-placeholder": "Properties sold",
     // preview
     "preview-title": `Inbox preview`,
     "preview-input-placeholder":
