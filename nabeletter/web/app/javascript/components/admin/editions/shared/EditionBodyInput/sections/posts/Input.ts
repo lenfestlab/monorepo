@@ -16,14 +16,15 @@ import {
   merge,
   Notification,
   Observable,
-  onErrorResumeNext,
   Subject,
   Subscription,
 } from "rxjs"
 import { tag } from "rxjs-spy/operators"
 import { ajax, AjaxError } from "rxjs/ajax"
 import {
+  dematerialize,
   distinctUntilChanged,
+  filter,
   map,
   mapTo,
   materialize,
@@ -128,18 +129,24 @@ export class Input extends Component<Props, State> {
       share()
     )
 
-    const addRequest$: Observable<Post> = addButton$.pipe(
+    const addRequest$ = addButton$.pipe(
       withLatestFrom(urlInput$),
       map(([_, url]) => url),
       switchMap((url: URL) => {
-        return ajax.getJSON<Post>(
-          `${process.env.SCREENSHOT_ENDPOINT}?url=${url}`
-        )
+        return ajax
+          .getJSON<Post>(`${process.env.SCREENSHOT_ENDPOINT}?url=${url}`)
+          .pipe(materialize(), tag("addRequest$.getJSON.materialize$"))
       }),
       tag("addRequest$"),
       share()
     )
-    const add$ = onErrorResumeNext(addRequest$).pipe(tag("add$"), share())
+
+    const add$ = addRequest$.pipe(
+      filter((n) => n.kind === "N"),
+      dematerialize(),
+      tag("add$"),
+      share()
+    )
 
     const clearUrl$ = add$.pipe(mapTo(""))
     const url$ = merge(urlInput$, clearUrl$).pipe(
@@ -162,7 +169,7 @@ export class Input extends Component<Props, State> {
 
     const pending$ = merge(
       addButton$.pipe(mapTo(true)),
-      add$.pipe(mapTo(false))
+      addRequest$.pipe(mapTo(false))
     ).pipe(
       distinctUntilChanged(),
       startWith(false),
@@ -182,8 +189,7 @@ export class Input extends Component<Props, State> {
 
     const urlError$: Observable<URLError> = merge(
       urlInput$.pipe(mapTo(urlErrorDefault)), // reset on URL edit
-      add$.pipe(
-        materialize(),
+      addRequest$.pipe(
         map((notification: Notification<Post>) => {
           if (notification.kind === "E") {
             const {
