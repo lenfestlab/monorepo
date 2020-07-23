@@ -5,7 +5,11 @@ import { stringifyUrl } from "query-string"
 import { Fragment, FunctionComponent } from "react"
 import { classes, media, TypeStyle } from "typestyle"
 
-import { AnalyticsProps as AllAnalyticsProps, Link } from "analytics"
+import {
+  AnalyticsProps as AllAnalyticsProps,
+  Link,
+  rewriteURL,
+} from "analytics"
 import { LayoutTable } from "components/table"
 import { percent, px } from "csx"
 import { allEmpty, either, first, isEmpty, last, map, reduce, values } from "fp"
@@ -64,7 +68,22 @@ export const Field: FunctionComponent<Props> = ({
         tbody([
           events.map((event) => {
             const title = event.summary
-            const description = event.description
+
+            let description = event.description
+            const parser = new DOMParser()
+            const doc = parser.parseFromString(description, "text/html")
+            const links = doc.querySelectorAll("a")
+            // replace all links w/ analytics links
+            doc.querySelectorAll("a").forEach((link) => {
+              const href = rewriteURL(link.href, {
+                ...analytics,
+                title: link.innerHTML,
+              })
+              link.target = "_blank"
+              link.href = href
+            })
+            description = doc.documentElement.innerHTML
+
             const startsAt = format(
               parseISO(event.dstart),
               "EEE, d LLL y' at 'p"
