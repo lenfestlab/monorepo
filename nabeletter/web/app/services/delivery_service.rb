@@ -47,19 +47,13 @@ class DeliveryService
     text = Nokogiri::HTML(html).text
 
     # override "to" w/ the recipients, if provided
-    to = recipients.join(", ") if recipients.present?
-
-    # override "to" w/ the current admin, if sole recipient
-    user = nil
-    if (recipients.count == 1 && (recipients.first == current_user.email))
-      user = current_user
+    if recipients.present?
+      to = recipients.join(", ")
     end
-    # if admin user recipient, override w/ their meta on test delivery
-    to = user.email_address if !Rails.env.production? && user.present?
-    # interpolate mailgun vars if sole recipient is current_user
+    # interpolate mailgun vars unless sending directly to recipients
     subs = {
-      "VAR-UNSUBSCRIBE-URL" => (user.present? ? ENV["RAILS_HOST"] : "%mailing_list_unsubscribe_url%"),
-      "VAR-RECIPIENT-UID" => (user.present? ? "RECIPIENT_UID" : "%recipient.uid%")
+      "VAR-UNSUBSCRIBE-URL" => (recipients.present? ? "https://#{ENV["RAILS_HOST"]}" : "%mailing_list_unsubscribe_url%"),
+      "VAR-RECIPIENT-UID" => (recipients.present? ? "RECIPIENT_UID" : "%recipient.uid%")
     }
     re = Regexp.union(subs.keys)
     html = edition.body_html.gsub(re, subs)

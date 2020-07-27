@@ -44,7 +44,7 @@ export const rewriteURL = (redirect: string, props: AnalyticsProps): string => {
       el: label,
       cd1: neighborhood,
       cd2: edition,
-      // cd3: "WIP" // TODO: pending
+      // cd3: "WIP"
       cd4: section,
       cd5: String(sectionRank),
       cd6: redirect,
@@ -52,7 +52,5 @@ export const rewriteURL = (redirect: string, props: AnalyticsProps): string => {
     },
   })
   const url = `https://${process.env.RAILS_HOST}/analytics`
-  // TODO: use shortlink in lieu of "ga" param
-  // return stringifyUrl({ url, query: { ga, redirect } })
-  return redirect
+  return stringifyUrl({ url, query: { ga, redirect } })
 }

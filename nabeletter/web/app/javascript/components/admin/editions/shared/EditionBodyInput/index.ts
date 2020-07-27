@@ -1,12 +1,22 @@
 import { h } from "@cycle/react"
 import { dataProvider } from "components/admin/providers"
-import { body, mj, mjml, Node } from "mj"
+import { body, formatErrorHTML, mj, MjApiResult, mjml, Node } from "mj"
 import { Component, createRef, RefObject } from "react"
-import { BehaviorSubject, from, Subject, Subscription, zip } from "rxjs"
+import {
+  BehaviorSubject,
+  from,
+  of,
+  onErrorResumeNext,
+  Subject,
+  Subscription,
+  zip,
+} from "rxjs"
 import { tag } from "rxjs-spy/operators"
+import { ajax, AjaxResponse } from "rxjs/ajax"
 import {
   debounceTime,
   distinctUntilChanged,
+  map as map$,
   share,
   skip,
   switchMap,
@@ -16,7 +26,7 @@ import { colors, fonts } from "styles"
 
 import { AnalyticsProps as AllAnalyticsProps } from "analytics"
 import { Record as ApiRecord } from "components/admin/shared"
-import { compact, find, get, isEmpty, map, values } from "fp"
+import { compact, find, get, isEmpty, map, reduce, values } from "fp"
 import { Editor } from "./Editor"
 import { PreviewRef, SectionField, SectionInput } from "./types"
 
@@ -193,6 +203,10 @@ function getSectionComponents(kind: Kind) {
   }
 }
 
+type URLHash = string
+type URL = string
+type URLMap = Record<URLHash, URL>
+
 type Config = object
 type SetConfig = (config: Config) => void
 
@@ -216,6 +230,7 @@ interface Props {
 interface State {
   sections: SectionConfig[]
   syncing: boolean
+  html: string
 }
 export class EditionBodyInput extends Component<Props, State> {
   subscription: Subscription | null = null
@@ -259,7 +274,7 @@ export class EditionBodyInput extends Component<Props, State> {
       }
     })
 
-    this.state = { sections, syncing: false }
+    this.state = { sections, syncing: false, html: "" }
     // NOTE: sync section visibility
     this.sectionRefsMap = sections.reduce<SectionRefsMap>(
       (prior, current, _idx, _configs): SectionRefsMap => {
@@ -314,14 +329,6 @@ export class EditionBodyInput extends Component<Props, State> {
     const syncConfigs$ = this.configs$.pipe(
       tag("configs$"),
       skip(1),
-      tap((_) => {
-        this.setState((prior: State) => {
-          return {
-            ...prior,
-            syncing: true,
-          }
-        })
-      }),
       debounceTime(500),
       switchMap((sections) => {
         const body_data = { sections }
@@ -330,6 +337,133 @@ export class EditionBodyInput extends Component<Props, State> {
         const request = dataProvider("UPDATE", "editions", { id, data })
         return from(request)
       }),
+      tag("syncConfigs$"),
+      share()
+    )
+
+    const syncHTML$ = this.configs$.pipe(
+      skip(1),
+      debounceTime(500),
+      tap((_) => {
+        this.setState((prior: State) => {
+          return {
+            ...prior,
+            syncing: true,
+          }
+        })
+      }),
+      switchMap((sections: SectionConfig[]) => {
+        const nodes: Node[] = []
+        const typestyle = createTypeStyle()
+        const edition = get(this.props.record, "id", "") as string
+        let sectionRank = 0
+        let previewText: string | null = null
+        sections.map(({ kind, config }: SectionConfig) => {
+          if (kind === PREVIEW) {
+            previewText = get(config, "text")
+          } else {
+            const { node: makeNode } = getSectionComponents(kind)
+            if (makeNode) {
+              const node = makeNode({
+                // @ts-ignore
+                config,
+                typestyle,
+                analytics: {
+                  section: kind,
+                  sectionRank, // NOTE: temporary, need evaluate node first
+                  edition,
+                },
+              })
+              if (node) {
+                const section = kind
+                const analytics: AnalyticsProps = {
+                  section,
+                  sectionRank,
+                  edition,
+                }
+                // @ts-ignore
+                nodes.push(makeNode({ config, typestyle, analytics }))
+                sectionRank++ // header == 0, footer coerceed to == -1
+              }
+            }
+          }
+        })
+
+        const mjNode: Node = mjml([
+          mj(
+            "mj-head",
+            {},
+            compact([
+              mj("mj-font", {
+                href:
+                  "https://fonts.googleapis.com/css?family=Roboto|Roboto+Slab&display=swap",
+              }),
+              mj("mj-attributes", {}, [
+                mj("mj-text", {
+                  paddingTop: px(0),
+                  paddingBottom: px(0),
+                  lineHeight: 1.5,
+                }),
+                mj("mj-image", { padding: px(0) }),
+                mj("mj-column", { padding: px(0) }),
+                mj("mj-section", { padding: px(0) }),
+                mj("mj-all", {
+                  fontFamily: fonts.roboto,
+                  fontSize: px(16) as string,
+                }),
+              ]),
+              mj("mj-style", { inline: true }, typestyle.getStyles()),
+              !isEmpty(previewText) &&
+                mj(
+                  "mj-preview",
+                  {},
+                  `${previewText} ${`&nbsp;&zwnj;`.repeat(90)}`
+                ),
+            ])
+          ),
+          body(
+            {
+              backgroundColor: colors.veryLightGray,
+              width: "600px",
+            },
+            nodes
+          ),
+        ])
+        return of(mjNode)
+      }),
+      switchMap((mjNode: Node) => {
+        const url = process.env.MJML_ENDPOINT! as string
+        return onErrorResumeNext(
+          ajax({
+            url,
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: {
+              mjml: mjNode,
+            },
+          })
+        )
+      }),
+      map$((response: AjaxResponse): string => {
+        const { html, errors }: MjApiResult = response.response
+        return html ?? formatErrorHTML(errors)
+      }),
+      distinctUntilChanged(),
+      tag("html$"),
+      tap((html) => {
+        this.setState((prior: State) => {
+          return {
+            ...prior,
+            html,
+          }
+        })
+      }),
+      switchMap((html) => {
+        const id = this.props.record?.id
+        const data = { body_html: html }
+        const request = dataProvider("UPDATE", "editions", { id, data })
+        return onErrorResumeNext(from(request))
+      }),
       tap((_) => {
         this.setState((prior: State) => {
           return {
@@ -337,20 +471,6 @@ export class EditionBodyInput extends Component<Props, State> {
             syncing: false,
           }
         })
-      }),
-      tag("syncConfigs$"),
-      share()
-    )
-
-    // NOTE: sync sections' config & html with server
-    const syncHTML$ = this.html$$.pipe(
-      debounceTime(500),
-      distinctUntilChanged(),
-      switchMap((html) => {
-        const id = this.props.record?.id
-        const data = { body_html: html }
-        const request = dataProvider("UPDATE", "editions", { id, data })
-        return from(request)
       }),
       share()
     )
@@ -370,11 +490,8 @@ export class EditionBodyInput extends Component<Props, State> {
   render() {
     const inputs: SectionInput[] = []
     const fields: SectionField[] = []
-    const nodes: Node[] = []
-    const edition = get(this.props.record, "id", "") as string
-    const { sections, syncing } = this.state
-    let previewText: string | null = null
-    const typestyle = createTypeStyle()
+    const { sections, syncing, html } = this.state
+
     sections.forEach((sectionConfig: SectionConfig, idx: number) => {
       const kind = get(sectionConfig, "kind")
       const config = get(sectionConfig, "config")
@@ -390,86 +507,18 @@ export class EditionBodyInput extends Component<Props, State> {
           }
         })
       }
-      const { input, field, node: makeNode } = getSectionComponents(kind)
+
+      const { input } = getSectionComponents(kind)
       const { inputRef, fieldRef } = this.sectionRefsMap[kind]
       const key = `section-${kind}`
-
-      const section = kind
-      const sectionRank = idx + 1
-      const analytics: AnalyticsProps = {
-        section,
-        sectionRank, // TODO: verify sectionRank
-        edition,
-      }
 
       inputs.push(
         // @ts-ignore
         h(input, { key, kind, config, setConfig, inputRef, id: `${key}-input` })
       )
-
-      // fields.push(
-      //   // @ts-ignore
-      //   h(field, {
-      //     key,
-      //     kind,
-      //     config,
-      //     id: `${key}-field`,
-      //     analytics,
-      //   })
-      // )
-
-      if (kind === PREVIEW) {
-        previewText = get(config, "text")
-      } else {
-        if (makeNode) {
-          // @ts-ignore
-          const node = makeNode({ analytics, config, typestyle })
-          if (node) nodes.push(node)
-        }
-      }
     })
 
-    const mjNode: Node = mjml([
-      mj(
-        "mj-head",
-        {},
-        compact([
-          mj("mj-font", {
-            href:
-              "https://fonts.googleapis.com/css?family=Roboto|Roboto+Slab&display=swap",
-          }),
-          mj("mj-attributes", {}, [
-            mj("mj-text", {
-              paddingTop: px(0),
-              paddingBottom: px(0),
-              lineHeight: 1.5,
-            }),
-            mj("mj-image", { padding: px(0) }),
-            mj("mj-column", { padding: px(0) }),
-            mj("mj-section", { padding: px(0) }),
-            mj("mj-all", {
-              fontFamily: fonts.roboto,
-              fontSize: px(16) as string,
-            }),
-          ]),
-          mj("mj-style", { inline: true }, typestyle.getStyles()),
-          !isEmpty(previewText) &&
-            mj("mj-preview", {}, `${previewText} ${`&nbsp;&zwnj;`.repeat(90)}`),
-        ])
-      ),
-      body(
-        {
-          backgroundColor: colors.veryLightGray,
-          width: "600px",
-        },
-        nodes
-      ),
-    ])
-
-    const { htmlRef, ampRef } = this
-    const html$$ = this.html$$
-    return [
-      h(Editor, { syncing, inputs, fields, htmlRef, ampRef, mjNode, html$$ }),
-    ]
+    const { htmlRef } = this
+    return [h(Editor, { syncing, inputs, fields, html, htmlRef })]
   }
 }

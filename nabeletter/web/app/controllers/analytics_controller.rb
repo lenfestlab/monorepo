@@ -12,8 +12,6 @@ class AnalyticsController < ApplicationController
   def index
     ga = safe[:ga]
     redirect = safe[:redirect]
-    Rails.logger.info("params.ga #{ga}")
-    Rails.logger.info("params.redirect #{redirect}")
     if ga.present?
       uri = URI(ga)
       Rails.logger.info(ga)
@@ -39,7 +37,7 @@ class AnalyticsController < ApplicationController
   protected
 
   def safe
-    params.permit([:redirect, :ga])
+    params.permit(%i[ga redirect])
   end
 
 end
