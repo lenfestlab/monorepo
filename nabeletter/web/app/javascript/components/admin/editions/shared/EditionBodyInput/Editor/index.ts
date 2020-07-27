@@ -4,8 +4,6 @@ import { Box, CircularProgress, Grid } from "@material-ui/core"
 import { makeStyles } from "@material-ui/core/styles"
 
 import { viewHeight } from "csx"
-import { Node as MJNode } from "mj"
-import { Subject } from "rxjs"
 import type { PreviewRef, SectionField, SectionInput } from "../types"
 import { Preview } from "./Preview"
 
@@ -18,23 +16,13 @@ const useStyles = makeStyles((theme) => ({
 
 interface Props {
   htmlRef?: PreviewRef
-  ampRef?: PreviewRef
   inputs: SectionInput[]
   fields: SectionField[]
   syncing: boolean
-  mjNode?: MJNode
-  html$$: Subject<string>
+  html: string
 }
 
-export const Editor = ({
-  inputs,
-  fields,
-  htmlRef,
-  ampRef,
-  syncing,
-  mjNode,
-  html$$,
-}: Props) => {
+export const Editor = ({ inputs, fields, syncing, html, htmlRef }: Props) => {
   const css = useStyles()
   return div({ id: "editor" }, [
     h(
@@ -91,12 +79,9 @@ export const Editor = ({
           },
           [
             h(Preview, {
-              id: "preview",
+              html,
               htmlRef,
-              ampRef,
               fields,
-              mjNode,
-              html$$,
             }),
           ]
         ),

@@ -147,7 +147,7 @@ export const node = ({ analytics: _analytics }: Props): Node => {
                 title,
               })
               return mj("mj-social-element", {
-                name: title,
+                name: `${title}-noshare`, // https://git.io/JJEie
                 backgroundColor: colors.darkBlue,
                 color: colors.white,
                 href,

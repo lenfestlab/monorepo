@@ -76,3 +76,11 @@ export { Attributes as TableAttributes, node as table } from "./table"
 export { node as raw } from "./raw"
 export { group } from "./group"
 export { button } from "./button"
+
+export const formatErrorHTML = (data: any): string =>
+  `<pre style="color: red">${JSON.stringify(data, null, 2)}</pre>`
+
+export interface MjApiResult {
+  html: string
+  errors: JSON
+}
