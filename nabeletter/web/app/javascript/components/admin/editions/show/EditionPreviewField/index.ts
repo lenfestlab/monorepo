@@ -1,5 +1,4 @@
-import { div } from "@cycle/react-dom"
-
+import { span } from "@cycle/react-dom"
 import { Edition } from "components/admin/shared"
 import { get } from "fp"
 
@@ -16,5 +15,5 @@ export const EditionPreviewField: React.FunctionComponent<Props> = ({
 }) => {
   const __html = get(record, source) || "<h1>WIP</h1>"
   const doc = { __html }
-  return div({ dangerouslySetInnerHTML: doc })
+  return span({ dangerouslySetInnerHTML: doc })
 }

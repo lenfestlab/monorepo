@@ -38,6 +38,9 @@ class DeliveryService
   def deliver!(edition:, recipients: [], current_user: nil)
     # NOTE: "to" default is edition's list address
     newsletter = edition.newsletter
+    sender_name = newsletter.sender_name || "Lenfest Local Lab"
+    sender_address = newsletter.sender_address || "mail@lenfestlab.org"
+    from = "#{sender_name} <#{sender_address}>"
     list_identifier = newsletter.mailgun_list_identifier
     list_name, list_domain = list_identifier.split("@")
     to = list_identifier
@@ -59,12 +62,11 @@ class DeliveryService
     html = edition.body_html.gsub(re, subs)
 
     request_body = {
-      from: "Lenfest Local Lab <mail@#{list_domain}>",
+      from: from,
       to: to,
       subject: subject,
       html: html,
       text: text,
-      "amp-html": amp,
     }
     Rails.logger.info("request_body #{request_body}")
     response =
