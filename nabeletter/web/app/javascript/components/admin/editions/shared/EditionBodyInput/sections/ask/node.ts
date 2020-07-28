@@ -21,6 +21,7 @@ export const node = ({ analytics, config, typestyle }: Props): Node | null => {
   const emailAddress = process.env.FEEDBACK_EMAIL as string
   const emailSubject = translate("ask-field-email-subject")
   const mailto = `mailto:${emailAddress}?subject=${emailSubject}`
+  const cta = translate("ask-field-email-cta")
 
   return cardWrapper({ title, pre, post, analytics, typestyle }, [
     cardSection({}, [
@@ -36,11 +37,11 @@ export const node = ({ analytics, config, typestyle }: Props): Node | null => {
             color: colors.white,
             fontSize: px(18),
             fontWeight: "bold",
-            href: rewriteURL(mailto, { ...analytics, title: mailto }),
+            href: rewriteURL(mailto, { ...analytics, title: cta }),
             textDecoration: "none",
             padding: "10px 20px 10px 20px",
           },
-          translate("ask-field-email-cta")
+          cta
         ),
       ]),
     ]),

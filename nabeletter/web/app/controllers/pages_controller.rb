@@ -4,4 +4,6 @@ class PagesController < ApplicationController
   def index; end
 
   def admin; end
+
+  def signup; end
 end

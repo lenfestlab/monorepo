@@ -2,3 +2,4 @@
 *.lock binary
 *.js* binary
 *.html* binary
+*.svg* binary

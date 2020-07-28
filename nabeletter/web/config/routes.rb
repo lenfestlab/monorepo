@@ -2,6 +2,9 @@ Rails.application.routes.draw do
   root to: redirect("/admin")
 
   get "/admin", controller: :pages, action: :admin
+  get "/signup", controller: :pages, action: :signup
+  post "/signups", controller: :signups, action: :signup
+
   resources :analytics, only: :index
   resources :events, only: :index
   resources :articles, only: :index
@@ -9,7 +12,7 @@ Rails.application.routes.draw do
 
   jsonapi_resources :newsletters, only: %i[index show]
   jsonapi_resources :editions, only: %i[index create update show]
-  jsonapi_resources :subscriptions, only: %i[index show create]
+  jsonapi_resources :subscriptions, only: %i[index show create update]
   jsonapi_resources :users, only: %i[index]
 
   # NOTE: https://bit.ly/2UEyLO1

@@ -9,8 +9,7 @@ class Subscription < ApplicationRecord
             presence: true,
             uniqueness: {
               scope: :newsletter,
-              message:
-                "%{attribute} \"%{value}\" already subscribed to the newsletter.",
+              message: "\"%{value}\" already subscribed to the newsletter.",
             }
 
   after_save :upsert_to_list
