@@ -25,7 +25,7 @@
 import { mj, Node } from "."
 
 export interface Attributes {
-  padding?: string
+  padding?: string | number
   paddingLeft?: string | number // px | int
   paddingRight?: string | number // px | int
   paddingTop?: string | number // px | int

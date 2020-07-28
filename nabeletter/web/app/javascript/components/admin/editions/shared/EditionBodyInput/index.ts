@@ -1,5 +1,6 @@
 import { h } from "@cycle/react"
 import { dataProvider } from "components/admin/providers"
+import { Edition } from "components/admin/shared"
 import { body, formatErrorHTML, mj, MjApiResult, mjml, Node } from "mj"
 import { Component, createRef, RefObject } from "react"
 import {
@@ -355,7 +356,9 @@ export class EditionBodyInput extends Component<Props, State> {
       switchMap((sections: SectionConfig[]) => {
         const nodes: Node[] = []
         const typestyle = createTypeStyle()
-        const edition = get(this.props.record, "id", "") as string
+        const edition: Edition = this.props.record!
+        const context = { edition }
+        const editionId = get(edition, "id", "") as string
         let sectionRank = 0
         let previewText: string | null = null
         sections.map(({ kind, config }: SectionConfig) => {
@@ -367,11 +370,12 @@ export class EditionBodyInput extends Component<Props, State> {
               const node = makeNode({
                 // @ts-ignore
                 config,
+                context,
                 typestyle,
                 analytics: {
                   section: kind,
                   sectionRank, // NOTE: temporary, need evaluate node first
-                  edition,
+                  edition: editionId,
                 },
               })
               if (node) {
@@ -379,10 +383,10 @@ export class EditionBodyInput extends Component<Props, State> {
                 const analytics: AnalyticsProps = {
                   section,
                   sectionRank,
-                  edition,
+                  edition: editionId,
                 }
                 // @ts-ignore
-                nodes.push(makeNode({ config, typestyle, analytics }))
+                nodes.push(makeNode({ config, context, typestyle, analytics }))
                 sectionRank++ // header == 0, footer coerceed to == -1
               }
             }
