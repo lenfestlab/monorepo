@@ -12,6 +12,9 @@ export const currency = (amount: number) => {
 
 export const translate = (key: string): string => {
   const messages = {
+    // header
+    "header-input-subtitle-placeholder":
+      "What you need to start your week in Fishtown",
     // properties
     "properties-input-url-placeholder": "https://www.zillow.com/homedetails...",
     "properties-input-url-add": "Add",

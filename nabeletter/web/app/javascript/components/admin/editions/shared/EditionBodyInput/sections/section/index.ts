@@ -1,8 +1,14 @@
+import { Edition } from "components/admin/shared"
 import { TypeStyle } from "typestyle"
 import { AnalyticsProps } from "../MarkdownField"
 
+export interface Context {
+  edition: Edition
+}
+
 export interface SectionProps {
   analytics: AnalyticsProps
+  context: Context
   typestyle: TypeStyle
 }
 

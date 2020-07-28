@@ -6,7 +6,7 @@ import { SectionProps } from "."
 import { md } from "../MarkdownField"
 import { cardSection } from "../section/cardSection"
 
-export interface CardWrapperProps extends SectionProps {
+export interface CardWrapperProps extends Omit<SectionProps, "context"> {
   title: string
   pre?: string
   post?: string
