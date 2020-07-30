@@ -261,12 +261,12 @@ export class EditionBodyInput extends Component<Props, State> {
       TWEETS,
       FACEBOOK,
       INSTAGRAM,
+      ANSWER,
+      ASK,
       PERMITS,
       MEETINGS,
       PROPERTIES_SALE,
       PROPERTIES_SOLD,
-      ASK,
-      ANSWER,
       FOOTER,
     ]
     allKinds.forEach((kind) => {
@@ -427,7 +427,7 @@ export class EditionBodyInput extends Component<Props, State> {
           ),
           body(
             {
-              backgroundColor: colors.veryLightGray,
+              backgroundColor: colors.white,
               width: "600px",
             },
             nodes
