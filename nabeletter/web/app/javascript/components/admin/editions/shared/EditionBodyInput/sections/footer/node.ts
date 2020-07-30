@@ -1,8 +1,8 @@
 import { footer } from "@cycle/react-dom"
 import { link } from "analytics"
 import { rewriteURL } from "analytics"
-import { AnalyticsProps as _AnalyticsProps } from "analytics/Link"
 import { px } from "csx"
+import { get } from "fp"
 import { translate } from "i18n"
 import {
   column as columnNode,
@@ -13,12 +13,9 @@ import {
   TextAttributes,
 } from "mj"
 import { colors } from "styles"
-
-export type AnalyticsProps = Omit<_AnalyticsProps, "section" | "sectionRank">
+import { SectionProps } from "../section"
 
 const feedbackEmail = process.env.FEEDBACK_EMAIL as string
-const guideNabe = process.env.FOOTER_GUIDE_NEIGHBOR as string
-const guideRestaurant = process.env.FOOTER_GUIDE_RESTAURANT as string
 
 interface SocialLink {
   title: string
@@ -27,38 +24,29 @@ interface SocialLink {
 }
 const socialLinks: SocialLink[] = [
   {
-    title: "twitter",
-    url: process.env.SOCIAL_TWITTER as string,
-    src:
-      "https://res.cloudinary.com/dh5yeyrsc/image/upload/v1585124214/social/twitter-icon_uevlyu.png",
-  },
-  {
     title: "facebook",
     url: process.env.SOCIAL_FACEBOOK as string,
     src:
       "https://res.cloudinary.com/dh5yeyrsc/image/upload/v1585124217/social/facebook-icon_yfgb3v.png",
   },
-  {
-    title: "instagram",
-    url: process.env.SOCIAL_INSTAGRAM as string,
-    src:
-      "https://res.cloudinary.com/dh5yeyrsc/image/upload/v1585124216/social/ins-icon_ehb9j9.png",
-  },
 ]
 
 const linebreak = "<br/>"
 
-export interface Props {
-  analytics: AnalyticsProps
-}
+export interface Props extends SectionProps {}
 
-export const node = ({ analytics: _analytics }: Props): Node => {
+export const node = ({
+  analytics: _analytics,
+  context: { edition },
+}: Props): Node => {
   const { white } = colors
   const analytics = {
     ..._analytics,
     section: "footer",
     sectionRank: -1,
   }
+  const newsletter_id = get(edition, ["newsletter", "id"])
+  const newsletter_name = get(edition, "newsletter_name")
 
   const footerTextAttributes: TextAttributes = {
     align: "center",
@@ -89,12 +77,10 @@ export const node = ({ analytics: _analytics }: Props): Node => {
         textNode(
           {
             ...footerTextAttributes,
-            fontSize: px(18) as string,
             paddingBottom: px(24),
           },
           [
             translate("footer-feedback-prompt"),
-            linebreak,
             translate("footer-feedback-cta"),
             link({
               analytics,
@@ -107,30 +93,31 @@ export const node = ({ analytics: _analytics }: Props): Node => {
             }),
           ]
         ),
+
         textNode(
           {
             ...footerTextAttributes,
-            fontWeight: 500,
-            lineHeight: 2,
             paddingBottom: px(24),
           },
           [
-            link({
-              analytics,
-              url: guideNabe,
-              title: translate("footer-guide-nabe"),
-              style: styles.link,
-            }),
-            linebreak,
-            link({
-              analytics,
-              url: guideRestaurant,
-              title: translate("footer-guide-restaurant"),
-              style: styles.link,
-            }),
+            translate("footer-signup-copy").replace(
+              "LINK",
+              link({
+                analytics,
+                title: "Sign up",
+                url: `https://${process.env.RAILS_HOST}/signup?newsletter_id=${newsletter_id}`,
+                style: {
+                  ...styles.link,
+                  fontWeight: "bold",
+                },
+              })
+            ),
           ]
         ),
 
+        textNode({ ...footerTextAttributes }, [
+          translate("footer-connect").replace("NEWSLETTER_NAME", newsletter_name)
+        ]),
         mj(
           "mj-social",
           {
@@ -139,6 +126,7 @@ export const node = ({ analytics: _analytics }: Props): Node => {
             color: colors.black,
             iconSize: px(30) as string,
             mode: "horizontal",
+            paddingTop: px(0),
           },
           [
             ...socialLinks.map(({ title, url, src }: SocialLink) => {
@@ -161,10 +149,22 @@ export const node = ({ analytics: _analytics }: Props): Node => {
             ...footerTextAttributes,
             paddingBottom: px(24),
           },
+          [`&copy;`, translate("footer-copyright")]
+        ),
+
+        textNode(
+          {
+            ...footerTextAttributes,
+            paddingBottom: px(24),
+          },
+          [translate("footer-attribution")]
+        ),
+
+        textNode(
+          {
+            ...footerTextAttributes,
+          },
           [
-            `&copy;`,
-            translate("footer-copyright"),
-            `&nbsp;`,
             link({
               analytics,
               title: translate("footer-unsubscribe"),
@@ -172,13 +172,6 @@ export const node = ({ analytics: _analytics }: Props): Node => {
               style: styles.link,
             }),
           ]
-        ),
-
-        textNode(
-          {
-            ...footerTextAttributes,
-          },
-          [translate("footer-attribution")]
         ),
       ]),
     ]

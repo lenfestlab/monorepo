@@ -22,9 +22,10 @@ export const cardWrapper = (
       paddingBottom: px(12),
       paddingLeft: px(24),
       paddingRight: px(24),
+      backgroundColor: colors.veryLightGray,
     },
     compact([
-      cardSection({ paddingTop: px(25) }, [
+      cardSection({ paddingTop: px(25), isFirstSection: true }, [
         column({}, [
           text(
             {
@@ -59,6 +60,8 @@ export const cardWrapper = (
             ]),
           ]),
         ]),
+
+      cardSection({ isLastSection: true }, [column({}, [text({}, `&nbsp;`)])]),
     ])
   )
 }

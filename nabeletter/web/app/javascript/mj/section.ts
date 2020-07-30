@@ -26,14 +26,14 @@
 import { mj, Node } from "."
 
 export interface Attributes {
+  backgroundColor?: string
+  borderRadius?: string | number
   cssClass?: string
   padding?: string | number
-  paddingTop?: string | number
   paddingBottom?: string | number
   paddingLeft?: string | number
   paddingRight?: string | number
-  backgroundColor?: string
-  borderRadius?: string
+  paddingTop?: string | number
 }
 
 export const section = (attributes: Attributes, nodes: Node[]) =>

@@ -1,5 +1,3 @@
-// import { createMoneyIntlFormatter } from "@easymoney/formatter"
-// import { createMoney } from "@easymoney/money"
 import { get } from "fp"
 
 export const currency = (amount: number) => {
@@ -115,9 +113,9 @@ export const translate = (key: string): string => {
     "meetings-field-set-reminder": "Set reminder",
     // footer
     "footer-feedback-prompt": "Have feedback?",
-    "footer-feedback-cta": "Send your comments and questions to ",
-    "footer-guide-nabe": "Fishtown New Neighbor Guide",
-    "footer-guide-restaurant": "Fishtown Restaurant Guide",
+    "footer-feedback-cta": "Send it to ",
+    "footer-signup-copy": `Was this email forwarded to you? LINK to receive it each week here.`,
+    "footer-connect": `Connect with NEWSLETTER_NAME on Facebook`,
     "footer-copyright": "2020 Lenfest Institute",
     "footer-unsubscribe": "Unsubscribe",
     "footer-attribution":

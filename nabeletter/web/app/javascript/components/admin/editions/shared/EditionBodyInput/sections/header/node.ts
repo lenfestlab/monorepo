@@ -2,7 +2,7 @@ import { px } from "csx"
 import { format, parseISO } from "date-fns"
 import { compact, either, get } from "fp"
 import { translate } from "i18n"
-import { column, Node, section, text, wrapper } from "mj"
+import { column, image, Node, section, text, wrapper } from "mj"
 import { colors, fonts } from "styles"
 import { Config } from "."
 import { SectionProps } from "../section"
@@ -27,35 +27,34 @@ export const node = ({
 
   const textProps = {
     align: "center",
-    color: colors.white,
+    color: colors.black,
     fontFamily: fonts.robotoSlab,
+    fontSize: px(16) as string,
   }
   return wrapper(
     { padding: px(0) },
     compact([
       section(
         {
-          backgroundColor: colors.darkBlue,
-          borderRadius: px(3) as string,
-          paddingTop: px(30),
-          paddingBottom: px(30),
+          backgroundColor: colors.veryLightGray,
+          paddingTop: px(20),
+          paddingBottom: px(24),
         },
         [
           column(
             {},
             compact([
+              image({
+                alt: title,
+                width: px(166),
+                height: px(58),
+                src:
+                  "https://res.cloudinary.com/hb8lfmjh0/image/upload/v1596141169/366063a485d790eacd7ec9646b2b58fa.png",
+              }),
               text(
                 {
                   ...textProps,
-                  fontSize: px(24) as string,
-                  fontWeight: 600,
-                },
-                title
-              ),
-              text(
-                {
-                  ...textProps,
-                  fontSize: px(16) as string,
+                  paddingTop: px(8),
                 },
                 subtitle
               ),
@@ -63,6 +62,8 @@ export const node = ({
                 text(
                   {
                     ...textProps,
+                    fontWeight: 300,
+                    paddingTop: px(13),
                   },
                   format(parseISO(published), "MMMM d, y")
                 ),
