@@ -31,7 +31,7 @@ export const node = ({ analytics, config, typestyle }: Props): Node | null => {
       },
     },
     more: {
-      fontSize: px(18),
+      fontSize: px(16),
       fontWeight: 500,
       fontStyle: "italic",
       color: colors.darkBlue,
@@ -66,6 +66,8 @@ export const node = ({ analytics, config, typestyle }: Props): Node | null => {
         const childAttributes = {
           color: colors.white,
           fontWeight: 300,
+          paddingLeft: px(24),
+          paddingRight: px(24),
         }
         return cardSection({}, [
           column(
@@ -97,7 +99,6 @@ export const node = ({ analytics, config, typestyle }: Props): Node | null => {
         cardSection(
           {
             paddingTop: px(24),
-            paddingBottom: px(24),
           },
           [
             column({}, [

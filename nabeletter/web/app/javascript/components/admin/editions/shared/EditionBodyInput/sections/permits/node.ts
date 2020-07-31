@@ -32,7 +32,7 @@ export const node = ({ analytics, config, typestyle }: Props): Node | null => {
       }) => {
         const description = description_custom ?? defaultDescription
         const primary = {
-          fontSize: px(18),
+          fontSize: px(16),
           fontWeight: 500,
           paddingTop: px(10),
         }

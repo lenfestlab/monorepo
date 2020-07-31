@@ -27,7 +27,7 @@ export const node = ({ analytics, config, typestyle }: Props): Node | null => {
     cardSection({}, [
       column({ paddingBottom: px(24) }, [
         text(
-          { align: "center", fontSize: px(18), fontWeight: 500 },
+          { fontSize: px(18), fontWeight: 500 },
           md({ markdown, analytics, typestyle })
         ),
         button(

@@ -404,19 +404,8 @@ export class EditionBodyInput extends Component<Props, State> {
                   "https://fonts.googleapis.com/css?family=Roboto|Roboto+Slab&display=swap",
               }),
               mj("mj-attributes", {}, [
-                mj("mj-text", {
-                  paddingTop: px(0),
-                  paddingBottom: px(0),
-                  paddingLeft: px(pad * 2),
-                  paddingRight: px(pad * 2),
-                  lineHeight: 1.5,
-                }),
-                mj("mj-image", {
-                  paddingTop: px(0),
-                  paddingBottom: px(0),
-                  paddingLeft: px(pad * 2),
-                  paddingRight: px(pad * 2),
-                }),
+                mj("mj-text", { padding: px(0), lineHeight: 1.5 }),
+                mj("mj-image", { padding: px(0) }),
                 mj("mj-column", { padding: px(0) }),
                 mj("mj-section", { padding: px(0) }),
                 mj("mj-all", {
