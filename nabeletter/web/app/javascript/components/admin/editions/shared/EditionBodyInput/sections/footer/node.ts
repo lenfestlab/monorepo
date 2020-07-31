@@ -69,8 +69,7 @@ export const node = ({
     {
       backgroundColor: colors.darkBlue,
       borderRadius: px(3) as string,
-      paddingTop: px(24),
-      paddingBottom: px(24),
+      padding: px(24),
     },
     [
       columnNode({}, [
@@ -116,7 +115,10 @@ export const node = ({
         ),
 
         textNode({ ...footerTextAttributes }, [
-          translate("footer-connect").replace("NEWSLETTER_NAME", newsletter_name)
+          translate("footer-connect").replace(
+            "NEWSLETTER_NAME",
+            newsletter_name
+          ),
         ]),
         mj(
           "mj-social",

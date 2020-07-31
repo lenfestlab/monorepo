@@ -25,26 +25,32 @@ export const cardWrapper = (
       backgroundColor: colors.veryLightGray,
     },
     compact([
-      cardSection({ paddingTop: px(25), isFirstSection: true }, [
-        column({}, [
-          text(
-            {
-              fontFamily: fonts.robotoSlab,
-              fontSize: px(20),
-              fontWeight: 500,
-              align: "center",
-              color: colors.black,
-              paddingBottom: px(20),
-            },
-            title
-          ),
-        ]),
-      ]),
+      cardSection(
+        {
+          paddingTop: px(24),
+          isFirstSection: true,
+        },
+        [
+          column({}, [
+            text(
+              {
+                fontFamily: fonts.robotoSlab,
+                fontSize: px(20),
+                fontWeight: 500,
+                align: "center",
+                color: colors.black,
+                paddingBottom: px(20),
+              },
+              title
+            ),
+          ]),
+        ]
+      ),
 
       pre &&
         cardSection({}, [
           column({}, [
-            text({ paddingBottom: px(20) }, [
+            text({ paddingBottom: px(10) }, [
               md({ markdown: pre, analytics, typestyle }),
             ]),
           ]),
@@ -55,7 +61,7 @@ export const cardWrapper = (
       post &&
         cardSection({}, [
           column({}, [
-            text({ paddingTop: px(10), paddingBottom: px(20) }, [
+            text({ paddingTop: px(10) }, [
               md({ markdown: post, analytics, typestyle }),
             ]),
           ]),

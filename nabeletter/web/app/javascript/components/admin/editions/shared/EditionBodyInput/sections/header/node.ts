@@ -39,6 +39,8 @@ export const node = ({
           backgroundColor: colors.veryLightGray,
           paddingTop: px(20),
           paddingBottom: px(24),
+          paddingLeft: px(24),
+          paddingRight: px(24),
         },
         [
           column(

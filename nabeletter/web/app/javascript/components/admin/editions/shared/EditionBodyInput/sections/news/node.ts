@@ -25,16 +25,6 @@ export const articlesNode = ({
   const { articles, pre, post } = config
   if (allEmpty([pre, post, articles])) return null
 
-  const styles = {
-    title: {
-      fontSize: px(18),
-      fontWeight: 500,
-      color: colors.darkBlue,
-      textDecoration: "underline",
-    },
-  }
-  const classNames = typestyle.stylesheet(styles)
-
   return cardWrapper(
     { title, pre, post, analytics, typestyle },
     compact([
@@ -67,25 +57,45 @@ export const articlesNode = ({
                 text(
                   {
                     paddingTop: px(10),
+                    paddingBottom: px(6),
                   },
-                  link({ analytics, title, url, className: classNames.title })
+                  link({
+                    analytics,
+                    title,
+                    url,
+                    className: typestyle.style({
+                      fontSize: px(16),
+                      fontWeight: 500,
+                      color: colors.darkBlue,
+                      textDecoration: "underline",
+                    }),
+                  })
                 ),
               published &&
                 text(
                   {
+                    fontSize: px(14),
                     fontWeight: "normal",
                     fontStyle: "italic",
                   },
-                  published
+                  published.toUpperCase()
                 ),
               description &&
                 text(
                   {
                     fontSize: px(14),
+                    fontWeight: 300,
                   },
                   description
                 ),
-              site_name && text({}, site_name),
+              site_name &&
+                text(
+                  {
+                    fontSize: px(14),
+                    fontWeight: "normal",
+                  },
+                  site_name
+                ),
             ])
           ),
         ])

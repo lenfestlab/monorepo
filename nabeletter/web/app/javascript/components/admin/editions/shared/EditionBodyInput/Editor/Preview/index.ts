@@ -20,7 +20,7 @@ export const Preview = ({ fields: unstyledFields, htmlRef, html }: Props) => {
   const desktop = queries.desktop.maxWidth + 40 // 640
   const iphone = queries.mobile.maxWidth + 20
   const widths = { desktop, mobile: iphone }
-  const [width, setWidth] = useState(widths.mobile)
+  const [width, setWidth] = useState(desktop)
   const onChange = (event: React.MouseEvent<HTMLElement>, newWidth: number) =>
     setWidth(newWidth ?? widths.desktop)
 

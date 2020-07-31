@@ -32,6 +32,8 @@ export interface Attributes {
   lineHeight?: string | number // px | unitless
   padding?: string | number
   paddingBottom?: string | number
+  paddingLeft?: string | number
+  paddingRight?: string | number
   paddingTop?: string | number
   textAlign?: string
 }

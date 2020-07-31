@@ -24,9 +24,15 @@ export const node = ({
   return cardWrapper({ title, pre, post, analytics, typestyle }, [
     cardSection({}, [
       group({ verticalAlign: "top" }, [
-        ...images.map(({ url: src, caption = "" }: Image) => {
+        ...images.map(({ url: src, caption = "" }, idx: number) => {
           return column({}, [
-            imageNode({ src, alt: caption }),
+            imageNode({
+              src,
+              alt: caption,
+              ...(idx === 0 && {
+                paddingRight: px(12),
+              }),
+            }),
             text(
               {
                 align: "center",

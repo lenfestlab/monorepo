@@ -12,7 +12,10 @@ export const cardSection = (
   children: Node[]
 ): Node => {
   const radius = px(3) as string
+  const sidePadding = px(24) as string
   const sharedAttributes: SectionAttributes = {
+    paddingLeft: sidePadding,
+    paddingRight: sidePadding,
     backgroundColor: colors.white,
     ...(isFirstSection && {
       borderRadius: `${radius} ${radius} 0px 0px`,

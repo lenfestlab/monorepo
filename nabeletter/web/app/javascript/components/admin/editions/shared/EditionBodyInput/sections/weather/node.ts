@@ -106,7 +106,7 @@ export const node = ({ analytics, config, typestyle }: Props): Node | null => {
       typestyle,
     },
     [
-      cardSection({ paddingLeft: px(10), paddingRight: px(10) }, [
+      cardSection({}, [
         group({ verticalAlign: "top" }, [
           ...days.map(({ dayOfWeek, imageURL: src, imageMap, temp }: Day) => {
             const columnChildAttrs = {
