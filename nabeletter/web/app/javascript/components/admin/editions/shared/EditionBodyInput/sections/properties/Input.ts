@@ -1,5 +1,9 @@
 import { h } from "@cycle/react"
 import {
+  Button,
+  Dialog,
+  DialogActions,
+  DialogContent,
   Grid,
   IconButton,
   List,
@@ -8,8 +12,8 @@ import {
   ListItemText,
   TextField,
 } from "@material-ui/core"
-import { Delete } from "@material-ui/icons"
-import { Component, RefObject } from "react"
+import { Delete, Edit } from "@material-ui/icons"
+import { Component, createRef, RefObject } from "react"
 import {
   BehaviorSubject,
   combineLatest,
@@ -36,9 +40,9 @@ import {
   withLatestFrom,
 } from "rxjs/operators"
 
-import { compact, either, isEmpty, unionWith, uniqBy } from "fp"
+import { compact, find, isEmpty, unionWith, uniqBy } from "fp"
 import { translate } from "i18n"
-import { Config, Property, SetConfig } from "."
+import { Config, EditableProperty, SetConfig } from "."
 import { ProgressButton } from "../ProgressButton"
 import { QuickLinks } from "../QuickLinks"
 import { SectionConfig } from "../section"
@@ -54,6 +58,12 @@ const noError: UrlError = { error: false, helperText: "" }
 type InputEvent = React.ChangeEvent<HTMLInputElement>
 type ButtonEvent = React.MouseEvent<HTMLButtonElement>
 
+type EditDialogProps = {
+  open: boolean
+  selectionID?: string
+  selectionDescriptionPlaceholder?: string
+}
+
 export interface Props {
   config: Config
   setConfig: SetConfig
@@ -64,12 +74,12 @@ export interface Props {
   titlePlaceholder: string
 }
 
-interface State extends SectionConfig {
+interface State extends SectionConfig, EditDialogProps {
   url: string
   pending: boolean
   disabled: boolean
   error: UrlError
-  properties: Property[]
+  properties: EditableProperty[]
 }
 
 export class Input extends Component<Props, State> {
@@ -101,8 +111,8 @@ export class Input extends Component<Props, State> {
     this.properties$$.next(newValues)
   }
 
-  properties$$ = new BehaviorSubject<Property[]>([])
-  properties$: Observable<Property[]> = this.properties$$.pipe(
+  properties$$ = new BehaviorSubject<EditableProperty[]>([])
+  properties$: Observable<EditableProperty[]> = this.properties$$.pipe(
     tag("properties$"),
     shareReplay()
   )
@@ -111,7 +121,7 @@ export class Input extends Component<Props, State> {
     withLatestFrom(this.url$),
     map(([_, url]) => url),
     switchMap((url) =>
-      ajax.getJSON<Property>(
+      ajax.getJSON<EditableProperty>(
         `${process.env.SECTION_PROPERTIES_ENDPOINT}?url=${url}`
       )
     ),
@@ -170,6 +180,39 @@ export class Input extends Component<Props, State> {
     shareReplay()
   )
 
+  // Edit
+  dialogProps$$ = new BehaviorSubject<EditDialogProps>({ open: false })
+  dialogProps$ = this.dialogProps$$.pipe(
+    tag("permits.dialogProps$"),
+    shareReplay()
+  )
+  onClickEdit = (url: string) => {
+    const selection = find(this.properties$$.value, (item) => item.url === url)
+    const selectionDescriptionPlaceholder = selection?.description
+    this.dialogProps$$.next({
+      open: true,
+      selectionID: url,
+      selectionDescriptionPlaceholder,
+    })
+  }
+  onClose = () =>
+    this.dialogProps$$.next({
+      open: false,
+    })
+
+  descriptionRef = createRef<HTMLTextAreaElement>()
+  onSave = () => {
+    const descValue = this.descriptionRef.current?.value
+    const description_custom = isEmpty(descValue) ? null : descValue
+    const newSelections = this.properties$$.value.map((property) => {
+      return property.url === this.dialogProps$$.value.selectionID
+        ? { ...property, description_custom }
+        : property
+    })
+    this.properties$$.next(newSelections)
+    this.onClose()
+  }
+
   constructor(props: Props) {
     super(props)
     const { config } = props
@@ -194,6 +237,7 @@ export class Input extends Component<Props, State> {
       disabled: false,
       error: noError,
       properties,
+      ...{ open: false },
     }
   }
 
@@ -230,6 +274,20 @@ export class Input extends Component<Props, State> {
       share()
     )
 
+    const dialogState$ = combineLatest([this.dialogProps$]).pipe(
+      tap(([dialogProps]) => {
+        this.setState((prior) => {
+          const next = {
+            ...prior,
+            ...dialogProps,
+          }
+          return next
+        })
+      }),
+      tag("dialogState$"),
+      share()
+    )
+
     const sync$ = combineLatest(
       this.title$,
       this.pre$,
@@ -243,7 +301,7 @@ export class Input extends Component<Props, State> {
       tag("sync$")
     )
 
-    this.subscription = merge(state$, sync$).subscribe()
+    this.subscription = merge(sync$, state$, dialogState$).subscribe()
   }
   componentWillUnmount() {
     this.subscription?.unsubscribe()
@@ -262,6 +320,7 @@ export class Input extends Component<Props, State> {
       error: { error, helperText },
       properties,
     } = this.state
+    const { open, selectionDescriptionPlaceholder } = this.state
 
     const {
       setTitle,
@@ -271,6 +330,7 @@ export class Input extends Component<Props, State> {
       onClickAdd,
       onClickDelete,
     } = this
+    const { onClickEdit, onClose, onSave } = this
 
     const placeholder = translate(`properties-input-url-placeholder`)
     const urls = compact(
@@ -314,18 +374,39 @@ export class Input extends Component<Props, State> {
             {
               dense: true,
             },
-            properties.map((property: Property) => {
+            properties.map((property: EditableProperty) => {
               const id = property.url
               const primary = property.address
               const secondary = property.url
+              const onClick = (event: any) => onClickEdit(id)
               return h(ListItem, [
                 h(ListItemText, { primary, secondary }),
                 h(ListItemSecondaryAction, [
+                  h(IconButton, { id, onClick }, [h(Edit)]),
                   h(IconButton, { id, onClick: onClickDelete }, [h(Delete)]),
                 ]),
               ])
             })
           ),
+        ]),
+        h(Dialog, { open, fullWidth: true, maxWidth: "md" }, [
+          h(DialogContent, [
+            h(TextField, {
+              label: "Description",
+              autoFocus: true,
+              margin: "dense",
+              fullWidth: true,
+              multiline: true,
+              rows: 4,
+              variant: "filled",
+              placeholder: selectionDescriptionPlaceholder,
+              inputRef: this.descriptionRef,
+            }),
+          ]),
+          h(DialogActions, [
+            h(Button, { onClick: onClose, color: "primary" }, "Cancel"),
+            h(Button, { onClick: onSave, color: "primary" }, "Save"),
+          ]),
         ]),
       ]
     )

@@ -23,7 +23,7 @@ import {
   switchMap,
   tap,
 } from "rxjs/operators"
-import { colors, fonts } from "styles"
+import { colors, fonts, queries } from "styles"
 
 import { AnalyticsProps as AllAnalyticsProps } from "analytics"
 import { Record as ApiRecord } from "components/admin/shared"
@@ -31,8 +31,8 @@ import { compact, find, get, isEmpty, map, reduce, values } from "fp"
 import { Editor } from "./Editor"
 import { PreviewRef, SectionField, SectionInput } from "./types"
 
-import { px } from "csx"
-import { createTypeStyle } from "typestyle"
+import { important, px } from "csx"
+import { createTypeStyle, media } from "typestyle"
 import {
   Field as AnswerField,
   Input as AnswerInput,
@@ -393,6 +393,7 @@ export class EditionBodyInput extends Component<Props, State> {
           }
         })
 
+        const pad = 24
         const mjNode: Node = mjml([
           mj(
             "mj-head",
@@ -406,9 +407,16 @@ export class EditionBodyInput extends Component<Props, State> {
                 mj("mj-text", {
                   paddingTop: px(0),
                   paddingBottom: px(0),
+                  paddingLeft: px(pad * 2),
+                  paddingRight: px(pad * 2),
                   lineHeight: 1.5,
                 }),
-                mj("mj-image", { padding: px(0) }),
+                mj("mj-image", {
+                  paddingTop: px(0),
+                  paddingBottom: px(0),
+                  paddingLeft: px(pad * 2),
+                  paddingRight: px(pad * 2),
+                }),
                 mj("mj-column", { padding: px(0) }),
                 mj("mj-section", { padding: px(0) }),
                 mj("mj-all", {

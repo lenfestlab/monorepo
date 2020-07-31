@@ -41,9 +41,10 @@ export const node = ({
         beds,
         baths,
         description,
+        description_custom,
         sold_on,
       }) => {
-        const _description = null ?? description
+        const _description = description_custom ?? description
         const _price = price && currency(parseFloat(price))
         const details = []
         if (beds) details.push(`${beds} bedroom`)

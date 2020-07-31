@@ -11,9 +11,13 @@ export interface Property {
   sold_on?: string
 }
 
+export interface EditableProperty extends Property {
+  description_custom?: string | null
+}
+
 export interface Config extends SectionConfig {
   url: string
-  properties: Property[]
+  properties: EditableProperty[]
 }
 export type SetConfig = (config: Config) => void
 
