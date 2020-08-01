@@ -1,43 +1,64 @@
 require 'uri'
 
-class AnalyticsError < StandardError
-  def initialize(msg = "Unknown")
-    super
-  end
-end
-
 class AnalyticsController < ApplicationController
   layout false
 
   def index
-    ga = safe[:ga]
     redirect = safe[:redirect]
-    if ga.present?
-      uri = URI(ga)
-      Rails.logger.info(ga)
-      payload_data = uri.query
-      Rails.logger.info(payload_data)
-      analytics_url = "#{uri.scheme}://#{uri.host}#{uri.path}"
-      Rails.logger.info(analytics_url)
-      cache_bust = Time.now.to_i # unix timestamp
-      tid = CGI.escape(ENV["GA_TID"])
-      payload_data = "#{payload_data}&tid=#{tid}&z=#{cache_bust}"
-      Rails.logger.info(payload_data)
-      response = HTTParty.post(analytics_url, {
-        body: payload_data,
-        headers: {"User-Agent" => "nabeletter-#{ENV["RACK_ENV"]}"},
-      })
-      Rails.logger.info("response.code #{response.code}")
-      Rails.logger.info("response.success? #{response.success?}")
-      raise(AnalyticsError, response["errors"]) unless response.success?
-    end
+    track(
+      user_id: safe["uid"],
+      event: safe["ea"],
+      properties: {
+        category: safe["ec"],
+        label: safe["el"],
+        cd1: safe['cd1'],
+        cd2: safe['cd2'],
+        cd3: safe['cd3'],
+        cd4: safe['cd4'],
+        cd5: safe['cd5'],
+        cd6: safe['cd6'],
+        cd7: safe['cd7'],
+        cd8: safe['cd8'],
+      }
+    )
     redirect_to redirect
+  end
+
+  def pixel
+    track(
+      user_id: safe["uid"] || "RECIPIENT_UID",
+      event: safe["ea"],
+      properties: {
+        category: safe["ec"],
+        cd1: safe["cd1"],
+        cd2: safe["cd2"],
+      }
+    )
+    # https://stackoverflow.com/a/29614032
+    send_data(Base64.decode64("R0lGODlhAQABAPAAAAAAAAAAACH5BAEAAAAALAAAAAABAAEAAAICRAEAOw=="),
+              type: "image/gif",
+              disposition: "inline")
   end
 
   protected
 
   def safe
-    params.permit(%i[ga redirect])
+    params.permit!
+  end
+
+  def track(user_id:, event:, properties:)
+    segment = SimpleSegment::Client.new(
+      write_key: ENV["SEGMENT_WRITE_KEY"],
+      logger: Rails.logger,
+      on_error: proc { |error_code, error_body, exception, response|
+        Raven.capture_exception(exception)
+      }
+    )
+    segment.track(
+      user_id: user_id,
+      event: event,
+      properties: properties
+    )
   end
 
 end

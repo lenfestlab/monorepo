@@ -23,7 +23,11 @@ export interface AnalyticsProps {
   title: string
 }
 
-export const rewriteURL = (redirect: string, props: AnalyticsProps): string => {
+export const rewriteURL = (
+  redirect: string,
+  props: AnalyticsProps,
+  pixel?: boolean
+): string => {
   const {
     category = "interaction",
     action = "click",
@@ -35,9 +39,12 @@ export const rewriteURL = (redirect: string, props: AnalyticsProps): string => {
     title,
   } = props
   const uid = "VAR-RECIPIENT-UID"
-  const ga = stringifyUrl({
-    url: "https://www.google-analytics.com/collect?v=1&t=event",
+  const path = pixel ? "pixel" : "analytics"
+  const url = `https://${process.env.RAILS_HOST}/${path}`
+  return stringifyUrl({
+    url,
     query: {
+      redirect,
       uid,
       ec: category,
       ea: action,
@@ -51,6 +58,22 @@ export const rewriteURL = (redirect: string, props: AnalyticsProps): string => {
       cd7: title,
     },
   })
-  const url = `https://${process.env.RAILS_HOST}/analytics`
-  return stringifyUrl({ url, query: { ga, redirect } })
+}
+
+export const pixelURL = (edition: string | number): string => {
+  const category = "email"
+  const action = "open"
+  const neighborhood = "fishtown"
+  const uid = "VAR-RECIPIENT-UID"
+  const url = stringifyUrl({
+    url: `https://${process.env.RAILS_HOST}/pixel`,
+    query: {
+      ec: category,
+      ea: action,
+      cd1: neighborhood,
+      cd2: String(edition),
+    },
+  })
+  const pixel = `${url}&uid=${uid}`
+  return pixel
 }

@@ -17,17 +17,6 @@ class Edition < ApplicationRecord
     end
   end
 
-  before_save do
-    # NOTE: append analytics "open" event pixel
-    body = body_html || ""
-    unless body.try(:include?, "google-analytics.com")
-      self.body_html =
-        body.concat(
-          "<img src='https://www.google-analytics.com/collect?v=1&t=event&ec=email&ea=open&tid=%recipient.tid%&uid=%recipient.uid%' />\n",
-        )
-    end
-  end
-
   ## State machine
   #
 
