@@ -4,6 +4,7 @@ Rails.application.routes.draw do
   get "/admin", controller: :pages, action: :admin
   get "/signup", controller: :pages, action: :signup
   post "/signups", controller: :signups, action: :signup
+  get "/pixel", controller: :analytics, action: :pixel
 
   resources :analytics, only: :index
   resources :events, only: :index
