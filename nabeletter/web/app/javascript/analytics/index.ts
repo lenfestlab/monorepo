@@ -61,19 +61,26 @@ export const rewriteURL = (
 }
 
 export const pixelURL = (edition: string | number): string => {
-  const category = "email"
-  const action = "open"
-  const neighborhood = "fishtown"
+  const v = "1"
+  const t = "event"
+  const ec = "email"
+  const ea = "open"
+  const tid = process.env.GA_TID as string
   const uid = "VAR-RECIPIENT-UID"
+  const cd1 = "fishtown"
+  const cd2 = String(edition)
   const url = stringifyUrl({
-    url: `https://${process.env.RAILS_HOST}/pixel`,
+    url: `https://www.google-analytics.com/collect`,
     query: {
-      ec: category,
-      ea: action,
-      cd1: neighborhood,
-      cd2: String(edition),
+      v,
+      t,
+      ec,
+      ea,
+      tid,
+      uid,
+      cd1,
+      cd2,
     },
   })
-  const pixel = `${url}&uid=${uid}`
-  return pixel
+  return url
 }

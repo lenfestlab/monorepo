@@ -1,7 +1,7 @@
 import { link } from "analytics"
 import { important, px } from "csx"
-import { format, fromUnixTime } from "date-fns"
-import { allEmpty, either } from "fp"
+import { format, fromUnixTime, parseISO } from "date-fns"
+import { allEmpty, either, get } from "fp"
 import { translate } from "i18n"
 import { column, group, image, Node, text } from "mj"
 import { colors, StyleMap } from "styles"
@@ -9,7 +9,6 @@ import { Config, Forecast } from "."
 import { md } from "../MarkdownField"
 import { cardSection, cardWrapper, SectionProps } from "../section"
 
-import { get } from "fp"
 type ImageWidth = string
 type ImageURL = string
 export type ImageMap = Record<ImageWidth, ImageURL>
@@ -62,7 +61,12 @@ export interface Props extends SectionProps {
   config: Config
 }
 
-export const node = ({ analytics, config, typestyle }: Props): Node | null => {
+export const node = ({
+  analytics,
+  config,
+  typestyle,
+  context: { edition },
+}: Props): Node | null => {
   const title = either(
     config.title,
     translate("weather-input-title-placeholder")
@@ -85,6 +89,18 @@ export const node = ({ analytics, config, typestyle }: Props): Node | null => {
     }
     return day
   })
+
+  let date: null | string = null
+  const publishAt = get(edition, "publish_at")
+  if (publishAt) {
+    date = format(parseISO(publishAt), "y-MM-dd")
+  }
+  const lat: string | null = get(edition, "newsletter_lat")
+  const lng: string | null = get(edition, "newsletter_lng")
+  const url =
+    date && lat && lng
+      ? `https://darksky.net/details/${lat},${lng}/${date}/us12/en`
+      : "https://darksky.net"
 
   const styles: StyleMap = {
     day: {
@@ -164,7 +180,7 @@ export const node = ({ analytics, config, typestyle }: Props): Node | null => {
             [
               link(
                 {
-                  url: "https://darksky.net/poweredby",
+                  url,
                   title: "Powered by Dark Sky",
                   analytics,
                   style: styles.vendorAttributionLink,

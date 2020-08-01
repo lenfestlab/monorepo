@@ -1,6 +1,5 @@
-import { footer } from "@cycle/react-dom"
-import { link } from "analytics"
-import { pixelURL, rewriteURL } from "analytics"
+import { link, pixelURL } from "analytics"
+import { rewriteURL } from "analytics"
 import { px } from "csx"
 import { get } from "fp"
 import { translate } from "i18n"
@@ -9,7 +8,6 @@ import {
   image,
   mj,
   Node,
-  raw,
   section as sectionNode,
   text as textNode,
   TextAttributes,
@@ -47,9 +45,9 @@ export const node = ({
     section: "footer",
     sectionRank: -1,
   }
-  const edition_id = get(edition, "id")
   const newsletter_id = get(edition, ["newsletter", "id"])
   const newsletter_name = get(edition, "newsletter_name")
+  const edition_id = get(edition, "id")
 
   const footerTextAttributes: TextAttributes = {
     align: "center",
@@ -178,13 +176,12 @@ export const node = ({
             }),
           ]
         ),
-
-        image({
-          src: pixelURL(edition_id),
-          alt: "pixel",
-          width: px(1),
-          height: px(1),
-        }),
+        // image({
+        //   src: pixelURL(edition_id),
+        //   alt: "pixel",
+        //   width: px(1),
+        //   height: px(1),
+        // }),
       ]),
     ]
   )

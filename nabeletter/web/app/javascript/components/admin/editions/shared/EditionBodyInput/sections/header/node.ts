@@ -1,3 +1,4 @@
+import { pixelURL } from "analytics"
 import { px } from "csx"
 import { format, parseISO } from "date-fns"
 import { compact, either, get } from "fp"
@@ -24,6 +25,7 @@ export const node = ({
   )
   const { edition } = context
   const published = get(edition, "publish_at")
+  const edition_id = get(edition, "id")
 
   const textProps = {
     align: "center",
@@ -31,6 +33,7 @@ export const node = ({
     fontFamily: fonts.robotoSlab,
     fontSize: px(16) as string,
   }
+
   return wrapper(
     { padding: px(0) },
     compact([
@@ -50,8 +53,7 @@ export const node = ({
                 alt: title,
                 width: px(166),
                 height: px(58),
-                src:
-                  "https://res.cloudinary.com/hb8lfmjh0/image/upload/v1596141169/366063a485d790eacd7ec9646b2b58fa.png",
+                src: `https://res.cloudinary.com/hb8lfmjh0/image/upload/v1596322723/8b5c7b89f30a3afe90c7cfa30889c909.png`,
               }),
               text(
                 {
