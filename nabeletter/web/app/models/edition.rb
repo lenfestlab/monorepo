@@ -17,6 +17,18 @@ class Edition < ApplicationRecord
     end
   end
 
+  before_save do
+    # NOTE: append analytics "open" event pixel
+    tid = ENV["GA_TID"]
+    uid = "%recipient.uid%" # mailgun interpolates
+    body = body_html || ""
+    src = %Q(https://www.google-analytics.com/collect?v=1&t=event&ec=email&ea=open&tid=#{tid}&uid=#{uid})
+    unless body.try(:include?, src)
+      self.body_html = body.concat(%Q(<img src="#{src}" />))
+    end
+  end
+
+
   ## State machine
   #
 
