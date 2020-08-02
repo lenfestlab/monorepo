@@ -25,7 +25,7 @@ interface SocialLink {
 const socialLinks: SocialLink[] = [
   {
     title: "facebook",
-    url: process.env.SOCIAL_FACEBOOK as string,
+    url: "https://www.facebook.com/The-Hook-100662555076140",
     src:
       "https://res.cloudinary.com/dh5yeyrsc/image/upload/v1585124217/social/facebook-icon_yfgb3v.png",
   },
@@ -104,7 +104,7 @@ export const node = ({
               "LINK",
               link({
                 analytics,
-                title: "Sign up",
+                title: "here",
                 url: `https://${process.env.RAILS_HOST}/signup?newsletter_id=${newsletter_id}`,
                 style: {
                   ...styles.link,
@@ -160,7 +160,29 @@ export const node = ({
             ...footerTextAttributes,
             paddingBottom: px(24),
           },
-          [translate("footer-attribution")]
+          [
+            `This newsletter is brought to you by the `,
+            link({
+              analytics,
+              title: "Lenfest Lab,",
+              url: "https://medium.com/the-lenfest-local-lab",
+              style: styles.link,
+            }),
+            `a project of `,
+            link({
+              analytics,
+              title: "The Lenfest Institute for Journalism,",
+              url: "https://www.lenfestinstitute.org",
+              style: styles.link,
+            }),
+            `and `,
+            link({
+              analytics,
+              title: "The Philadelphia Inquirer.",
+              url: "https://www.inquirer.com",
+              style: styles.link,
+            }),
+          ]
         ),
 
         textNode(

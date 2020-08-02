@@ -114,12 +114,12 @@ export const translate = (key: string): string => {
     // footer
     "footer-feedback-prompt": "Have feedback?",
     "footer-feedback-cta": "Send it to ",
-    "footer-signup-copy": `Was this email forwarded to you? LINK to receive it each week here.`,
+    "footer-signup-copy": `Was this email forwarded to you? Sign up to receive it each week LINK.`,
     "footer-connect": `Connect with NEWSLETTER_NAME on Facebook`,
     "footer-copyright": "2020 Lenfest Institute",
     "footer-unsubscribe": "Unsubscribe",
     "footer-attribution":
-      "This newsletter is brought to you by the Lenfest Lab, a project of The Lenfest Institute for Journalism, and The Philadelphia Inquirer.",
+      "This newsletter is brought to you by the LENFEST_LAB, a project of The Lenfest Institute for Journalism, and The Philadelphia Inquirer.",
   }
   return get(messages, key)
 }

@@ -1,4 +1,4 @@
-import { link } from "analytics"
+import { link, pixelURL } from "analytics"
 import { important, px } from "csx"
 import { format, fromUnixTime, parseISO } from "date-fns"
 import { allEmpty, either, get } from "fp"
@@ -72,8 +72,7 @@ export const node = ({
     translate("weather-input-title-placeholder")
   )
   const { markdown, pre, post } = config
-  if (process.env.NODE_ENV === "development" && allEmpty([pre, markdown, post]))
-    return null
+  if (allEmpty([pre, markdown, post])) return null
 
   const forecast: Forecast = either(config.forecast, [])
   const days: Day[] = forecast.map(({ time, icon, high, low }) => {
@@ -101,6 +100,8 @@ export const node = ({
     date && lat && lng
       ? `https://darksky.net/details/${lat},${lng}/${date}/us12/en`
       : "https://darksky.net"
+
+  const edition_id = get(edition, "id")
 
   const styles: StyleMap = {
     day: {
@@ -190,6 +191,17 @@ export const node = ({
               ),
             ]
           ),
+        ]),
+      ]),
+
+      cardSection({}, [
+        column({ paddingTop: px(10) }, [
+          image({
+            src: pixelURL(edition_id),
+            alt: "pixel",
+            width: px(1),
+            height: px(1),
+          }),
         ]),
       ]),
 
