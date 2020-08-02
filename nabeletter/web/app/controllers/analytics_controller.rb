@@ -56,7 +56,7 @@ class AnalyticsController < ApplicationController
     )
     segment.track(
       user_id: user_id,
-      event: event,
+      event: (event || "MIA"),
       properties: properties
     )
   end

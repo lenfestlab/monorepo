@@ -1,5 +1,5 @@
 import { link, rewriteURL } from "analytics"
-import { px } from "csx"
+import { important, px } from "csx"
 import { format, parseISO } from "date-fns"
 import { allEmpty, compact, either, last } from "fp"
 import { translate } from "i18n"
@@ -23,10 +23,11 @@ export const node = ({ analytics, config, typestyle }: Props): Node | null => {
   if (allEmpty([events, pre, post])) return null
 
   const styles = {
-    description: {
+    autolinks: {
+      color: important(colors.white),
       $nest: {
         "& a": {
-          color: colors.white,
+          color: important(colors.white),
         },
       },
     },
@@ -78,16 +79,28 @@ export const node = ({ analytics, config, typestyle }: Props): Node | null => {
             compact([
               src && image({ src, alt: event.summary }),
               text(
-                { ...childAttributes, paddingTop: px(12), fontWeight: 500 },
+                {
+                  ...childAttributes,
+                  paddingTop: px(12),
+                  fontWeight: 500,
+                  cssClass: classNames.autolinks,
+                },
                 event.summary
               ),
-              text({ ...childAttributes, paddingBottom: px(12) }, startsAt),
+              text(
+                {
+                  ...childAttributes,
+                  paddingBottom: px(12),
+                  cssClass: classNames.autolinks,
+                },
+                `<span style="color: white" class="${classNames.autolinks}">${startsAt}</span>`
+              ),
               description &&
                 text(
                   {
                     ...childAttributes,
                     paddingBottom: px(12),
-                    cssClass: classNames.description,
+                    cssClass: classNames.autolinks,
                   },
                   description
                 ),
