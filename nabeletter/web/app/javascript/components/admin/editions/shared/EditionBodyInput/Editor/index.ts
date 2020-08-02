@@ -1,6 +1,6 @@
 import { h } from "@cycle/react"
 import { div } from "@cycle/react-dom"
-import { Box, CircularProgress, Grid } from "@material-ui/core"
+import { Box, CircularProgress, Grid, Typography } from "@material-ui/core"
 import { makeStyles } from "@material-ui/core/styles"
 
 import { viewHeight } from "csx"
@@ -20,9 +20,17 @@ interface Props {
   fields: SectionField[]
   syncing: boolean
   html: string
+  htmlSizeError: string | null
 }
 
-export const Editor = ({ inputs, fields, syncing, html, htmlRef }: Props) => {
+export const Editor = ({
+  inputs,
+  fields,
+  syncing,
+  html,
+  htmlRef,
+  htmlSizeError,
+}: Props) => {
   const css = useStyles()
   return div({ id: "editor" }, [
     h(
@@ -42,6 +50,12 @@ export const Editor = ({ inputs, fields, syncing, html, htmlRef }: Props) => {
             size: 20,
             disableShrink: true,
           }),
+        htmlSizeError &&
+          h(
+            Typography,
+            { variant: "subtitle1", color: "error" },
+            htmlSizeError
+          ),
       ]
     ),
     h(

@@ -232,6 +232,7 @@ interface State {
   sections: SectionConfig[]
   syncing: boolean
   html: string
+  htmlSizeError: string | null
 }
 export class EditionBodyInput extends Component<Props, State> {
   subscription: Subscription | null = null
@@ -275,7 +276,7 @@ export class EditionBodyInput extends Component<Props, State> {
       }
     })
 
-    this.state = { sections, syncing: false, html: "" }
+    this.state = { sections, syncing: false, html: "", htmlSizeError: null }
     // NOTE: sync section visibility
     this.sectionRefsMap = sections.reduce<SectionRefsMap>(
       (prior, current, _idx, _configs): SectionRefsMap => {
@@ -452,10 +453,17 @@ export class EditionBodyInput extends Component<Props, State> {
       distinctUntilChanged(),
       tag("html$"),
       tap((html) => {
+        const kb = new Blob([html]).size / 1000
+        // NOTE: warn if size Gmail's clip threshold. https://bit.ly/30q9ZFv
+        const htmlSizeError =
+          kb >= 102
+            ? "Warning: size exceeds 102KB; clients may truncate."
+            : null
         this.setState((prior: State) => {
           return {
             ...prior,
             html,
+            htmlSizeError,
           }
         })
       }),
@@ -465,7 +473,7 @@ export class EditionBodyInput extends Component<Props, State> {
         const request = dataProvider("UPDATE", "editions", { id, data })
         return onErrorResumeNext(from(request))
       }),
-      tap((_) => {
+      tap(() => {
         this.setState((prior: State) => {
           return {
             ...prior,
@@ -491,7 +499,7 @@ export class EditionBodyInput extends Component<Props, State> {
   render() {
     const inputs: SectionInput[] = []
     const fields: SectionField[] = []
-    const { sections, syncing, html } = this.state
+    const { sections, syncing, html, htmlSizeError } = this.state
 
     sections.forEach((sectionConfig: SectionConfig, idx: number) => {
       const kind = get(sectionConfig, "kind")
@@ -520,6 +528,8 @@ export class EditionBodyInput extends Component<Props, State> {
     })
 
     const { htmlRef } = this
-    return [h(Editor, { syncing, inputs, fields, html, htmlRef })]
+    return [
+      h(Editor, { syncing, inputs, fields, html, htmlRef, htmlSizeError }),
+    ]
   }
 }
