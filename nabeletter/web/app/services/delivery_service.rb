@@ -56,7 +56,7 @@ class DeliveryService
     # interpolate mailgun vars unless sending directly to recipients
     subs = {
       "VAR-UNSUBSCRIBE-URL" => (recipients.present? ? "https://#{ENV["RAILS_HOST"]}" : "%mailing_list_unsubscribe_url%"),
-      "VAR-RECIPIENT-UID" => (recipients.present? ? "RECIPIENT_UID" : "%recipient.uid%")
+      "VAR-RECIPIENT-UID" => (recipients.present? ? "VAR-RECIPIENT-UID" : "%recipient.uid%")
     }
     re = Regexp.union(subs.keys)
     html = edition.body_html.gsub(re, subs)
