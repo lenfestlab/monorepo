@@ -18,11 +18,12 @@ class Edition < ApplicationRecord
   end
 
   before_save do
-    # NOTE: append analytics "open" event pixel
     tid = ENV["GA_TID"]
-    uid = "%recipient.uid%" # mailgun interpolates
+    uid = "VAR-RECIPIENT-UID"
+    cd1 = self.newsletter.name.downcase
+    cd2 = id
     body = body_html || ""
-    src = %Q(https://www.google-analytics.com/collect?v=1&t=event&ec=email&ea=open&tid=#{tid}&uid=#{uid})
+    src = %Q(https://www.google-analytics.com/collect?v=1&t=event&ec=email&ea=open&tid=#{tid}&uid=#{uid}&cd1=#{cd1}&cd2=#{cd2})
     unless body.try(:include?, src)
       self.body_html = body.concat(%Q(<img src="#{src}" />))
     end

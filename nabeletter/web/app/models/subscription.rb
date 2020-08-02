@@ -15,10 +15,7 @@ class Subscription < ApplicationRecord
   after_save :upsert_to_list
   def upsert_to_list
     list_identifier = newsletter.list_identifier
-    subscriber_data =
-      self.slice(*%i[email_address name_first name_last]).merge(
-        { tid: ENV["GA_TID"], uid: id },
-      )
+    subscriber_data = self.slice(*%i[email_address name_first name_last]).merge({ uid: id })
     deliverer = DeliveryService.new
     deliverer.subscribe!(
       list_identifier: list_identifier, subscriber_data: subscriber_data,
