@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2020_08_01_223620) do
+ActiveRecord::Schema.define(version: 2020_08_03_160853) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -29,6 +29,35 @@ ActiveRecord::Schema.define(version: 2020_08_01_223620) do
     t.index ["publish_at"], name: "index_editions_on_publish_at"
     t.index ["state"], name: "index_editions_on_state"
     t.index ["subject"], name: "index_editions_on_subject"
+  end
+
+  create_table "events", force: :cascade do |t|
+    t.string "uid"
+    t.string "ea"
+    t.string "ec"
+    t.string "el"
+    t.string "cd1"
+    t.string "cd2"
+    t.string "cd3"
+    t.string "cd4"
+    t.string "cd5"
+    t.string "cd6"
+    t.string "cd7"
+    t.string "cd8"
+    t.datetime "created_at", precision: 6, null: false
+    t.datetime "updated_at", precision: 6, null: false
+    t.index ["cd1"], name: "index_events_on_cd1"
+    t.index ["cd2"], name: "index_events_on_cd2"
+    t.index ["cd3"], name: "index_events_on_cd3"
+    t.index ["cd4"], name: "index_events_on_cd4"
+    t.index ["cd5"], name: "index_events_on_cd5"
+    t.index ["cd6"], name: "index_events_on_cd6"
+    t.index ["cd7"], name: "index_events_on_cd7"
+    t.index ["cd8"], name: "index_events_on_cd8"
+    t.index ["ea"], name: "index_events_on_ea"
+    t.index ["ec"], name: "index_events_on_ec"
+    t.index ["el"], name: "index_events_on_el"
+    t.index ["uid"], name: "index_events_on_uid"
   end
 
   create_table "newsletters", force: :cascade do |t|

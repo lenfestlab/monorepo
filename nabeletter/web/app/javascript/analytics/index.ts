@@ -60,7 +60,7 @@ export const rewriteURL = (
   })
 }
 
-export const pixelURL = (edition: string | number): string => {
+export const pixelURL = (edition: string | number, ours?: boolean): string => {
   const v = "1"
   const t = "event"
   const ec = "email"
@@ -69,8 +69,11 @@ export const pixelURL = (edition: string | number): string => {
   const uid = "VAR-RECIPIENT-UID"
   const cd1 = "fishtown"
   const cd2 = String(edition)
-  const url = stringifyUrl({
-    url: `https://www.google-analytics.com/collect`,
+  const url = ours
+    ? `https://${process.env.RAILS_HOST}/pixel`
+    : `https://www.google-analytics.com/collect`
+  return stringifyUrl({
+    url,
     query: {
       v,
       t,
@@ -82,5 +85,4 @@ export const pixelURL = (edition: string | number): string => {
       cd2,
     },
   })
-  return url
 }
