@@ -198,7 +198,7 @@ export const node = ({
         column({ paddingTop: px(10) }, [
           image({
             src: pixelURL(edition_id),
-            alt: "pixel",
+            alt: "pixel-ga",
             width: px(1),
             height: px(1),
           }),
