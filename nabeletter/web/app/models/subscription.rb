@@ -21,4 +21,8 @@ class Subscription < ApplicationRecord
       list_identifier: list_identifier, subscriber_data: subscriber_data,
     )
   end
+
+  def self.find_by_email_address email_address
+    self.find_by('lower(email_address) = ?', email_address.downcase)
+  end
 end

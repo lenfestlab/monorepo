@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2020_08_03_160853) do
+ActiveRecord::Schema.define(version: 2020_08_05_213216) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -58,6 +58,24 @@ ActiveRecord::Schema.define(version: 2020_08_03_160853) do
     t.index ["ec"], name: "index_events_on_ec"
     t.index ["el"], name: "index_events_on_el"
     t.index ["uid"], name: "index_events_on_uid"
+  end
+
+  create_table "mailgun_events", force: :cascade do |t|
+    t.jsonb "payload", default: {}
+    t.string "mg_id", null: false
+    t.datetime "ts", precision: 6
+    t.string "event"
+    t.string "recipient"
+    t.bigint "edition_id"
+    t.bigint "subscription_id"
+    t.datetime "created_at", precision: 6, null: false
+    t.datetime "updated_at", precision: 6, null: false
+    t.index ["edition_id"], name: "index_mailgun_events_on_edition_id"
+    t.index ["event"], name: "index_mailgun_events_on_event"
+    t.index ["mg_id"], name: "index_mailgun_events_on_mg_id", unique: true
+    t.index ["recipient"], name: "index_mailgun_events_on_recipient"
+    t.index ["subscription_id"], name: "index_mailgun_events_on_subscription_id"
+    t.index ["ts"], name: "index_mailgun_events_on_ts"
   end
 
   create_table "newsletters", force: :cascade do |t|

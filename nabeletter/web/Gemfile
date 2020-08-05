@@ -25,6 +25,7 @@ gem 'webpacker', '~> 4.0'
 gem 'open_graph_reader'
 gem 'chronic'
 gem 'simple_segment'
+gem 'mailgun-ruby'
 
 group :development do
   gem 'web-console', '>= 3.3.0'
