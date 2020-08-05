@@ -67,6 +67,7 @@ class DeliveryService
       subject: subject,
       html: html,
       text: text,
+      "o:tag": "eid=#{edition.id}"
     }
     Rails.logger.info("request_body #{request_body}")
     response =
@@ -77,6 +78,7 @@ class DeliveryService
     Rails.logger.info("parsed_response #{response.parsed_response}")
     raise(DeliveryError, response["errors"]) unless response.success?
   end
+
 
   private
 
