@@ -9,6 +9,14 @@ class SignupsController < ApplicationController
        newsletter_id: newsletter_id
      )
      if sub.valid?
+        # AnalyticsService.new.track(
+          # user_id: sub.id,
+          # event_action: "subscribed",
+          # properties: {
+            # category: "newsletter",
+            # cd3: newsletter_id,
+          # }
+        # )
        render status: :ok, json: { email_address: email_address }
      else
        error = sub.errors.full_messages

@@ -30,15 +30,4 @@ class EditionResource < JSONAPI::Resource
     super - %i[newsletter]
   end
 
-  def body_html
-    body = @model.body_html
-    user = @context[:current_user]
-    if body && !Rails.env.production? && (uid = user.id)
-      subs = { "VAR-RECIPIENT-UID" => uid }
-      re = Regexp.union(subs.keys)
-      body.gsub(re, subs)
-    else
-      body
-    end
-  end
 end
