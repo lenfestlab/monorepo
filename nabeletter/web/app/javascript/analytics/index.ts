@@ -12,6 +12,8 @@ type Neighborhood = "fishtown"
 
 type UUID = string
 
+const uid = "VAR-RECIPIENT-UID"
+
 export interface AnalyticsProps {
   category?: Category
   action?: Action
@@ -23,11 +25,7 @@ export interface AnalyticsProps {
   title: string
 }
 
-export const rewriteURL = (
-  redirect: string,
-  props: AnalyticsProps,
-  pixel?: boolean
-): string => {
+export const rewriteURL = (redirect: string, props: AnalyticsProps): string => {
   const {
     category = "interaction",
     action = "click",
@@ -38,9 +36,7 @@ export const rewriteURL = (
     sectionRank,
     title,
   } = props
-  const uid = "VAR-RECIPIENT-UID"
-  const path = pixel ? "pixel" : "analytics"
-  const url = `https://${process.env.RAILS_HOST}/${path}`
+  const url = `https://${process.env.RAILS_HOST}/analytics`
   return stringifyUrl({
     url,
     query: {
@@ -66,7 +62,6 @@ export const pixelURL = (edition: string | number, ours?: boolean): string => {
   const ec = "email"
   const ea = "open"
   const tid = process.env.GA_TID as string
-  const uid = "VAR-RECIPIENT-UID"
   const cd1 = "fishtown"
   const cd2 = String(edition)
   const url = ours

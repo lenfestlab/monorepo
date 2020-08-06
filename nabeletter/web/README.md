@@ -36,7 +36,7 @@ heroku git:remote -r stag -a lenfestlab-nabeletter-stag
 
 ```
 DISABLE_DATABASE_ENVIRONMENT_CHECK=1 heroku local:run -e .env.dev bundle exec rails db:drop && \
-  heroku pg:pull DATABASE_URL nabeletter_development -r prod
+  heroku pg:pull DATABASE_URL nabeletter_development -r stag
 ```
 
 ## Replace stag db w/ a copy of your local db

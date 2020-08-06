@@ -197,7 +197,7 @@ export const node = ({
       cardSection({}, [
         column({ paddingTop: px(10) }, [
           image({
-            src: pixelURL(edition_id),
+            src: pixelURL(edition_id, true),
             alt: "pixel-ga",
             width: px(1),
             height: px(1),

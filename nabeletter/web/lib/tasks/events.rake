@@ -47,7 +47,21 @@ namespace :events do
         subscription_id: subscription_id,
         payload: item,
       }
-      MailgunEvent.create_or_find_by attrs
+      event = MailgunEvent.create_or_find_by attrs
+      if event.valid? && event_name == "unsubscribed"
+        ap event
+        newsletter_id = event.edition.try(:newsletter).try(:id)
+        AnalyticsService.new.track(
+          user_id: subscription_id,
+          event_action: event_name,
+          properties: {
+            category: "newsletter",
+            cd2: edition_id,
+            cd3: newsletter_id
+          },
+          timestamp: ts
+        )
+      end
     end
   end
 

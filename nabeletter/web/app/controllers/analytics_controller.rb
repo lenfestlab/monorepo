@@ -5,22 +5,24 @@ class AnalyticsController < ApplicationController
 
   def index
     redirect = safe[:redirect]
-    track(
-      user_id: safe["uid"],
-      event_action: safe["ea"],
-      properties: {
-        category: safe["ec"],
-        label: safe["el"],
-        cd1: safe['cd1'],
-        cd2: safe['cd2'],
-        cd3: safe['cd3'],
-        cd4: safe['cd4'],
-        cd5: safe['cd5'],
-        cd6: safe['cd6'],
-        cd7: safe['cd7'],
-        cd8: safe['cd8'],
-      }
-    )
+    unless safe[:ga].present? # skip old analytics strategy
+      track(
+        user_id: safe["uid"],
+        event_action: safe["ea"],
+        properties: {
+          category: safe["ec"],
+          label: safe["el"],
+          cd1: safe['cd1'],
+          cd2: safe['cd2'],
+          cd3: safe['cd3'],
+          cd4: safe['cd4'],
+          cd5: safe['cd5'],
+          cd6: safe['cd6'],
+          cd7: safe['cd7'],
+          cd8: safe['cd8'],
+        }
+      )
+    end
     redirect_to redirect
   end
 
@@ -45,6 +47,7 @@ class AnalyticsController < ApplicationController
               disposition: "inline")
   end
 
+
   protected
 
   def safe
@@ -52,36 +55,11 @@ class AnalyticsController < ApplicationController
   end
 
   def track(user_id:, event_action:, properties:)
-    data = {
-      uid: user_id,
-      ea: event_action,
-      ec: properties[:category],
-      el: properties[:label],
-      cd1: properties[:cd1],
-      cd2: properties[:cd2],
-      cd3: properties[:cd3],
-      cd4: properties[:cd4],
-      cd5: properties[:cd5],
-      cd6: properties[:cd6],
-      cd7: properties[:cd7],
-      cd8: properties[:cd8]
-    }
-    ap data
-    Event.create(data)
-    if event_action && event_action != "open" # avoid dupe of GA pixel
-      segment = SimpleSegment::Client.new(
-        write_key: ENV["SEGMENT_WRITE_KEY"],
-        logger: Rails.logger,
-        on_error: proc { |error_code, error_body, exception, response|
-          Raven.capture_exception(exception)
-        }
-      )
-      segment.track(
-        user_id: user_id,
-        event: event_action,
-        properties: properties
-      )
-    end
+    AnalyticsService.new.track(
+      user_id: user_id,
+      event_action: event_action,
+      properties: properties
+    )
   end
 
 end
