@@ -19,7 +19,6 @@ class AnalyticsController < ApplicationController
           cd5: safe['cd5'],
           cd6: safe['cd6'],
           cd7: safe['cd7'],
-          cd8: safe['cd8'],
         }
       )
     end
