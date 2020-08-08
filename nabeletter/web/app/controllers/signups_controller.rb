@@ -4,22 +4,15 @@ class SignupsController < ApplicationController
    def signup
      email_address = safe[:email_address]
      newsletter_id = safe[:newsletter_id]
-     sub = Subscription.create(
+     subscription = Subscription.create(
        email_address: email_address,
        newsletter_id: newsletter_id
      )
-     if sub.valid?
-        # AnalyticsService.new.track(
-          # user_id: sub.id,
-          # event_action: "subscribed",
-          # properties: {
-            # category: "newsletter",
-            # cd3: newsletter_id,
-          # }
-        # )
+     if subscription.valid?
+       welcome subscription
        render status: :ok, json: { email_address: email_address }
      else
-       error = sub.errors.full_messages
+       error = subscription.errors.full_messages
        render status: :bad_request, json: { error: error }
      end
    end
@@ -29,4 +22,11 @@ class SignupsController < ApplicationController
    def safe
      params.permit!
    end
+
+   def welcome(subscription)
+     DeliveryService.new.welcome! subscription
+   rescue StandardError => error
+     Raven.capture_exception(error)
+   end
+
  end

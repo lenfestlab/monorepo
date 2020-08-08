@@ -4,6 +4,7 @@ import { AnalyticsProps } from "../MarkdownField"
 
 export interface Context {
   edition: Edition
+  isWelcome: boolean
 }
 
 export interface SectionProps {

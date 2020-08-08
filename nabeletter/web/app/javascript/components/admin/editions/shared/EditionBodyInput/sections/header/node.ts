@@ -15,7 +15,7 @@ export interface Props extends SectionProps {
 export const node = ({
   analytics,
   config,
-  context,
+  context: { edition, isWelcome },
   typestyle,
 }: Props): Node | null => {
   const title = translate("header-title")
@@ -23,9 +23,7 @@ export const node = ({
     config.subtitle,
     translate("header-input-subtitle-placeholder")
   )
-  const { edition } = context
   const published = get(edition, "publish_at")
-  const edition_id = get(edition, "id")
 
   const textProps = {
     align: "center",
@@ -62,7 +60,8 @@ export const node = ({
                 },
                 subtitle
               ),
-              published &&
+              !isWelcome &&
+                published &&
                 text(
                   {
                     ...textProps,

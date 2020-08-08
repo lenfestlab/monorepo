@@ -50,5 +50,7 @@ module Web
     # https://www.fngtps.com/2019/rails6-blocked-host/
     config.hosts << env_url_options[:host]
 
+
+    config.time_zone = 'Eastern Time (US & Canada)'
   end
 end

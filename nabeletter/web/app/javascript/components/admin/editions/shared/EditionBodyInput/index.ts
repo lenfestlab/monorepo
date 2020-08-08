@@ -358,7 +358,10 @@ export class EditionBodyInput extends Component<Props, State> {
         const nodes: Node[] = []
         const typestyle = createTypeStyle()
         const edition: Edition = this.props.record!
-        const context = { edition }
+        const edition_id = edition.id
+        const welcomeEditionId = process.env.WELCOME_EDITION_ID!
+        const isWelcome = welcomeEditionId === edition_id
+        const context = { edition, isWelcome }
         const editionId = get(edition, "id", "") as string
         let sectionRank = 0
         let previewText: string | null = null

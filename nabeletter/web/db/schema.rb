@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2020_08_05_213216) do
+ActiveRecord::Schema.define(version: 2020_08_08_123931) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -100,12 +100,14 @@ ActiveRecord::Schema.define(version: 2020_08_05_213216) do
     t.datetime "unsubscribed_at"
     t.datetime "created_at", precision: 6, null: false
     t.datetime "updated_at", precision: 6, null: false
+    t.datetime "welcomed_at"
     t.index ["email_address"], name: "index_subscriptions_on_email_address"
     t.index ["name_first"], name: "index_subscriptions_on_name_first"
     t.index ["name_last"], name: "index_subscriptions_on_name_last"
     t.index ["newsletter_id"], name: "index_subscriptions_on_newsletter_id"
     t.index ["subscribed_at"], name: "index_subscriptions_on_subscribed_at"
     t.index ["unsubscribed_at"], name: "index_subscriptions_on_unsubscribed_at"
+    t.index ["welcomed_at"], name: "index_subscriptions_on_welcomed_at"
   end
 
   create_table "users", force: :cascade do |t|
