@@ -25,4 +25,14 @@ class Subscription < ApplicationRecord
   def self.find_by_email_address email_address
     self.find_by('lower(email_address) = ?', email_address.downcase)
   end
+
+  def welcomed!
+    self.update! welcomed_at: Time.zone.now
+  end
+  scope :unwelcomed_emails,
+        lambda {
+          where(welcomed_at: nil)
+         .pluck(:email_address)
+        }
+
 end

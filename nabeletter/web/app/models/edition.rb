@@ -35,7 +35,7 @@ class Edition < ApplicationRecord
         lambda {
           now = Time.zone.now
           start = 11.minutes.ago now
-          deliverable.where(
+          deliverable.where.not(id: ENV["WELCOME_EDITION_ID"]).where(
             "(publish_at >= ?) AND (publish_at <= ?)",
             start,
             now,
@@ -45,9 +45,9 @@ class Edition < ApplicationRecord
   ## Email delivery
   #
 
-  def deliver(recipients: [], current_user: nil)
+  def deliver(recipients: [])
     deliverer = DeliveryService.new
-    deliverer.deliver!(edition: self, recipients: recipients, current_user: current_user)
+    deliverer.deliver!(edition: self, recipients: recipients)
     return true # return truthy for AASM
   end
 end

@@ -4,7 +4,7 @@ class EditionsController < ResourceController
     if safe_params[:attributes][:test] && edition = Edition.find(safe_params[:id])
       recipients = safe_params[:attributes][:recipients]
       recipients = recipients.present? ? recipients.split(/[\s,]+/) : []
-      edition.deliver(recipients: recipients, current_user: current_user)
+      edition.deliver(recipients: recipients)
     end
     super
   end

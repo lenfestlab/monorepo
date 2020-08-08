@@ -1,7 +1,7 @@
-import { link, pixelURL } from "analytics"
+import { link } from "analytics"
 import { rewriteURL } from "analytics"
 import { px } from "csx"
-import { get } from "fp"
+import { compact, get } from "fp"
 import { translate } from "i18n"
 import {
   column as columnNode,
@@ -37,7 +37,7 @@ export interface Props extends SectionProps {}
 
 export const node = ({
   analytics: _analytics,
-  context: { edition },
+  context: { edition, isWelcome },
 }: Props): Node => {
   const { white } = colors
   const analytics = {
@@ -73,138 +73,136 @@ export const node = ({
       padding: px(24),
     },
     [
-      columnNode({}, [
-        textNode(
-          {
-            ...footerTextAttributes,
-            paddingBottom: px(24),
-          },
-          [
-            translate("footer-feedback-prompt"),
-            translate("footer-feedback-cta"),
-            link({
-              analytics,
-              title: feedbackEmail,
-              url: `mailto:${feedbackEmail}`,
-              style: {
-                ...styles.link,
-                fontWeight: "bold",
-              },
-            }),
-          ]
-        ),
-
-        textNode(
-          {
-            ...footerTextAttributes,
-            paddingBottom: px(24),
-          },
-          [
-            translate("footer-signup-copy").replace(
-              "LINK",
+      columnNode(
+        {},
+        compact([
+          textNode(
+            {
+              ...footerTextAttributes,
+              paddingBottom: px(24),
+            },
+            [
+              translate("footer-feedback-prompt"),
+              translate("footer-feedback-cta"),
               link({
                 analytics,
-                title: "here",
-                url: `https://${process.env.RAILS_HOST}/signup?newsletter_id=${newsletter_id}`,
+                title: feedbackEmail,
+                url: `mailto:${feedbackEmail}`,
                 style: {
                   ...styles.link,
                   fontWeight: "bold",
                 },
-              })
-            ),
-          ]
-        ),
-
-        textNode({ ...footerTextAttributes }, [
-          translate("footer-connect").replace(
-            "NEWSLETTER_NAME",
-            newsletter_name
+              }),
+            ]
           ),
-        ]),
-        mj(
-          "mj-social",
-          {
-            align: "center",
-            containerBackgroundColor: colors.darkBlue,
-            color: colors.black,
-            iconSize: px(30) as string,
-            mode: "horizontal",
-            paddingTop: px(0),
-          },
-          [
-            ...socialLinks.map(({ title, url, src }: SocialLink) => {
-              const href = rewriteURL(url, {
-                ...analytics,
-                title,
-              })
-              return mj("mj-social-element", {
-                name: `${title}-noshare`, // https://git.io/JJEie
-                backgroundColor: colors.darkBlue,
-                color: colors.white,
-                href,
-              })
-            }),
-          ]
-        ),
 
-        textNode(
-          {
-            ...footerTextAttributes,
-            paddingBottom: px(24),
-          },
-          [`&copy;`, translate("footer-copyright")]
-        ),
+          textNode(
+            {
+              ...footerTextAttributes,
+              paddingBottom: px(24),
+            },
+            [
+              translate("footer-signup-copy").replace(
+                "LINK",
+                link({
+                  analytics,
+                  title: "here",
+                  url: `https://${process.env.RAILS_HOST}/signup?newsletter_id=${newsletter_id}`,
+                  style: {
+                    ...styles.link,
+                    fontWeight: "bold",
+                  },
+                })
+              ),
+            ]
+          ),
 
-        textNode(
-          {
-            ...footerTextAttributes,
-            paddingBottom: px(24),
-          },
-          [
-            `This newsletter is brought to you by the `,
-            link({
-              analytics,
-              title: "Lenfest Lab,",
-              url: "https://medium.com/the-lenfest-local-lab",
-              style: styles.link,
-            }),
-            `a project of `,
-            link({
-              analytics,
-              title: "The Lenfest Institute for Journalism,",
-              url: "https://www.lenfestinstitute.org",
-              style: styles.link,
-            }),
-            `and `,
-            link({
-              analytics,
-              title: "The Philadelphia Inquirer.",
-              url: "https://www.inquirer.com",
-              style: styles.link,
-            }),
-          ]
-        ),
+          textNode({ ...footerTextAttributes }, [
+            translate("footer-connect").replace(
+              "NEWSLETTER_NAME",
+              newsletter_name
+            ),
+          ]),
+          mj(
+            "mj-social",
+            {
+              align: "center",
+              containerBackgroundColor: colors.darkBlue,
+              color: colors.black,
+              iconSize: px(30) as string,
+              mode: "horizontal",
+              paddingTop: px(0),
+            },
+            [
+              ...socialLinks.map(({ title, url, src }: SocialLink) => {
+                const href = rewriteURL(url, {
+                  ...analytics,
+                  title,
+                })
+                return mj("mj-social-element", {
+                  name: `${title}-noshare`, // https://git.io/JJEie
+                  backgroundColor: colors.darkBlue,
+                  color: colors.white,
+                  href,
+                })
+              }),
+            ]
+          ),
 
-        textNode(
-          {
-            ...footerTextAttributes,
-          },
-          [
-            link({
-              analytics,
-              title: translate("footer-unsubscribe"),
-              url: "VAR-UNSUBSCRIBE-URL",
-              style: styles.link,
-            }),
-          ]
-        ),
-        // image({
-        //   src: pixelURL(edition_id),
-        //   alt: "pixel",
-        //   width: px(1),
-        //   height: px(1),
-        // }),
-      ]),
+          textNode(
+            {
+              ...footerTextAttributes,
+              paddingBottom: px(24),
+            },
+            [`&copy;`, translate("footer-copyright")]
+          ),
+
+          textNode(
+            {
+              ...footerTextAttributes,
+              paddingBottom: px(24),
+            },
+            [
+              `This newsletter is brought to you by the `,
+              link({
+                analytics,
+                title: "Lenfest Lab,",
+                url: "https://medium.com/the-lenfest-local-lab",
+                style: styles.link,
+              }),
+              `a project of `,
+              link({
+                analytics,
+                title: "The Lenfest Institute for Journalism,",
+                url: "https://www.lenfestinstitute.org",
+                style: styles.link,
+              }),
+              `and `,
+              link({
+                analytics,
+                title: "The Philadelphia Inquirer.",
+                url: "https://www.inquirer.com",
+                style: styles.link,
+              }),
+            ]
+          ),
+
+          // !isWelcome &&
+          textNode(
+            {
+              ...footerTextAttributes,
+            },
+            [
+              link({
+                analytics,
+                title: translate("footer-unsubscribe"),
+                url: "VAR-UNSUBSCRIBE-URL",
+                style: styles.link,
+              }),
+            ]
+          ),
+        ])
+      ),
     ]
   )
 }

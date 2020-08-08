@@ -35,7 +35,8 @@ class DeliveryService
     raise(DeliveryError, response["errors"]) unless response.success?
   end
 
-  def deliver!(edition:, recipients: [], current_user: nil)
+  def deliver!(edition:, recipients: [], recipient_vars: {})
+    ap "deliver!(e: #{edition.id}, recipeints: #{recipients}, vars: #{recipient_vars})"
     # NOTE: "to" default is edition's list address
     newsletter = edition.newsletter
     sender_name = newsletter.sender_name || "Lenfest Local Lab"
@@ -54,10 +55,20 @@ class DeliveryService
       to = recipients.join(", ")
     end
     # interpolate mailgun vars unless sending directly to recipients
+    interpolate = !recipients.present? || recipient_vars.present?
+
+    ap "interpolate: #{interpolate}"
+    unsubscribe_var = interpolate \
+      ?  (recipient_vars.present? \
+          ? "%unsubscribe_url%" \
+          : "%mailing_list_unsubscribe_url%") \
+      : "https://#{ENV["RAILS_HOST"]}"
+    recipient_var = interpolate ? "%recipient.uid%" : "VAR-RECIPIENT-UID"
     subs = {
-      "VAR-UNSUBSCRIBE-URL" => (recipients.present? ? "https://#{ENV["RAILS_HOST"]}" : "%mailing_list_unsubscribe_url%"),
-      "VAR-RECIPIENT-UID" => (recipients.present? ? "VAR-RECIPIENT-UID" : "%recipient.uid%")
+      "VAR-UNSUBSCRIBE-URL" => unsubscribe_var,
+      "VAR-RECIPIENT-UID" => recipient_var
     }
+    ap subs
     re = Regexp.union(subs.keys)
     html = edition.body_html.gsub(re, subs)
 
@@ -67,7 +78,8 @@ class DeliveryService
       subject: subject,
       html: html,
       text: text,
-      "o:tag": "eid=#{edition.id}"
+      "o:tag": "eid=#{edition.id}",
+      "recipient-variables": recipient_vars
     }
     Rails.logger.info("request_body #{request_body}")
     response =
@@ -77,6 +89,26 @@ class DeliveryService
       )
     Rails.logger.info("parsed_response #{response.parsed_response}")
     raise(DeliveryError, response["errors"]) unless response.success?
+  end
+
+  def welcome! subscriptions
+    subscriptions = [subscriptions].compact
+    ap "welcome! #{subscriptions}"
+    edition = Edition.find ENV["WELCOME_EDITION_ID"]
+    ap "edition #{edition}"
+    recipient_vars = subscriptions.inject({}) do |hash, subscription|
+      hash.update(subscription.email_address => {
+        uid: subscription.id,
+      })
+    end
+    ap "recipient_vars #{recipient_vars}"
+    addresses = recipient_vars.keys
+    ap "addresses #{addresses}"
+    self.deliver!(
+      edition: edition,
+      recipients: addresses,
+      recipient_vars: recipient_vars.to_json)
+    Subscription.where(id: subscriptions.map(&:id)).update_all(welcomed_at: Time.zone.now)
   end
 
 
