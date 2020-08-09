@@ -81,3 +81,20 @@ export const pixelURL = (edition: string | number, ours?: boolean): string => {
     },
   })
 }
+
+export const rewriteDomLinks = (
+  html: string,
+  analytics: Omit<AnalyticsProps, "title">
+): string => {
+  const parser = new DOMParser()
+  const doc = parser.parseFromString(html, "text/html")
+  doc.querySelectorAll("a").forEach((link) => {
+    const href = rewriteURL(link.href, {
+      ...analytics,
+      title: link.innerHTML,
+    })
+    link.target = "_blank"
+    link.href = href
+  })
+  return doc.documentElement.innerHTML
+}

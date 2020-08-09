@@ -92,18 +92,14 @@ class DeliveryService
   end
 
   def welcome! subscriptions
-    subscriptions = [subscriptions].compact
-    ap "welcome! #{subscriptions}"
+    subscriptions = [subscriptions].flatten
     edition = Edition.find ENV["WELCOME_EDITION_ID"]
-    ap "edition #{edition}"
     recipient_vars = subscriptions.inject({}) do |hash, subscription|
       hash.update(subscription.email_address => {
         uid: subscription.id,
       })
     end
-    ap "recipient_vars #{recipient_vars}"
     addresses = recipient_vars.keys
-    ap "addresses #{addresses}"
     self.deliver!(
       edition: edition,
       recipients: addresses,

@@ -1,4 +1,4 @@
-import { link, rewriteURL } from "analytics"
+import { link, rewriteDomLinks } from "analytics"
 import { px } from "csx"
 import { format, parseISO } from "date-fns"
 import { allEmpty, compact, either, first, last } from "fp"
@@ -41,7 +41,9 @@ export const node = ({ analytics, config, typestyle }: Props): Node | null => {
     compact([
       ...events.map((event) => {
         const title = event.summary
-        const description = event.description
+
+        const description = rewriteDomLinks(event.description, analytics)
+
         const startsAt = format(parseISO(event.dstart), "EEE, d LLL y' at 'p")
 
         const location = event.location.includes("zoom")

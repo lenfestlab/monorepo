@@ -41,7 +41,7 @@ import { translate } from "i18n"
 import { Article, Config, SetConfig } from "."
 import { ProgressButton } from "../ProgressButton"
 import { QuickLinks } from "../QuickLinks"
-import { SectionConfig } from "../section"
+import { AdOpt, SectionConfig } from "../section"
 import { SectionInput } from "../section/SectionInput"
 
 type URL = string
@@ -84,6 +84,10 @@ export class Input extends Component<Props, State> {
   post$$ = new BehaviorSubject<string>("")
   post$ = this.post$$.pipe(tag("post$"), shareReplay())
   setPost = (val: string) => this.post$$.next(val)
+
+  ad$$ = new BehaviorSubject<AdOpt>(undefined)
+  ad$ = this.ad$$.pipe(tag("ad$"), shareReplay())
+  setAd = (val: AdOpt) => this.ad$$.next(val)
 
   url$$ = new BehaviorSubject<string>("")
   url$: Observable<string> = this.url$$.pipe(tag("url$"), shareReplay())
@@ -162,16 +166,25 @@ export class Input extends Component<Props, State> {
   constructor(props: Props) {
     super(props)
     const { config } = props
-    const { title = "", pre = "", post = "", url = "", articles = [] } = config
+    const {
+      title = "",
+      pre = "",
+      post = "",
+      ad,
+      url = "",
+      articles = [],
+    } = config
     this.title$$.next(title)
     this.pre$$.next(pre)
     this.post$$.next(post)
+    this.ad$$.next(ad)
     this.url$$.next(url)
     this.articles$$.next(articles)
     this.state = {
       title,
       pre,
       post,
+      ad,
       url,
       pending: false,
       disabled: false,
@@ -185,6 +198,7 @@ export class Input extends Component<Props, State> {
       this.title$,
       this.pre$,
       this.post$,
+      this.ad$,
       this.url$,
       this.pending$,
       this.disabled$,
@@ -192,7 +206,7 @@ export class Input extends Component<Props, State> {
       this.articles$$,
     ]).pipe(
       tag("combineLatest$"),
-      tap(([title, pre, post, url, pending, disabled, error, articles]) => {
+      tap(([title, pre, post, ad, url, pending, disabled, error, articles]) => {
         // @ts-ignore
         this.setState((prior) => {
           const next = {
@@ -200,6 +214,7 @@ export class Input extends Component<Props, State> {
             title,
             pre,
             post,
+            ad,
             url,
             error,
             pending,
@@ -217,11 +232,12 @@ export class Input extends Component<Props, State> {
       this.title$,
       this.pre$,
       this.post$,
+      this.ad$,
       this.url$,
       this.articles$
     ).pipe(
-      tap(([title, pre, post, url, articles]) => {
-        this.props.setConfig({ title, pre, post, url, articles })
+      tap(([title, pre, post, ad, url, articles]) => {
+        this.props.setConfig({ title, pre, post, ad, url, articles })
       }),
       tag("sync$")
     )
@@ -250,6 +266,7 @@ export class Input extends Component<Props, State> {
       title,
       pre,
       post,
+      ad,
       url,
       disabled,
       pending,
@@ -261,6 +278,7 @@ export class Input extends Component<Props, State> {
       setTitle,
       setPre,
       setPost,
+      setAd,
       onChangeURL,
       onClickAdd,
       onClickDelete,
@@ -285,6 +303,8 @@ export class Input extends Component<Props, State> {
         setPost,
         headerText,
         titlePlaceholder,
+        ad,
+        setAd,
       },
       [
         !isEmpty(urls) && h(QuickLinks, { urls }),

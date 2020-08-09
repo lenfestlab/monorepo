@@ -1,8 +1,9 @@
+import { rewriteURL } from "analytics"
 import { px } from "csx"
 import { compact } from "fp"
-import { column, Node, text, wrapper } from "mj"
+import { column, image, Node, text, wrapper } from "mj"
 import { colors, fonts } from "styles"
-import { SectionProps } from "."
+import { AdOpt, SectionProps } from "."
 import { md } from "../MarkdownField"
 import { cardSection } from "../section/cardSection"
 
@@ -10,10 +11,11 @@ export interface CardWrapperProps extends Omit<SectionProps, "context"> {
   title: string
   pre?: string
   post?: string
+  ad?: AdOpt
 }
 
 export const cardWrapper = (
-  { title, pre, post, analytics, typestyle }: CardWrapperProps,
+  { title, pre, post, ad, analytics, typestyle }: CardWrapperProps,
   children: Node[]
 ): Node => {
   return wrapper(
@@ -66,6 +68,26 @@ export const cardWrapper = (
             ]),
           ]),
         ]),
+
+      ad &&
+        cardSection(
+          {
+            paddingTop: px(20),
+          },
+          [
+            column({}, [
+              image({
+                alt: ad.image.alt,
+                src: ad.image.src,
+                href: rewriteURL(ad.image.href, {
+                  ...analytics,
+                  label: "ad",
+                  title: ad.image.alt,
+                }),
+              }),
+            ]),
+          ]
+        ),
 
       cardSection({ isLastSection: true }, [column({}, [text({}, `&nbsp;`)])]),
     ])

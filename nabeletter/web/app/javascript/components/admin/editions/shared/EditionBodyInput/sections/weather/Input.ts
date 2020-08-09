@@ -32,12 +32,13 @@ export const Input = ({ config, setConfig, inputRef, id }: Props) => {
   const [title, setTitle] = useState(config.title)
   const [pre, setPre] = useState(config.pre)
   const [post, setPost] = useState(config.post)
+  const [ad, setAd] = useState(config.ad)
   const [markdown, setMarkdown] = useState(config.markdown)
   const [forecast, setForecast] = useState(config.forecast)
 
   useEffect(() => {
-    setConfig({ title, pre, post, markdown, forecast })
-  }, [title, pre, post, markdown, forecast])
+    setConfig({ ad, title, pre, post, markdown, forecast })
+  }, [ad, title, pre, post, markdown, forecast])
 
   const endpoint = process.env.WEATHER_ENDPOINT
   const lat = process.env.WEATHER_LAT
@@ -84,6 +85,8 @@ export const Input = ({ config, setConfig, inputRef, id }: Props) => {
       setPost,
       headerText,
       titlePlaceholder,
+      ad,
+      setAd,
     },
     [
       h(ProgressButton, { disabled, pending, onClick }, "Update forecast"),

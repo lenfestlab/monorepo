@@ -11,10 +11,10 @@ export interface Props extends SectionProps {
 
 export const node = ({ analytics, config, typestyle }: Props): Node | null => {
   const title = either(config.title, translate("intro-input-title-placeholder"))
-  const { markdown, pre, post } = config
-  if (allEmpty([markdown, pre, post])) return null
+  const { markdown, pre, post, ad } = config
+  if (allEmpty([markdown, pre, post, ad])) return null
 
-  return cardWrapper({ title, pre, post, analytics, typestyle }, [
+  return cardWrapper({ title, pre, post, ad, analytics, typestyle }, [
     cardSection({}, [
       column({}, [text({}, md({ markdown, analytics, typestyle }))]),
     ]),

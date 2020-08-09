@@ -1,4 +1,4 @@
-import { link, pixelURL } from "analytics"
+import { link } from "analytics"
 import { important, px } from "csx"
 import { format, fromUnixTime, parseISO } from "date-fns"
 import { allEmpty, either, get } from "fp"
@@ -71,8 +71,8 @@ export const node = ({
     config.title,
     translate("weather-input-title-placeholder")
   )
-  const { markdown, pre, post } = config
-  if (allEmpty([pre, markdown, post])) return null
+  const { markdown, pre, post, ad } = config
+  if (allEmpty([pre, markdown, post, ad])) return null
 
   const forecast: Forecast = either(config.forecast, [])
   const days: Day[] = forecast.map(({ time, icon, high, low }) => {
@@ -119,6 +119,7 @@ export const node = ({
       title,
       pre,
       post,
+      ad,
       analytics,
       typestyle,
     },
@@ -191,17 +192,6 @@ export const node = ({
               ),
             ]
           ),
-        ]),
-      ]),
-
-      cardSection({}, [
-        column({ paddingTop: px(10) }, [
-          image({
-            src: pixelURL(edition_id, true),
-            alt: "pixel-ga",
-            width: px(1),
-            height: px(1),
-          }),
         ]),
       ]),
 
