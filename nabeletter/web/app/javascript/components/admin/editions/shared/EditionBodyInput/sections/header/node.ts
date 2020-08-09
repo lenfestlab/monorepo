@@ -70,6 +70,12 @@ export const node = ({
                   },
                   format(parseISO(published), "MMMM d, y")
                 ),
+              image({
+                src: pixelURL(edition.id, true),
+                alt: " ",
+                width: px(1),
+                height: px(1),
+              }),
             ])
           ),
         ]

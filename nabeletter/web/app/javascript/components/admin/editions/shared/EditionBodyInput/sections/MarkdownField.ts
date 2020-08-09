@@ -86,10 +86,10 @@ interface MdProps {
 }
 export const md = ({ markdown, analytics, typestyle }: MdProps): string => {
   const transformLinkUri: TransformLinkUri = (url, children, _title) => {
+    let child
     // @ts-ignore
-    const child = children[0]
-    const type: string | null | undefined = child.type
-    const title: string | null | undefined = child.value
+    if (children) child = children[0]
+    const title: string | null | undefined = child?.value
 
     const analyticsProps: AllAnalyticsProps = {
       ...analytics,

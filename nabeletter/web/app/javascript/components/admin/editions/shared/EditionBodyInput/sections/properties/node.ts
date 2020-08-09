@@ -18,9 +18,9 @@ export const node = ({
   typestyle,
   titlePlaceholder,
 }: Props): Node | null => {
-  const { pre, post, properties } = config
+  const { pre, post, ad, properties } = config
   const title = either(config.title, titlePlaceholder)
-  if (allEmpty([pre, post, properties])) return null
+  if (allEmpty([pre, post, ad, properties])) return null
 
   const styles: StyleMap = {
     link: {
@@ -31,7 +31,7 @@ export const node = ({
   }
   const classNames = typestyle.stylesheet(styles)
 
-  return cardWrapper({ title, pre, post, analytics, typestyle }, [
+  return cardWrapper({ title, pre, post, ad, analytics, typestyle }, [
     ...properties.map(
       ({
         url,

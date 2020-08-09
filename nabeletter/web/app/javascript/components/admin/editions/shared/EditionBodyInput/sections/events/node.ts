@@ -1,4 +1,4 @@
-import { link, rewriteURL } from "analytics"
+import { link, rewriteDomLinks } from "analytics"
 import { important, px } from "csx"
 import { format, parseISO } from "date-fns"
 import { allEmpty, compact, either, last } from "fp"
@@ -17,10 +17,10 @@ export const node = ({ analytics, config, typestyle }: Props): Node | null => {
     config.title,
     translate(`events-input-title-placeholder`)
   )
-  const { pre, post } = config
+  const { pre, post, ad } = config
   const events = config.selections
   const publicURL = config.publicURL
-  if (allEmpty([events, pre, post])) return null
+  if (allEmpty([events, pre, post, ad])) return null
 
   const styles = {
     autolinks: {
@@ -42,10 +42,10 @@ export const node = ({ analytics, config, typestyle }: Props): Node | null => {
   const classNames = typestyle.stylesheet(styles)
 
   return cardWrapper(
-    { title, pre, post, analytics, typestyle },
+    { title, pre, post, ad, analytics, typestyle },
     compact([
       ...events.map((event) => {
-        let description = event.description
+        let description = rewriteDomLinks(event.description, analytics)
         const parser = new DOMParser()
         const doc = parser.parseFromString(description, "text/html")
         const links = doc.querySelectorAll("a")
@@ -53,15 +53,6 @@ export const node = ({ analytics, config, typestyle }: Props): Node | null => {
         const src = link?.href
         // remove img link from description
         link?.parentNode?.removeChild(link)
-        // replace all links w/ analytics links
-        doc.querySelectorAll("a").forEach((link) => {
-          const href = rewriteURL(link.href, {
-            ...analytics,
-            title: link.innerHTML,
-          })
-          link.target = "_blank"
-          link.href = href
-        })
         description = doc.documentElement.innerHTML
         const startsAt = format(parseISO(event.dstart), "EEEE, LLLL d @ h aaaa")
         const childAttributes = {

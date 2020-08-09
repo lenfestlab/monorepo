@@ -16,8 +16,14 @@ export interface SectionProps {
 export { cardWrapper } from "./cardWrapper"
 export { cardSection } from "./cardSection"
 
+import { AdOpt } from "./ad"
+export { AdOpt }
+
 export interface SectionConfig {
   title: string
   pre?: string
   post?: string
+  ad?: AdOpt
 }
+
+export { Input as AdInput } from "./ad"

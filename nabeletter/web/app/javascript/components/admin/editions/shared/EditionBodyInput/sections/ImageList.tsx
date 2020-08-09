@@ -22,7 +22,7 @@ const useStyles = makeStyles((theme: Theme) =>
       transform: "translateZ(0)",
     },
     title: {
-      color: theme.palette.primary.dark,
+      color: theme.palette.primary.light,
     },
     titleBar: {
       background:
@@ -38,16 +38,17 @@ export interface Tile {
 }
 
 interface Props {
+  cellHeight?: number | "auto"
   tiles: Tile[]
 }
 
 export function ImageList(props: Props) {
   const classes = useStyles()
-  const { tiles } = props
+  const { tiles, cellHeight } = props
 
   return (
     <div className={classes.root}>
-      <GridList className={classes.gridList} cols={1.5}>
+      <GridList cellHeight={cellHeight} className={classes.gridList} cols={1.5}>
         {tiles.map((tile) => (
           <GridListTile key={tile.url}>
             <img src={tile.url} />
