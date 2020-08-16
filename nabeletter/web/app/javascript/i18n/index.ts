@@ -129,13 +129,20 @@ export const translate = (key: string): string => {
       "This newsletter is brought to you by the LENFEST_LAB, a project of The Lenfest Institute for Journalism, and The Philadelphia Inquirer.",
     "ad-input-set": "Set advertisement",
     "ad-input-edit": "Edit advertisement",
+    "ad-input-title-label": "Title",
+    "ad-input-title-placeholder": "Goose Island",
+    "ad-input-body-label": "Body",
+    "ad-input-body-placeholder": "Lorem...",
     "ad-input-dialogue-href-label": "Link destination URL",
     "ad-input-dialogue-href-placeholder":
       "https://www.gooseisland.com/brewhouse-philly/",
-    "ad-input-dialogue-url-label": "Image source URL",
-    "ad-input-dialogue-url-placeholder": "https://.../image.png",
     "ad-input-dialogue-alt-label": "Image alt text",
     "ad-input-dialogue-alt-placeholder": "Goose Island",
+    "ad-input-dialogue-src-label": "Ad",
+    "ad-input-logo-image-label": "Logo image",
+    "ad-input-logo-image-placeholder": "https://.../image.png",
+    "ad-input-main-image-label": "Main image",
+    "ad-input-main-image-placeholder": "https://.../image.png",
   }
   return get(messages, key)
 }

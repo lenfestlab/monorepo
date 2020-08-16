@@ -31,8 +31,9 @@ const either = (value: any | string | null | undefined, fallback: any): any => {
   }
 }
 
+const isPresent = (value: any | string | null | undefined) => !isEmpty(value)
 const anyEmpty = <T>(coll: T[]) => some(coll, isEmpty)
-const anyPresent = <T>(coll: T[]) => some(coll, (item: T) => !isEmpty(item))
+const anyPresent = <T>(coll: T[]) => some(coll, (item: T) => isPresent(item))
 const allEmpty = <T>(coll: T[]) => every(coll, isEmpty)
 
 export {
@@ -48,6 +49,7 @@ export {
   get,
   isEmpty,
   isEqual,
+  isPresent,
   keys,
   last,
   map,

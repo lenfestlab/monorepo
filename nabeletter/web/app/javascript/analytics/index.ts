@@ -23,6 +23,7 @@ export interface AnalyticsProps {
   section: string
   sectionRank: number
   title: string
+  aid?: UUID
 }
 
 export const rewriteURL = (redirect: string, props: AnalyticsProps): string => {
@@ -35,6 +36,7 @@ export const rewriteURL = (redirect: string, props: AnalyticsProps): string => {
     section,
     sectionRank,
     title,
+    aid,
   } = props
   const url = `https://${process.env.RAILS_HOST}/analytics`
   return stringifyUrl({
@@ -52,6 +54,7 @@ export const rewriteURL = (redirect: string, props: AnalyticsProps): string => {
       cd5: String(sectionRank),
       cd6: redirect,
       cd7: title,
+      cd9: aid,
     },
   })
 }

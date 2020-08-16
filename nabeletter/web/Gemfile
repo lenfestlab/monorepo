@@ -26,6 +26,9 @@ gem 'open_graph_reader'
 gem 'chronic'
 gem 'simple_segment'
 gem 'mailgun-ruby'
+gem 'active_storage-postgresql',
+  github: 'brenthargrave/active_storage-postgresql',
+  branch: 'enable-cache-control'
 
 group :development do
   gem 'web-console', '>= 3.3.0'

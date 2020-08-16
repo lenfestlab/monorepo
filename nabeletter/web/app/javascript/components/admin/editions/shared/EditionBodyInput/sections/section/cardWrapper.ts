@@ -83,6 +83,7 @@ export const cardWrapper = (
                   ...analytics,
                   label: "ad",
                   title: ad.image.alt,
+                  aid: ad.id,
                 }),
               }),
             ]),

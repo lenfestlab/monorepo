@@ -16,6 +16,12 @@ if (process.env.DEBUG_RX) {
 }
 
 import {
+  Create as AdCreate,
+  Edit as AdEdit,
+  List as AdList,
+  Show as AdShow,
+} from "./ads"
+import {
   EditionCreate,
   EditionEdit,
   EditionList,
@@ -41,6 +47,13 @@ const layout = (props: any) => {
 
 export const AdminApp = () =>
   h(Admin, { layout, dataProvider, i18nProvider, authProvider }, [
+    h(Resource, {
+      name: "ads",
+      list: AdList,
+      create: AdCreate,
+      show: AdShow,
+      edit: AdEdit,
+    }),
     h(Resource, {
       name: "editions",
       list: EditionList,

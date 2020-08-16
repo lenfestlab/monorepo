@@ -15,6 +15,7 @@
     "@cycle/react": "~2.7.0",
     "@cycle/react-dom": "~2.4.0",
     "@cycle/run": "~5.4.0",
+    "@cycle/rxjs-run": "10.5.0",
     "@gripeless/pico": "~1.0.1",
     "@material-ui/lab": "~4.0.0-alpha.54",
     "@rails/actioncable": "^6.0.0",

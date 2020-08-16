@@ -1,4 +1,13 @@
 GIT
+  remote: https://github.com/brenthargrave/active_storage-postgresql.git
+  revision: a0dd908e4a47977769e655fb8f44fb4b06fa6a4e
+  branch: enable-cache-control
+  specs:
+    active_storage-postgresql (0.2.1)
+      pg (>= 1.0)
+      rails (>= 5.2)
+
+GIT
   remote: https://github.com/timberio/timber-ruby-rails.git
   revision: 250326b0926d33207f0e1147a594dd8fe4487466
   ref: 250326
@@ -266,6 +275,7 @@ PLATFORMS
 
 DEPENDENCIES
   aasm
+  active_storage-postgresql!
   awesome_print
   bootsnap (>= 1.4.2)
   chronic

@@ -19,6 +19,8 @@ class AnalyticsController < ApplicationController
           cd5: safe['cd5'],
           cd6: safe['cd6'],
           cd7: safe['cd7'],
+          # NOTE: cd8 dupes uid
+          cd9: safe['cd9'],
         }
       )
     end

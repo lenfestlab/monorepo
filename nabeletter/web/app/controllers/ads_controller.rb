@@ -1,0 +1,1 @@
+class AdsController < ResourceController; end
