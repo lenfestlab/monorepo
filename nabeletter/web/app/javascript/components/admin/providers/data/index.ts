@@ -23,6 +23,7 @@ const settings = {
     editions: { keyForAttribute },
     newsletters: { keyForAttribute },
     users: { keyForAttribute },
+    ads: { keyForAttribute },
   },
   serializerOpts: {
     subscriptions: {
@@ -35,6 +36,7 @@ const settings = {
     },
     newsletters: { keyForAttribute },
     users: { keyForAttribute },
+    ads: { keyForAttribute, newsletter },
   },
 }
 

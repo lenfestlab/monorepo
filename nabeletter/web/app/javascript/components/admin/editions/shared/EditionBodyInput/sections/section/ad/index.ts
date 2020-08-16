@@ -1,4 +1,5 @@
-export interface Ad {
+export interface CachedAd {
+  id: string
   image: {
     src: string
     href: string
@@ -6,6 +7,6 @@ export interface Ad {
   }
 }
 
-export type AdOpt = Ad | undefined
+export type AdOpt = CachedAd | undefined
 
 export { Input } from "./Input"

@@ -18,13 +18,9 @@ end
 
 Timber.config.integrations.rack
   .user_context.custom_user_hash = lambda do |rack_env|
-  # skip requests issued by external editor
-  from =
-    rack_env["HTTP_REFERER"]
-  return nil if from && from.include?(ENV["EDITOR_HOST"])
   # skip non-resource endpoints
   path = rack_env["PATH_INFO"]
-  return nil if path.match(%r{^\/(tokens|admin|analytics|events|articles|permits|signup|signups|pixel|newsletters)?$})
+  return nil if path.match(%r{^\/(tokens|admin|analytics|events|articles|permits|signup|signups|pixel)?$})
   # authenticate
   proxy = rack_env["warden"]
   proxy.authenticate!(scope: :user)

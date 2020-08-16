@@ -332,6 +332,69 @@ app.get("/images", async (req, res) => {
   }
 });
 
+app.post("/adcapture", async (req, res) => {
+  try {
+    console.info("req.body", req.body);
+    const { identifier, html, selector } = req.body;
+    if (!html) throw new Error(`MIA: html param`);
+    console.info("html", html);
+    // init browser
+    const browser = await puppeteer.launch({
+      args: ["--no-sandbox", "--disable-setuid-sandbox"],
+    });
+    const page = await browser.newPage();
+    await page.setViewport({
+      width: 800,
+      height: 800,
+      isLandscape: true,
+      deviceScaleFactor: 2,
+    });
+    await page.setContent(html, {
+      waitUntil: "networkidle2",
+    });
+    // screenshot embed ele
+    // https://gist.github.com/malyw/b4e8284e42fdaeceab9a67a9b0263743#file-index-js-L18-L46
+    // https://gist.github.com/malyw/b4e8284e42fdaeceab9a67a9b0263743#gistcomment-2776083
+    const ele = await page.$(selector);
+    if (!ele) throw new Error(`MIA: page element with selector '${selector}'`);
+    const screenshot = await ele.screenshot({
+      omitBackground: true,
+      encoding: "binary",
+    });
+    await browser.close();
+    // upload image
+    const api = cloudinary.v2;
+    const public_id = crypto.createHash("md5").update(identifier).digest("hex");
+    const apiUploadOpts: UploadApiOptions = { public_id, overwrite: true };
+    const screenshot_url: string = await new Promise<string>(
+      (resolve, reject) => {
+        api.uploader
+          .upload_stream(
+            apiUploadOpts,
+            (
+              error: UploadApiErrorResponse | undefined,
+              result: UploadApiResponse | undefined
+            ) => {
+              if (error) reject(new Error(error.message));
+              const upload_url: string | undefined = result?.secure_url;
+              if (!upload_url) throw new Error("MIA: upload_url");
+              resolve(upload_url);
+            }
+          )
+          .end(screenshot);
+      }
+    );
+    const data = { screenshot_url, image_id: public_id };
+    console.info("response.data", data);
+    res.status(200).json(data);
+  } catch (error) {
+    console.error(error);
+    const json = { error: true, message: error.message };
+    console.error(json);
+    res.status(400).json(json);
+  }
+});
+
 app.get("/", (req, res) => {
   res.send("TODO");
 });
