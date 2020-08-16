@@ -45,7 +45,7 @@ export const node = ({ analytics, config, typestyle }: Props): Node | null => {
     { title, pre, post, ad, analytics, typestyle },
     compact([
       ...events.map((event) => {
-        let description = rewriteDomLinks(event.description, analytics)
+        let description = event.description
         const parser = new DOMParser()
         const doc = parser.parseFromString(description, "text/html")
         const links = doc.querySelectorAll("a")
@@ -53,7 +53,8 @@ export const node = ({ analytics, config, typestyle }: Props): Node | null => {
         const src = link?.href
         // remove img link from description
         link?.parentNode?.removeChild(link)
-        description = doc.documentElement.innerHTML
+        // analyze links
+        description = rewriteDomLinks(doc.documentElement.innerHTML, analytics)
         const startsAt = format(parseISO(event.dstart), "EEEE, LLLL d @ h aaaa")
         const childAttributes = {
           color: colors.white,

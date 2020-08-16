@@ -44,6 +44,14 @@ export const articlesNode = ({
         const published =
           published_time && format(parseISO(published_time), "MMMM d, y")
 
+        const style = {
+          fontSize: px(16),
+          fontWeight: 500,
+          color: colors.darkBlue,
+          textDecoration: "underline",
+        }
+        const className = typestyle.style(style)
+
         return cardSection({}, [
           column(
             { paddingBottom: px(12) },
@@ -63,12 +71,8 @@ export const articlesNode = ({
                     analytics,
                     title,
                     url,
-                    className: typestyle.style({
-                      fontSize: px(16),
-                      fontWeight: 500,
-                      color: colors.darkBlue,
-                      textDecoration: "underline",
-                    }),
+                    style,
+                    className,
                   })
                 ),
               published &&

@@ -16,4 +16,5 @@ JSONAPI.configure do |config|
   # TODO: fix client serializer bug that bakes :id into :attributes on PATCH
   config.raise_if_parameters_not_allowed = false
 
+  config.default_paginator = :paged
 end

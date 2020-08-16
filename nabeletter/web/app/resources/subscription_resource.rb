@@ -14,4 +14,12 @@ class SubscriptionResource < JSONAPI::Resource
     # disallow re-assigning subsciption to another newsletter
     super - %i[newsletter]
   end
+
+  filter :email_address, apply: ->(records, value, _options) {
+    records.where "email_address LIKE ?", "%#{value[0]}%"
+  }
+  filter :name_last, apply: ->(records, value, _options) {
+    records.where "name_last LIKE ?", "%#{value[0]}%"
+  }
+
 end

@@ -1,5 +1,5 @@
 import { link, rewriteDomLinks } from "analytics"
-import { px } from "csx"
+import { important, px } from "csx"
 import { format, parseISO } from "date-fns"
 import { allEmpty, compact, either, first, last } from "fp"
 import { translate } from "i18n"
@@ -30,8 +30,12 @@ export const node = ({ analytics, config, typestyle }: Props): Node | null => {
         },
       },
     },
-    reminderLink: {
-      color: colors.black,
+    link: {
+      color: important(colors.black),
+    },
+    zoomLink: {
+      color: important(colors.black),
+      textDecoration: important("none"),
     },
   }
   const classNames = typestyle.stylesheet(styles)
@@ -47,7 +51,12 @@ export const node = ({ analytics, config, typestyle }: Props): Node | null => {
         const startsAt = format(parseISO(event.dstart), "EEE, d LLL y' at 'p")
 
         const location = event.location.includes("zoom")
-          ? translate("meetings-field-zoom-link")
+          ? link({
+              analytics,
+              url: event.location,
+              className: classNames.zoomLink,
+              title: translate("meetings-field-zoom-link"),
+            })
           : first(event.location?.split(","))
 
         const endpoint = process.env.ICS_ENDPOINT!
@@ -74,7 +83,7 @@ export const node = ({ analytics, config, typestyle }: Props): Node | null => {
                 link({
                   analytics,
                   url,
-                  className: classNames.reminderLink,
+                  className: classNames.link,
                   title: translate("meetings-field-set-reminder"),
                 })
               ),
