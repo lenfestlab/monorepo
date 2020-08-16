@@ -1,15 +1,23 @@
 import { h } from "@cycle/react"
 import {
-  DateField,
   Datagrid,
+  DateField,
   List,
   ReferenceField,
   TextField,
 } from "react-admin"
+import { Filter, TextInput } from "react-admin"
 
-interface Props {}
+const EmailFilter = (props: {}) =>
+  h(Filter, { ...props }, [
+    h(TextInput, { label: "Email", source: "email_address", alwaysOn: true }),
+    h(TextInput, {
+      label: "Last name",
+      source: "name_last",
+    }),
+  ])
 
-export const SubscriptionList = (props: Props) =>
+export const SubscriptionList = (props: {}) =>
   h(
     List,
     {
@@ -17,6 +25,7 @@ export const SubscriptionList = (props: Props) =>
       sort: { field: "subscribed_at", order: "DESC" },
       bulkActionButtons: false,
       exporter: false,
+      filters: h(EmailFilter),
     },
     [
       h(Datagrid, { rowClick: "show" }, [
