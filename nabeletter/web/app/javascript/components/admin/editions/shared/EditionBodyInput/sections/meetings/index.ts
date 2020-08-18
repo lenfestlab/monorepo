@@ -1,7 +1,6 @@
 // TODO: restore once FNA ical resumes; in meantime, use Event module
 export { Config, Event, SetConfig } from "../events/index"
 export { Input } from "./Input"
-export { Field } from "./Field"
 export { node } from "./node"
 
 /*

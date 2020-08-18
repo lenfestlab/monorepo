@@ -4,7 +4,7 @@ import { Box, CircularProgress, Grid, Typography } from "@material-ui/core"
 import { makeStyles } from "@material-ui/core/styles"
 
 import { viewHeight } from "csx"
-import type { PreviewRef, SectionField, SectionInput } from "../types"
+import type { PreviewRef, SectionInput } from "../types"
 import { Preview } from "./Preview"
 
 const useStyles = makeStyles((theme) => ({
@@ -17,7 +17,6 @@ const useStyles = makeStyles((theme) => ({
 interface Props {
   htmlRef?: PreviewRef
   inputs: SectionInput[]
-  fields: SectionField[]
   syncing: boolean
   html: string
   htmlSizeError: string | null
@@ -25,7 +24,6 @@ interface Props {
 
 export const Editor = ({
   inputs,
-  fields,
   syncing,
   html,
   htmlRef,
@@ -95,7 +93,6 @@ export const Editor = ({
             h(Preview, {
               html,
               htmlRef,
-              fields,
             }),
           ]
         ),

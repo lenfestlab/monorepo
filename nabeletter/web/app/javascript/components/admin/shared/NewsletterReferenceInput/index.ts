@@ -1,8 +1,7 @@
 import { h } from "@cycle/react"
 import { ReferenceInput, required, SelectInput } from "react-admin"
 
-interface Props {}
-export const NewsletterReferenceInput = (props: Props) =>
+export const NewsletterReferenceInput = (props: {}) =>
   h(
     ReferenceInput,
     {
@@ -11,6 +10,7 @@ export const NewsletterReferenceInput = (props: Props) =>
       source: "newsletter.id",
       reference: "newsletters",
       allowEmpty: false,
+      perPage: 100,
       validate: [required("Newsletter required.")],
       sort: { field: "name", order: "ASC" },
     },

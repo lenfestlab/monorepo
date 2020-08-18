@@ -8,15 +8,14 @@ import { rgb } from "csx"
 import { isEmpty, max, values } from "fp"
 import React, { Fragment, useEffect, useState } from "react"
 import { queries } from "styles"
-import type { PreviewRef, SectionField } from "../../types"
+import type { PreviewRef } from "../../types"
 
 interface Props {
   htmlRef?: PreviewRef
-  fields: SectionField[]
   html: string
 }
 
-export const Preview = ({ fields: unstyledFields, htmlRef, html }: Props) => {
+export const Preview = ({ htmlRef, html }: Props) => {
   const desktop = queries.desktop.maxWidth + 40 // 640
   const iphone = queries.mobile.maxWidth + 20
   const widths = { desktop, mobile: iphone }

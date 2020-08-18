@@ -2,20 +2,13 @@ import { h } from "@cycle/react"
 import { div } from "@cycle/react-dom"
 import { makeStyles } from "@material-ui/core/styles"
 import { formatISO, parseISO } from "date-fns"
-import { ChangeEvent, useEffect } from "react"
+import { ChangeEvent, useEffect, useState } from "react"
 import { Edit, SimpleForm } from "react-admin"
 import { from, Observable, Subject, Subscription } from "rxjs"
 import { tag } from "rxjs-spy/operators"
-import {
-  catchError,
-  debounceTime,
-  share,
-  skip,
-  switchMap,
-} from "rxjs/operators"
+import { catchError, debounceTime, share, switchMap, tap } from "rxjs/operators"
 
 import {
-  EditionBodyButton,
   EditionBodyInput,
   EditionPublishAtInput,
   EditionSubjectInput,
@@ -38,7 +31,6 @@ export const EditionEdit = (props: Props) => {
   useEffect(() => {
     const subscription: Subscription = data$
       .pipe(
-        skip(1),
         debounceTime(1000),
         switchMap((data: object) => {
           const request = dataProvider("UPDATE", "editions", { id, data })
@@ -47,6 +39,9 @@ export const EditionEdit = (props: Props) => {
         catchError((error: Error, caught$: Observable<any>) => {
           alert(JSON.stringify(error))
           return caught$
+        }),
+        tap((_) => {
+          // TODO: window.location.reload()
         }),
         tag("data$"),
         share()
@@ -101,7 +96,7 @@ export const EditionEdit = (props: Props) => {
     },
     [
       h(SimpleForm, { submitOnEnter: false, redirect: false, toolbar: null }, [
-        div({ className: classes.topInputs, id: "top-inputs" }, [
+        div({ className: classes.topInputs, id: `top-inputs` }, [
           h(EditionPublishAtInput, {
             id: "edition-publish",
             className: classes.publish,
@@ -113,9 +108,7 @@ export const EditionEdit = (props: Props) => {
             onChange,
           }),
         ]),
-        process.env.FF_INLINE_EDITOR
-          ? h(EditionBodyInput)
-          : h(EditionBodyButton),
+        h(EditionBodyInput),
       ]),
     ]
   )
