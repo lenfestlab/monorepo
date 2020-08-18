@@ -5,15 +5,13 @@ import { TypeStyle } from "typestyle"
 
 import { LayoutTable } from "components/table"
 import { colors, compileStyles, queries } from "styles"
-import type { SectionField } from "../../../types"
 
 interface Props {
-  fields: SectionField[]
   typestyle: TypeStyle
   isAmp?: boolean
 }
 
-export function Body({ fields, typestyle, isAmp = false }: Props) {
+export function Body({ typestyle, isAmp = false }: Props) {
   const { cssRaw, cssRule } = typestyle
   const {
     desktop: { maxWidth },
@@ -52,11 +50,11 @@ export function Body({ fields, typestyle, isAmp = false }: Props) {
 
   return body({ key: "body" }, [
     h(LayoutTable, [
-      h(
-        LayoutTable,
-        { maxWidth, className: classNames.body, style: styles.body },
-        fields
-      ),
+      h(LayoutTable, {
+        maxWidth,
+        className: classNames.body,
+        style: styles.body,
+      }),
     ]),
   ])
 }

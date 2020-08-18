@@ -23,98 +23,44 @@ import {
   switchMap,
   tap,
 } from "rxjs/operators"
-import { colors, fonts, queries } from "styles"
+import { colors, fonts } from "styles"
 
 import { AnalyticsProps as AllAnalyticsProps } from "analytics"
 import { Record as ApiRecord } from "components/admin/shared"
-import { compact, find, get, isEmpty, map, reduce, values } from "fp"
+import { compact, get, isEmpty, map } from "fp"
 import { Editor } from "./Editor"
-import { PreviewRef, SectionField, SectionInput } from "./types"
+import { PreviewRef, SectionInput } from "./types"
 
-import { important, px } from "csx"
-import { createTypeStyle, media } from "typestyle"
+import { px } from "csx"
+import { createTypeStyle } from "typestyle"
+import { Input as AnswerInput, node as answerNode } from "./sections/answer"
+import { Input as AskInput, node as askNode } from "./sections/ask"
+import { Input as EventsInput, node as eventsNode } from "./sections/events"
 import {
-  Field as AnswerField,
-  Input as AnswerInput,
-  node as answerNode,
-} from "./sections/answer"
-import {
-  Field as AskField,
-  Input as AskInput,
-  node as askNode,
-} from "./sections/ask"
-import {
-  Field as EventsField,
-  Input as EventsInput,
-  node as eventsNode,
-} from "./sections/events"
-import {
-  Field as FacebookField,
   Input as FacebookInput,
   node as facebookNode,
 } from "./sections/facebook"
+import { Input as FooterInput, node as footerNode } from "./sections/footer"
+import { Input as HeaderInput, node as headerNode } from "./sections/header"
+import { Input as HistoryInput, node as historyNode } from "./sections/history"
 import {
-  Field as FooterField,
-  Input as FooterInput,
-  node as footerNode,
-} from "./sections/footer"
-import {
-  Field as HeaderField,
-  Input as HeaderInput,
-  node as headerNode,
-} from "./sections/header"
-import {
-  Field as HistoryField,
-  Input as HistoryInput,
-  node as historyNode,
-} from "./sections/history"
-import {
-  Field as InstagramField,
   Input as InstagramInput,
   node as instagramNode,
 } from "./sections/instagram"
+import { Input as IntroInput, node as introNode } from "./sections/intro"
 import {
-  Field as IntroField,
-  Input as IntroInput,
-  node as introNode,
-} from "./sections/intro"
-import {
-  Field as MeetingsField,
   Input as MeetingsInput,
   node as meetingsNode,
 } from "./sections/meetings"
-import {
-  Field as NewsField,
-  Input as NewsInput,
-  node as newsNode,
-} from "./sections/news"
-import {
-  Field as PermitsField,
-  Input as PermitsInput,
-  node as permitsNode,
-} from "./sections/permits"
-import {
-  Field as PreviewField,
-  Input as PreviewInput,
-  node as previewNode,
-} from "./sections/preview"
-import { SaleField, SaleInput, saleNode } from "./sections/properties"
-import { SoldField, SoldInput, soldNode } from "./sections/properties"
-import {
-  Field as SafetyField,
-  Input as SafetyInput,
-  node as safetyNode,
-} from "./sections/safety"
-import {
-  Field as TweetsField,
-  Input as TweetsInput,
-  node as twitterNode,
-} from "./sections/tweets"
-import {
-  Field as WeatherField,
-  Input as WeatherInput,
-  node as weatherNode,
-} from "./sections/weather"
+import { Input as NewsInput, node as newsNode } from "./sections/news"
+import { Input as PermitsInput, node as permitsNode } from "./sections/permits"
+import { Input as PreviewInput, node as previewNode } from "./sections/preview"
+import { SaleInput, saleNode } from "./sections/properties"
+import { SoldInput, soldNode } from "./sections/properties"
+import { Input as SafetyInput, node as safetyNode } from "./sections/safety"
+import { Input as StatsInput, node as statsNode } from "./sections/stats"
+import { Input as TweetsInput, node as twitterNode } from "./sections/tweets"
+import { Input as WeatherInput, node as weatherNode } from "./sections/weather"
 
 export const PREVIEW = "preview"
 export const HEADER = "header"
@@ -122,6 +68,7 @@ export const INTRO = "intro"
 export const WEATHER = "weather"
 export const EVENTS = "events"
 export const NEWS = "news"
+export const STATS = "stats"
 export const SAFETY = "safety"
 export const HISTORY = "history"
 export const TWEETS = "tweets"
@@ -142,6 +89,7 @@ export type Kind =
   | "weather"
   | "events"
   | "news"
+  | "stats"
   | "safety"
   | "history"
   | "tweets"
@@ -160,45 +108,43 @@ type AnalyticsProps = Omit<AllAnalyticsProps, "title">
 function getSectionComponents(kind: Kind) {
   switch (kind) {
     case PREVIEW:
-      return { field: PreviewField, input: PreviewInput, node: previewNode }
+      return { input: PreviewInput, node: previewNode }
     case HEADER:
-      return { field: HeaderField, input: HeaderInput, node: headerNode }
+      return { input: HeaderInput, node: headerNode }
     case INTRO:
-      return { field: IntroField, input: IntroInput, node: introNode }
+      return { input: IntroInput, node: introNode }
     case WEATHER:
-      return { field: WeatherField, input: WeatherInput, node: weatherNode }
+      return { input: WeatherInput, node: weatherNode }
     case EVENTS:
-      return { field: EventsField, input: EventsInput, node: eventsNode }
+      return { input: EventsInput, node: eventsNode }
     case NEWS:
-      return { field: NewsField, input: NewsInput, node: newsNode }
+      return { input: NewsInput, node: newsNode }
+    case STATS:
+      return { input: StatsInput, node: statsNode }
     case SAFETY:
-      return { field: SafetyField, input: SafetyInput, node: safetyNode }
+      return { input: SafetyInput, node: safetyNode }
     case HISTORY:
-      return { field: HistoryField, input: HistoryInput, node: historyNode }
+      return { input: HistoryInput, node: historyNode }
     case TWEETS:
-      return { field: TweetsField, input: TweetsInput, node: twitterNode }
+      return { input: TweetsInput, node: twitterNode }
     case FACEBOOK:
-      return { field: FacebookField, input: FacebookInput, node: facebookNode }
+      return { input: FacebookInput, node: facebookNode }
     case INSTAGRAM:
-      return {
-        field: InstagramField,
-        input: InstagramInput,
-        node: instagramNode,
-      }
+      return { input: InstagramInput, node: instagramNode }
     case PERMITS:
-      return { field: PermitsField, input: PermitsInput, node: permitsNode }
+      return { input: PermitsInput, node: permitsNode }
     case MEETINGS:
-      return { field: MeetingsField, input: MeetingsInput, node: meetingsNode }
+      return { input: MeetingsInput, node: meetingsNode }
     case ANSWER:
-      return { field: AnswerField, input: AnswerInput, node: answerNode }
+      return { input: AnswerInput, node: answerNode }
     case ASK:
-      return { field: AskField, input: AskInput, node: askNode }
+      return { input: AskInput, node: askNode }
     case PROPERTIES_SALE:
-      return { field: SaleField, input: SaleInput, node: saleNode }
+      return { input: SaleInput, node: saleNode }
     case PROPERTIES_SOLD:
-      return { field: SoldField, input: SoldInput, node: soldNode }
+      return { input: SoldInput, node: soldNode }
     case FOOTER:
-      return { field: FooterField, input: FooterInput, node: footerNode }
+      return { input: FooterInput, node: footerNode }
     default:
       throw new Error("Unsupported section")
   }
@@ -219,12 +165,6 @@ interface BodyConfig {
   sections: SectionConfig[]
 }
 
-interface SectionRefMap {
-  inputRef: RefObject<any>
-  fieldRef: RefObject<any>
-}
-type SectionRefsMap = Record<string, SectionRefMap>
-
 interface Props {
   record?: ApiRecord
 }
@@ -240,8 +180,6 @@ export class EditionBodyInput extends Component<Props, State> {
   html$$ = new Subject<string>()
   htmlRef: PreviewRef = createRef<HTMLDivElement>()
   ampRef: PreviewRef = createRef<HTMLDivElement>()
-  sectionObserver: IntersectionObserver | null = null
-  sectionRefsMap: SectionRefsMap = {}
 
   constructor(props: Props) {
     super(props)
@@ -257,6 +195,7 @@ export class EditionBodyInput extends Component<Props, State> {
       WEATHER,
       EVENTS,
       NEWS,
+      STATS,
       SAFETY,
       HISTORY,
       TWEETS,
@@ -277,56 +216,9 @@ export class EditionBodyInput extends Component<Props, State> {
     })
 
     this.state = { sections, syncing: false, html: "", htmlSizeError: null }
-    // NOTE: sync section visibility
-    this.sectionRefsMap = sections.reduce<SectionRefsMap>(
-      (prior, current, _idx, _configs): SectionRefsMap => {
-        const inputRef = createRef<HTMLElement>()
-        const fieldRef = createRef()
-        const { kind } = current
-        const result: SectionRefsMap = {
-          ...prior,
-          [kind]: { inputRef, fieldRef },
-        }
-        return result
-      },
-      {}
-    )
-    this.sectionObserver = new IntersectionObserver(
-      (entries) => {
-        const firstIntersecting = find(
-          entries,
-          ({ isIntersecting }) => isIntersecting
-        )
-        // fetch field corresponding to this input
-        const target = firstIntersecting?.target
-        if (!target) {
-          // NOOP
-        } else {
-          const inputId: string = target.id
-          const fieldId = inputId.replace("input", "field")
-          const frame = document.getElementById(
-            "preview-frame"
-          ) as HTMLIFrameElement
-          const innerDoc = frame.contentWindow?.document
-          const field = innerDoc?.getElementById(fieldId)
-          field?.scrollIntoView(true)
-        }
-      },
-      {
-        root: null, // viewport by default
-        threshold: 0.5,
-      }
-    )
   }
 
   componentDidMount() {
-    // NOTE: sync section visibility
-    values(this.sectionRefsMap).forEach((refMap) => {
-      const { inputRef } = refMap
-      const node: Element = inputRef.current
-      if (node) this.sectionObserver?.observe(node)
-    })
-
     // NOTE: sync sections' config & html with server
     const syncConfigs$ = this.configs$.pipe(
       tag("configs$"),
@@ -492,7 +384,6 @@ export class EditionBodyInput extends Component<Props, State> {
 
   componentWillUnmount() {
     this.subscription?.unsubscribe()
-    this.sectionObserver?.disconnect()
   }
 
   shouldComponentUpdate() {
@@ -501,7 +392,6 @@ export class EditionBodyInput extends Component<Props, State> {
 
   render() {
     const inputs: SectionInput[] = []
-    const fields: SectionField[] = []
     const { sections, syncing, html, htmlSizeError } = this.state
 
     sections.forEach((sectionConfig: SectionConfig, idx: number) => {
@@ -521,18 +411,15 @@ export class EditionBodyInput extends Component<Props, State> {
       }
 
       const { input } = getSectionComponents(kind)
-      const { inputRef, fieldRef } = this.sectionRefsMap[kind]
       const key = `section-${kind}`
 
       inputs.push(
         // @ts-ignore
-        h(input, { key, kind, config, setConfig, inputRef, id: `${key}-input` })
+        h(input, { key, kind, config, setConfig, id: `${key}-input` })
       )
     })
 
     const { htmlRef } = this
-    return [
-      h(Editor, { syncing, inputs, fields, html, htmlRef, htmlSizeError }),
-    ]
+    return [h(Editor, { syncing, inputs, html, htmlRef, htmlSizeError })]
   }
 }

@@ -55,6 +55,13 @@ export const translate = (key: string): string => {
     "news-input-title-placeholder": "Neighborhood news",
     "news-input-url-placeholder": "https://www.inquirer.com/...html",
     "news-input-url-add": "Add",
+    // stats
+    "stats-input-header": "Statistics",
+    "stats-input-title-placeholder": "Fishtown Statistics",
+    "stats-input-url-placeholder": "https://.../image.png",
+    "stats-input-caption-placeholder": "Image caption",
+    "stats-input-md-placeholder": "TK",
+    "stats-button-add": "Add",
     // safety
     "safety-input-header": "Safety watch",
     "safety-input-title-placeholder": "Safety watch",
