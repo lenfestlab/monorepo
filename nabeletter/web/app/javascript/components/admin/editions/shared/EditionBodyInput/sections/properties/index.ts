@@ -13,6 +13,7 @@ export interface Property {
 
 export interface EditableProperty extends Property {
   description_custom?: string | null
+  image_custom?: string | null
 }
 
 export interface Config extends SectionConfig {
