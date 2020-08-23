@@ -36,7 +36,8 @@ export const node = ({
       ({
         url,
         price,
-        image: src,
+        image,
+        image_custom,
         address,
         beds,
         baths,
@@ -45,6 +46,7 @@ export const node = ({
         sold_on,
       }) => {
         const _description = description_custom ?? description
+        const src = image_custom ?? image
         const _price = price && currency(parseFloat(price))
         const details = []
         if (beds) details.push(`${beds} bedroom`)

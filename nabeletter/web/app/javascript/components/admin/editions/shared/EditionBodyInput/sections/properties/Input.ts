@@ -62,6 +62,7 @@ type EditDialogProps = {
   open: boolean
   selectionID?: string
   selectionDescriptionPlaceholder?: string
+  selectionImagePlaceholder?: string
 }
 
 export interface Props {
@@ -193,10 +194,12 @@ export class Input extends Component<Props, State> {
   onClickEdit = (url: string) => {
     const selection = find(this.properties$$.value, (item) => item.url === url)
     const selectionDescriptionPlaceholder = selection?.description
+    const selectionImagePlaceholder = selection?.image
     this.dialogProps$$.next({
       open: true,
       selectionID: url,
       selectionDescriptionPlaceholder,
+      selectionImagePlaceholder,
     })
   }
   onClose = () =>
@@ -205,12 +208,15 @@ export class Input extends Component<Props, State> {
     })
 
   descriptionRef = createRef<HTMLTextAreaElement>()
+  imageRef = createRef<HTMLTextAreaElement>()
   onSave = () => {
     const descValue = this.descriptionRef.current?.value
     const description_custom = isEmpty(descValue) ? null : descValue
+    const imageValue = this.imageRef.current?.value
+    const image_custom = isEmpty(imageValue) ? null : imageValue
     const newSelections = this.properties$$.value.map((property) => {
       return property.url === this.dialogProps$$.value.selectionID
-        ? { ...property, description_custom }
+        ? { ...property, description_custom, image_custom }
         : property
     })
     this.properties$$.next(newSelections)
@@ -333,7 +339,11 @@ export class Input extends Component<Props, State> {
       error: { error, helperText },
       properties,
     } = this.state
-    const { open, selectionDescriptionPlaceholder } = this.state
+    const {
+      open,
+      selectionDescriptionPlaceholder,
+      selectionImagePlaceholder,
+    } = this.state
 
     const {
       setTitle,
@@ -417,6 +427,14 @@ export class Input extends Component<Props, State> {
               variant: "filled",
               placeholder: selectionDescriptionPlaceholder,
               inputRef: this.descriptionRef,
+            }),
+            h(TextField, {
+              label: "Image URL",
+              margin: "dense",
+              fullWidth: true,
+              variant: "filled",
+              placeholder: selectionImagePlaceholder,
+              inputRef: this.imageRef,
             }),
           ]),
           h(DialogActions, [
