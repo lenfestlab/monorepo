@@ -32,16 +32,20 @@ export const EditionEdit = (props: Props) => {
     const subscription: Subscription = data$
       .pipe(
         debounceTime(1000),
-        switchMap((data: object) => {
-          const request = dataProvider("UPDATE", "editions", { id, data })
-          return from(request)
+        switchMap((data: any) => {
+          const request: Promise<any> = dataProvider("UPDATE", "editions", {
+            id,
+            data,
+          })
+          return from(
+            request.then((value: any) => {
+              if (data.publish_at) window.location.reload()
+            })
+          )
         }),
         catchError((error: Error, caught$: Observable<any>) => {
           alert(JSON.stringify(error))
           return caught$
-        }),
-        tap((_) => {
-          // TODO: window.location.reload()
         }),
         tag("data$"),
         share()
