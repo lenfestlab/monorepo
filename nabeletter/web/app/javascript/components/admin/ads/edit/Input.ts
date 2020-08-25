@@ -145,7 +145,8 @@ export class Input extends Component<Props, State> {
       }),
       switchMap((_state) => {
         const identifier = this.props.record.id
-        const html = this.htmlRef.current?.outerHTML
+        let html = this.htmlRef.current?.innerHTML!
+        html = html.replace("0.001", "1")
         const selector = "#ad"
         const url = process.env.AD_CAPATURE_ENDPOINT! as string
         return onErrorResumeNext(
@@ -193,7 +194,7 @@ export class Input extends Component<Props, State> {
             main_image_url,
             screenshot_url,
           }
-          const request = dataProvider("UPDATE", "ads", { id, data })
+          const request = dataProvider("UPDATE", "units", { id, data })
           return onErrorResumeNext(from(request))
         }
       ),
@@ -294,24 +295,26 @@ export class Input extends Component<Props, State> {
             ...{ ref: this.htmlRef },
           },
           [
-            h(Unit, {
-              title,
-              body,
-              logo_image_url,
-              main_image_url,
-            }),
-            div({ style: { paddingTop: px(10) } }, [
-              div("As image:"),
+            div([
               loading
                 ? h(CircularProgress, {
                     size: 20,
                     disableShrink: true,
                   })
                 : img({
-                    style: { width: percent(100), paddingTop: px(10) },
+                    style: {
+                      width: percent(100),
+                      paddingTop: px(10),
+                    },
                     src: screenshot_url,
                   }),
             ]),
+            h(Unit, {
+              title,
+              body,
+              logo_image_url,
+              main_image_url,
+            }),
           ]
         ),
       ]

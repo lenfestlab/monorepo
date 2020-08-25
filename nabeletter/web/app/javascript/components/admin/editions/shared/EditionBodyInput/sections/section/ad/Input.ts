@@ -80,7 +80,7 @@ function AdDialogue({ ad, onClickSave, onClickCancel, open }: AdDialogueProps) {
   }, [alt, href, aid])
 
   const { loading, value: ads, error } = useAsync(async () => {
-    const response: GetAdsResponse = await dataProvider("GET_LIST", "ads", {
+    const response: GetAdsResponse = await dataProvider("GET_LIST", "units", {
       pagination: { page: 1, perPage: 25 },
       sort: { order: "ASC" },
     })

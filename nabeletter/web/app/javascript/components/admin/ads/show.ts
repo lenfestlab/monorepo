@@ -1,6 +1,7 @@
 import { h } from "@cycle/react"
 import {
   DateField,
+  ImageField,
   Show as _Show,
   SimpleShowLayout,
   TextField,
@@ -16,5 +17,6 @@ export const Show = (props: {}) =>
       h(TextField, { source: "body" }),
       h(DateField, { source: "created_at", label: "Created", showTime: true }),
       h(DateField, { source: "updated_at", label: "Updated", showTime: true }),
+      h(ImageField, { source: "screenshot_url" }),
     ]),
   ])
