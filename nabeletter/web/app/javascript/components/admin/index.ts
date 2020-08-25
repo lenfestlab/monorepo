@@ -48,7 +48,8 @@ const layout = (props: any) => {
 export const AdminApp = () =>
   h(Admin, { layout, dataProvider, i18nProvider, authProvider }, [
     h(Resource, {
-      name: "ads",
+      name: "units",
+      options: { label: "Ads" },
       list: AdList,
       create: AdCreate,
       show: AdShow,

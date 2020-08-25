@@ -1,16 +1,6 @@
 import { h } from "@cycle/react"
-import {
-  body as _body,
-  div,
-  h1,
-  head,
-  html,
-  img,
-  link,
-  span,
-} from "@cycle/react-dom"
+import { body as _body, div, head, img, link } from "@cycle/react-dom"
 import { percent, px } from "csx"
-import { Fragment } from "react"
 import { colors, fonts, Style, StyleMap } from "styles"
 
 interface Props {
@@ -34,6 +24,8 @@ const styles: StyleMap = {
   ad: {
     width: px(600),
     minHeight: px(300),
+    // display: "none",
+    opacity: 0.001,
   },
   container: {
     width: "auto",

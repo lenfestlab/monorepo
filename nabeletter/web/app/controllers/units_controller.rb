@@ -1,0 +1,1 @@
+class UnitsController < ResourceController; end
