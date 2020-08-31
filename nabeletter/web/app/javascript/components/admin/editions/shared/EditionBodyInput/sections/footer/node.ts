@@ -103,10 +103,10 @@ export const node = ({
             },
             [
               translate("footer-signup-copy").replace(
-                "LINK",
+                "SIGN_UP",
                 link({
                   analytics,
-                  title: "here",
+                  title: "Sign up",
                   url: `https://${process.env.RAILS_HOST}/signup?newsletter_id=${newsletter_id}`,
                   style: {
                     ...styles.link,
@@ -187,7 +187,6 @@ export const node = ({
             ]
           ),
 
-          // !isWelcome &&
           textNode(
             {
               ...footerTextAttributes,

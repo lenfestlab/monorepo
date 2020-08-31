@@ -25,7 +25,7 @@ export const node = ({ analytics, config, typestyle }: Props): Node | null => {
 
   return cardWrapper({ title, pre, post, analytics, typestyle }, [
     cardSection({}, [
-      column({ paddingBottom: px(24) }, [
+      column({}, [
         text(
           { fontSize: px(18), fontWeight: 500 },
           md({ markdown, analytics, typestyle })

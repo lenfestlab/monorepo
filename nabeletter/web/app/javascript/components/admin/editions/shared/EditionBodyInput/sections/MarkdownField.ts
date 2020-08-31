@@ -84,6 +84,7 @@ interface MdProps {
   markdown?: string
   typestyle: TypeStyle
 }
+
 export const md = ({ markdown, analytics, typestyle }: MdProps): string => {
   const transformLinkUri: TransformLinkUri = (url, children, _title) => {
     let child
@@ -111,6 +112,9 @@ export const md = ({ markdown, analytics, typestyle }: MdProps): string => {
         },
         "& h2,h3,h4,h5,h6": {
           fontSize: px(18),
+        },
+        "& p": {
+          marginBlockStart: px(0),
         },
       },
     },
