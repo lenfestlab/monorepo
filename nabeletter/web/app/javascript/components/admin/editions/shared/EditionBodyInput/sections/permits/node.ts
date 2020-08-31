@@ -42,7 +42,9 @@ export const node = ({ analytics, config, typestyle }: Props): Node | null => {
         }
         return cardSection({}, [
           column(
-            { paddingBottom: px(24) },
+            {
+              paddingBottom: px(12),
+            },
             compact([
               imageNode({
                 src,

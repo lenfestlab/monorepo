@@ -172,7 +172,7 @@ export const node = ({
       ]),
 
       cardSection({}, [
-        column({ paddingTop: px(10) }, [
+        column({ paddingTop: px(10), paddingBottom: px(24) }, [
           text(
             {
               fontSize: px(14),

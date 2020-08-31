@@ -304,6 +304,7 @@ export class EditionBodyInput extends Component<Props, State> {
                 mj("mj-image", { padding: px(0) }),
                 mj("mj-column", { padding: px(0) }),
                 mj("mj-section", { padding: px(0) }),
+                mj("mj-wrapper", { padding: px(0) }),
                 mj("mj-all", {
                   fontFamily: fonts.roboto,
                   fontSize: px(16) as string,

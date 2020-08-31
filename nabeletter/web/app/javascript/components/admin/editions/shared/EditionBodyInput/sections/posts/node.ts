@@ -28,7 +28,7 @@ export const node = ({
 
   return cardWrapper({ title, pre, post, analytics, typestyle }, [
     cardSection({}, [
-      column({ paddingBottom: px(24) }, [
+      column({}, [
         ...posts.map(({ url, screenshot_url: src }: Post, idx) => {
           const href = rewriteURL(url, {
             ...analytics,
