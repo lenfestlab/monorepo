@@ -249,7 +249,7 @@ export class EditionBodyInput extends Component<Props, State> {
       switchMap((sections: SectionConfig[]) => {
         const nodes: Node[] = []
         const typestyle = createTypeStyle()
-        const edition: Edition = this.props.record!
+        const edition = this.props.record! as Edition
         const edition_id = edition.id
         const welcomeEditionId = process.env.WELCOME_EDITION_ID!
         const isWelcome = welcomeEditionId === edition_id

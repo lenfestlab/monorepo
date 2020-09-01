@@ -40,4 +40,4 @@ const settings = {
   },
 }
 
-export const dataProvider = jsonapiClient(apiHost, settings)
+export const dataProvider = jsonapiClient(`${apiHost}/api`, settings)

@@ -1,4 +1,4 @@
-class UnitResource < JSONAPI::Resource
+class Api::UnitResource < JSONAPI::Resource
   model_name 'Ad'
 
   attributes(*%i[

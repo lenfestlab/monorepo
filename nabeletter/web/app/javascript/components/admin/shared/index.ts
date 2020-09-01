@@ -2,7 +2,12 @@ import { Identifier, Record } from "ra-core"
 export { Identifier, Record }
 
 export type Newsletter = Record
-export type Edition = Record
+
+export interface Edition extends Record {
+  newsletter: Newsletter
+  publish_at: string
+  subject: string
+}
 
 export interface Ad extends Record {
   title: string

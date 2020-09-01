@@ -1,1 +1,0 @@
-class NewslettersController < ResourceController; end

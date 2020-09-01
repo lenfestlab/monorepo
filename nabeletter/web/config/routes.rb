@@ -6,16 +6,20 @@ Rails.application.routes.draw do
   post "/signups", controller: :signups, action: :signup
   get "/pixel", controller: :analytics, action: :pixel
 
+  resources :editions, only: %i[index show]
+
   resources :analytics, only: :index
   resources :events, only: :index
   resources :articles, only: :index
   resources :permits, only: :index
 
-  jsonapi_resources :newsletters, only: %i[index show]
-  jsonapi_resources :editions, only: %i[index create update show]
-  jsonapi_resources :subscriptions, only: %i[index show create update]
-  jsonapi_resources :users, only: %i[index]
-  jsonapi_resources :units, only: %i[index create update show]
+  namespace :api do
+    jsonapi_resources :editions, only: %i[index create update show]
+    jsonapi_resources :newsletters, only: %i[index show]
+    jsonapi_resources :subscriptions, only: %i[index show create update]
+    jsonapi_resources :units, only: %i[index create update show]
+    jsonapi_resources :users, only: %i[index]
+  end
 
   # NOTE: https://bit.ly/2UEyLO1
   devise_for :users,

@@ -9,10 +9,11 @@ import get from "lodash/get"
 import { ChangeEvent, FormEvent, useCallback, useState } from "react"
 import { create } from "rxjs-spy"
 import { colors, fonts, queries } from "styles"
-import { classes, cssRule, media, stylesheet } from "typestyle"
+import { classes, cssRaw, cssRule, media, stylesheet } from "typestyle"
 import { URL } from "url"
 import backgroundImage from "./background.jpg"
-import logo from "./hook.svg"
+
+import logo from "images/hook.svg"
 
 const spy = create({ defaultLogger: console, sourceMaps: true })
 if (process.env.DEBUG_RX) {
@@ -34,6 +35,9 @@ cssRule("html", {
   OBackgroundSize: "cover",
   backgroundSize: "cover",
 })
+cssRaw(`
+@import url('https://fonts.googleapis.com/css?family=Roboto|Roboto+Slab&display=swap');
+`)
 
 const pad = 24
 const textStyle = {
