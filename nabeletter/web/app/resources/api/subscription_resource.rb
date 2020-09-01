@@ -1,4 +1,4 @@
-class SubscriptionResource < JSONAPI::Resource
+class Api::SubscriptionResource < JSONAPI::Resource
   attributes(
     *%i[email_address subscribed_at unsubscribed_at name_first name_last],
   )

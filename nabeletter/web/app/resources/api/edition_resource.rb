@@ -1,4 +1,4 @@
-class EditionResource < JSONAPI::Resource
+class Api::EditionResource < JSONAPI::Resource
   attributes(*%i[
              subject
              publish_at
@@ -29,5 +29,8 @@ class EditionResource < JSONAPI::Resource
     # NOTE: disallows reassigning edition to another newsletter
     super - %i[newsletter]
   end
+
+  filter :state
+  filter :newsletter_id
 
 end

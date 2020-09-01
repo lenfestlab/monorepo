@@ -17,6 +17,17 @@ class Edition < ApplicationRecord
     end
   end
 
+  def web_preview
+    subs = {
+      # hide unsubscribe link
+      "Unsubscribe" => "",
+      # set anonymous uid
+      "VAR-RECIPIENT-UID" => "ANON"
+    }
+    re = Regexp.union(subs.keys)
+    body_html.gsub(re, subs)
+  end
+
 
   ## State machine
   #
