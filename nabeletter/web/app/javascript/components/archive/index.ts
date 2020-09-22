@@ -182,7 +182,7 @@ export const App = (_: {}) => {
   const { loading, value, error } = useAsync(async () => {
     const response: GetResponse = await dataProvider("GET_LIST", "editions", {
       filter: { state: "delivered", newsletter_id },
-      pagination: { page: 1, perPage: 5 },
+      pagination: { page: 1, perPage: 100 },
       sort: { field: "publish_at", order: "DESC" },
     })
     return response.data
