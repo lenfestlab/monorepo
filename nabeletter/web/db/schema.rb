@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2020_08_17_112944) do
+ActiveRecord::Schema.define(version: 2020_09_28_134343) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -97,6 +97,18 @@ ActiveRecord::Schema.define(version: 2020_08_17_112944) do
     t.index ["ec"], name: "index_events_on_ec"
     t.index ["el"], name: "index_events_on_el"
     t.index ["uid"], name: "index_events_on_uid"
+  end
+
+  create_table "links", force: :cascade do |t|
+    t.bigint "edition_id", null: false
+    t.string "href", null: false
+    t.string "section_name", null: false
+    t.datetime "created_at", precision: 6, null: false
+    t.datetime "updated_at", precision: 6, null: false
+    t.index ["edition_id", "href"], name: "index_links_on_edition_id_and_href", unique: true
+    t.index ["edition_id"], name: "index_links_on_edition_id"
+    t.index ["href"], name: "index_links_on_href"
+    t.index ["section_name"], name: "index_links_on_section_name"
   end
 
   create_table "mailgun_events", force: :cascade do |t|
