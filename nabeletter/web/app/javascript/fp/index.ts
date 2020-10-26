@@ -18,6 +18,7 @@ import reduce from "lodash/reduce"
 import some from "lodash/some"
 import sortBy from "lodash/sortBy"
 import startsWith from "lodash/startsWith"
+import truncate from "lodash/truncate"
 import union from "lodash/union"
 import unionWith from "lodash/unionWith"
 import uniqBy from "lodash/uniqBy"
@@ -59,6 +60,7 @@ export {
   paramCase,
   reduce,
   sortBy,
+  truncate,
   startsWith,
   union,
   unionWith,

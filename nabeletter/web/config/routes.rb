@@ -19,6 +19,7 @@ Rails.application.routes.draw do
     jsonapi_resources :subscriptions, only: %i[index show create update]
     jsonapi_resources :units, only: %i[index create update show]
     jsonapi_resources :users, only: %i[index]
+    jsonapi_resources :links, only: %i[index show update]
   end
 
   # NOTE: https://bit.ly/2UEyLO1

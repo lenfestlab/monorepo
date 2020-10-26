@@ -37,6 +37,8 @@ export const EditionList = (props: Props) =>
           { source: "publish_at", label: "Publish/Send at", showTime: true },
           []
         ),
+        h(TextField, { source: "state" }, []),
+        h(TextField, { source: "link_count", label: "Links" }, []),
       ]),
     ]
   )
