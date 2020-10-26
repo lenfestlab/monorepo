@@ -27,6 +27,7 @@ import {
   EditionList,
   EditionShow,
 } from "./editions"
+import { LinkEdit, LinkList } from "./links"
 import { NewsletterList } from "./newsletters"
 import { authProvider, dataProvider, i18nProvider } from "./providers"
 import {
@@ -75,5 +76,10 @@ export const AdminApp = () =>
     h(Resource, {
       name: "users",
       list: UserList,
+    }),
+    h(Resource, {
+      name: "links",
+      list: LinkList,
+      edit: LinkEdit,
     }),
   ])

@@ -2,6 +2,7 @@ class Edition < ApplicationRecord
   include AASM
 
   belongs_to :newsletter
+  has_many :links
 
   validates :subject, presence: true, uniqueness: true, length: { in: 1...100 }
 

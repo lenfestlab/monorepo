@@ -1,4 +1,7 @@
 class Api::EditionResource < JSONAPI::Resource
+  has_one :newsletter
+  has_many :links
+
   attributes(*%i[
              subject
              publish_at
@@ -9,9 +12,9 @@ class Api::EditionResource < JSONAPI::Resource
              newsletter_name
              newsletter_lat
              newsletter_lng
+             link_count
              ])
 
-  has_one :newsletter
 
   def newsletter_name
     @model.newsletter.sender_name
@@ -23,7 +26,9 @@ class Api::EditionResource < JSONAPI::Resource
   def newsletter_lng
     @model.newsletter.lng
   end
-
+  def link_count
+    @model.links.count
+  end
 
   def self.updatable_fields(context)
     # NOTE: disallows reassigning edition to another newsletter
