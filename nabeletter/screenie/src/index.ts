@@ -40,7 +40,7 @@ if (process.env.NODE_ENV === "production") {
 app.post("/mjml", (req, res) => {
   try {
     const mjml = req.body.mjml;
-    console.dir(mjml, { depth: null, colors: true });
+    // console.dir(mjml, { depth: null, colors: true });
     const result = mjml2html(mjml, { minify: true, validationLevel: "strict" });
     res.status(200).json(result);
   } catch (error) {
@@ -156,21 +156,23 @@ app.get("/capture", async (req, res) => {
     console.info("url", url);
     let embedURL;
     const domain = new URL(url).hostname.replace("www.", "");
+    const encoded = encodeURIComponent(url);
+    const app_id = process.env.FB_APP_ID;
+    const client_token = process.env.FB_CLIENT_TOKEN;
+    const access_token = `${app_id}|${client_token}`;
     switch (domain) {
       // https://developer.twitter.com/en/docs/tweets/post-and-engage/api-reference/get-statuses-oembed
       case "twitter.com":
         embedURL = `https://publish.twitter.com/oembed?url=${url}`;
         break;
       case "instagram.com":
-        embedURL = `https://api.instagram.com/oembed/?maxwidth=600&url=${url}`;
+        embedURL = `https://graph.facebook.com/v8.0/instagram_oembed?access_token=${access_token}&url=${encoded}`;
         break;
       case "facebook.com":
-        const encoded = encodeURIComponent(url);
-        console.debug("encoded", encoded);
         if (url.includes("video")) {
-          embedURL = `https://www.facebook.com/plugins/video/oembed.json/?url=${encoded}`;
+          embedURL = `https://graph.facebook.com/v8.0/oembed_video?access_token=${access_token}&url=${encoded}`;
         } else {
-          embedURL = `https://www.facebook.com/plugins/post/oembed.json/?url=${encoded}`;
+          embedURL = `https://graph.facebook.com/v8.0/oembed_post?access_token=${access_token}&url=${encoded}`;
         }
         break;
       default:
@@ -187,8 +189,8 @@ app.get("/capture", async (req, res) => {
     // NOTE: fix embed HTML where necessary
     if (domain == "instagram.com") {
       html = html.replace(
-        "//www.instagram.com/embed.js",
-        "https://instagram.com/embed.js"
+        "//platform.instagram.com/en_US/embeds.js",
+        "https://platform.instagram.com/en_US/embeds.js"
       );
     }
     console.debug(html);
