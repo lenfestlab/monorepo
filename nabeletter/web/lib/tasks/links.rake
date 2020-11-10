@@ -1,5 +1,6 @@
 require 'nokogiri'
 require 'cgi'
+require 'digest'
 
 namespace :links do
 
@@ -18,10 +19,11 @@ namespace :links do
             updated_at: Time.zone.now,
             edition_id: edition.id,
             href: href,
+            href_digest: Digest::SHA2.hexdigest(href),
             section_name: section_name,
             redirect: redirect
           }
-          Link.upsert(attrs, unique_by: :index_links_on_edition_id_and_href)
+          Link.upsert(attrs, unique_by: :index_links_on_edition_id_and_href_digest)
         end
       end
     end
