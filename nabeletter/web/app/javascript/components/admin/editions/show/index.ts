@@ -50,6 +50,7 @@ export const EditionShow = (props: {}) =>
           },
           [h(TextField, { source: "name" })]
         ),
+        h(TextField, { label: "Kind", source: "kind" }),
         h(TextField, { label: "Email subject", source: "subject" }),
         h(DateField, {
           label: "Publish/send at",

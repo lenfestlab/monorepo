@@ -2,9 +2,7 @@ import { h } from "@cycle/react"
 import { addHours, startOfTomorrow } from "date-fns"
 import { DateTimeInput, required } from "react-admin"
 
-interface Props {}
-
-export const EditionPublishAtInput = (props: Props) =>
+export const EditionPublishAtInput = (props: {}) =>
   h(DateTimeInput, {
     ...props,
     label: "Publish/send at",
