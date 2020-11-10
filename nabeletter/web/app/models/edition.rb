@@ -29,6 +29,7 @@ class Edition < ApplicationRecord
     body_html.gsub(re, subs)
   end
 
+  enum kind: %i[normal adhoc personal]
 
   ## State machine
   #

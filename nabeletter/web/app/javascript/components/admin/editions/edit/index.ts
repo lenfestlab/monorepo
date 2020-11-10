@@ -10,6 +10,7 @@ import { catchError, debounceTime, share, switchMap, tap } from "rxjs/operators"
 
 import {
   EditionBodyInput,
+  EditionKindInput,
   EditionPublishAtInput,
   EditionSubjectInput,
 } from "components/admin/editions/shared"
@@ -62,9 +63,10 @@ export const EditionEdit = (props: Props) => {
       alignContent: "center",
       width: "100%",
     },
-    newsletter: {
+    kind: {
       display: "flex-inline",
       marginLeft: theme.spacing(2),
+      marginTop: theme.spacing(-4.5),
     },
     publish: {
       display: "flex-inline",
@@ -74,7 +76,6 @@ export const EditionEdit = (props: Props) => {
     subject: {
       display: "flex-inline",
       marginLeft: theme.spacing(2),
-      width: "100%",
     },
   }))
   const classes = useStyles()
@@ -90,6 +91,10 @@ export const EditionEdit = (props: Props) => {
     data$.next({ [name]: value })
   }
 
+  const onChangeKind = (value: string) => {
+    data$.next({ kind: value })
+  }
+
   return h(
     Edit,
     {
@@ -101,6 +106,11 @@ export const EditionEdit = (props: Props) => {
     [
       h(SimpleForm, { submitOnEnter: false, redirect: false, toolbar: null }, [
         div({ className: classes.topInputs, id: `top-inputs` }, [
+          h(EditionKindInput, {
+            id: "edition-kind",
+            className: classes.kind,
+            onChange: onChangeKind,
+          }),
           h(EditionPublishAtInput, {
             id: "edition-publish",
             className: classes.publish,

@@ -13,6 +13,7 @@ class Api::EditionResource < JSONAPI::Resource
              newsletter_lat
              newsletter_lng
              link_count
+             kind
              ])
 
 
@@ -35,6 +36,7 @@ class Api::EditionResource < JSONAPI::Resource
     super - %i[newsletter]
   end
 
+  filter :kind
   filter :state
   filter :newsletter_id
 
