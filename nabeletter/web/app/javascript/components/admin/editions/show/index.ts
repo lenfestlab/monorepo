@@ -6,6 +6,7 @@ import {
   Datagrid,
   DateField,
   EditButton,
+  Pagination,
   ReferenceField,
   ReferenceManyField,
   Show,
@@ -66,7 +67,13 @@ export const EditionShow = (props: {}) =>
       h(Tab, { label: "Links" }, [
         h(
           ReferenceManyField,
-          { reference: "links", target: "edition_id", label: "Links" },
+          {
+            perPage: 100,
+            reference: "links",
+            target: "edition_id",
+            label: "Links",
+            pagination: h(Pagination),
+          },
           [
             h(Datagrid, {}, [
               h(TextField, { source: "section" }, []),
