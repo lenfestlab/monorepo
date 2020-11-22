@@ -4,9 +4,9 @@ import { translate } from "i18n"
 import { column, image as imageNode, Node, text } from "mj"
 import { Config } from "."
 import { md } from "../MarkdownField"
-import { cardSection, cardWrapper, SectionProps } from "../section"
+import { cardSection, cardWrapper, SectionNodeProps } from "../section"
 
-export interface Props extends SectionProps {
+export interface Props extends SectionNodeProps {
   config: Config
 }
 

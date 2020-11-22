@@ -1,6 +1,10 @@
 import { h } from "@cycle/react"
 import { dataProvider } from "components/admin/providers"
-import { Edition } from "components/admin/shared"
+import {
+  Edition,
+  Newsletter,
+  NewsletterReferenceField,
+} from "components/admin/shared"
 import { body, formatErrorHTML, mj, MjApiResult, mjml, Node } from "mj"
 import { Component, createRef, RefObject } from "react"
 import {
@@ -58,6 +62,7 @@ import { Input as PreviewInput, node as previewNode } from "./sections/preview"
 import { SaleInput, saleNode } from "./sections/properties"
 import { SoldInput, soldNode } from "./sections/properties"
 import { Input as SafetyInput, node as safetyNode } from "./sections/safety"
+import { SectionInputContext } from "./sections/section"
 import { Input as StatsInput, node as statsNode } from "./sections/stats"
 import { Input as TweetsInput, node as twitterNode } from "./sections/tweets"
 import { Input as WeatherInput, node as weatherNode } from "./sections/weather"
@@ -166,7 +171,7 @@ interface BodyConfig {
 }
 
 interface Props {
-  record?: ApiRecord
+  record?: Edition
 }
 interface State {
   sections: SectionConfig[]
@@ -254,6 +259,7 @@ export class EditionBodyInput extends Component<Props, State> {
         const welcomeEditionId = process.env.WELCOME_EDITION_ID!
         const isWelcome = welcomeEditionId === edition_id
         const context = { edition, isWelcome }
+        const neighborhood = edition.newsletter_analytics_name
         const editionId = get(edition, "id", "") as string
         let sectionRank = 0
         let previewText: string | null = null
@@ -271,6 +277,7 @@ export class EditionBodyInput extends Component<Props, State> {
                 analytics: {
                   section: kind,
                   sectionRank, // NOTE: temporary, need evaluate node first
+                  neighborhood,
                   edition: editionId,
                 },
               })
@@ -279,6 +286,7 @@ export class EditionBodyInput extends Component<Props, State> {
                 const analytics: AnalyticsProps = {
                   section,
                   sectionRank,
+                  neighborhood,
                   edition: editionId,
                 }
                 // @ts-ignore
@@ -395,6 +403,24 @@ export class EditionBodyInput extends Component<Props, State> {
     const inputs: SectionInput[] = []
     const { sections, syncing, html, htmlSizeError } = this.state
 
+    // TODO: embed JSONAPI edition.newsletter
+    const edition: Edition | undefined = this.props.record
+    const id = get(edition, ["newsletter", "id"]) || ""
+    const name = edition?.newsletter_name || ""
+    const lat = edition?.newsletter_lat || ""
+    const lng = edition?.newsletter_lng || ""
+    const source_urls = edition?.newsletter_source_urls || ""
+    const newsletter = {
+      id,
+      name,
+      lat,
+      lng,
+      source_urls,
+    }
+    const context: SectionInputContext = {
+      newsletter,
+    }
+
     sections.forEach((sectionConfig: SectionConfig, idx: number) => {
       const kind = get(sectionConfig, "kind")
       const config = get(sectionConfig, "config")
@@ -416,7 +442,7 @@ export class EditionBodyInput extends Component<Props, State> {
 
       inputs.push(
         // @ts-ignore
-        h(input, { key, kind, config, setConfig, id: `${key}-input` })
+        h(input, { key, kind, config, setConfig, id: `${key}-input`, context })
       )
     })
 

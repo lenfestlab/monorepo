@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2020_11_10_204606) do
+ActiveRecord::Schema.define(version: 2020_12_08_002147) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -145,6 +145,10 @@ ActiveRecord::Schema.define(version: 2020_11_10_204606) do
     t.string "sender_address"
     t.decimal "lat", precision: 10, scale: 6
     t.decimal "lng", precision: 10, scale: 6
+    t.text "source_urls"
+    t.string "analytics_name"
+    t.string "social_url_facebook"
+    t.string "logo_url"
     t.index ["mailgun_list_identifier"], name: "index_newsletters_on_mailgun_list_identifier"
     t.index ["name"], name: "index_newsletters_on_name"
   end

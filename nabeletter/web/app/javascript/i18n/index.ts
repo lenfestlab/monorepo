@@ -12,7 +12,7 @@ export const translate = (key: string): string => {
   const messages = {
     // header
     "header-input-subtitle-placeholder":
-      "What you need to start your week in Fishtown",
+      "What you need to start your week in NABE_NAME",
     // properties
     "properties-input-url-placeholder": "https://www.zillow.com/homedetails...",
     "properties-input-url-add": "Add",
@@ -25,7 +25,7 @@ export const translate = (key: string): string => {
     "preview-input-placeholder":
       "Optional. If omitted, clients default to first ~90 characters of content.",
     // header
-    "header-title": "Fishtown Neighborhood Newsletter",
+    "header-title": "NABE_NAME Neighborhood Newsletter",
     // sections
     "section-pre": "Pre",
     "section-post": "Post",
@@ -41,7 +41,7 @@ export const translate = (key: string): string => {
     "weather-field-vendor-attribution": "* Weather Data Powered by Dark Sky",
     // events
     "events-input-header": "Events",
-    "events-input-title-placeholder": "Fishtown events",
+    "events-input-title-placeholder": "NABE_NAME events",
     "events-input-url-placeholder":
       "https://calendar.google.com/calendar/ical/.../basic.ics",
     "events-input-download": "Load",
@@ -57,7 +57,7 @@ export const translate = (key: string): string => {
     "news-input-url-add": "Add",
     // stats
     "stats-input-header": "Statistics",
-    "stats-input-title-placeholder": "Fishtown Statistics",
+    "stats-input-title-placeholder": "NABE_NAME Statistics",
     "stats-input-url-placeholder": "https://.../image.png",
     "stats-input-caption-placeholder": "Image caption",
     "stats-input-md-placeholder": "TK",

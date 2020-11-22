@@ -98,6 +98,8 @@ const classNames = stylesheet({
     paddingBottom: px(half),
   },
   logo: {
+    width: px(166),
+    alignSelf: "center",
     paddingTop: px(pad),
     paddingBottom: px(pad),
   },
@@ -150,7 +152,7 @@ const linkString = ({
     )
   )
 
-import { Edition } from "components/admin/shared"
+import { Edition, Newsletter } from "components/admin/shared"
 interface GetResponse {
   data: Edition[]
   total: number
@@ -179,6 +181,17 @@ export const App = (_: {}) => {
     color: colors.darkBlue,
   })
 
+  const { value: newsletter } = useAsync(async () => {
+    const response: { data: Newsletter } = await dataProvider(
+      "GET_ONE",
+      "newsletters",
+      {
+        id: newsletter_id,
+      }
+    )
+    return response.data
+  }, [])
+
   const { loading, value, error } = useAsync(async () => {
     const response: GetResponse = await dataProvider("GET_LIST", "editions", {
       filter: { state: "delivered", newsletter_id },
@@ -192,16 +205,20 @@ export const App = (_: {}) => {
   return div({ id: "container", className: classNames.container }, [
     div({ id: "main", className: classNames.main }, [
       div({ id: "inner", className: classNames.mainInner }, [
-        img({ src: logo, alt: "The Hook", className: classNames.logo }),
+        img({
+          src: newsletter?.logo_url,
+          alt: newsletter?.sender_name,
+          className: classNames.logo,
+        }),
         div({ className: classNames.innerBare }, [
           div(
             { className: classes(classNames.innerBare, classNames.pitch) },
-            `The Hook is a weekly newsletter just about Fishtown. Each week, you’ll be sent curated headlines about your neighborhood, local events, real estate listings, reminders for community meetings, and more. `
+            `${newsletter?.sender_name} is a weekly newsletter just about ${newsletter?.name}. Each week, you’ll be sent curated headlines about your neighborhood, local events, real estate listings, reminders for community meetings, and more. `
           ),
           div({ className: classes(classNames.innerBare, classNames.cta) }, [
             span({
               dangerouslySetInnerHTML: {
-                __html: `${signup} for The Hook`,
+                __html: `${signup} for ${newsletter?.sender_name}`,
               },
             }),
           ]),
@@ -212,7 +229,7 @@ export const App = (_: {}) => {
             const published = format(parseISO(publish_at), "MMMM d, y")
             return div({ className: classNames.edition }, [
               div({ className: classNames.editionTitle }, [
-                `The Hook: ${published}`,
+                `${newsletter?.sender_name}: ${published}`,
               ]),
               a(
                 {
@@ -238,11 +255,11 @@ export const App = (_: {}) => {
         div({ id: "social", className: classNames.social }, [
           div(
             { id: "social-pitch", className: classNames.socialPitch },
-            `Connect with The Hook on Facebook`
+            `Connect with ${newsletter?.sender_name} on Facebook`
           ),
           a(
             {
-              href: "https://www.facebook.com/The-Hook-100662555076140",
+              href: newsletter?.social_url_facebook,
               target: "_blank",
             },
             [img({ src: facebook, alt: "Facebook" })]

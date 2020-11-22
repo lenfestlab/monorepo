@@ -6,9 +6,9 @@ import { translate } from "i18n"
 import { column, image, Node, section, text, wrapper } from "mj"
 import { colors, fonts } from "styles"
 import { Config } from "."
-import { SectionProps } from "../section"
+import { SectionNodeProps } from "../section"
 
-export interface Props extends SectionProps {
+export interface Props extends SectionNodeProps {
   config: Config
 }
 
@@ -18,11 +18,13 @@ export const node = ({
   context: { edition, isWelcome },
   typestyle,
 }: Props): Node | null => {
-  const title = translate("header-title")
+  // TODO: embed JSONAPI edition.newsletter
+  const NABE_NAME = edition.newsletter_name
+  const title = translate("header-title").replace("NABE_NAME", NABE_NAME)
   const subtitle = either(
     config.subtitle,
     translate("header-input-subtitle-placeholder")
-  )
+  ).replace("NABE_NAME", NABE_NAME)
   const published = get(edition, "publish_at")
 
   const textProps = {
@@ -51,7 +53,7 @@ export const node = ({
                 alt: title,
                 width: px(166),
                 height: px(58),
-                src: `https://res.cloudinary.com/hb8lfmjh0/image/upload/v1596322723/8b5c7b89f30a3afe90c7cfa30889c909.png`,
+                src: edition.newsletter_logo_url,
               }),
               text(
                 {
@@ -71,7 +73,11 @@ export const node = ({
                   format(parseISO(published), "MMMM d, y")
                 ),
               image({
-                src: pixelURL(edition.id, true),
+                src: pixelURL(
+                  edition.newsletter_analytics_name,
+                  edition.id,
+                  true
+                ),
                 alt: " ",
                 width: px(1),
                 height: px(1),

@@ -20,7 +20,7 @@ export { node } from "./node"
 //   "url": "https://www.google.com/calendar/event?eid=MnVrdjFxbDlyNzJobnZocjcwa3ZkdTdiNXMgZmlzaHRvd24ub3JnX28wbnUwaDlpdHZxYmZjZTdjMjUzOHFpajcwQGc",
 //   "name": "Set Reminder"
 // },
-// "meeting": "Fishtown Rec Center, 1202 E Montgomery Ave",
+// "meeting": "Rec Center, 1202 E Montgomery Ave",
 // "people": [{
 //   "name": "Mom Investment Llc",
 //   "title": "Owner"

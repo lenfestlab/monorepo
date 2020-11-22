@@ -1,15 +1,19 @@
-import { Edition } from "components/admin/shared"
+import { Edition, Newsletter } from "components/admin/shared"
 import { TypeStyle } from "typestyle"
 import { AnalyticsProps } from "../MarkdownField"
 
-export interface Context {
+export interface SectionInputContext {
+  newsletter?: Newsletter
+}
+
+export interface SectionNodeContext {
   edition: Edition
   isWelcome: boolean
 }
 
-export interface SectionProps {
+export interface SectionNodeProps {
   analytics: AnalyticsProps
-  context: Context
+  context: SectionNodeContext
   typestyle: TypeStyle
 }
 

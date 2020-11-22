@@ -2,9 +2,9 @@ import { allEmpty, either } from "fp"
 import { translate } from "i18n"
 import { Node } from "mj"
 import { Config, node as imagesNode } from "../images"
-import { SectionProps } from "../section"
+import { SectionNodeProps } from "../section"
 
-export interface Props extends SectionProps {
+export interface Props extends SectionNodeProps {
   config: Config
 }
 

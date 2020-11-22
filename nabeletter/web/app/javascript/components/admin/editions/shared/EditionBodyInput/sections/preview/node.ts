@@ -3,9 +3,9 @@ import { compact, either, isEmpty } from "fp"
 import { column, Node, text } from "mj"
 import { StyleMap } from "styles"
 import { Config } from "."
-import { cardSection, cardWrapper, SectionProps } from "../section"
+import { cardSection, cardWrapper, SectionNodeProps } from "../section"
 
-export interface Props extends SectionProps {
+export interface Props extends SectionNodeProps {
   config: Config
 }
 

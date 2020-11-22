@@ -3,14 +3,34 @@ import React, { Fragment } from "react"
 import {
   Datagrid,
   DateField,
+  Filter,
   List,
   ReferenceField,
+  ReferenceInput,
+  SelectInput,
   TextField,
 } from "react-admin"
 
-interface Props {}
+const NewsletterFilter = (props: {}) =>
+  h(Filter, { ...props }, [
+    h(
+      ReferenceInput,
+      {
+        alwaysOn: true,
+        // allowEmpty: false,
+        source: "newsletter_id",
+        reference: "newsletters",
+      },
+      [
+        h(SelectInput, {
+          label: "Newsletter",
+          source: "name",
+        }),
+      ]
+    ),
+  ])
 
-export const EditionList = (props: Props) =>
+export const EditionList = (props: {}) =>
   h(
     List,
     {
@@ -18,6 +38,7 @@ export const EditionList = (props: Props) =>
       sort: { field: "publish_at", order: "DESC" },
       bulkActionButtons: false,
       exporter: false,
+      filters: h(NewsletterFilter),
     },
     [
       h(Datagrid, { rowClick: "show" }, [

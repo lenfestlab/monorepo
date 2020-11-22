@@ -1,19 +1,14 @@
-import { h } from "@cycle/react"
 import { a, button, div, form, img, input, span } from "@cycle/react-dom"
-import { BrowserClient } from "@sentry/browser"
-import { dataProvider } from "components/admin/providers"
 import { horizontal, normalize, setupPage } from "csstips"
 import { content, fillParent, vertical } from "csstips"
 import { percent, px, rgba, url } from "csx"
+import logo from "images/hook.svg"
 import get from "lodash/get"
 import { ChangeEvent, FormEvent, useCallback, useState } from "react"
 import { create } from "rxjs-spy"
 import { colors, fonts, queries } from "styles"
 import { classes, cssRaw, cssRule, media, stylesheet } from "typestyle"
-import { URL } from "url"
 import backgroundImage from "./background.jpg"
-
-import logo from "images/hook.svg"
 
 const spy = create({ defaultLogger: console, sourceMaps: true })
 if (process.env.DEBUG_RX) {
@@ -67,6 +62,9 @@ const classNames = stylesheet({
     paddingBottom: px(pad * 2),
   },
   logo: {
+    width: px(166),
+    alignSelf: "center",
+    // paddingTop: px(pad),
     paddingBottom: px(pad),
   },
   pitch: {
@@ -166,7 +164,26 @@ const classNames = stylesheet({
 
 const moreURL = process.env.ONBOARDING_SIGNUP_MORE_URL! as string
 
+import { dataProvider } from "components/admin/providers"
+import { Newsletter } from "components/admin/shared"
+import { useAsync } from "react-use"
+interface GetResponse {
+  data: Newsletter
+  total: number
+}
+
 export const App = (_: {}) => {
+  const { search } = window.location
+  const params = new URLSearchParams(search)
+  const newsletter_id = params.get("newsletter_id")
+
+  const { value: newsletter } = useAsync(async () => {
+    const response: GetResponse = await dataProvider("GET_ONE", "newsletters", {
+      id: newsletter_id,
+    })
+    return response.data
+  }, [])
+
   const [email, setEmail] = useState("")
   const onChange = (event: ChangeEvent) => {
     const target = event.target as HTMLInputElement
@@ -185,10 +202,12 @@ export const App = (_: {}) => {
       event.preventDefault()
       setError(null)
       setLoading(true)
+      const email_address = email
+
       const { search } = window.location
       const params = new URLSearchParams(search)
       const newsletter_id = params.get("newsletter_id")
-      const email_address = email
+
       const data = { email_address, newsletter_id }
       fetch(`/signups`, {
         method: "POST",
@@ -221,14 +240,18 @@ export const App = (_: {}) => {
 
   return div({ className: classNames.background }, [
     div({ className: classNames.container }, [
-      img({ src: logo, alt: "The Hook", className: classNames.logo }),
+      img({
+        src: newsletter?.logo_url,
+        alt: newsletter?.sender_name,
+        className: classNames.logo,
+      }),
       div(
         { className: classNames.pitch },
-        `Fishtown: Do you want all of your neighborhood news in one place?`
+        `${newsletter?.name}: Do you want all of your neighborhood news in one place?`
       ),
       div(
         { className: classNames.description },
-        `The Hook is a weekly newsletter just about Fishtown. Each week, you’ll receive local news, events, real estate listings, and more.`
+        `${newsletter?.sender_name} is a weekly newsletter just about ${newsletter?.name}. Each week, you’ll receive local news, events, real estate listings, and more.`
       ),
       form({ id: "signup-form", className: classNames.form, onSubmit }, [
         success && div({ className: classNames.success }, "Thanks!"),

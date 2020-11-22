@@ -7,7 +7,7 @@ import { column, group, image, Node, text } from "mj"
 import { colors, StyleMap } from "styles"
 import { Config, Forecast } from "."
 import { md } from "../MarkdownField"
-import { cardSection, cardWrapper, SectionProps } from "../section"
+import { cardSection, cardWrapper, SectionNodeProps } from "../section"
 
 type ImageWidth = string
 type ImageURL = string
@@ -57,7 +57,7 @@ export interface Day {
   }
 }
 
-export interface Props extends SectionProps {
+export interface Props extends SectionNodeProps {
   config: Config
 }
 

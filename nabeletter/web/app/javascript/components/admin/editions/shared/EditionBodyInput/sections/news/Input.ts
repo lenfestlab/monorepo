@@ -41,7 +41,7 @@ import { translate } from "i18n"
 import { Article, Config, SetConfig } from "."
 import { ProgressButton } from "../ProgressButton"
 import { QuickLinks } from "../QuickLinks"
-import { AdOpt, SectionConfig } from "../section"
+import { AdOpt, SectionConfig, SectionInputContext } from "../section"
 import { SectionInput } from "../section/SectionInput"
 
 type URL = string
@@ -55,6 +55,7 @@ type InputEvent = React.ChangeEvent<HTMLInputElement>
 type ButtonEvent = React.MouseEvent<HTMLButtonElement>
 
 interface Props {
+  context: SectionInputContext
   config: Config
   setConfig: SetConfig
   inputRef: RefObject<HTMLDivElement>
@@ -253,6 +254,7 @@ export class Input extends Component<Props, State> {
       inputRef,
       id,
       kind,
+      context,
       // TODO
       // urlPlaceholder,
       // headerText,
@@ -287,8 +289,8 @@ export class Input extends Component<Props, State> {
     const headerText = translate(`news-input-header`)
     const titlePlaceholder = translate(`news-input-title-placeholder`)
     const placeholder = translate(`news-input-url-placeholder`)
-    const urls = compact(
-      (process.env.SECTION_NEWS_SOURCE_URLS ?? "").split(/\s+/)
+    const urls: string[] = compact(
+      (context.newsletter?.source_urls ?? "").split(/\s+/)
     )
     return h(
       SectionInput,

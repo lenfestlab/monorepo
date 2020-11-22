@@ -3,11 +3,11 @@ import { px } from "csx"
 import { compact } from "fp"
 import { column, image, Node, text, wrapper } from "mj"
 import { colors, fonts } from "styles"
-import { AdOpt, SectionProps } from "."
+import { AdOpt, SectionNodeProps } from "."
 import { md } from "../MarkdownField"
 import { cardSection } from "../section/cardSection"
 
-export interface CardWrapperProps extends Omit<SectionProps, "context"> {
+export interface CardWrapperProps extends Omit<SectionNodeProps, "context"> {
   title: string
   pre?: string
   post?: string
