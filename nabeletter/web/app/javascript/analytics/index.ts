@@ -8,7 +8,6 @@ export const safeTitle = (title: string | undefined | null) => either(title, "")
 type Category = "interaction"
 type Action = "click"
 type Label = "content" | "ad"
-type Neighborhood = "fishtown"
 
 type UUID = string
 
@@ -18,7 +17,7 @@ export interface AnalyticsProps {
   category?: Category
   action?: Action
   label?: Label
-  neighborhood?: Neighborhood
+  neighborhood: string
   edition: UUID
   section: string
   sectionRank: number
@@ -31,7 +30,7 @@ export const rewriteURL = (redirect: string, props: AnalyticsProps): string => {
     category = "interaction",
     action = "click",
     label = "content",
-    neighborhood = "fishtown",
+    neighborhood,
     edition,
     section,
     sectionRank,
@@ -59,13 +58,17 @@ export const rewriteURL = (redirect: string, props: AnalyticsProps): string => {
   })
 }
 
-export const pixelURL = (edition: string | number, ours?: boolean): string => {
+export const pixelURL = (
+  newsletter_analytics_name: string,
+  edition: string | number,
+  ours?: boolean
+): string => {
   const v = "1"
   const t = "event"
   const ec = "email"
   const ea = "open"
   const tid = process.env.GA_TID as string
-  const cd1 = "fishtown"
+  const cd1 = newsletter_analytics_name
   const cd2 = String(edition)
   const url = ours
     ? `https://${process.env.RAILS_HOST}/pixel`

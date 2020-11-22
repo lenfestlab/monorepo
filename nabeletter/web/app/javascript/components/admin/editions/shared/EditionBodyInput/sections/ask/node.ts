@@ -6,9 +6,9 @@ import { button, column, Node, text } from "mj"
 import { colors } from "styles"
 import { Config } from "."
 import { md } from "../MarkdownField"
-import { cardSection, cardWrapper, SectionProps } from "../section"
+import { cardSection, cardWrapper, SectionNodeProps } from "../section"
 
-export interface Props extends SectionProps {
+export interface Props extends SectionNodeProps {
   config: Config
 }
 

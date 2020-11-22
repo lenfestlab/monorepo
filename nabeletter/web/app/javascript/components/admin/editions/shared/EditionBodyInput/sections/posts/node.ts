@@ -4,9 +4,9 @@ import { allEmpty, either, isEmpty, map, values } from "fp"
 import { translate } from "i18n"
 import { column, group, image, image as imageNode, Node, text } from "mj"
 import { Config, Post } from "."
-import { cardSection, cardWrapper, SectionProps } from "../section"
+import { cardSection, cardWrapper, SectionNodeProps } from "../section"
 
-export interface Props extends SectionProps {
+export interface Props extends SectionNodeProps {
   config: Config
   kind: string
 }

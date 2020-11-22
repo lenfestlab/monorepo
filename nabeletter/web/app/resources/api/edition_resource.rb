@@ -12,6 +12,10 @@ class Api::EditionResource < JSONAPI::Resource
              newsletter_name
              newsletter_lat
              newsletter_lng
+             newsletter_source_urls
+             newsletter_analytics_name
+             newsletter_social_url_facebook
+             newsletter_logo_url
              link_count
              kind
              ])
@@ -26,6 +30,18 @@ class Api::EditionResource < JSONAPI::Resource
   end
   def newsletter_lng
     @model.newsletter.lng
+  end
+  def newsletter_source_urls
+    @model.newsletter.source_urls
+  end
+  def newsletter_analytics_name
+    @model.newsletter.analytics_name
+  end
+  def newsletter_social_url_facebook
+    @model.newsletter.social_url_facebook
+  end
+  def newsletter_logo_url
+    @model.newsletter.logo_url
   end
   def link_count
     @model.links.count

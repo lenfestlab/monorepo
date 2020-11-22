@@ -3,9 +3,9 @@ import { translate } from "i18n"
 import { Node } from "mj"
 import { Config } from "."
 import { articlesNode } from "../news"
-import { SectionProps } from "../section"
+import { SectionNodeProps } from "../section"
 
-export interface Props extends SectionProps {
+export interface Props extends SectionNodeProps {
   config: Config
 }
 

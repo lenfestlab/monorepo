@@ -6,16 +6,22 @@ import { translate } from "i18n"
 import { column, image, Node, text } from "mj"
 import { colors } from "styles"
 import { Config } from "."
-import { cardSection, cardWrapper, SectionProps } from "../section"
+import { cardSection, cardWrapper, SectionNodeProps } from "../section"
 
-export interface Props extends SectionProps {
+export interface Props extends SectionNodeProps {
   config: Config
 }
 
-export const node = ({ analytics, config, typestyle }: Props): Node | null => {
+export const node = ({
+  context: { edition },
+  analytics,
+  config,
+  typestyle,
+}: Props): Node | null => {
+  const NABE_NAME = edition.newsletter_name
   const title = either(
     config.title,
-    translate(`events-input-title-placeholder`)
+    translate(`events-input-title-placeholder`).replace("NABE_NAME", NABE_NAME)
   )
   const { pre, post, ad } = config
   const events = config.selections

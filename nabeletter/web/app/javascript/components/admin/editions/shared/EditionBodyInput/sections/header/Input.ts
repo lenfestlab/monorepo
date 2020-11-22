@@ -9,21 +9,27 @@ import {
 import { translate } from "i18n"
 import React, { RefObject, useEffect, useState } from "react"
 import { Config, SetConfig } from "."
+import { SectionInputContext } from "../section"
 
 interface Props {
+  context: SectionInputContext
   config: Config
   setConfig: SetConfig
   inputRef: RefObject<HTMLDivElement>
   id: string
 }
-export const Input = ({ config, setConfig }: Props) => {
+export const Input = ({ context, config, setConfig }: Props) => {
   const [subtitle, setSubtitle] = useState(config.subtitle)
 
   useEffect(() => {
     setConfig({ subtitle })
   }, [subtitle])
 
-  const titlePlaceholder = translate("header-input-subtitle-placeholder")
+  const NABE_NAME = context.newsletter?.name ?? "???"
+  const titlePlaceholder = translate(
+    "header-input-subtitle-placeholder"
+  ).replace("NABE_NAME", NABE_NAME)
+
   const onChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     setSubtitle(event.target.value as string)
   }

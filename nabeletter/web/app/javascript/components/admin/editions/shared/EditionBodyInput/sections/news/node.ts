@@ -6,9 +6,9 @@ import { translate } from "i18n"
 import { column, image, Node, text } from "mj"
 import { colors } from "styles"
 import { Article, Config } from "."
-import { cardSection, cardWrapper, SectionProps } from "../section"
+import { cardSection, cardWrapper, SectionNodeProps } from "../section"
 
-export interface Props extends SectionProps {
+export interface Props extends SectionNodeProps {
   config: Config
 }
 

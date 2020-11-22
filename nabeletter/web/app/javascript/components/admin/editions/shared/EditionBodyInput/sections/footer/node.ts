@@ -13,7 +13,7 @@ import {
   TextAttributes,
 } from "mj"
 import { colors } from "styles"
-import { SectionProps } from "../section"
+import { SectionNodeProps } from "../section"
 
 const feedbackEmail = process.env.FEEDBACK_EMAIL as string
 
@@ -22,18 +22,9 @@ interface SocialLink {
   url: string
   src: string
 }
-const socialLinks: SocialLink[] = [
-  {
-    title: "facebook",
-    url: "https://www.facebook.com/The-Hook-100662555076140",
-    src:
-      "https://res.cloudinary.com/dh5yeyrsc/image/upload/v1585124217/social/facebook-icon_yfgb3v.png",
-  },
-]
-
 const linebreak = "<br/>"
 
-export interface Props extends SectionProps {}
+export interface Props extends SectionNodeProps {}
 
 export const node = ({
   analytics: _analytics,
@@ -47,7 +38,20 @@ export const node = ({
   }
   const newsletter_id = get(edition, ["newsletter", "id"])
   const newsletter_name = get(edition, "newsletter_name")
+  const newsletter_social_url_facebook = get(
+    edition,
+    "newsletter_social_url_facebook"
+  )
   const edition_id = get(edition, "id")
+
+  const socialLinks: SocialLink[] = [
+    {
+      title: "facebook",
+      url: newsletter_social_url_facebook,
+      src:
+        "https://res.cloudinary.com/dh5yeyrsc/image/upload/v1585124217/social/facebook-icon_yfgb3v.png",
+    },
+  ]
 
   const footerTextAttributes: TextAttributes = {
     align: "center",

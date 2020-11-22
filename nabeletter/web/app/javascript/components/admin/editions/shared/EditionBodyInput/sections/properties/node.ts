@@ -5,9 +5,9 @@ import { currency } from "i18n"
 import { column, image as imageNode, Node, text } from "mj"
 import { colors, StyleMap } from "styles"
 import { Config } from "."
-import { cardSection, cardWrapper, SectionProps } from "../section"
+import { cardSection, cardWrapper, SectionNodeProps } from "../section"
 
-export interface Props extends SectionProps {
+export interface Props extends SectionNodeProps {
   config: Config
   titlePlaceholder: string
 }

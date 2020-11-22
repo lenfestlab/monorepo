@@ -31,6 +31,7 @@ import { compact, either } from "fp"
 import { translate } from "i18n"
 import { Config, Event, SetConfig } from "."
 import { ProgressButton } from "../ProgressButton"
+import { SectionConfig, SectionInputContext } from "../section"
 import { SectionInput } from "../section/SectionInput"
 import { Item, TransferList } from "../TransferList"
 
@@ -149,13 +150,14 @@ const selections$: Observable<Event[]> = right$.pipe(
 )
 
 interface Props {
+  context: SectionInputContext
   config: Config
   setConfig: SetConfig
   inputRef: RefObject<HTMLDivElement>
   id: string
 }
 
-export const Input = ({ config, setConfig, inputRef, id }: Props) => {
+export const Input = ({ context, config, setConfig, inputRef, id }: Props) => {
   const [title, setTitle] = useState(config.title)
   const [pre, setPre] = useState(config.pre)
   const [post, setPost] = useState(config.post)
@@ -175,7 +177,11 @@ export const Input = ({ config, setConfig, inputRef, id }: Props) => {
   )
 
   const headerText = translate("events-input-header")
-  const titlePlaceholder = translate("events-input-title-placeholder")
+  const NABE_NAME = context.newsletter?.name ?? "???"
+  const titlePlaceholder = translate("events-input-title-placeholder").replace(
+    "NABE_NAME",
+    NABE_NAME
+  )
   const placeholder = translate(`events-input-url-placeholder`)
 
   return h(
