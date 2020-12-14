@@ -20,8 +20,9 @@ Timber.config.integrations.rack
   .user_context.custom_user_hash = lambda do |rack_env|
   # skip non-resource endpoints
   path = rack_env["PATH_INFO"]
-  return nil if path.match(%r{^\/(tokens|admin|analytics|events|articles|permits|signup|signups|pixel|editions)?$})
+  return nil if path.match(%r{^\/(tokens|admin|analytics|events|articles|permits|signup|signups|pixel)?$})
   return nil if path.match(%r{^\/(editions)})
+  return nil if path.match(%r{^\/(api\/editions|api\/newsletters)?})
   # authenticate
   proxy = rack_env["warden"]
   proxy.authenticate!(scope: :user)
