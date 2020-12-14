@@ -1,6 +1,7 @@
 import { h } from "@cycle/react"
 import React, { Fragment } from "react"
 import {
+  AutocompleteInput,
   Datagrid,
   DateField,
   Filter,
@@ -28,6 +29,15 @@ const NewsletterFilter = (props: {}) =>
         }),
       ]
     ),
+    h(AutocompleteInput, {
+      alwaysOn: true,
+      choices: [
+        { id: 0, name: "normal" },
+        { id: 1, name: "adhoc" },
+        { id: 2, name: "personal" },
+      ],
+      source: "kind",
+    }),
   ])
 
 export const EditionList = (props: {}) =>
