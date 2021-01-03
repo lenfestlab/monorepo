@@ -1,6 +1,6 @@
 brew "asdf"
 brew "heroku/brew/heroku"
 brew "mkcert"
-brew "postgresql"
+brew "postgresql@12"
 brew "puma/puma/puma-dev"
 brew "yarn"
