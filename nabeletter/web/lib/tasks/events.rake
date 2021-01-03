@@ -69,3 +69,30 @@ namespace :events do
 
 end
 
+
+namespace :stats do
+
+  task import: :environment do
+    api_key = ENV["MAILGUN_API_KEY"]
+    Edition.normal.delivered.order(:publish_at).each do |edition|
+      published_at = edition.publish_at
+      start_at = published_at.beginning_of_month.to_i
+      end_at = published_at.end_of_month.to_i
+      resolution = "month"
+      id = edition.id
+      tag = "eid=#{id}"
+      %w{ delivered }.each do |event|
+        url = "https://api:#{api_key}@api.mailgun.net/v3/lenfestlab.org/tags/#{tag}/stats?event=#{event}&resolution=#{resolution}&start=#{start_at}&end=#{end_at}"
+        response = HTTParty.get(url)
+        Rails.logger.info("parsed_response #{response.parsed_response}")
+        data = response.parsed_response
+        total = data["stats"][0][event]["total"] rescue nil
+        if total
+          edition.update("stat_#{event}": total)
+        end
+      end
+    end
+  end
+
+end
+
