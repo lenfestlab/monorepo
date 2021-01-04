@@ -193,12 +193,15 @@ app.get("/capture", async (req, res) => {
         "https://platform.instagram.com/en_US/embeds.js"
       );
     }
-    console.debug(html);
+
     // init browser
     const browser = await puppeteer.launch({
+      headless: true,
       args: ["--no-sandbox", "--disable-setuid-sandbox"],
     });
     const page = await browser.newPage();
+    const ua = process.env.FAKE_USER_AGENT;
+    await page.setUserAgent(ua ?? (await browser.userAgent()));
     await page.setViewport({
       width: 800,
       height: 800,
@@ -225,6 +228,7 @@ app.get("/capture", async (req, res) => {
       default:
         throw new Error("Unsupported embed provider");
     }
+
     const ele = await page.$(selector);
     if (!ele) throw new Error(`MIA: page element ${selector}`);
     const screenshot = await ele.screenshot({
