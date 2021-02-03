@@ -11,11 +11,13 @@ import {
 import { Delete } from "@material-ui/icons"
 import { Component, createRef, RefObject } from "react"
 import {
+  BehaviorSubject,
   combineLatest,
   fromEvent,
   merge,
   Notification,
   Observable,
+  of,
   Subject,
   Subscription,
 } from "rxjs"
@@ -66,6 +68,7 @@ interface State extends SectionConfig {
   pending: boolean
   url: URL
   urlError: URLError
+  selection: number
   postmap: PostMap
 }
 
@@ -73,6 +76,7 @@ export class Input extends Component<Props, State> {
   subscription: Subscription | null = null
   refTitle = createRef<HTMLDivElement>()
   refURL = createRef<HTMLDivElement>()
+  refSelection = createRef<HTMLDivElement>()
   refAdd = createRef<HTMLButtonElement>()
   remove$$ = new Subject<URL>()
   title$$ = new Subject<string>()
@@ -93,12 +97,13 @@ export class Input extends Component<Props, State> {
       pending: false,
       url: "",
       urlError: { error: false, helperText: "" },
+      selection: 1,
       postmap,
     }
   }
 
   componentDidMount() {
-    const { title, pre, post, url, disabled, postmap } = this.state
+    const { title, pre, post, url, selection, disabled, postmap } = this.state
 
     const title$ = this.title$$
       .asObservable()
@@ -110,7 +115,7 @@ export class Input extends Component<Props, State> {
       .asObservable()
       .pipe(startWith(post), tag("post$"), shareReplay())
 
-    if (!this.refURL.current) {
+    if (!this.refURL.current || !this.refSelection) {
       throw new Error("MIA: refUrl")
     }
     const urlInput$ = fromEvent<InputChangeEvent>(
@@ -123,18 +128,35 @@ export class Input extends Component<Props, State> {
       tag("urlInput$"),
       share()
     )
+    const selectionInput$ = merge(
+      of(1), // default to 1st
+      fromEvent<InputChangeEvent>(this.refSelection.current!, "input").pipe(
+        map((event: InputChangeEvent) => {
+          return event.target.value as string
+        })
+      ),
+      tag("selectionInput$"),
+      share()
+    )
 
     const addButton$ = fromEvent(this.refAdd.current!, "click").pipe(
       tag("addButton$"),
       share()
     )
 
+    const urlAndSelection$ = combineLatest(urlInput$, selectionInput$).pipe(
+      tag("urlAndSelection$"),
+      share()
+    )
     const addRequest$ = addButton$.pipe(
-      withLatestFrom(urlInput$),
-      map(([_, url]) => url),
-      switchMap((url: URL) => {
+      withLatestFrom(urlAndSelection$),
+      map(([_, pair]) => pair),
+      tag("[url$, selection$]"),
+      switchMap(([url, selection]) => {
         return ajax
-          .getJSON<Post>(`${process.env.SCREENSHOT_ENDPOINT}?url=${url}`)
+          .getJSON<Post>(
+            `${process.env.SCREENSHOT_ENDPOINT}?selection=${selection}&url=${url}`
+          )
           .pipe(materialize(), tag("addRequest$.getJSON.materialize$"))
       }),
       tag("addRequest$"),
@@ -153,6 +175,12 @@ export class Input extends Component<Props, State> {
       startWith(url),
       distinctUntilChanged(),
       tag("url$"),
+      shareReplay()
+    )
+    const selection$ = merge(selectionInput$, clearUrl$).pipe(
+      startWith(selection),
+      distinctUntilChanged(),
+      tag("selection$"),
       shareReplay()
     )
 
@@ -235,29 +263,43 @@ export class Input extends Component<Props, State> {
       pre$,
       post$,
       url$,
+      selection$,
       disabled$,
       pending$,
       urlError$,
       postmap$,
     ]).pipe(
       tag("combineLatest$"),
-      tap(([title, pre, post, url, disabled, pending, urlError, postmap]) => {
-        // @ts-ignore
-        this.setState((prior) => {
-          const next = {
-            ...prior,
-            title,
-            pre,
-            post,
-            url,
-            disabled,
-            pending,
-            urlError,
-            postmap,
-          }
-          return next
-        })
-      }),
+      tap(
+        ([
+          title,
+          pre,
+          post,
+          url,
+          selection,
+          disabled,
+          pending,
+          urlError,
+          postmap,
+        ]) => {
+          // @ts-ignore
+          this.setState((prior) => {
+            const next = {
+              ...prior,
+              title,
+              pre,
+              post,
+              url,
+              selection,
+              disabled,
+              pending,
+              urlError,
+              postmap,
+            }
+            return next
+          })
+        }
+      ),
       tag("state$"),
       share()
     )
@@ -277,7 +319,7 @@ export class Input extends Component<Props, State> {
   }
 
   render() {
-    const { refTitle, refURL, refAdd } = this
+    const { refTitle, refURL, refSelection, refAdd } = this
     const { inputRef, id, kind, quickLinks } = this.props
     const {
       disabled,
@@ -287,6 +329,7 @@ export class Input extends Component<Props, State> {
       post,
       postmap,
       url,
+      selection,
       urlError,
     } = this.state
     const posts = values(postmap)
@@ -324,6 +367,14 @@ export class Input extends Component<Props, State> {
             placeholder: translate(`${kind}-input-url-placeholder`),
             variant: "filled",
           },
+        }),
+        h(TextField, {
+          ref: refSelection,
+          value: selection,
+          defaultValue: 1,
+          label: "Carousel image no.",
+          type: "number",
+          variant: "filled",
         }),
         h(
           ProgressButton,
