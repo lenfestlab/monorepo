@@ -355,7 +355,7 @@ export class EditionBodyInput extends Component<Props, State> {
         return html ?? formatErrorHTML(errors)
       }),
       distinctUntilChanged(),
-      tag("html$"),
+      // tag("html$"),
       tap((html) => {
         const kb = new Blob([html]).size / 1000
         // NOTE: warn if size Gmail's clip threshold. https://bit.ly/30q9ZFv

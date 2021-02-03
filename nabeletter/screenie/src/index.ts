@@ -231,6 +231,37 @@ app.get("/capture", async (req, res) => {
 
     const ele = await page.$(selector);
     if (!ele) throw new Error(`MIA: page element ${selector}`);
+
+    const selection = Number(req.query.selection as string);
+    console.debug(`selection: ${selection}`);
+    const public_key = selection === 0 ? url : `${url}-${selection}`;
+    if (domain === "instagram.com") {
+      await page.waitForSelector("iframe");
+      const frameHandle = await page.$("iframe");
+      const frame = await frameHandle?.contentFrame();
+      if (!frame) {
+        console.error("MIA iframe");
+      } else {
+        if (selection > 1) {
+          try {
+            await frame.waitForSelector("button");
+            const button = await frame.$("button");
+            if (!button) {
+              console.error("MIA: button");
+            } else {
+              var rightClicks = selection - 1;
+              for (var i = 0; i < rightClicks; i++) {
+                button.click();
+                await frame.waitForNavigation({ timeout: 1000 });
+              }
+            }
+          } catch (error) {
+            console.error(error);
+          }
+        }
+      }
+    }
+
     const screenshot = await ele.screenshot({
       omitBackground: true,
       encoding: "binary",
@@ -238,7 +269,7 @@ app.get("/capture", async (req, res) => {
     await browser.close();
     // upload image
     const api = cloudinary.v2;
-    const public_id = crypto.createHash("md5").update(url).digest("hex");
+    const public_id = crypto.createHash("md5").update(public_key).digest("hex");
     const apiUploadOpts: UploadApiOptions = { public_id, overwrite: true };
     const screenshot_url: string = await new Promise<string>(
       (resolve, reject) => {
