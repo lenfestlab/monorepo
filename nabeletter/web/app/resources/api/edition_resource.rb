@@ -16,6 +16,7 @@ class Api::EditionResource < JSONAPI::Resource
              newsletter_analytics_name
              newsletter_social_url_facebook
              newsletter_logo_url
+             newsletter_timezone
              link_count
              kind
              ])
@@ -45,6 +46,10 @@ class Api::EditionResource < JSONAPI::Resource
   end
   def link_count
     @model.links.count
+  end
+
+  def newsletter_timezone
+    @model.newsletter.timezone || "Etc/UTC"
   end
 
   def self.updatable_fields(context)

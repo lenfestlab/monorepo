@@ -111,7 +111,7 @@ export class Input extends Component<Props, State> {
           const address = rawAddress
           const type = humanize(typeofwork)
           const date = format(parseISO(permitissuedate), "MMMM d, y")
-          const description = approvedscopeofwork
+          const description = (approvedscopeofwork ?? "")
             .split(/\./)
             .map((sentence) => humanize(sentence))
             .join(". ")

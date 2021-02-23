@@ -10,6 +10,7 @@ export interface Newsletter extends Record {
   sender_name?: string
   social_url_facebook?: string
   logo_url?: string
+  timezone?: string
 }
 
 export interface Edition extends Record {
@@ -23,6 +24,7 @@ export interface Edition extends Record {
   newsletter_source_urls: string
   newsletter_analytics_name: string
   newsletter_logo_url: string
+  newsletter_timezone: string
 }
 
 export interface Ad extends Record {

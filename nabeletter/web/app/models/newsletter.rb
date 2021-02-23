@@ -8,4 +8,12 @@ class Newsletter < ApplicationRecord
   def list_identifier
     self.mailgun_list_identifier
   end
+
+  def get_timezone
+    Timezone.lookup(self.lat, self.lng).try :name
+  end
+
+  before_save do
+    self.timezone = self.get_timezone
+  end
 end
