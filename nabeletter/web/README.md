@@ -6,7 +6,7 @@ bash ./scripts/bootstrap.sh
 
 # enable localhost SSL
 mkcert -install
-(ipaddr=$(ipconfig getifaddr en0) && \
+(ipaddr=$(ipconfig getifaddr en1) && \
   cd ./config/cert/ && \
   mkcert \
   --cert-file localhost-cert.pem \

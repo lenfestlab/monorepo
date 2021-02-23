@@ -1,3 +1,5 @@
+import { format as _format } from "date-fns"
+import { utcToZonedTime } from "date-fns-tz"
 import { get } from "fp"
 
 export const currency = (amount: number) => {
@@ -7,6 +9,14 @@ export const currency = (amount: number) => {
   })
   return formatter.format(amount).replace(/\D00(?=\D*$)/, "") // https://bit.ly/3fPs70s
 }
+
+export const UTC = "Etc/UTC"
+export const EST = "America/New_York"
+export const FORMAT_GCAL = "yyyyMMdd'T'HHmmss'Z'"
+export const FORMAT_LONG = "EEEE, LLLL d @ p"
+export const FORMAT_SHORT = "L/d/yy h':'mmaa"
+export const format = (date: Date, format: string, timezone: string) =>
+  _format(utcToZonedTime(date, timezone), format)
 
 export const translate = (key: string): string => {
   const messages = {
@@ -45,7 +55,10 @@ export const translate = (key: string): string => {
     "events-input-url-placeholder":
       "https://calendar.google.com/calendar/ical/.../basic.ics",
     "events-input-download": "Load",
+    "events-add-to-gcal": "Add to calendar >>",
     "events-field-more": "View more events >>",
+    "events-field-add":
+      "Add our shared neighborhood events calendar to your Google Calendar.",
     "events-input-public-helper":
       "Settings and sharing > Integrate calendar > Public URL to this calendar",
     "events-input-webcal-helper":
@@ -117,7 +130,10 @@ export const translate = (key: string): string => {
     "meetings-input-header": "Meetings",
     "meetings-input-title-placeholder": "Neighbors Association Meetings",
     "meetings-field-zoom-link": "Zoom link",
-    "meetings-field-set-reminder": "Set reminder",
+    // "meetings-field-set-reminder": "Set reminder",
+    "meetings-field-set-reminder": "Add to calendar >>",
+    "meetings-field-more": "View more meetings >>",
+    "meetings-field-add": `Add our shared community meetings calendar to your Google Calendar.`,
     // footer
     "footer-feedback-prompt": "Have feedback?",
     "footer-feedback-cta": "Send it to ",

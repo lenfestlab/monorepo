@@ -1,6 +1,6 @@
 import { h } from "@cycle/react"
 import { TextField } from "@material-ui/core"
-import { format, parseISO } from "date-fns"
+import { parseISO } from "date-fns"
 import { RefObject, useEffect, useState } from "react"
 import { useObservable } from "react-use"
 import {
@@ -28,7 +28,7 @@ import {
 } from "rxjs/operators"
 
 import { compact, either } from "fp"
-import { translate } from "i18n"
+import { EST, format, FORMAT_SHORT, translate } from "i18n"
 import { Config, Event, SetConfig } from "."
 import { ProgressButton } from "../ProgressButton"
 import { SectionInput } from "../section/SectionInput"
@@ -119,7 +119,7 @@ const events$: Observable<Event[]> = onErrorResumeNext(response$).pipe(
 
 const mapItems = (events: Event[]): Item[] =>
   events.map(({ uid, summary, dstart }) => {
-    const starts = format(parseISO(dstart), "L/d/yy h':'mmaa")
+    const starts = format(parseISO(dstart), FORMAT_SHORT, EST)
     return { id: uid, title: `${starts} ${summary}` }
   })
 

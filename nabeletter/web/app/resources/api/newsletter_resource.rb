@@ -9,6 +9,7 @@ class Api::NewsletterResource < JSONAPI::Resource
              lng
              social_url_facebook
              logo_url
+             timezone
              ])
 
   has_many :editions

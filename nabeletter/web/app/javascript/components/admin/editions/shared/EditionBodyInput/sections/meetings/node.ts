@@ -1,8 +1,8 @@
 import { link, rewriteDomLinks } from "analytics"
 import { important, px } from "csx"
-import { format, parseISO } from "date-fns"
+import { parseISO } from "date-fns"
 import { allEmpty, compact, either, first, last } from "fp"
-import { translate } from "i18n"
+import { EST, format, FORMAT_GCAL, FORMAT_LONG, translate, UTC } from "i18n"
 import { column, image, Node, text } from "mj"
 import { stringifyUrl } from "query-string"
 import { colors, StyleMap } from "styles"
@@ -20,6 +20,7 @@ export const node = ({ analytics, config, typestyle }: Props): Node | null => {
   )
   const { pre, post } = config
   const events = config.selections
+  const publicURL = config.publicURL
   if (allEmpty([events, pre, post])) return null
 
   const styles: StyleMap = {
@@ -37,6 +38,13 @@ export const node = ({ analytics, config, typestyle }: Props): Node | null => {
       color: important(colors.black),
       textDecoration: important("none"),
     },
+    more: {
+      fontSize: px(16),
+      fontWeight: 500,
+      fontStyle: "italic",
+      color: colors.darkBlue,
+      textDecoration: "underline",
+    },
   }
   const classNames = typestyle.stylesheet(styles)
 
@@ -45,11 +53,8 @@ export const node = ({ analytics, config, typestyle }: Props): Node | null => {
     compact([
       ...events.map((event) => {
         const title = event.summary
-
         const description = rewriteDomLinks(event.description, analytics)
-
-        const startsAt = format(parseISO(event.dstart), "EEE, d LLL y' at 'p")
-
+        const startsAt = format(parseISO(event.dstart), FORMAT_LONG, EST)
         const location = event.location.includes("zoom")
           ? link({
               analytics,
@@ -58,12 +63,26 @@ export const node = ({ analytics, config, typestyle }: Props): Node | null => {
               title: translate("meetings-field-zoom-link"),
             })
           : first(event.location?.split(","))
-
-        const endpoint = process.env.ICS_ENDPOINT!
         const url = stringifyUrl({
-          url: endpoint,
+          url: process.env.ICS_ENDPOINT!,
           query: {
             ...event,
+          },
+        })
+        const { dstart, dend } = event
+        let dates = format(parseISO(dstart), FORMAT_GCAL, UTC)
+        if (dend) {
+          const ends = format(parseISO(dend), FORMAT_GCAL, UTC)
+          dates = `${dates}/${ends}`
+        }
+        const addUrl = stringifyUrl({
+          url: "https://calendar.google.com/calendar/r/eventedit",
+          query: {
+            action: "TEMPLATE",
+            text: title,
+            details: event.description, // NOTE: w/o analytics URLs
+            location,
+            dates,
           },
         })
 
@@ -80,17 +99,57 @@ export const node = ({ analytics, config, typestyle }: Props): Node | null => {
               text({ fontWeight: 500 }, location ?? ""),
               text(
                 {},
-                link({
-                  analytics,
-                  url,
-                  className: classNames.link,
-                  title: translate("meetings-field-set-reminder"),
-                })
+                `\u{1F5D3} ` +
+                  link({
+                    analytics,
+                    url: addUrl,
+                    className: classNames.link,
+                    title: translate("meetings-field-set-reminder"),
+                  })
               ),
             ])
           ),
         ])
       }),
+      cardSection(
+        {
+          paddingTop: px(24),
+        },
+        [
+          column({}, [
+            text(
+              {},
+              link({
+                analytics,
+                className: classNames.more,
+                url:
+                  "https://calendar.google.com/calendar/embed?src=c_uqq4uallutcud0pv1fmepbl9ng%40group.calendar.google.com&ctz=America%2FNew_York",
+                title: translate("meetings-field-more"),
+              })
+            ),
+          ]),
+        ]
+      ),
+      publicURL &&
+        cardSection(
+          {
+            paddingTop: px(24),
+          },
+          [
+            column({}, [
+              text(
+                {},
+                `\u{1F5D3} ` +
+                  link({
+                    analytics,
+                    className: classNames.more,
+                    url: publicURL,
+                    title: translate("meetings-field-add"),
+                  })
+              ),
+            ]),
+          ]
+        ),
     ])
   )
 }
