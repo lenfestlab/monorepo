@@ -5,7 +5,7 @@ import { allEmpty, capitalize, compact, either, map } from "fp"
 import { translate } from "i18n"
 import { column, image, Node, text } from "mj"
 import { colors } from "styles"
-import { Article, Config } from "."
+import { Config, EditableArticle } from "."
 import { cardSection, cardWrapper, SectionNodeProps } from "../section"
 
 export interface Props extends SectionNodeProps {
@@ -28,18 +28,21 @@ export const articlesNode = ({
   return cardWrapper(
     { title, pre, post, ad, analytics, typestyle },
     compact([
-      ...map(articles, (article: Article) => {
+      ...map(articles, (article) => {
         const {
           url,
           title,
           description,
           site_name: _site_name,
+          site_name_custom,
           image: src,
           published_time,
         } = article
 
         // "http://www.inquirer.com" => "Inquirer.com"
-        const site_name = capitalize(_site_name.split(".").slice(-2).join("."))
+        const site_name =
+          site_name_custom ??
+          capitalize(_site_name.split(".").slice(-2).join("."))
 
         const published =
           published_time && format(parseISO(published_time), "MMMM d, y")

@@ -1,5 +1,9 @@
 import { h } from "@cycle/react"
 import {
+  Button,
+  Dialog,
+  DialogActions,
+  DialogContent,
   Grid,
   IconButton,
   List,
@@ -8,8 +12,8 @@ import {
   ListItemText,
   TextField,
 } from "@material-ui/core"
-import { Delete } from "@material-ui/icons"
-import { Component, RefObject } from "react"
+import { Delete, Edit } from "@material-ui/icons"
+import { Component, createRef, RefObject } from "react"
 import {
   BehaviorSubject,
   combineLatest,
@@ -36,9 +40,9 @@ import {
   withLatestFrom,
 } from "rxjs/operators"
 
-import { compact, either, isEmpty, unionWith, uniqBy } from "fp"
+import { compact, either, find, isEmpty, unionWith, uniqBy } from "fp"
 import { translate } from "i18n"
-import { Article, Config, SetConfig } from "."
+import { Article, Config, EditableArticle, SetConfig } from "."
 import { ProgressButton } from "../ProgressButton"
 import { QuickLinks } from "../QuickLinks"
 import { AdOpt, SectionConfig, SectionInputContext } from "../section"
@@ -54,6 +58,12 @@ const noError: UrlError = { error: false, helperText: "" }
 type InputEvent = React.ChangeEvent<HTMLInputElement>
 type ButtonEvent = React.MouseEvent<HTMLButtonElement>
 
+type EditDialogProps = {
+  open: boolean
+  selectionID?: string
+  selectionSitePlaceholder?: string
+}
+
 interface Props {
   context: SectionInputContext
   config: Config
@@ -63,12 +73,12 @@ interface Props {
   id: string
 }
 
-interface State extends SectionConfig {
+interface State extends SectionConfig, EditDialogProps {
   url: string
   pending: boolean
   disabled: boolean
   error: UrlError
-  articles: Article[]
+  articles: EditableArticle[]
 }
 
 export class Input extends Component<Props, State> {
@@ -164,6 +174,39 @@ export class Input extends Component<Props, State> {
     shareReplay()
   )
 
+  // Edit
+  dialogProps$$ = new BehaviorSubject<EditDialogProps>({ open: false })
+  dialogProps$ = this.dialogProps$$.pipe(
+    tag("permits.dialogProps$"),
+    shareReplay()
+  )
+  onClickEdit = (url: string) => {
+    const selection = find(this.articles$$.value, (item) => item.url === url)
+    const selectionSitePlaceholder = selection?.site_name
+    this.dialogProps$$.next({
+      open: true,
+      selectionID: url,
+      selectionSitePlaceholder,
+    })
+  }
+  onClose = () =>
+    this.dialogProps$$.next({
+      open: false,
+    })
+
+  siteRef = createRef<HTMLTextAreaElement>()
+  onSave = () => {
+    const siteValue = this.siteRef.current?.value
+    const site_name_custom = isEmpty(siteValue) ? null : siteValue
+    const newSelections = this.articles$$.value.map((article) => {
+      return article.url === this.dialogProps$$.value.selectionID
+        ? { ...article, site_name_custom }
+        : article
+    })
+    this.articles$$.next(newSelections)
+    this.onClose()
+  }
+
   constructor(props: Props) {
     super(props)
     const { config } = props
@@ -191,6 +234,7 @@ export class Input extends Component<Props, State> {
       disabled: false,
       error: noError,
       articles,
+      ...{ open: false },
     }
   }
 
@@ -229,6 +273,20 @@ export class Input extends Component<Props, State> {
       share()
     )
 
+    const dialogState$ = combineLatest([this.dialogProps$]).pipe(
+      tap(([dialogProps]) => {
+        this.setState((prior) => {
+          const next = {
+            ...prior,
+            ...dialogProps,
+          }
+          return next
+        })
+      }),
+      tag("dialogState$"),
+      share()
+    )
+
     const sync$ = combineLatest(
       this.title$,
       this.pre$,
@@ -243,7 +301,7 @@ export class Input extends Component<Props, State> {
       tag("sync$")
     )
 
-    this.subscription = merge(state$, sync$).subscribe()
+    this.subscription = merge(state$, sync$, dialogState$).subscribe()
   }
   componentWillUnmount() {
     this.subscription?.unsubscribe()
@@ -275,6 +333,7 @@ export class Input extends Component<Props, State> {
       error: { error, helperText },
       articles,
     } = this.state
+    const { open, selectionSitePlaceholder } = this.state
 
     const {
       setTitle,
@@ -285,6 +344,7 @@ export class Input extends Component<Props, State> {
       onClickAdd,
       onClickDelete,
     } = this
+    const { onClickEdit, onClose, onSave } = this
 
     const headerText = translate(`news-input-header`)
     const titlePlaceholder = translate(`news-input-title-placeholder`)
@@ -336,14 +396,37 @@ export class Input extends Component<Props, State> {
               const id = article.url
               const primary = article.title
               const secondary = article.url
+              const onClick = (event: any) => {
+                onClickEdit(id)
+              }
               return h(ListItem, [
                 h(ListItemText, { primary, secondary }),
                 h(ListItemSecondaryAction, [
+                  h(IconButton, { id, onClick }, [h(Edit)]),
                   h(IconButton, { id, onClick: onClickDelete }, [h(Delete)]),
                 ]),
               ])
             })
           ),
+        ]),
+        h(Dialog, { open, fullWidth: true, maxWidth: "md" }, [
+          h(DialogContent, [
+            h(TextField, {
+              label: "Source",
+              autoFocus: true,
+              margin: "dense",
+              fullWidth: true,
+              multiline: true,
+              rows: 4,
+              variant: "filled",
+              placeholder: selectionSitePlaceholder,
+              inputRef: this.siteRef,
+            }),
+          ]),
+          h(DialogActions, [
+            h(Button, { onClick: onClose, color: "primary" }, "Cancel"),
+            h(Button, { onClick: onSave, color: "primary" }, "Save"),
+          ]),
         ]),
       ]
     )
