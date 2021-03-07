@@ -21,9 +21,35 @@ class ArticlesController < ApplicationController
       raise(ArticleFetchError, message)
     end
     body = response.body
-    OpenGraphReader.parse!(body)
-    object = OpenGraphReader.fetch! url
-    og = object.og
+
+    object = OpenGraphReader.fetch url
+    og = object.try(:og)
+
+    title = og.try(:title)
+    if !title
+      doc = Nokogiri::HTML(body)
+      meta = doc.xpath('//meta[@property="og:title"]').first
+      title = meta["content"] if meta
+    end
+
+    description = og.try :description
+    if !description
+      doc = Nokogiri::HTML(body)
+      meta = doc.xpath('//meta[@property="og:description"]').first
+      description = meta["content"] if meta
+    end
+
+    site_name = og.try :site_name
+    if !site_name
+      doc = Nokogiri::HTML(body)
+      meta = doc.xpath('//meta[@property="og:site_name"]').first
+      site_name = meta["content"] if meta
+    end
+
+    # image = og.try :image
+    doc = Nokogiri::HTML(body)
+    meta = doc.xpath('//meta[@property="og:image"]').first
+    image = meta["content"] if meta
 
     published_time = object.try(:article).try(:published_time)
     if !published_time
@@ -45,11 +71,11 @@ class ArticlesController < ApplicationController
 
     data = {
       url: url,
-      title: og.title,
-      description: og.description,
+      title: title,
+      description: description,
       published_time: published_time,
-      site_name: og.site_name,
-      image: og.image.try(:url)
+      site_name: site_name,
+      image: image
     }
     render json: data
   end
