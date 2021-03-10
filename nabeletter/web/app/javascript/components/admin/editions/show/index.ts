@@ -1,10 +1,12 @@
 import { h } from "@cycle/react"
 import { a } from "@cycle/react-dom"
+import { EditionTrashButton } from "components/admin/editions/shared"
 import { Edition } from "components/admin/shared"
 import { get, truncate } from "fp"
 import {
   Datagrid,
   DateField,
+  DeleteButton,
   EditButton,
   Pagination,
   ReferenceField,
@@ -23,8 +25,13 @@ interface ActionProps {
 }
 const Actions = ({ basePath, data: record }: ActionProps) => {
   const state: string | null = get(record, "state")
-  if (!state || state === "delivered") return null
-  return h(TopToolbar, [h(EditButton, { basePath, record })])
+  if (!state) return null
+  return h(TopToolbar, [
+    state !== "delivered" &&
+      state !== "trashed" &&
+      h(EditButton, { basePath, record }),
+    state !== "trashed" && h(EditionTrashButton, { record }),
+  ])
 }
 
 const CustomUrlField = ({
@@ -52,6 +59,7 @@ export const EditionShow = (props: {}) =>
           [h(TextField, { source: "name" })]
         ),
         h(TextField, { label: "Kind", source: "kind" }),
+        h(TextField, { label: "State", source: "state" }),
         h(TextField, { label: "Email subject", source: "subject" }),
         h(DateField, {
           label: "Publish/send at",

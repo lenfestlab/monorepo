@@ -38,6 +38,16 @@ const NewsletterFilter = (props: {}) =>
       ],
       source: "kind",
     }),
+    h(AutocompleteInput, {
+      alwaysOn: true,
+      choices: [
+        { id: 2, name: "draft" },
+        { id: 0, name: "deliverable" },
+        { id: 1, name: "delivered" },
+        { id: 3, name: "trashed" },
+      ],
+      source: "state",
+    }),
   ])
 
 export const EditionList = (props: {}) =>
