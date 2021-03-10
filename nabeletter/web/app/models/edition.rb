@@ -34,13 +34,18 @@ class Edition < ApplicationRecord
   ## State machine
   #
 
-  enum state: %i[deliverable delivered]
+  enum state: %i[deliverable delivered draft trashed]
 
   aasm column: :state, enum: true do
-    state :deliverable, initial: true
+    state :draft, initial: true
+    state :deliverable
     state :delivered
+    state :trashed
     event :deliver do
       transitions from: :deliverable, to: :delivered, if: :deliver
+    end
+    event :trash do
+      transitions to: :trashed
     end
   end
 

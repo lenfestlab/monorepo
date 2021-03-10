@@ -6,6 +6,9 @@ class Api::EditionsController < ResourceController
       recipients = recipients.present? ? recipients.split(/[\s,]+/) : []
       edition.deliver(recipients: recipients)
     end
+    if safe_params[:attributes][:trash] && edition = Edition.find(safe_params[:id])
+      edition.trash!
+    end
     super
   end
 

@@ -12,6 +12,7 @@ import {
   EditionBodyInput,
   EditionKindInput,
   EditionPublishAtInput,
+  EditionStateInput,
   EditionSubjectInput,
 } from "components/admin/editions/shared"
 import { dataProvider } from "components/admin/providers"
@@ -95,6 +96,10 @@ export const EditionEdit = (props: Props) => {
     data$.next({ kind: value })
   }
 
+  const onChangeState = (value: string) => {
+    data$.next({ state: value })
+  }
+
   return h(
     Edit,
     {
@@ -110,6 +115,11 @@ export const EditionEdit = (props: Props) => {
             id: "edition-kind",
             className: classes.kind,
             onChange: onChangeKind,
+          }),
+          h(EditionStateInput, {
+            id: "edition-state",
+            className: classes.kind,
+            onChange: onChangeState,
           }),
           h(EditionPublishAtInput, {
             id: "edition-publish",
