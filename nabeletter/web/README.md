@@ -1,5 +1,6 @@
-```
 ## Setup
+
+```
 
 # Run setup script
 bash ./scripts/bootstrap.sh
@@ -20,6 +21,7 @@ cp .env.dev.example .env.dev
 # run locally
 heroku local -e .env.dev web=1,webpacker=1,log=1
 open https://localhost:3443
+```
 
 
 ## Deployment
