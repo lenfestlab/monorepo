@@ -121,6 +121,27 @@ export const node = ({
             ]
           ),
 
+          textNode(
+            {
+              ...footerTextAttributes,
+              paddingBottom: px(24),
+            },
+            [
+              translate("footer-past-editions").replace(
+                "HERE",
+                link({
+                  analytics,
+                  title: "here",
+                  url: `https://${process.env.RAILS_HOST}/editions?newsletter_id=${newsletter_id}`,
+                  style: {
+                    ...styles.link,
+                    fontWeight: "bold",
+                  },
+                })
+              ),
+            ]
+          ),
+
           textNode({ ...footerTextAttributes }, [
             translate("footer-connect").replace(
               "NEWSLETTER_NAME",
@@ -174,20 +195,21 @@ export const node = ({
                 url: "https://medium.com/the-lenfest-local-lab",
                 style: styles.link,
               }),
-              `a project of `,
+              ` a product and UX team at `,
               link({
                 analytics,
-                title: "The Lenfest Institute for Journalism,",
-                url: "https://www.lenfestinstitute.org",
-                style: styles.link,
-              }),
-              `and `,
-              link({
-                analytics,
-                title: "The Philadelphia Inquirer.",
+                title: "The Philadelphia Inquirer",
                 url: "https://www.inquirer.com",
                 style: styles.link,
               }),
+              ` and founded by `,
+              link({
+                analytics,
+                title: "The Lenfest Institute for Journalism",
+                url: "https://www.lenfestinstitute.org",
+                style: styles.link,
+              }),
+              ` in 2018.`,
             ]
           ),
 
