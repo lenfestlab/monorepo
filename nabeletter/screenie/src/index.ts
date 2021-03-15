@@ -22,8 +22,14 @@ import bodyParser from "body-parser";
 const app = express();
 const port = process.env.PORT || 5000;
 
-app.use(bodyParser.urlencoded({ extended: true }));
-app.use(bodyParser.json());
+app.use(
+  bodyParser.urlencoded({
+    extended: true,
+    limit: "50mb",
+    parameterLimit: 100000,
+  })
+);
+app.use(bodyParser.json({ limit: "50mb" }));
 app.use(bodyParser.raw());
 
 app.use(cors());
