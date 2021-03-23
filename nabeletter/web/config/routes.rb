@@ -12,6 +12,7 @@ Rails.application.routes.draw do
   resources :events, only: :index
   resources :articles, only: :index
   resources :permits, only: :index
+  resources :translations, only: :create
 
   namespace :api do
     jsonapi_resources :editions, only: %i[index create update show]

@@ -18,10 +18,10 @@ export const node = ({ analytics, config, typestyle }: Props): Node | null => {
     config.title,
     translate(`meetings-input-title-placeholder`)
   )
-  const { pre, post } = config
+  const { pre, post, post_es } = config
   const events = config.selections
   const publicURL = config.publicURL
-  if (allEmpty([events, pre, post])) return null
+  if (allEmpty([events, pre, post, post_es])) return null
 
   const styles: StyleMap = {
     description: {
@@ -49,7 +49,7 @@ export const node = ({ analytics, config, typestyle }: Props): Node | null => {
   const classNames = typestyle.stylesheet(styles)
 
   return cardWrapper(
-    { title, pre, post, analytics, typestyle },
+    { title, pre, post, post_es, analytics, typestyle },
     compact([
       ...events.map((event) => {
         const title = event.summary

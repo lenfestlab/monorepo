@@ -17,11 +17,11 @@ export const node = ({
   titlePlaceholder,
 }: Props): Node | null => {
   const title = either(config.title, titlePlaceholder)
-  const { pre, post, markdown } = config
+  const { pre, post, post_es, markdown } = config
   const images: Image[] = either(config.images, [])
-  if (allEmpty([pre, post, markdown, images])) return null
+  if (allEmpty([pre, post, post_es, markdown, images])) return null
 
-  return cardWrapper({ title, pre, post, analytics, typestyle }, [
+  return cardWrapper({ title, pre, post, post_es, analytics, typestyle }, [
     cardSection({}, [
       group({ verticalAlign: "top" }, [
         ...images.map(({ url: src, caption = "" }, idx: number) => {

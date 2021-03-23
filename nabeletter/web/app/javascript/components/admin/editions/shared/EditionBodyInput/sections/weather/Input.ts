@@ -32,6 +32,7 @@ export const Input = ({ config, setConfig, inputRef, id }: Props) => {
   const [title, setTitle] = useState(config.title)
   const [pre, setPre] = useState(config.pre)
   const [post, setPost] = useState(config.post)
+  const [post_es, setPost_es] = useState(config.post_es)
   const [ad, setAd] = useState(config.ad)
   const [markdown, setMarkdown] = useState(config.markdown)
   const [forecast, setForecast] = useState(config.forecast)
@@ -83,6 +84,8 @@ export const Input = ({ config, setConfig, inputRef, id }: Props) => {
       setPre,
       post,
       setPost,
+      post_es,
+      setPost_es,
       headerText,
       titlePlaceholder,
       ad,

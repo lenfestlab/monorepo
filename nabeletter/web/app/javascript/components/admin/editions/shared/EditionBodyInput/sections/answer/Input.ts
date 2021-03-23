@@ -85,6 +85,10 @@ export class Input extends Component<Props, State> {
   post$ = this.post$$.pipe(tag("post$"), shareReplay())
   setPost = (val: string) => this.post$$.next(val)
 
+  post_es$$ = new BehaviorSubject<string>("")
+  post_es$ = this.post_es$$.pipe(tag("post_es$"), shareReplay())
+  setPost_es = (val: string) => this.post_es$$.next(val)
+
   url$$ = new BehaviorSubject<string>("")
   url$: Observable<string> = this.url$$.pipe(tag("url$"), shareReplay())
   onChangeURL = (event: InputEvent) => this.url$$.next(event.target.value)
@@ -162,10 +166,18 @@ export class Input extends Component<Props, State> {
   constructor(props: Props) {
     super(props)
     const { config } = props
-    const { title = "", pre = "", post = "", url = "", articles = [] } = config
+    const {
+      title = "",
+      pre = "",
+      post = "",
+      url = "",
+      articles = [],
+      post_es = "",
+    } = config
     this.title$$.next(title)
     this.pre$$.next(pre)
     this.post$$.next(post)
+    this.post_es$$.next(post_es)
     this.url$$.next(url)
     this.articles$$.next(articles)
     this.state = {
@@ -185,6 +197,7 @@ export class Input extends Component<Props, State> {
       this.title$,
       this.pre$,
       this.post$,
+      this.post_es$,
       this.url$,
       this.pending$,
       this.disabled$,
@@ -192,23 +205,36 @@ export class Input extends Component<Props, State> {
       this.articles$$,
     ]).pipe(
       tag("combineLatest$"),
-      tap(([title, pre, post, url, pending, disabled, error, articles]) => {
-        // @ts-ignore
-        this.setState((prior) => {
-          const next = {
-            ...prior,
-            title,
-            pre,
-            post,
-            url,
-            error,
-            pending,
-            disabled,
-            articles,
-          }
-          return next
-        })
-      }),
+      tap(
+        ([
+          title,
+          pre,
+          post,
+          post_es,
+          url,
+          pending,
+          disabled,
+          error,
+          articles,
+        ]) => {
+          // @ts-ignore
+          this.setState((prior) => {
+            const next = {
+              ...prior,
+              title,
+              pre,
+              post,
+              post_es,
+              url,
+              error,
+              pending,
+              disabled,
+              articles,
+            }
+            return next
+          })
+        }
+      ),
       tag("state$"),
       share()
     )
@@ -217,11 +243,12 @@ export class Input extends Component<Props, State> {
       this.title$,
       this.pre$,
       this.post$,
+      this.post_es$,
       this.url$,
       this.articles$
     ).pipe(
-      tap(([title, pre, post, url, articles]) => {
-        this.props.setConfig({ title, pre, post, url, articles })
+      tap(([title, pre, post, post_es, url, articles]) => {
+        this.props.setConfig({ title, pre, post, post_es, url, articles })
       }),
       tag("sync$")
     )
@@ -239,6 +266,7 @@ export class Input extends Component<Props, State> {
       title,
       pre,
       post,
+      post_es,
       url,
       disabled,
       pending,
@@ -250,6 +278,7 @@ export class Input extends Component<Props, State> {
       setTitle,
       setPre,
       setPost,
+      setPost_es,
       onChangeURL,
       onClickAdd,
       onClickDelete,
@@ -272,6 +301,8 @@ export class Input extends Component<Props, State> {
         setPre,
         post,
         setPost,
+        post_es,
+        setPost_es,
         headerText,
         titlePlaceholder,
       },

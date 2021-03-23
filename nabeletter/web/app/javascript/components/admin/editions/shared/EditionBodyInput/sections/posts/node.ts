@@ -21,12 +21,12 @@ export const node = ({
     config.title,
     translate(`${kind}-input-title-placeholder`)
   )
-  const { pre, post } = config
+  const { pre, post, post_es } = config
   const postMap = either(config.postmap, {})
   const posts = values(postMap)
-  if (allEmpty([pre, post, posts])) return null
+  if (allEmpty([pre, post, post_es, posts])) return null
 
-  return cardWrapper({ title, pre, post, analytics, typestyle }, [
+  return cardWrapper({ title, pre, post, post_es, analytics, typestyle }, [
     cardSection({}, [
       column({}, [
         ...posts.map(({ url, screenshot_url: src }: Post, idx) => {

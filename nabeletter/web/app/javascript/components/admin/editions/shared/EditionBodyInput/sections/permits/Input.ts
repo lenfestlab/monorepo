@@ -75,6 +75,10 @@ export class Input extends Component<Props, State> {
   post$ = this.post$$.pipe(tag("post$"), shareReplay())
   setPost = (val: string) => this.post$$.next(val)
 
+  post_es$$ = new BehaviorSubject<string>("")
+  post_es$ = this.post_es$$.pipe(tag("post_es$"), shareReplay())
+  setPost_es = (val: string) => this.post_es$$.next(val)
+
   selections$$ = new BehaviorSubject<EditablePermit[]>([])
   selections$ = this.selections$$.pipe(
     tag("permits.selections$"),
@@ -191,10 +195,11 @@ export class Input extends Component<Props, State> {
   constructor(props: Props) {
     super(props)
     const { config } = props
-    const { title, pre, post, selections } = config
+    const { title, pre, post, post_es, selections } = config
     this.title$$.next(title ?? "")
     this.pre$$.next(pre ?? "")
     this.post$$.next(post ?? "")
+    this.post_es$$.next(post_es ?? "")
     this.selections$$.next(selections ?? [])
     this.setRight(mapToItems(selections ?? []))
     this.state = {
@@ -213,11 +218,12 @@ export class Input extends Component<Props, State> {
       this.title$,
       this.pre$,
       this.post$,
+      this.post_es$,
       this.selections$,
       this.left$,
       this.right$,
     ]).pipe(
-      tap(([title, pre, post, selections, left, right]) => {
+      tap(([title, pre, post, post_es, selections, left, right]) => {
         // @ts-ignore
         this.setState((prior) => {
           const next = {
@@ -225,6 +231,7 @@ export class Input extends Component<Props, State> {
             title,
             pre,
             post,
+            post_es,
             selections,
             left,
             right,
@@ -253,11 +260,12 @@ export class Input extends Component<Props, State> {
       this.title$,
       this.pre$,
       this.post$,
+      this.post_es$,
       this.selections$
     ).pipe(
       skip(1),
-      tap(([title, pre, post, selections]) => {
-        this.props.setConfig({ title, pre, post, selections })
+      tap(([title, pre, post, post_es, selections]) => {
+        this.props.setConfig({ title, pre, post, post_es, selections })
       }),
       tag("permits.sync$")
     )
@@ -269,9 +277,9 @@ export class Input extends Component<Props, State> {
   }
 
   render() {
-    const { setTitle, setPre, setPost, setLeft, setRight } = this
+    const { setTitle, setPre, setPost, setPost_es, setLeft, setRight } = this
     const { onClickEdit, onClose, onSave } = this
-    const { title, pre, post, left, right } = this.state
+    const { title, pre, post, post_es, left, right } = this.state
     const { open, selectionDescriptionPlaceholder } = this.state
     const { inputRef, id } = this.props
     const headerText = translate("permits-input-header")
@@ -288,6 +296,8 @@ export class Input extends Component<Props, State> {
         setPre,
         post,
         setPost,
+        post_es,
+        setPost_es,
         headerText,
         titlePlaceholder,
       },

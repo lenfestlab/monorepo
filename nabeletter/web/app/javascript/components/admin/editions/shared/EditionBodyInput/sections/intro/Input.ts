@@ -17,11 +17,12 @@ export const Input = ({ config, setConfig, inputRef, id }: Props) => {
   const [title, setTitle] = useState(config.title)
   const [pre, setPre] = useState(config.pre)
   const [post, setPost] = useState(config.post)
+  const [post_es, setPost_es] = useState(config.post_es)
   const [ad, setAd] = useState(config.ad)
 
   useEffect(() => {
-    setConfig({ title, markdown, pre, post, ad })
-  }, [title, markdown, pre, post, ad])
+    setConfig({ title, markdown, pre, post, post_es, ad })
+  }, [title, markdown, pre, post, post_es, ad])
 
   const headerText = translate("intro-input-header")
   const titlePlaceholder = translate("intro-input-title-placeholder")
@@ -40,6 +41,8 @@ export const Input = ({ config, setConfig, inputRef, id }: Props) => {
       setPre,
       post,
       setPost,
+      post_es,
+      setPost_es,
       headerText,
       titlePlaceholder,
       ad,

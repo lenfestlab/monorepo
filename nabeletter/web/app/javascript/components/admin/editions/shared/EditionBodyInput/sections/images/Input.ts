@@ -74,6 +74,10 @@ export class Input extends Component<Props, State> {
   post$ = this.post$$.pipe(tag("post$"), shareReplay())
   setPost = (val: string) => this.post$$.next(val)
 
+  post_es$$ = new BehaviorSubject<string>("")
+  post_es$ = this.post_es$$.pipe(tag("post_es$"), shareReplay())
+  setPost_es = (val: string) => this.post_es$$.next(val)
+
   markdown$$ = new BehaviorSubject<string>("")
   markdown$ = this.markdown$$.pipe(tag("markdown$"), shareReplay())
   setMarkdown = (value: string) => this.markdown$$.next(value)
@@ -137,12 +141,13 @@ export class Input extends Component<Props, State> {
   constructor(props: Props) {
     super(props)
     const { config } = props
-    const { title, pre, post, markdown: _md, images: _images } = config
+    const { title, pre, post, post_es, markdown: _md, images: _images } = config
     const images = _images ?? []
     const markdown = _md ?? ""
     this.title$$.next(title ?? "")
     this.pre$$.next(pre ?? "")
     this.post$$.next(post ?? "")
+    this.post_es$$.next(post_es ?? "")
     this.images$$.next(images)
     this.markdown$$.next(markdown)
     this.state = {
@@ -162,6 +167,7 @@ export class Input extends Component<Props, State> {
       this.title$,
       this.pre$,
       this.post$,
+      this.post_es$,
       this.url$,
       this.caption$,
       this.error$,
@@ -169,23 +175,36 @@ export class Input extends Component<Props, State> {
       this.markdown$,
     ]).pipe(
       tag("combineLatest$"),
-      tap(([title, pre, post, url, caption, error, images, markdown]) => {
-        // @ts-ignore
-        this.setState((prior) => {
-          const next = {
-            ...prior,
-            title,
-            pre,
-            post,
-            url,
-            caption,
-            error,
-            images,
-            markdown,
-          }
-          return next
-        })
-      }),
+      tap(
+        ([
+          title,
+          pre,
+          post,
+          post_es,
+          url,
+          caption,
+          error,
+          images,
+          markdown,
+        ]) => {
+          // @ts-ignore
+          this.setState((prior) => {
+            const next = {
+              ...prior,
+              title,
+              pre,
+              post,
+              post_es,
+              url,
+              caption,
+              error,
+              images,
+              markdown,
+            }
+            return next
+          })
+        }
+      ),
       tag("state$"),
       share()
     )
@@ -194,11 +213,12 @@ export class Input extends Component<Props, State> {
       this.title$,
       this.pre$,
       this.post$,
+      this.post_es$,
       this.images$,
       this.markdown$
     ).pipe(
-      tap(([title, pre, post, images, markdown]) => {
-        this.props.setConfig({ title, pre, post, images, markdown })
+      tap(([title, pre, post, post_es, images, markdown]) => {
+        this.props.setConfig({ title, pre, post, post_es, images, markdown })
       }),
       tag("sync$")
     )
@@ -226,6 +246,7 @@ export class Input extends Component<Props, State> {
       title,
       pre,
       post,
+      post_es,
       markdown,
       url,
       caption,
@@ -241,6 +262,7 @@ export class Input extends Component<Props, State> {
       setTitle,
       setPre,
       setPost,
+      setPost_es,
       onChangeCaption,
       onChangeURL,
       onClickAdd,
@@ -266,6 +288,8 @@ export class Input extends Component<Props, State> {
         setPre,
         post,
         setPost,
+        post_es,
+        setPost_es,
         headerText,
         titlePlaceholder,
       },

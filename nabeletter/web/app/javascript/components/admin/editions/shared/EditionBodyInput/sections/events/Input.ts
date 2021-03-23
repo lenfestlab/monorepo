@@ -161,6 +161,7 @@ export const Input = ({ context, config, setConfig, inputRef, id }: Props) => {
   const [title, setTitle] = useState(config.title)
   const [pre, setPre] = useState(config.pre)
   const [post, setPost] = useState(config.post)
+  const [post_es, setPost_es] = useState(config.post_es)
   const [ad, setAd] = useState(config.ad)
   const webcal = useObservable(webcal$, either(config.webcal, ""))
   const publicURL = useObservable(publicURL$, either(config.publicURL, ""))
@@ -172,8 +173,18 @@ export const Input = ({ context, config, setConfig, inputRef, id }: Props) => {
   const right = useObservable(right$, mapItems(selections))
 
   useEffect(
-    () => setConfig({ title, pre, post, ad, webcal, publicURL, selections }),
-    [title, pre, post, ad, webcal, publicURL, selections]
+    () =>
+      setConfig({
+        title,
+        pre,
+        post,
+        post_es,
+        ad,
+        webcal,
+        publicURL,
+        selections,
+      }),
+    [title, pre, post, post_es, ad, webcal, publicURL, selections]
   )
 
   const headerText = translate("events-input-header")
@@ -196,6 +207,8 @@ export const Input = ({ context, config, setConfig, inputRef, id }: Props) => {
       setPre,
       post,
       setPost,
+      post_es,
+      setPost_es,
       headerText,
       titlePlaceholder,
       ad,

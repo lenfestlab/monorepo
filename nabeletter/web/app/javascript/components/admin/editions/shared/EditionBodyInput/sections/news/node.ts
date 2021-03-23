@@ -22,11 +22,11 @@ export const articlesNode = ({
   typestyle,
   title,
 }: ArticlesCardProps): Node | null => {
-  const { articles, pre, post, ad } = config
-  if (allEmpty([pre, post, ad, articles])) return null
+  const { articles, pre, post, post_es, ad } = config
+  if (allEmpty([pre, post, post_es, ad, articles])) return null
 
   return cardWrapper(
-    { title, pre, post, ad, analytics, typestyle },
+    { title, pre, post, post_es, ad, analytics, typestyle },
     compact([
       ...map(articles, (article) => {
         const {

@@ -98,6 +98,10 @@ export class Input extends Component<Props, State> {
   post$ = this.post$$.pipe(tag("post$"), shareReplay())
   setPost = (val: string) => this.post$$.next(val)
 
+  post_es$$ = new BehaviorSubject<string>("")
+  post_es$ = this.post_es$$.pipe(tag("post_es$"), shareReplay())
+  setPost_es = (val: string) => this.post_es$$.next(val)
+
   ad$$ = new BehaviorSubject<AdOpt>(undefined)
   ad$ = this.ad$$.pipe(tag("ad$"), shareReplay())
   setAd = (val: AdOpt) => this.ad$$.next(val)
@@ -230,6 +234,7 @@ export class Input extends Component<Props, State> {
       title = "",
       pre = "",
       post = "",
+      post_es = "",
       ad,
       url = "",
       properties = [],
@@ -244,6 +249,7 @@ export class Input extends Component<Props, State> {
       title,
       pre,
       post,
+      post_es,
       ad,
       url,
       pending: false,
@@ -259,6 +265,7 @@ export class Input extends Component<Props, State> {
       this.title$,
       this.pre$,
       this.post$,
+      this.post_es$,
       this.ad$,
       this.url$,
       this.pending$,
@@ -268,7 +275,18 @@ export class Input extends Component<Props, State> {
     ]).pipe(
       tag("combineLatest$"),
       tap(
-        ([title, pre, post, ad, url, pending, disabled, error, properties]) => {
+        ([
+          title,
+          pre,
+          post,
+          post_es,
+          ad,
+          url,
+          pending,
+          disabled,
+          error,
+          properties,
+        ]) => {
           // @ts-ignore
           this.setState((prior) => {
             const next = {
@@ -276,6 +294,7 @@ export class Input extends Component<Props, State> {
               title,
               pre,
               post,
+              post_es,
               ad,
               url,
               error,
@@ -309,6 +328,7 @@ export class Input extends Component<Props, State> {
       this.title$,
       this.pre$,
       this.post$,
+      // TODO: this.post_es$,
       this.ad$,
       this.url$,
       this.properties$
@@ -332,6 +352,7 @@ export class Input extends Component<Props, State> {
       title,
       pre,
       post,
+      post_es,
       ad,
       url,
       disabled,
@@ -349,6 +370,7 @@ export class Input extends Component<Props, State> {
       setTitle,
       setPre,
       setPost,
+      setPost_es,
       setAd,
       onChangeURL,
       onClickAdd,
@@ -371,6 +393,8 @@ export class Input extends Component<Props, State> {
         setPre,
         post,
         setPost,
+        post_es,
+        setPost_es,
         headerText,
         titlePlaceholder,
         ad,

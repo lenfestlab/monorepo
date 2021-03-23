@@ -27,6 +27,7 @@ export interface SectionConfig {
   title: string
   pre?: string
   post?: string
+  post_es?: string
   ad?: AdOpt
 }
 

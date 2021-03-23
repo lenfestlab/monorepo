@@ -14,8 +14,8 @@ export interface Props extends SectionNodeProps {
 
 export const node = ({ analytics, config, typestyle }: Props): Node | null => {
   const title = either(config.title, translate("ask-input-title-placeholder"))
-  const { prompt = "", pre, post } = config
-  if (allEmpty([prompt, pre, post])) return null
+  const { prompt = "", pre, post, post_es } = config
+  if (allEmpty([prompt, pre, post, post_es])) return null
 
   const markdown = prompt
   const emailAddress = process.env.FEEDBACK_EMAIL as string
@@ -23,7 +23,7 @@ export const node = ({ analytics, config, typestyle }: Props): Node | null => {
   const mailto = `mailto:${emailAddress}?subject=${emailSubject}`
   const cta = translate("ask-field-email-cta")
 
-  return cardWrapper({ title, pre, post, analytics, typestyle }, [
+  return cardWrapper({ title, pre, post, post_es, analytics, typestyle }, [
     cardSection({}, [
       column({}, [
         text(
