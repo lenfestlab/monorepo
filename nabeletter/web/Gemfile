@@ -27,6 +27,7 @@ gem 'chronic'
 gem 'simple_segment'
 gem 'mailgun-ruby'
 gem 'timezone'
+gem 'easy_translate'
 gem 'active_storage-postgresql',
   github: 'brenthargrave/active_storage-postgresql',
   branch: 'enable-cache-control'

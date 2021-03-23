@@ -25,11 +25,11 @@ export const node = ({
     config.title,
     translate(`events-input-title-placeholder`).replace("NABE_NAME", NABE_NAME)
   )
-  const { pre, post, ad } = config
+  const { pre, post, post_es, ad } = config
   const events = config.selections
   const moreURL = process.env.SECTION_EVENTS_DEFAULT_MORE_URL! as string
   const publicURL = config.publicURL
-  if (allEmpty([events, pre, post, ad])) return null
+  if (allEmpty([events, pre, post, post_es, ad])) return null
 
   const styles = {
     autolinks: {
@@ -51,7 +51,7 @@ export const node = ({
   const classNames = typestyle.stylesheet(styles)
 
   return cardWrapper(
-    { title, pre, post, ad, analytics, typestyle },
+    { title, pre, post, post_es, ad, analytics, typestyle },
     compact([
       ...events.map((event) => {
         let description = event.description

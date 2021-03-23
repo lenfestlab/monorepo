@@ -11,11 +11,12 @@ export interface CardWrapperProps extends Omit<SectionNodeProps, "context"> {
   title: string
   pre?: string
   post?: string
+  post_es?: string
   ad?: AdOpt
 }
 
 export const cardWrapper = (
-  { title, pre, post, ad, analytics, typestyle }: CardWrapperProps,
+  { title, pre, post, post_es, ad, analytics, typestyle }: CardWrapperProps,
   children: Node[]
 ): Node => {
   return wrapper(
@@ -65,6 +66,15 @@ export const cardWrapper = (
           column({}, [
             text({ paddingTop: px(10) }, [
               md({ markdown: post, analytics, typestyle }),
+            ]),
+          ]),
+        ]),
+
+      post_es &&
+        cardSection({}, [
+          column({}, [
+            text({ paddingTop: px(10) }, [
+              md({ markdown: post_es, analytics, typestyle }),
             ]),
           ]),
         ]),

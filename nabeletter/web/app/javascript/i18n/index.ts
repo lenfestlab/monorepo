@@ -39,6 +39,7 @@ export const translate = (key: string): string => {
     // sections
     "section-pre": "Pre",
     "section-post": "Post",
+    "section-post-es": "Post (translated)",
     // intro
     "intro-input-header": "Intro",
     "intro-input-title-placeholder": "Today's neighborhood headlines",

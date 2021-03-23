@@ -11,14 +11,14 @@ export interface Props extends SectionNodeProps {
 }
 
 export const node = ({ analytics, config, typestyle }: Props): Node | null => {
-  const { pre, post, selections: permits } = config
+  const { pre, post, post_es, selections: permits } = config
   const title = either(
     config.title,
     translate("permits-input-title-placeholder")
   )
-  if (allEmpty([pre, post, permits])) return null
+  if (allEmpty([pre, post, post_es, permits])) return null
 
-  return cardWrapper({ title, pre, post, analytics, typestyle }, [
+  return cardWrapper({ title, pre, post, post_es, analytics, typestyle }, [
     ...permits.map(
       ({
         image: src,

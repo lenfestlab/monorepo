@@ -82,17 +82,19 @@ export class Input extends Component<Props, State> {
   title$$ = new Subject<string>()
   pre$$ = new Subject<string>()
   post$$ = new Subject<string>()
+  post_es$$ = new Subject<string>()
 
   constructor(props: Props) {
     super(props)
     const { config } = props
     const title = either(config.title, "")
-    const { pre = "", post = "" } = config
+    const { pre = "", post = "", post_es = "" } = config
     const postmap = either(config.postmap, {})
     this.state = {
       title,
       pre,
       post,
+      post_es,
       disabled: true,
       pending: false,
       url: "",
@@ -103,7 +105,16 @@ export class Input extends Component<Props, State> {
   }
 
   componentDidMount() {
-    const { title, pre, post, url, selection, disabled, postmap } = this.state
+    const {
+      title,
+      pre,
+      post,
+      post_es,
+      url,
+      selection,
+      disabled,
+      postmap,
+    } = this.state
 
     const title$ = this.title$$
       .asObservable()
@@ -114,6 +125,9 @@ export class Input extends Component<Props, State> {
     const post$ = this.post$$
       .asObservable()
       .pipe(startWith(post), tag("post$"), shareReplay())
+    const post_es$ = this.post_es$$
+      .asObservable()
+      .pipe(startWith(post_es), tag("post_es$"), shareReplay())
 
     if (!this.refURL.current || !this.refSelection) {
       throw new Error("MIA: refUrl")
@@ -262,6 +276,7 @@ export class Input extends Component<Props, State> {
       title$,
       pre$,
       post$,
+      post_es$,
       url$,
       selection$,
       disabled$,
@@ -275,6 +290,7 @@ export class Input extends Component<Props, State> {
           title,
           pre,
           post,
+          post_es,
           url,
           selection,
           disabled,
@@ -289,6 +305,7 @@ export class Input extends Component<Props, State> {
               title,
               pre,
               post,
+              post_es,
               url,
               selection,
               disabled,
@@ -304,9 +321,9 @@ export class Input extends Component<Props, State> {
       share()
     )
 
-    const sync$ = combineLatest(title$, pre$, post$, postmap$).pipe(
-      tap(([title, pre, post, postmap]) => {
-        this.props.setConfig({ title, pre, post, postmap })
+    const sync$ = combineLatest(title$, pre$, post$, post_es$, postmap$).pipe(
+      tap(([title, pre, post, post_es, postmap]) => {
+        this.props.setConfig({ title, pre, post, post_es, postmap })
       }),
       tag("sync$")
     )
@@ -327,6 +344,7 @@ export class Input extends Component<Props, State> {
       title,
       pre,
       post,
+      post_es,
       postmap,
       url,
       selection,
@@ -337,6 +355,7 @@ export class Input extends Component<Props, State> {
     const setTitle = (value: string) => this.title$$.next(value)
     const setPre = (value: string) => this.pre$$.next(value)
     const setPost = (value: string) => this.post$$.next(value)
+    const setPost_es = (value: string) => this.post_es$$.next(value)
 
     const headerText = translate(`${kind}-input-header`)
     const titlePlaceholder = translate(`${kind}-input-title-placeholder`)
@@ -352,6 +371,8 @@ export class Input extends Component<Props, State> {
         setPre,
         post,
         setPost,
+        post_es,
+        setPost_es,
         headerText,
         titlePlaceholder,
       },

@@ -96,6 +96,10 @@ export class Input extends Component<Props, State> {
   post$ = this.post$$.pipe(tag("post$"), shareReplay())
   setPost = (val: string) => this.post$$.next(val)
 
+  post_es$$ = new BehaviorSubject<string>("")
+  post_es$ = this.post_es$$.pipe(tag("post_es$"), shareReplay())
+  setPost_es = (val: string) => this.post_es$$.next(val)
+
   ad$$ = new BehaviorSubject<AdOpt>(undefined)
   ad$ = this.ad$$.pipe(tag("ad$"), shareReplay())
   setAd = (val: AdOpt) => this.ad$$.next(val)
@@ -214,6 +218,7 @@ export class Input extends Component<Props, State> {
       title = "",
       pre = "",
       post = "",
+      post_es = "",
       ad,
       url = "",
       articles = [],
@@ -221,6 +226,7 @@ export class Input extends Component<Props, State> {
     this.title$$.next(title)
     this.pre$$.next(pre)
     this.post$$.next(post)
+    this.post_es$$.next(post_es)
     this.ad$$.next(ad)
     this.url$$.next(url)
     this.articles$$.next(articles)
@@ -228,6 +234,7 @@ export class Input extends Component<Props, State> {
       title,
       pre,
       post,
+      post_es,
       ad,
       url,
       pending: false,
@@ -243,6 +250,7 @@ export class Input extends Component<Props, State> {
       this.title$,
       this.pre$,
       this.post$,
+      this.post_es$,
       this.ad$,
       this.url$,
       this.pending$,
@@ -251,24 +259,38 @@ export class Input extends Component<Props, State> {
       this.articles$$,
     ]).pipe(
       tag("combineLatest$"),
-      tap(([title, pre, post, ad, url, pending, disabled, error, articles]) => {
-        // @ts-ignore
-        this.setState((prior) => {
-          const next = {
-            ...prior,
-            title,
-            pre,
-            post,
-            ad,
-            url,
-            error,
-            pending,
-            disabled,
-            articles,
-          }
-          return next
-        })
-      }),
+      tap(
+        ([
+          title,
+          pre,
+          post,
+          post_es,
+          ad,
+          url,
+          pending,
+          disabled,
+          error,
+          articles,
+        ]) => {
+          // @ts-ignore
+          this.setState((prior) => {
+            const next = {
+              ...prior,
+              title,
+              pre,
+              post,
+              post_es,
+              ad,
+              url,
+              error,
+              pending,
+              disabled,
+              articles,
+            }
+            return next
+          })
+        }
+      ),
       tag("state$"),
       share()
     )
@@ -291,6 +313,7 @@ export class Input extends Component<Props, State> {
       this.title$,
       this.pre$,
       this.post$,
+      // TODO: this.post_es$$ - seea SectionInput.ts
       this.ad$,
       this.url$,
       this.articles$
@@ -326,6 +349,7 @@ export class Input extends Component<Props, State> {
       title,
       pre,
       post,
+      post_es,
       ad,
       url,
       disabled,
@@ -339,6 +363,7 @@ export class Input extends Component<Props, State> {
       setTitle,
       setPre,
       setPost,
+      setPost_es,
       setAd,
       onChangeURL,
       onClickAdd,
@@ -362,6 +387,8 @@ export class Input extends Component<Props, State> {
         pre,
         setPre,
         post,
+        post_es,
+        setPost_es,
         setPost,
         headerText,
         titlePlaceholder,

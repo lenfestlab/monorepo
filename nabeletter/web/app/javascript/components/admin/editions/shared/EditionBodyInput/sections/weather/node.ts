@@ -71,8 +71,8 @@ export const node = ({
     config.title,
     translate("weather-input-title-placeholder")
   )
-  const { markdown, pre, post, ad } = config
-  if (allEmpty([pre, markdown, post, ad])) return null
+  const { markdown, pre, post, post_es, ad } = config
+  if (allEmpty([pre, markdown, post, post_es, ad])) return null
 
   const forecast: Forecast = either(config.forecast, [])
   const days: Day[] = forecast.map(({ time, icon, high, low }) => {
@@ -119,6 +119,7 @@ export const node = ({
       title,
       pre,
       post,
+      post_es,
       ad,
       analytics,
       typestyle,
