@@ -30,7 +30,6 @@
     "@storybook/addons": "^5.3.17",
     "@storybook/preset-typescript": "~3.0.0",
     "@storybook/react": "^5.3.17",
-    "@timberio/browser": "~0.35.0",
     "@types/date-fns": "~2.6.0",
     "@types/lodash": "~4.14.149",
     "@types/node": "~13.11.1",
