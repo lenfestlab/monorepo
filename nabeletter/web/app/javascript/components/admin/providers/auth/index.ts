@@ -1,5 +1,4 @@
 import { AuthProvider } from "ra-core"
-import { addUserContext, info, removeUserContext } from "./logger"
 
 export const authProvider: AuthProvider = {
   login: ({ username, password }) => {
@@ -34,14 +33,13 @@ export const authProvider: AuthProvider = {
         localStorage.setItem("token", token)
         localStorage.setItem("user_id", id)
         localStorage.setItem("user_email", email)
-        addUserContext()
-        return info("login")
+        console.info("login")
+        return Promise.resolve()
       })
   },
 
   logout: async () => {
-    await info("logout")
-    removeUserContext()
+    console.info("logout")
     localStorage.clear()
   },
 
@@ -54,7 +52,6 @@ export const authProvider: AuthProvider = {
   },
 
   checkAuth: () => {
-    addUserContext()
     return localStorage.getItem("token") ? Promise.resolve() : Promise.reject()
   },
 
