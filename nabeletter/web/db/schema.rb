@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2021_02_25_181735) do
+ActiveRecord::Schema.define(version: 2021_04_07_171216) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -153,6 +153,26 @@ ActiveRecord::Schema.define(version: 2021_02_25_181735) do
     t.string "timezone"
     t.index ["mailgun_list_identifier"], name: "index_newsletters_on_mailgun_list_identifier"
     t.index ["name"], name: "index_newsletters_on_name"
+  end
+
+  create_table "page_sections", force: :cascade do |t|
+    t.string "title"
+    t.text "body"
+    t.bigint "page_id"
+    t.datetime "created_at", precision: 6, null: false
+    t.datetime "updated_at", precision: 6, null: false
+    t.index ["page_id"], name: "index_page_sections_on_page_id"
+    t.index ["title"], name: "index_page_sections_on_title"
+  end
+
+  create_table "pages", force: :cascade do |t|
+    t.string "title"
+    t.text "pre"
+    t.text "post"
+    t.text "sections", default: [], array: true
+    t.datetime "created_at", precision: 6, null: false
+    t.datetime "updated_at", precision: 6, null: false
+    t.index ["title"], name: "index_pages_on_title"
   end
 
   create_table "subscriptions", force: :cascade do |t|

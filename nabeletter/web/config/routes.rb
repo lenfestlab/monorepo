@@ -1,8 +1,8 @@
 Rails.application.routes.draw do
   root to: redirect("/admin")
 
-  get "/admin", controller: :pages, action: :admin
-  get "/signup", controller: :pages, action: :signup
+  get "/admin", controller: :packs, action: :admin
+  get "/signup", controller: :packs, action: :signup
   post "/signups", controller: :signups, action: :signup
   get "/pixel", controller: :analytics, action: :pixel
 
@@ -13,8 +13,11 @@ Rails.application.routes.draw do
   resources :articles, only: :index
   resources :permits, only: :index
   resources :translations, only: :create
+  resources :pages, only: :show
 
   namespace :api do
+    jsonapi_resources :pages, only: %i[index create update show]
+    jsonapi_resources :page_sections, only: %i[index create update show]
     jsonapi_resources :editions, only: %i[index create update show]
     jsonapi_resources :newsletters, only: %i[index show]
     jsonapi_resources :subscriptions, only: %i[index show create update]

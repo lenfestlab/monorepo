@@ -1,4 +1,4 @@
-import { Newsletter, Record } from "components/admin/shared"
+import { Newsletter, Page, Record } from "components/admin/shared"
 import jsonapiClient from "ra-jsonapi-client" // NOTE: fork https://git.io/JvnOF
 
 const apiHost = "" // same as asset server
@@ -10,6 +10,9 @@ const keyForAttribute = "underscore_case"
 const newsletter = {
   // Th ID of child is given by its id field
   ref: (_parent: Record, child: Newsletter) => child.id,
+}
+const page = {
+  ref: (_parent: Record, child: Page) => child.id,
 }
 
 const settings = {
@@ -24,6 +27,8 @@ const settings = {
     newsletters: { keyForAttribute },
     users: { keyForAttribute },
     units: { keyForAttribute },
+    pages: { keyForAttribute },
+    page_sections: { keyForAttribute },
   },
   serializerOpts: {
     subscriptions: {
@@ -37,6 +42,8 @@ const settings = {
     newsletters: { keyForAttribute },
     users: { keyForAttribute },
     units: { keyForAttribute, newsletter },
+    pages: { keyForAttribute },
+    page_sections: { keyForAttribute, page },
   },
 }
 

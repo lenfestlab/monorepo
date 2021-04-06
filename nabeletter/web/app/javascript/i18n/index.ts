@@ -161,6 +161,18 @@ export const translate = (key: string): string => {
     "ad-input-logo-image-placeholder": "https://.../image.png",
     "ad-input-main-image-label": "Main image",
     "ad-input-main-image-placeholder": "https://.../image.png",
+    // pages
+    "page-input-title-label": "Title",
+    "page-input-title-placeholder": "COVID-19 Resources",
+    "page-input-pre-label": "Pre/intro text (markdown)",
+    "page-input-pre-placeholder": "# ...",
+    "page-input-post-label": "Post/outro text (markdown)",
+    "page-input-post-placeholder": "# ...",
+    // page sections
+    "page-section-input-title-label": "Title",
+    "page-section-input-title-placeholder": "...",
+    "page-section-input-body-label": "Body text (markdown)",
+    "page-section-input-body-placeholder": "# ...",
   }
   return get(messages, key)
 }
