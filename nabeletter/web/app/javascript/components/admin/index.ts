@@ -29,6 +29,16 @@ import {
 } from "./editions"
 import { LinkEdit, LinkList } from "./links"
 import { NewsletterList } from "./newsletters"
+import {
+  Create as PageCreate,
+  Edit as PageEdit,
+  List as PageList,
+} from "./pages"
+import {
+  Create as PageSectionCreate,
+  Edit as PageSectionEdit,
+  List as PageSectionList,
+} from "./page_sections"
 import { authProvider, dataProvider, i18nProvider } from "./providers"
 import {
   SubscriptionCreate,
@@ -81,5 +91,17 @@ export const AdminApp = () =>
       name: "links",
       list: LinkList,
       edit: LinkEdit,
+    }),
+    h(Resource, {
+      name: "pages",
+      create: PageCreate,
+      list: PageList,
+      edit: PageEdit,
+    }),
+    h(Resource, {
+      name: "page_sections",
+      create: PageSectionCreate,
+      list: PageSectionList,
+      edit: PageSectionEdit,
     }),
   ])

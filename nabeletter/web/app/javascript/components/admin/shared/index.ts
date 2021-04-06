@@ -36,5 +36,16 @@ export interface Ad extends Record {
   updated_at: string
 }
 
+export interface PageSection extends Record {
+  title: string
+  body: string
+}
+export interface Page extends Record {
+  title: string
+  pre: string
+  post: string
+  sections: PageSection[]
+}
+
 export { NewsletterReferenceInput } from "./NewsletterReferenceInput"
 export { NewsletterReferenceField } from "./NewsletterReferenceField"

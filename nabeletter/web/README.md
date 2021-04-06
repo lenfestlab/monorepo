@@ -1,7 +1,6 @@
 ## Setup
 
 ```
-
 # Run setup script
 bash ./scripts/bootstrap.sh
 
