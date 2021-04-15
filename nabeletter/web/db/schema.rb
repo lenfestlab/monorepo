@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2021_04_07_171216) do
+ActiveRecord::Schema.define(version: 2021_04_16_194100) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -172,6 +172,10 @@ ActiveRecord::Schema.define(version: 2021_04_07_171216) do
     t.text "sections", default: [], array: true
     t.datetime "created_at", precision: 6, null: false
     t.datetime "updated_at", precision: 6, null: false
+    t.integer "ordered_section_ids", default: [], array: true
+    t.bigint "newsletter_id"
+    t.string "header_image_url"
+    t.index ["newsletter_id"], name: "index_pages_on_newsletter_id"
     t.index ["title"], name: "index_pages_on_title"
   end
 

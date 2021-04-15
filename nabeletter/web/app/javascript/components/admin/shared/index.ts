@@ -41,10 +41,15 @@ export interface PageSection extends Record {
   body: string
 }
 export interface Page extends Record {
+  header_image_url: string
   title: string
   pre: string
   post: string
   sections: PageSection[]
+  last_updated_at: string
+  newsletter_logo_url: string
+  newsletter_name: string
+  newsletter_social_url_facebook: string
 }
 
 export { NewsletterReferenceInput } from "./NewsletterReferenceInput"
