@@ -12,6 +12,7 @@ export const colors = {
   lightGray: "#d3d3d3", // https://www.colorhexa.com/d3d3d3
   veryLightGray: "#e9e9e9",
   white: "#fff",
+  lightBlue: "#bbe1fa",
 }
 
 export const queries = {

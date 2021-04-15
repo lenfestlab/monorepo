@@ -3,6 +3,8 @@ class Newsletter < ApplicationRecord
 
   has_many :subscriptions, dependent: :destroy
 
+  has_many :pages, dependent: :destroy
+
   validates :name, presence: true, uniqueness: true
 
   def list_identifier

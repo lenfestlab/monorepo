@@ -11,7 +11,6 @@ import { colors, fonts, queries } from "styles"
 import { classes, cssRaw, cssRule, media, stylesheet } from "typestyle"
 
 import facebook from "images/facebook-icon.svg"
-import logo from "images/hook.svg"
 
 const spy = create({ defaultLogger: console, sourceMaps: true })
 if (process.env.DEBUG_RX) {

@@ -14,6 +14,7 @@ export const UTC = "Etc/UTC"
 export const EST = "America/New_York"
 export const FORMAT_GCAL = "yyyyMMdd'T'HHmmss'Z'"
 export const FORMAT_LONG = "EEEE, LLLL d @ p"
+export const FORMAT_LONG_ENG = "EEEE, LLLL d 'at' p"
 export const FORMAT_SHORT = "L/d/yy h':'mmaa"
 export const format = (date: Date, format: string, timezone: string) =>
   _format(utcToZonedTime(date, timezone), format)
@@ -162,6 +163,8 @@ export const translate = (key: string): string => {
     "ad-input-main-image-label": "Main image",
     "ad-input-main-image-placeholder": "https://.../image.png",
     // pages
+    "page-input-image-label": "Header image URL",
+    "page-input-image-placeholder": "https://...",
     "page-input-title-label": "Title",
     "page-input-title-placeholder": "COVID-19 Resources",
     "page-input-pre-label": "Pre/intro text (markdown)",

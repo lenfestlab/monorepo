@@ -7,3 +7,4 @@ release: bundle exec rails db:migrate
 # dev-only
 webpacker: ./bin/webpack-dev-server
 log: tail -f ./log/development.log
+# pgweb: pgweb --host=${DATABASE_HOST} --db=${DATABASE_NAME} --ssl=disable

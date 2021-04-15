@@ -12,7 +12,7 @@ import {
   ListSubheader,
   TextField,
 } from "@material-ui/core"
-import { OpenInNew } from "@material-ui/icons"
+import { ArrowDownward, ArrowUpward, OpenInNew } from "@material-ui/icons"
 import { dataProvider } from "components/admin/providers"
 import { Page, PageSection } from "components/admin/shared"
 import { translate } from "i18n"
@@ -37,6 +37,7 @@ interface Props {
 
 interface State {
   id: number | string
+  header_image_url: string
   title: string
   pre: string
   post: string
@@ -45,6 +46,12 @@ interface State {
 
 export class Input extends Component<Props, State> {
   subscription: Subscription | null = null
+
+  header_image_url$$ = new BehaviorSubject<string>("")
+  header_image_url$ = this.header_image_url$$.pipe(
+    tag("header_image_url$"),
+    shareReplay()
+  )
 
   title$$ = new BehaviorSubject<string>("")
   title$ = this.title$$.pipe(tag("title$"), shareReplay())
@@ -60,22 +67,33 @@ export class Input extends Component<Props, State> {
 
   onChange = (event: InputEvent) => {
     const { name, value } = event.target
+    if (name === "header_image_url") this.header_image_url$$.next(value)
     if (name === "title") this.title$$.next(value)
     if (name === "pre") this.pre$$.next(value)
     if (name === "post") this.post$$.next(value)
   }
 
+  onSwap = (index1: number, index2: number) => {
+    const sections = this.sections$$.value
+    const temp = sections[index1]
+    sections[index1] = sections[index2]
+    sections[index2] = temp
+    this.sections$$.next(sections)
+  }
+
   constructor(props: Props) {
     super(props)
     const {
-      record: { id, title, pre, post, sections },
+      record: { id, header_image_url, title, pre, post, sections },
     } = props
+    this.header_image_url$$.next(header_image_url)
     this.title$$.next(title)
     this.pre$$.next(pre)
     this.post$$.next(post)
     this.sections$$.next(sections)
     this.state = {
       id,
+      header_image_url,
       title,
       pre,
       post,
@@ -84,13 +102,20 @@ export class Input extends Component<Props, State> {
   }
 
   componentDidMount() {
-    const { title$, pre$, post$, sections$ } = this
+    const { header_image_url$, title$, pre$, post$, sections$ } = this
 
-    const setState$ = combineLatest(title$, pre$, post$, sections$).pipe(
-      tap(([title, pre, post, sections]) => {
+    const setState$ = combineLatest(
+      header_image_url$,
+      title$,
+      pre$,
+      post$,
+      sections$
+    ).pipe(
+      tap(([header_image_url, title, pre, post, sections]) => {
         this.setState((prior: State) => {
           return {
             ...prior,
+            header_image_url,
             title,
             pre,
             post,
@@ -101,10 +126,17 @@ export class Input extends Component<Props, State> {
       tag("page.input.setState$")
     )
 
-    const sync$ = combineLatest(title$, pre$, post$, sections$).pipe(
-      switchMap(([title, pre, post, sections]) => {
+    const sync$ = combineLatest(
+      header_image_url$,
+      title$,
+      pre$,
+      post$,
+      sections$
+    ).pipe(
+      switchMap(([header_image_url, title, pre, post, sections]) => {
         const id = this.props.record?.id
         const data = {
+          header_image_url,
           title,
           pre,
           post,
@@ -124,8 +156,8 @@ export class Input extends Component<Props, State> {
   }
 
   render() {
-    const { onChange } = this
-    const { id, title, pre, post, sections } = this.state
+    const { onChange, onSwap } = this
+    const { id, header_image_url, title, pre, post, sections } = this.state
     return h(
       Box,
       {
@@ -145,6 +177,17 @@ export class Input extends Component<Props, State> {
           },
           [
             h(Grid, { container: true, direction: "column", spacing: 1 }, [
+              h(TextField, {
+                value: header_image_url,
+                ...{
+                  onChange,
+                  label: translate("page-input-image-label"),
+                  name: "header_image_url",
+                  fullWidth: true,
+                  placeholder: translate("page-input-image-placeholder"),
+                  variant: "filled",
+                },
+              }),
               h(TextField, {
                 value: title,
                 ...{
@@ -175,14 +218,29 @@ export class Input extends Component<Props, State> {
                   dense: true,
                   subheader: h(ListSubheader, ["Sections"]),
                 },
-                sections.map((section: PageSection) => {
+                sections.map((section: PageSection, idx: number) => {
                   const id = section.id
                   const primary = section.title
                   const onClickOpen = () =>
                     window.open(`admin#/page_sections/${id}`)
+                  const onClickDown = () => onSwap(idx, idx + 1)
+                  const onClickUp = () => onSwap(idx, idx - 1)
                   return h(ListItem, [
                     h(ListItemText, { primary }),
                     h(ListItemSecondaryAction, [
+                      h(
+                        IconButton,
+                        {
+                          onClick: onClickDown,
+                          disabled: idx === sections.length - 1,
+                        },
+                        [h(ArrowDownward)]
+                      ),
+                      h(
+                        IconButton,
+                        { onClick: onClickUp, disabled: idx === 0 },
+                        [h(ArrowUpward)]
+                      ),
                       h(IconButton, { onClick: onClickOpen }, [h(OpenInNew)]),
                     ]),
                   ])
