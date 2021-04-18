@@ -17,7 +17,7 @@ namespace :events do
   task import: :environment do
     client = Mailgun::Client.new ENV["MAILGUN_API_KEY"]
     endpoint = Mailgun::Events.new(client, "lenfestlab.org")
-    types = %w{ opened unsubscribed rejected complained }
+    types = %w{ opened unsubscribed rejected complained delivered complained }
     env = ENV["RAILS_ENV_ABBR"]
     minutes = Integer(ENV["MAILGUN_MINUTES"] || 30)
     Newsletter.all.each do |newsletter|
