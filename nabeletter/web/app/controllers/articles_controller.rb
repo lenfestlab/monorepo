@@ -14,7 +14,7 @@ class ArticlesController < ApplicationController
   def index
     url = safe[:url]
     Rails.logger.info("params.url #{url}")
-    response = HTTParty.get url
+    response = HTTParty.get(url, { verify: false })
     unless response.success?
       message = response.message
       Rails.logger.error(message)

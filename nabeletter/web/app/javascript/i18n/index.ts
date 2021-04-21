@@ -165,7 +165,7 @@ export const translate = (key: string): string => {
     // pages
     "page-input-image-label": "Header image URL",
     "page-input-image-placeholder": "https://...",
-    "page-input-title-label": "Title",
+    "page-input-title-label": "Title (required for embedding)",
     "page-input-title-placeholder": "COVID-19 Resources",
     "page-input-pre-label": "Pre/intro text (markdown)",
     "page-input-pre-placeholder": "# ...",
