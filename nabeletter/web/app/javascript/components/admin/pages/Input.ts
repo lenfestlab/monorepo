@@ -190,6 +190,7 @@ export class Input extends Component<Props, State> {
               }),
               h(TextField, {
                 value: title,
+                required: true,
                 ...{
                   onChange,
                   label: translate("page-input-title-label"),

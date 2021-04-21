@@ -39,10 +39,13 @@ export const articlesNode = ({
           published_time,
         } = article
 
-        // "http://www.inquirer.com" => "Inquirer.com"
         const site_name =
           site_name_custom ??
-          capitalize(_site_name.split(".").slice(-2).join("."))
+          (_site_name &&
+            (_site_name.includes(".com")
+              ? // "http://www.inquirer.com" => "Inquirer.com"
+                capitalize(_site_name.split(".").slice(-2).join("."))
+              : _site_name))
 
         const published =
           published_time && format(parseISO(published_time), "MMMM d, y")

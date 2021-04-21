@@ -35,7 +35,7 @@ export const PageProfile = ({ page }: { page: Page }) => {
       ]),
       header_image_url && img({ src: header_image_url }),
       div({ className: classNames.content }, [
-        title && h1(title),
+        // title && h1(title),
         h(ReactMarkdown, {
           source: pre,
           escapeHtml: false,
