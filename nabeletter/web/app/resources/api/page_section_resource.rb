@@ -4,6 +4,7 @@ class Api::PageSectionResource < JSONAPI::Resource
              updated_at
              title
              body
+             hidden
              ])
 
   has_one :page

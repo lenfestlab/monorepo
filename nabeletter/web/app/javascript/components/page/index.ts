@@ -42,21 +42,21 @@ export const PageProfile = ({ page }: { page: Page }) => {
           linkTarget: "_blank",
         }),
         ol({ className: classNames.tableOfContents }, [
-          ...sections.map((section: PageSection) => {
-            return li([a({ href: `#section-${section.id}` }, section.title)])
+          ...sections.map(({ id, title, hidden }: PageSection) => {
+            return !hidden && li([a({ href: `#section-${id}` }, title)])
           }),
         ]),
-        ...sections.map((section: PageSection) => {
-          return div(
-            { id: `section-${section.id}`, className: classNames.card },
-            [
-              h3({ className: classNames.cardHeader }, section.title),
+        ...sections.map(({ id, title, body, hidden }: PageSection) => {
+          return (
+            !hidden &&
+            div({ id: `section-${id}`, className: classNames.card }, [
+              h3({ className: classNames.cardHeader }, title),
               h(ReactMarkdown, {
-                source: section.body,
+                source: body,
                 escapeHtml: false,
                 linkTarget: "_blank",
               }),
-            ]
+            ])
           )
         }),
         h(ReactMarkdown, {
