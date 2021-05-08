@@ -12,7 +12,7 @@ class Page < ApplicationRecord
     sorted = union.map do |id|
       all.find {|s| s.id == id}
     end
-    sorted.as_json(only: %i[ id title body ])
+    sorted.as_json(only: %i[ id title body hidden ])
   end
 
   def sections= ordered_sections

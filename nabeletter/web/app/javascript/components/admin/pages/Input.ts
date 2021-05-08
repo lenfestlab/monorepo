@@ -12,7 +12,13 @@ import {
   ListSubheader,
   TextField,
 } from "@material-ui/core"
-import { ArrowDownward, ArrowUpward, OpenInNew } from "@material-ui/icons"
+import {
+  ArrowDownward,
+  ArrowUpward,
+  OpenInNew,
+  Visibility,
+  VisibilityOff,
+} from "@material-ui/icons"
 import { dataProvider } from "components/admin/providers"
 import { Page, PageSection } from "components/admin/shared"
 import { translate } from "i18n"
@@ -222,13 +228,22 @@ export class Input extends Component<Props, State> {
                 sections.map((section: PageSection, idx: number) => {
                   const id = section.id
                   const primary = section.title
+                  const hidden = section.hidden
                   const onClickOpen = () =>
                     window.open(`admin#/page_sections/${id}`)
                   const onClickDown = () => onSwap(idx, idx + 1)
                   const onClickUp = () => onSwap(idx, idx - 1)
+
                   return h(ListItem, [
                     h(ListItemText, { primary }),
                     h(ListItemSecondaryAction, [
+                      h(
+                        IconButton,
+                        {
+                          disabled: true,
+                        },
+                        [h(hidden ? VisibilityOff : Visibility)]
+                      ),
                       h(
                         IconButton,
                         {

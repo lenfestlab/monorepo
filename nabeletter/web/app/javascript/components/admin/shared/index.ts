@@ -39,7 +39,9 @@ export interface Ad extends Record {
 export interface PageSection extends Record {
   title: string
   body: string
+  hidden: boolean
 }
+
 export interface Page extends Record {
   header_image_url: string
   title: string
