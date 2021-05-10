@@ -109,6 +109,10 @@ export const classNames = stylesheet({
     paddingTop: px(10),
   },
 
+  headerImage: {
+    width: percent(100),
+  },
+
   content: {
     ...fillParent,
     ...vertical,

@@ -21,7 +21,11 @@ export const PageProfile = ({ page }: { page: Page }) => {
     newsletter_social_url_facebook,
     last_updated_at,
   } = page
-  const updated_at = format(parseISO(last_updated_at), FORMAT_LONG_ENG, EST)
+  const updated_at = format(
+    parseISO(last_updated_at),
+    "LLLL d',' y 'at' h':'mm aaaa",
+    EST
+  )
   return div({ className: classNames.background }, [
     div({ className: classNames.container }, [
       div({ className: classNames.header }, [
@@ -30,10 +34,14 @@ export const PageProfile = ({ page }: { page: Page }) => {
             src: newsletter_logo_url,
             className: classNames.logo,
           }),
-          span({ className: classNames.updated }, updated_at),
+          span({ className: classNames.updated }, `Updated on ${updated_at}`),
         ]),
       ]),
-      header_image_url && img({ src: header_image_url }),
+      header_image_url &&
+        img({
+          className: classNames.headerImage,
+          src: header_image_url,
+        }),
       div({ className: classNames.content }, [
         // title && h1(title),
         h(ReactMarkdown, {
