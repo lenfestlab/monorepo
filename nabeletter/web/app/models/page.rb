@@ -27,12 +27,17 @@ class Page < ApplicationRecord
   def newsletter_logo_url
     newsletter.logo_url
   end
-
   def newsletter_name
     newsletter.sender_name
   end
   def newsletter_social_url_facebook
     newsletter.social_url_facebook
+  end
+  def newsletter_analytics_name
+    newsletter.analytics_name
+  end
+  def newsletter_id
+    newsletter.id
   end
 
   def as_json(options)
@@ -41,6 +46,8 @@ class Page < ApplicationRecord
           newsletter_name
           newsletter_logo_url 
           newsletter_social_url_facebook
+          newsletter_analytics_name
+          newsletter_id
           })
   end
 

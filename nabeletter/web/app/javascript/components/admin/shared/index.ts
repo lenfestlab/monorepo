@@ -52,6 +52,8 @@ export interface Page extends Record {
   newsletter_logo_url: string
   newsletter_name: string
   newsletter_social_url_facebook: string
+  newsletter_analytics_name: string
+  newsletter_id: string
 }
 
 export { NewsletterReferenceInput } from "./NewsletterReferenceInput"

@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2021_05_08_162818) do
+ActiveRecord::Schema.define(version: 2021_05_14_151213) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -87,6 +87,8 @@ ActiveRecord::Schema.define(version: 2021_05_08_162818) do
     t.string "cd8"
     t.datetime "created_at", precision: 6, null: false
     t.datetime "updated_at", precision: 6, null: false
+    t.string "aid"
+    t.index ["aid"], name: "index_events_on_aid"
     t.index ["cd1"], name: "index_events_on_cd1"
     t.index ["cd2"], name: "index_events_on_cd2"
     t.index ["cd3"], name: "index_events_on_cd3"

@@ -76,6 +76,7 @@
     "typescript": "~3.8.3",
     "typestyle": "~2.1.0",
     "underscore.string": "3.3.5",
+    "uuidv4": "6.2.8",
     "webpack-bundle-analyzer": "~3.7.0",
     "webpack-dev-server": "~3.10.3"
   }
