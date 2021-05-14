@@ -8,6 +8,7 @@ class AnalyticsController < ApplicationController
     unless safe[:ga].present? # skip old analytics strategy
       track(
         user_id: safe["uid"],
+        anon_id: safe["aid"],
         event_action: safe["ea"],
         properties: {
           category: safe["ec"],
@@ -24,7 +25,11 @@ class AnalyticsController < ApplicationController
         }
       )
     end
-    redirect_to redirect
+    if redirect
+      redirect_to redirect
+    else
+      head :ok
+    end
   end
 
   def pixel
@@ -55,9 +60,10 @@ class AnalyticsController < ApplicationController
     params.permit!
   end
 
-  def track(user_id:, event_action:, properties:)
+  def track(user_id:, anon_id:, event_action:, properties:)
     AnalyticsService.new.track(
       user_id: user_id,
+      anon_id: anon_id,
       event_action: event_action,
       properties: properties
     )

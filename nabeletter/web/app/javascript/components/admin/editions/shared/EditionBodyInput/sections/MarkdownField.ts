@@ -13,7 +13,7 @@ import {
 import { colors, queries } from "styles"
 import { StyleMap } from "styles"
 
-type TransformLinkUri = (
+export type TransformLinkUri = (
   uri: string,
   children?: ReactNode,
   title?: string

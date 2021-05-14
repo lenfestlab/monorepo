@@ -11,9 +11,10 @@ class AnalyticsService
     )
   end
 
-  def track(user_id:, event_action:, properties:, timestamp: nil)
+  def track(user_id:, anon_id:, event_action:, properties:, timestamp: nil)
     properties[:cd8] = user_id # NOTE: MUST dupe uid
     data = {
+      aid: anon_id,
       uid: user_id,
       ea: event_action,
       ec: properties[:category],
@@ -32,6 +33,7 @@ class AnalyticsService
     timestamp ||= Time.zone.now
     @api.track(
       user_id: user_id,
+      anonymous_id: anon_id,
       event: event_action,
       properties: properties,
       timestamp: timestamp.utc.iso8601
