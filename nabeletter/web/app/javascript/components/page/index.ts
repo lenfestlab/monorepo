@@ -32,10 +32,17 @@ export const PageProfile = ({ page }: { page: Page }) => {
     last_updated_at,
   } = page
 
-  const sharedAnalyticsProps = {
+  const { search } = window.location
+  const params = new URLSearchParams(search)
+  const uid = params.get("uid")
+  const eid = params.get("eid")
+
+  const sharedAnalyticsProps: Omit<AnalyticsProps, "action"> = {
     label: title,
     page_id: String(_page_id),
     nabe_name: newsletter_analytics_name,
+    uid,
+    eid,
   }
 
   const { loading, value, error } = useAsync(async () => {

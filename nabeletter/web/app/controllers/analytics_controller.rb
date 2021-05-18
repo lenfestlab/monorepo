@@ -60,7 +60,7 @@ class AnalyticsController < ApplicationController
     params.permit!
   end
 
-  def track(user_id:, anon_id:, event_action:, properties:)
+  def track(user_id: nil, anon_id: nil, event_action:, properties:)
     AnalyticsService.new.track(
       user_id: user_id,
       anon_id: anon_id,
