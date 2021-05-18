@@ -46,10 +46,20 @@ interface LinkProps {
 }
 
 export const link = (
-  { analytics, className, title, url, style }: LinkProps,
+  { analytics, className, title, url: _url, style }: LinkProps,
   children?: Children
 ) => {
-  const href = rewriteURL(url, {
+  const host = process.env.RAILS_HOST as string
+  let tracked_url: string
+  if (_url.includes(host)) {
+    const url = new URL(_url)
+    url.searchParams.set("uid", "VAR-RECIPIENT-UID")
+    url.searchParams.set("eid", analytics.edition)
+    tracked_url = url.href
+  } else {
+    tracked_url = _url
+  }
+  const href = rewriteURL(tracked_url, {
     title: safeTitle(title),
     ...analytics,
   })

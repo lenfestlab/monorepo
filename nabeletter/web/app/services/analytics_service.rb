@@ -11,7 +11,7 @@ class AnalyticsService
     )
   end
 
-  def track(user_id:, anon_id:, event_action:, properties:, timestamp: nil)
+  def track(user_id: nil, anon_id: nil, event_action:, properties:, timestamp: nil)
     properties[:cd8] = user_id # NOTE: MUST dupe uid
     data = {
       aid: anon_id,
