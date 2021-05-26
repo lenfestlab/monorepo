@@ -1,7 +1,7 @@
 import { h } from "@cycle/react"
-import { a, b, div, h1, h2, h3, img, li, ol, span } from "@cycle/react-dom"
+import { a, b, div, h1, h2, h3, i, img, li, ol, span } from "@cycle/react-dom"
 import { parseISO } from "date-fns"
-import { ReactNode } from "react"
+import { ReactElement, ReactNode, useState } from "react"
 import ReactMarkdown from "react-markdown"
 import { useAsync } from "react-use"
 
@@ -32,7 +32,7 @@ export const PageProfile = ({ page }: { page: Page }) => {
     last_updated_at,
   } = page
 
-  const { search } = window.location
+  const { search, origin, pathname } = window.location
   const params = new URLSearchParams(search)
   const uid = params.get("uid")
   const eid = params.get("eid")
@@ -52,7 +52,7 @@ export const PageProfile = ({ page }: { page: Page }) => {
     })
   }, [])
 
-  const makeTransformLinkUri = (section_id?: string): TransformLinkUri => {
+  const makeTransformLinkUri = (section_id = "none"): TransformLinkUri => {
     const transformLinkUri: TransformLinkUri = (url, children, _) => {
       let child
       // @ts-ignore
@@ -68,6 +68,26 @@ export const PageProfile = ({ page }: { page: Page }) => {
       return rewritten
     }
     return transformLinkUri
+  }
+
+  const copyableLink = (url: string, section_id = "none") => {
+    const [copied, setCopied] = useState(false)
+    const cta = `Share this resource`
+    const onClick = async (e: React.SyntheticEvent) => {
+      e.preventDefault()
+      await navigator.clipboard.writeText(url)
+      setCopied(true)
+      await track({
+        ...sharedAnalyticsProps,
+        action: "click",
+        label: cta,
+        anchor: url,
+        section_id,
+      })
+    }
+    return copied
+      ? i(`Link copied to clipboard!`)
+      : a({ href: url, onClick }, cta)
   }
 
   const updated_at = format(
@@ -123,11 +143,13 @@ export const PageProfile = ({ page }: { page: Page }) => {
             )
           }),
         ]),
-        ...sections.map(({ id, title, body, hidden }: PageSection) => {
-          const section_id = String(id)
+        ...sections.map(({ id: _id, title, body, hidden }: PageSection) => {
+          const section_id = String(_id)
+          const id = `section-${section_id}`
+          const section_url = `${origin}${pathname}#${id}`
           return (
             !hidden &&
-            div({ id: `section-${id}`, className: classNames.card }, [
+            div({ id, className: classNames.card }, [
               h3({ className: classNames.cardHeader }, title),
               h(ReactMarkdown, {
                 source: body,
@@ -135,6 +157,7 @@ export const PageProfile = ({ page }: { page: Page }) => {
                 linkTarget: "_blank",
                 transformLinkUri: makeTransformLinkUri(section_id),
               }),
+              copyableLink(section_url, section_id),
             ])
           )
         }),
