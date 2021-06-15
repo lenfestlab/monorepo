@@ -5,7 +5,22 @@ import {
   Newsletter,
   NewsletterReferenceField,
 } from "components/admin/shared"
-import { body, formatErrorHTML, mj, MjApiResult, mjml, Node } from "mj"
+import {
+  all,
+  attributes,
+  body,
+  column,
+  font,
+  head,
+  image,
+  mjml,
+  Node,
+  preview,
+  section,
+  style,
+  text,
+  wrapper,
+} from "mjml-json"
 import { Component, createRef, RefObject } from "react"
 import {
   BehaviorSubject,
@@ -299,32 +314,26 @@ export class EditionBodyInput extends Component<Props, State> {
 
         const pad = 24
         const mjNode: Node = mjml([
-          mj(
-            "mj-head",
-            {},
+          head(
             compact([
-              mj("mj-font", {
+              font({
                 href:
                   "https://fonts.googleapis.com/css?family=Roboto|Roboto+Slab&display=swap",
               }),
-              mj("mj-attributes", {}, [
-                mj("mj-text", { padding: px(0), lineHeight: 1.5 }),
-                mj("mj-image", { padding: px(0) }),
-                mj("mj-column", { padding: px(0) }),
-                mj("mj-section", { padding: px(0) }),
-                mj("mj-wrapper", { padding: px(0) }),
-                mj("mj-all", {
+              attributes([
+                text({ padding: px(0), lineHeight: 1.5 }),
+                image({ padding: px(0) }),
+                column({ padding: px(0) }),
+                section({ padding: px(0) }),
+                wrapper({ padding: px(0) }),
+                all({
                   fontFamily: fonts.roboto,
                   fontSize: px(16) as string,
                 }),
               ]),
-              mj("mj-style", { inline: true }, typestyle.getStyles()),
+              style({ inline: true }, typestyle.getStyles()),
               !isEmpty(previewText) &&
-                mj(
-                  "mj-preview",
-                  {},
-                  `${previewText} ${`&nbsp;&zwnj;`.repeat(90)}`
-                ),
+                preview(`${previewText} ${`&nbsp;&zwnj;`.repeat(90)}`),
             ])
           ),
           body(
@@ -351,8 +360,17 @@ export class EditionBodyInput extends Component<Props, State> {
         )
       }),
       map$((response: AjaxResponse): string => {
-        const { html, errors }: MjApiResult = response.response
-        return html ?? formatErrorHTML(errors)
+        const {
+          html,
+          errors,
+        }: {
+          html: string
+          errors: JSON
+        } = response.response
+        return (
+          html ??
+          `<pre style="color: red">${JSON.stringify(errors, null, 2)}</pre>`
+        )
       }),
       distinctUntilChanged(),
       // tag("html$"),

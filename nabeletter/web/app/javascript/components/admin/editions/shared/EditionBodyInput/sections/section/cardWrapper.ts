@@ -1,7 +1,7 @@
 import { rewriteURL } from "analytics"
 import { px } from "csx"
 import { compact } from "fp"
-import { column, image, Node, text, wrapper } from "mj"
+import { column, image, Node, text, wrapper } from "mjml-json"
 import { colors, fonts } from "styles"
 import { AdOpt, SectionNodeProps } from "."
 import { md } from "../MarkdownField"

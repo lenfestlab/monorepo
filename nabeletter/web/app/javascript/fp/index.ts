@@ -1,4 +1,3 @@
-import { paramCase } from "change-case"
 import capitalize from "lodash/capitalize"
 import chunk from "lodash/chunk"
 import compact from "lodash/compact"
@@ -11,7 +10,6 @@ import isEqual from "lodash/isEqual"
 import keys from "lodash/keys"
 import last from "lodash/last"
 import map from "lodash/map"
-import mapKeys from "lodash/mapKeys"
 import max from "lodash/max"
 import omit from "lodash/omit"
 import reduce from "lodash/reduce"
@@ -54,10 +52,8 @@ export {
   keys,
   last,
   map,
-  mapKeys,
   max,
   omit,
-  paramCase,
   reduce,
   sortBy,
   truncate,

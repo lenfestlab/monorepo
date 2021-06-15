@@ -1,6 +1,6 @@
 import { either } from "fp"
 import { translate } from "i18n"
-import { Node } from "mj"
+import { Node } from "mjml-json"
 import { Config } from "."
 import { articlesNode } from "../news"
 import { SectionNodeProps } from "../section"

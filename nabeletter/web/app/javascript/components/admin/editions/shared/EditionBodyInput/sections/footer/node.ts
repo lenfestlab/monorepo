@@ -11,7 +11,7 @@ import {
   section as sectionNode,
   text as textNode,
   TextAttributes,
-} from "mj"
+} from "mjml-json"
 import { colors } from "styles"
 import { SectionNodeProps } from "../section"
 

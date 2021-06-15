@@ -1,6 +1,6 @@
 import { px } from "csx"
 import { compact, either, isEmpty } from "fp"
-import { column, Node, text } from "mj"
+import { column, Node, text } from "mjml-json"
 import { StyleMap } from "styles"
 import { Config } from "."
 import { cardSection, cardWrapper, SectionNodeProps } from "../section"

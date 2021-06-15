@@ -1,7 +1,7 @@
 import { px } from "csx"
 import { allEmpty, compact, either } from "fp"
 import { translate } from "i18n"
-import { column, image as imageNode, Node, text } from "mj"
+import { column, image as imageNode, Node, text } from "mjml-json"
 import { Config } from "."
 import { md } from "../MarkdownField"
 import { cardSection, cardWrapper, SectionNodeProps } from "../section"

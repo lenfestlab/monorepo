@@ -1,5 +1,5 @@
 import { px } from "csx"
-import { Node, section, SectionAttributes } from "mj"
+import { Node, section, SectionAttributes } from "mjml-json"
 import { colors } from "styles"
 
 interface Attributes extends SectionAttributes {
