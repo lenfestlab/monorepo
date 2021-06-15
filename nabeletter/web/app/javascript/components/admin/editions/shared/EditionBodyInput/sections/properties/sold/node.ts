@@ -1,5 +1,5 @@
 import { translate } from "i18n"
-import { Node } from "mj"
+import { Node } from "mjml-json"
 import { node as baseNode, Props as BaseNodeProps } from "../node"
 
 type Props = BaseNodeProps

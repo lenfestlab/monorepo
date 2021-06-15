@@ -1,6 +1,6 @@
 import { allEmpty, either } from "fp"
 import { translate } from "i18n"
-import { column, Node, text } from "mj"
+import { column, Node, text } from "mjml-json"
 import { Config } from "."
 import { md } from "../MarkdownField"
 import { cardSection, cardWrapper, SectionNodeProps } from "../section"

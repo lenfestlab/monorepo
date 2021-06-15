@@ -2,7 +2,7 @@ import { rewriteURL } from "analytics"
 import { px } from "csx"
 import { allEmpty, either, isEmpty, map, values } from "fp"
 import { translate } from "i18n"
-import { column, group, image, image as imageNode, Node, text } from "mj"
+import { column, group, image, image as imageNode, Node, text } from "mjml-json"
 import { Config, Post } from "."
 import { cardSection, cardWrapper, SectionNodeProps } from "../section"
 

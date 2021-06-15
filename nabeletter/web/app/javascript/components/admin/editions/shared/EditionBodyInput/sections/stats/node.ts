@@ -1,5 +1,5 @@
 import { translate } from "i18n"
-import { Node } from "mj"
+import { Node } from "mjml-json"
 import { Config, node as imagesNode } from "../images"
 import { SectionNodeProps } from "../section"
 
