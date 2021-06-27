@@ -53,9 +53,8 @@ export const link = (
   let tracked_url: string
   if (_url.includes(host)) {
     const url = new URL(_url)
-    // NOTE: pending analysis requiring uid/eid
-    // url.searchParams.set("uid", "VAR-RECIPIENT-UID")
-    // url.searchParams.set("eid", analytics.edition)
+    url.searchParams.set("uid", "VAR-RECIPIENT-UID")
+    url.searchParams.set("eid", analytics.edition)
     tracked_url = url.href
   } else {
     tracked_url = _url
