@@ -258,7 +258,12 @@ app.get("/capture", async (req, res) => {
               var rightClicks = selection - 1;
               for (var i = 0; i < rightClicks; i++) {
                 button.click();
-                await frame.waitForNavigation({ timeout: 1000 });
+                console.debug(`rightClicks ${rightClicks}`);
+                try {
+                  await frame.waitForNavigation({ timeout: 2000 });
+                } catch (error) {
+                  console.error(error);
+                }
               }
             }
           } catch (error) {
@@ -268,6 +273,7 @@ app.get("/capture", async (req, res) => {
       }
     }
 
+    console.debug(`sel: ${selector}`);
     const screenshot = await ele.screenshot({
       omitBackground: true,
       encoding: "binary",
