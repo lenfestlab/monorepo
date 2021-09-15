@@ -13,6 +13,7 @@ export const colors = {
   veryLightGray: "#e9e9e9",
   white: "#fff",
   lightBlue: "#bbe1fa",
+  textBlue: "#2566A5",
 }
 
 export const queries = {
