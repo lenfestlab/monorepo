@@ -8358,10 +8358,10 @@ mixin-object@^2.0.1:
     for-in "^0.1.3"
     is-extendable "^0.1.1"
 
-mjml-json@0.0.5:
-  version "0.0.5"
-  resolved "https://registry.yarnpkg.com/mjml-json/-/mjml-json-0.0.5.tgz#3f3bdb5a7942575964facf75a50f759165159d52"
-  integrity sha512-VUqERxHaATQBTgz5s5bMYMS4gGgsbtwYvKSFrpGRB0By6soLQuyk18eGE6HBqY61j2YQZGmxn2vAWYslSJZJlg==
+mjml-json@0.0.6:
+  version "0.0.6"
+  resolved "https://registry.yarnpkg.com/mjml-json/-/mjml-json-0.0.6.tgz#075f29df000de0f08909852397f1869b998c5db8"
+  integrity sha512-PA1qA5bLvS+CW5qPMlOyYveVbS9AIM0lJpgzJH/lspfIQWBrsUxfGlUOSm2xQYiABbRK5LbKjiiTz5M7lE5Y1w==
   dependencies:
     change-case "4.1.2"
     lodash "4.17.21"
