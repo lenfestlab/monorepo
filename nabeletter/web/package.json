@@ -50,7 +50,7 @@
     "html-to-image": "~0.1.1",
     "html2canvas": "~1.0.0-rc.5",
     "ics-tsc": "~0.0.1",
-    "mjml-json": "0.0.4",
+    "mjml-json": "0.0.5",
     "parse-domain": "~3.0.2",
     "prettier": "~2.0.2",
     "prop-types": "15.7.2",
