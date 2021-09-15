@@ -333,7 +333,7 @@ export class EditionBodyInput extends Component<Props, State> {
               ]),
               style({ inline: true }, typestyle.getStyles()),
               !isEmpty(previewText) &&
-                preview(`${previewText} ${`&nbsp;&zwnj;`.repeat(90)}`),
+                preview({}, `${previewText} ${`&nbsp;&zwnj;`.repeat(90)}`),
             ])
           ),
           body(

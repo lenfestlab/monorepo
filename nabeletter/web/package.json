@@ -3,7 +3,7 @@
   "private": true,
   "engines": {
     "node": "13.14.0",
-    "yarn": "1.22.10"
+    "yarn": "1.22.11"
   },
   "scripts": {
     "start": "start-storybook",
@@ -50,7 +50,7 @@
     "html-to-image": "~0.1.1",
     "html2canvas": "~1.0.0-rc.5",
     "ics-tsc": "~0.0.1",
-    "mjml-json": "0.0.3",
+    "mjml-json": "0.0.6",
     "parse-domain": "~3.0.2",
     "prettier": "~2.0.2",
     "prop-types": "15.7.2",

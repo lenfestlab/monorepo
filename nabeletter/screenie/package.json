@@ -3,7 +3,7 @@
   "private": true,
   "engines": {
     "node": "13.6.0",
-    "yarn": "1.22.10"
+    "yarn": "1.22.11"
   },
   "scripts": {
     "start": "ts-node src/index.ts",
