@@ -4,6 +4,7 @@ import { px } from "csx"
 import { compact, get } from "fp"
 import { translate } from "i18n"
 import {
+  button,
   column as columnNode,
   image,
   mj,
@@ -11,6 +12,7 @@ import {
   section as sectionNode,
   text as textNode,
   TextAttributes,
+  divider,
 } from "mjml-json"
 import { colors } from "styles"
 import { SectionNodeProps } from "../section"
@@ -70,6 +72,12 @@ export const node = ({
     },
   }
 
+
+  const buttonCopy = process.env.DONATION_BUTTON_COPY!
+  const url = process.env.DONATION_BUTTON_URL!
+  const href = rewriteURL(url, { ...analytics, title: buttonCopy })
+  const cta = process.env.DONATION_CTA_FOOTER!
+
   return sectionNode(
     {
       backgroundColor: colors.darkBlue,
@@ -80,6 +88,38 @@ export const node = ({
       columnNode(
         {},
         compact([
+
+          // donation
+          textNode(
+            {
+              fontSize: px(15),
+              fontWeight: 400,
+              lineHeight: px(22),
+              color: colors.white,
+              align: "center",
+            },
+            cta
+          ),
+          button(
+            {
+              align: "center",
+              paddingTop: px(17),
+              paddingLeft: px(0),
+              backgroundColor: colors.lightBlue,
+              borderRadius: px(0),
+              color: colors.textBlue,
+              fontSize: px(15),
+              fontWeight: 700,
+              lineHeight: px(18),
+              textTransform: "uppercase",
+              href,
+            },
+            buttonCopy
+          ),
+          divider({ borderWidth: px(1), borderColor: colors.white }),
+          textNode({}, "<br/>"),
+          // end: donation
+
           textNode(
             {
               ...footerTextAttributes,

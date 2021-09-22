@@ -17,9 +17,10 @@ export const node = ({ analytics, config, typestyle }: Props): Node | null => {
   const { markdown, pre, post, post_es, ad } = config
   if (allEmpty([markdown, pre, post, post_es, ad])) return null
 
-  const cta = `Give today`
-  const url = `https://checkout.fundjournalism.org/memberform?org_id=philadelphiainquirer&theme=thehook&campaign=7015G0000013nUnQAI`
-  const href = rewriteURL(url, { ...analytics, title: cta })
+  const cta = process.env.DONATION_CTA!
+  const buttonCopy = process.env.DONATION_BUTTON_COPY!
+  const url = process.env.DONATION_BUTTON_URL!
+  const href = rewriteURL(url, { ...analytics, title: buttonCopy })
 
   return cardWrapper({ title, pre, post, post_es, ad, analytics, typestyle }, [
     cardSection({}, [
@@ -32,7 +33,7 @@ export const node = ({ analytics, config, typestyle }: Props): Node | null => {
             fontWeight: 400,
             lineHeight: px(22),
           },
-          `❤️ Do you like this newsletter? Support local journalism. Donate a monthly gift today.`
+          cta
         ),
         button(
           {
@@ -48,7 +49,7 @@ export const node = ({ analytics, config, typestyle }: Props): Node | null => {
             textTransform: "uppercase",
             href,
           },
-          cta
+          buttonCopy
         ),
       ]),
     ]),
