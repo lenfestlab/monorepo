@@ -1,3 +1,4 @@
+import { EditionBodyInput } from "./EditionBodyInput"
 export { EditionBodyButton } from "./EditionBodyButton"
 export { EditionBodyInput } from "./EditionBodyInput"
 export { EditionPublishAtInput } from "./EditionPublishAtInput"

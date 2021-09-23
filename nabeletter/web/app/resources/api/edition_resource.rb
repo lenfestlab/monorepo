@@ -19,6 +19,7 @@ class Api::EditionResource < JSONAPI::Resource
              newsletter_timezone
              link_count
              kind
+             sms_data
              ])
 
 

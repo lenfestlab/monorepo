@@ -12,7 +12,7 @@ class Edition < ApplicationRecord
   def lock_once_delivered
     return unless delivered?
     attrs = changed_attributes.keys
-    if (attrs & %w[subject body_data body_html deliver_at newsletter_id])
+    if (attrs & %w[subject body_data body_html deliver_at newsletter_id sms_data])
          .present?
       errors.add(:base, "locked once delivered")
     end

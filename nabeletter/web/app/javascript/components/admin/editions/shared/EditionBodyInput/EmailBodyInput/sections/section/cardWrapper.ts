@@ -5,7 +5,7 @@ import { column, image, Node, text, wrapper } from "mjml-json"
 import { colors, fonts } from "styles"
 import { AdOpt, SectionNodeProps } from "."
 import { md } from "../MarkdownField"
-import { cardSection } from "../section/cardSection"
+import { cardSection } from "./cardSection"
 
 export interface CardWrapperProps extends Omit<SectionNodeProps, "context"> {
   title: string

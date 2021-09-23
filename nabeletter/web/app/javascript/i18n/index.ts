@@ -176,6 +176,10 @@ export const translate = (key: string): string => {
     "page-section-input-title-placeholder": "...",
     "page-section-input-body-label": "Body text (markdown)",
     "page-section-input-body-placeholder": "# ...",
+
+    // Text messaging
+    "sms-input-label": "SMS message body",
+    "sms-input-placeholder": "SMS message body"
   }
   return get(messages, key)
 }
