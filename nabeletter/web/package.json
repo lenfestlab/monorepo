@@ -39,6 +39,7 @@
     "@types/react-redux": "~7.1.9",
     "@types/showdown": "~1.9.3",
     "@types/underscore.string": "0.0.38",
+    "autolinker": "3.14.3",
     "babel-loader": "^8.1.0",
     "babel-plugin-transform-react-remove-prop-types": "0.4.24",
     "csstips": "~1.2.0",

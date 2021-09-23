@@ -30,7 +30,7 @@ export const Editor = ({
   htmlSizeError,
 }: Props) => {
   const css = useStyles()
-  return div({ id: "editor" }, [
+  return h(Box, { id: "editor" }, [
     h(
       Box,
       {
