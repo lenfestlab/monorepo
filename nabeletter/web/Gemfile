@@ -28,6 +28,8 @@ gem 'easy_translate'
 gem 'active_storage-postgresql',
   github: 'brenthargrave/active_storage-postgresql',
   branch: 'enable-cache-control'
+gem "phonelib"
+gem "twilio-ruby"
 
 group :development do
   gem 'web-console', '>= 3.3.0'

@@ -60,12 +60,30 @@ class Edition < ApplicationRecord
           )
         }
 
+
   ## Email delivery
   #
 
+  # TODO: deliver all channel+lang permutations
   def deliver(recipients: [])
     deliverer = DeliveryService.new
     deliverer.deliver!(edition: self, recipients: recipients)
     return true # return truthy for AASM
   end
+
+
+  ## SMS delilvery
+  #
+  def deliver_sms(recipients: [])
+    if recipients.present?
+      e164s = recipients.map {|n| Phonelib.parse(n).full_e164 }
+      body = self.sms_data["text"]
+      TwilioService.deliver_sms_phones!(body, e164s)
+    else
+      subs = self.newsletter.subscriptions.where(channel: "sms")
+      TwilioService.deliver_sms_subs!(body, subs)
+      raise "TODO"
+    end
+  end
+
 end

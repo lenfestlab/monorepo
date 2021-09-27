@@ -1,9 +1,11 @@
 import { h } from "@cycle/react"
 import { dataProvider } from "components/admin/providers"
 import {
+  Channel,
   Edition,
   Newsletter,
   NewsletterReferenceField,
+  Lang,
 } from "components/admin/shared"
 import {
   all,
@@ -52,6 +54,7 @@ import { PreviewRef, SectionInput } from "./types"
 
 import { px } from "csx"
 import { createTypeStyle } from "typestyle"
+import { TestDeliveryButton } from "../TestDeliveryButton"
 import { Input as AnswerInput, node as answerNode } from "./sections/answer"
 import { Input as AskInput, node as askNode } from "./sections/ask"
 import { Input as EventsInput, node as eventsNode } from "./sections/events"
@@ -187,6 +190,8 @@ interface BodyConfig {
 
 interface Props {
   record?: Edition
+  visibility: string
+  lang: Lang
 }
 interface State {
   sections: SectionConfig[]
@@ -422,7 +427,8 @@ export class EmailBodyInput extends Component<Props, State> {
     const { sections, syncing, html, htmlSizeError } = this.state
 
     // TODO: embed JSONAPI edition.newsletter
-    const edition: Edition | undefined = this.props.record
+    const { record } = this.props
+    const edition: Edition | undefined = record
     const id = get(edition, ["newsletter", "id"]) || ""
     const name = edition?.newsletter_name || ""
     const lat = edition?.newsletter_lat || ""
@@ -465,6 +471,11 @@ export class EmailBodyInput extends Component<Props, State> {
     })
 
     const { htmlRef } = this
-    return [h(Editor, { syncing, inputs, html, htmlRef, htmlSizeError })]
+    const { lang, visibility } = this.props
+    const testDeliveryButton =
+      h(TestDeliveryButton, { record, lang, channel: Channel.email })
+    return [
+      h(Editor, { syncing, inputs, html, htmlRef, htmlSizeError, visibility, testDeliveryButton }),
+    ]
   }
 }

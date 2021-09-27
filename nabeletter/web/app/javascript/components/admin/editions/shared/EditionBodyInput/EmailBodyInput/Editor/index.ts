@@ -20,6 +20,8 @@ interface Props {
   syncing: boolean
   html: string
   htmlSizeError: string | null
+  visibility: string
+  testDeliveryButton: React.ReactNode
 }
 
 export const Editor = ({
@@ -28,75 +30,82 @@ export const Editor = ({
   html,
   htmlRef,
   htmlSizeError,
+  visibility,
+  testDeliveryButton
 }: Props) => {
   const css = useStyles()
-  return h(Box, { id: "editor" }, [
-    h(
-      Box,
-      {
-        id: "progress-indicator",
-        key: "progress-indicator",
-        display: "flex",
-        flexDirection: "row",
-        justifyContent: "center",
-        flexWrap: "nowrap",
-        height: 20,
-      },
-      [
-        syncing &&
-          h(CircularProgress, {
-            size: 20,
-            disableShrink: true,
-          }),
-        htmlSizeError &&
-          h(
-            Typography,
-            { variant: "subtitle1", color: "error" },
-            htmlSizeError
-          ),
-      ]
-    ),
-    h(
-      Box,
-      {
-        id: "panel-container",
-        display: "flex",
-        flexDirection: "row",
-        justifyContent: "flex-start",
-        flexWrap: "nowrap",
-      },
-      [
-        h(
-          Box,
-          {
-            id: "panel-inputs",
-            className: css.panel,
-            flex: "1 0",
-            paddingLeft: 1,
-            paddingTop: 1,
-            paddingRight: 2,
-          },
-          [
-            h(Grid, { container: true, direction: "column", spacing: 1 }, [
-              ...inputs,
-            ]),
-          ]
-        ),
-        h(
-          Box,
-          {
-            id: "panel-fields",
-            className: css.panel,
-            flex: "0 0 content",
-          },
-          [
-            h(Preview, {
-              html,
-              htmlRef,
+  return h(
+    Box,
+    { id: "editor", display: visibility === "hidden" ? "none" : "flex" },
+    [
+      h(
+        Box,
+        {
+          id: "progress-indicator",
+          key: "progress-indicator",
+          display: "flex",
+          flexDirection: "row",
+          justifyContent: "center",
+          flexWrap: "nowrap",
+          height: 20,
+        },
+        [
+          syncing &&
+            h(CircularProgress, {
+              size: 20,
+              disableShrink: true,
             }),
-          ]
-        ),
-      ]
-    ),
-  ])
+          htmlSizeError &&
+            h(
+              Typography,
+              { variant: "subtitle1", color: "error" },
+              htmlSizeError
+            ),
+        ]
+      ),
+      h(
+        Box,
+        {
+          id: "panel-container",
+          display: "flex",
+          flexDirection: "row",
+          justifyContent: "flex-start",
+          flexWrap: "nowrap",
+        },
+        [
+          h(
+            Box,
+            {
+              id: "panel-inputs",
+              className: css.panel,
+              flex: "1 0",
+              paddingLeft: 1,
+              paddingTop: 1,
+              paddingRight: 2,
+            },
+            [
+              h(Grid, { container: true, direction: "column", spacing: 1 }, [
+                ...inputs,
+              ]),
+            ]
+          ),
+          h(
+            Box,
+            {
+              id: "panel-fields",
+              className: css.panel,
+              flex: "0 0 content",
+            },
+            [
+              h(Preview, {
+                html,
+                htmlRef,
+                testDeliveryButton
+              }),
+            ]
+          ),
+        ]
+      ),
+    ]
+  )
 }

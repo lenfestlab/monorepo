@@ -3,7 +3,7 @@ import { Tab, Tabs } from "@material-ui/core"
 import { Email, Phone } from "@material-ui/icons"
 import { Fragment, useState } from "react"
 
-import { Edition } from "components/admin/shared"
+import { Edition, Lang } from "components/admin/shared"
 import { EmailBodyInput } from "./EmailBodyInput"
 import { SmsBodyInput } from "./SmsBodyInput"
 
@@ -12,6 +12,7 @@ interface Props {
 }
 
 export const EditionBodyInput = ({ record }: Props) => {
+  const lang = Lang.en // TODO: lang support
   const initialTab: number = Number(localStorage.getItem("tab") ?? 0)
   const [tab, setTab] = useState(initialTab)
   const changeTab = (idx: number) => {
@@ -24,8 +25,12 @@ export const EditionBodyInput = ({ record }: Props) => {
       h(Tab, { icon: h(Phone), onClick: () => changeTab(1) }),
     ]),
     h(Fragment, [
-      tab === 0 && h(EmailBodyInput, { record }),
-      h(SmsBodyInput, { record, visibility: tab === 1 ? "visible" : "hidden" }),
+      h(EmailBodyInput, {
+        record,
+        lang,
+        visibility: tab === 0 ? "visible" : "hidden",
+      }),
+      h(SmsBodyInput, { record, lang, visibility: tab === 1 ? "visible" : "hidden" }),
     ]),
   ])
 }

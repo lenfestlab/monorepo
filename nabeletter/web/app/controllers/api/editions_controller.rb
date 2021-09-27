@@ -4,7 +4,13 @@ class Api::EditionsController < ResourceController
     if safe_params[:attributes][:test] && edition = Edition.find(safe_params[:id])
       recipients = safe_params[:attributes][:recipients]
       recipients = recipients.present? ? recipients.split(/[\s,]+/) : []
-      edition.deliver(recipients: recipients)
+      channel = safe_params[:attributes][:channel]
+      case channel
+      when "sms"
+        edition.deliver_sms(recipients: recipients)
+      else # email
+        edition.deliver(recipients: recipients)
+      end
     end
     if safe_params[:attributes][:trash] && edition = Edition.find(safe_params[:id])
       edition.trash!
