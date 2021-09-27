@@ -4,7 +4,7 @@ import { Box, Fade } from "@material-ui/core"
 import { Laptop, PhoneIphone } from "@material-ui/icons"
 import { ToggleButton, ToggleButtonGroup } from "@material-ui/lab"
 import { Frame } from "components/frame"
-import { rgb } from "csx"
+import { px, rgb } from "csx"
 import { isEmpty, max, values } from "fp"
 import React, { Fragment, useEffect, useState } from "react"
 import { queries } from "styles"
@@ -13,9 +13,10 @@ import type { PreviewRef } from "../../types"
 interface Props {
   htmlRef?: PreviewRef
   html: string
+  testDeliveryButton: React.ReactNode
 }
 
-export const Preview = ({ htmlRef, html }: Props) => {
+export const Preview = ({ htmlRef, html, testDeliveryButton }: Props) => {
   const desktop = queries.desktop.maxWidth + 40 // 640
   const iphone = queries.mobile.maxWidth + 20
   const widths = { desktop, mobile: iphone }
@@ -35,17 +36,16 @@ export const Preview = ({ htmlRef, html }: Props) => {
       display: "flex",
       flexDirection: "column",
       flexWrap: "nowrap",
-      alignItems: "flex-start",
-      alignContent: "flex-start",
     },
     [
       h(
         Box,
         {
           id: "preview-controls",
-          alignSelf: "center",
           display: "flex",
           flexDirection: "row",
+          justifyContent: "space-around",
+          alignItems: "center",
           paddingBottom: 2,
         },
         [
@@ -73,6 +73,7 @@ export const Preview = ({ htmlRef, html }: Props) => {
               ),
             ]
           ),
+          h(Box, [testDeliveryButton]),
         ]
       ),
 

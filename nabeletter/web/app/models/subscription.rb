@@ -5,14 +5,17 @@ class Subscription < ApplicationRecord
 
   after_initialize { self.subscribed_at ||= Time.zone.now if new_record? }
 
+  enum channel: %i[email sms]
+
   validates :email_address,
             presence: true,
+            if: Proc.new { |s| s.email? },
             uniqueness: {
               scope: :newsletter,
               message: "\"%{value}\" already subscribed to the newsletter.",
             }
 
-  after_save :upsert_to_list
+  after_save :upsert_to_list, if: Proc.new { |s| s.email? }
   def upsert_to_list
     list_identifier = newsletter.list_identifier
     subscriber_data = self.slice(*%i[email_address name_first name_last]).merge({ uid: id })
@@ -34,5 +37,29 @@ class Subscription < ApplicationRecord
           where(welcomed_at: nil)
          .pluck(:email_address)
         }
+
+
+  ## SMS
+  #
+
+  validates :phone, phone: { allow_blank: true }, if: Proc.new { |s| s.sms? }
+  validates :phone,
+            presence: true,
+            if: Proc.new { |s| s.sms? },
+            uniqueness: {
+              scope: :newsletter,
+              message: "\"%{value}\" already subscribed to the newsletter.",
+            }
+
+  before_save :normalize, if: Proc.new { |s| s.sms? }
+  def normalize
+    self.e164 = Phonelib.parse(phone).full_e164.presence
+  end
+  after_save :sync, if: Proc.new { |s| s.sms? }
+  def sync
+    unless twilio_sms_binding_sid.present?
+      self.update!(twilio_sms_binding_sid: TwilioService.bind_sms!(e164, id))
+    end
+  end
 
 end

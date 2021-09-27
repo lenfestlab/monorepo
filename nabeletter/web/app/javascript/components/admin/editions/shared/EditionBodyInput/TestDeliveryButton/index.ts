@@ -7,7 +7,7 @@ import {
   TextField,
   Typography,
 } from "@material-ui/core"
-import { Email } from "@material-ui/icons"
+import { Drafts, PhoneCallback } from "@material-ui/icons"
 import {
   ChangeEvent,
   Fragment,
@@ -18,27 +18,31 @@ import {
 } from "react"
 import { Button, useDataProvider } from "react-admin"
 
-import { Edition } from "components/admin/shared"
+import { Channel, Edition, Lang } from "components/admin/shared"
 
 interface Props {
-  record: Edition
+  record?: Edition
+  channel: Channel
+  lang: Lang
 }
 
-export const EditionTestDeliveryButton = ({ record }: Props) => {
+export const TestDeliveryButton = ({ record, channel, lang }: Props) => {
   if (!record) return null
 
   // recipients textfield
+  const cacheKey = `edition.test.${channel}`
   const [value, setValue] = useState<string>(
-    localStorage.getItem("edition.test.emails") ??
-      localStorage.getItem("user_email") ??
-      ""
+    localStorage.getItem(cacheKey) ?? ""
   )
   const onChange = (event: ChangeEvent<HTMLTextAreaElement>) => {
     const newValue = event.target.value as string
-    localStorage.setItem("edition.test.emails", newValue)
+    localStorage.setItem(cacheKey, newValue)
     setValue(newValue)
   }
-  const placeholder = "foo@example.com, bar@example.com, ..."
+  const placeholder = {
+    email: "foo@example.com, bar@example.com, ...",
+    sms: "123-456-7890, ...",
+  }[channel]
 
   // popover
   const [anchorEl, setAnchorEl] = useState<HTMLButtonElement | null>(null)
@@ -68,7 +72,7 @@ export const EditionTestDeliveryButton = ({ record }: Props) => {
     dataProvider
       .update("editions", {
         id: record.id,
-        data: { test: true, recipients: value },
+        data: { test: true, recipients: value, channel, lang },
       })
       .then((edition: Edition) => {
         setError(null)
@@ -83,6 +87,10 @@ export const EditionTestDeliveryButton = ({ record }: Props) => {
   }, [value])
   const isDeliverable: boolean = record.body_html && true
   const disabled = !isDeliverable || loading
+  const icon = {
+    email: h(Drafts),
+    sms: h(PhoneCallback),
+  }[channel]
 
   return h(Fragment, [
     h(
@@ -94,7 +102,7 @@ export const EditionTestDeliveryButton = ({ record }: Props) => {
         onClick: openPopover,
         disabled,
       },
-      [h(Email)]
+      [icon]
     ),
     h(
       Popover,

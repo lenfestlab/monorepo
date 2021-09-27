@@ -13,6 +13,16 @@ export interface Newsletter extends Record {
   timezone?: string
 }
 
+export enum Channel {
+  email = "email",
+  sms = "sms",
+}
+
+export enum Lang {
+  en = "en",
+  es = "es",
+}
+
 export interface Edition extends Record {
   newsletter: Newsletter
   publish_at: string

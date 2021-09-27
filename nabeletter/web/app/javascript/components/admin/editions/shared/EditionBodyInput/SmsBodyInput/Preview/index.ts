@@ -13,7 +13,6 @@ interface Props {
 }
 
 export const Preview = ({ text }: Props) => {
-  console.debug("Preview")
   const newLinedText = text.replace(/\n/g, "<br/>")
   const linkedText = autolinker.link(newLinedText)
   const __html = messageMarkup(linkedText)

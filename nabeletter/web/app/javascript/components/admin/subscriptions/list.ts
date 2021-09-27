@@ -1,5 +1,6 @@
 import { h } from "@cycle/react"
 import {
+  AutocompleteInput,
   Datagrid,
   DateField,
   List,
@@ -10,7 +11,16 @@ import { Filter, TextInput } from "react-admin"
 
 const EmailFilter = (props: {}) =>
   h(Filter, { ...props }, [
+    h(AutocompleteInput, {
+      alwaysOn: true,
+      choices: [
+        { id: 0, name: "email" },
+        { id: 1, name: "sms" },
+      ],
+      source: "channel",
+    }),
     h(TextInput, { label: "Email", source: "email_address", alwaysOn: true }),
+    h(TextInput, { label: "Phone", source: "e164", alwaysOn: true }),
     h(TextInput, {
       label: "Last name",
       source: "name_last",
@@ -40,6 +50,7 @@ export const SubscriptionList = (props: {}) =>
           [h(TextField, { source: "name" })]
         ),
         h(TextField, { source: "email_address" }),
+        h(TextField, { source: "e164", label: "Phone" }),
         h(TextField, { source: "name_first", label: "First name" }),
         h(TextField, { source: "name_last", label: "Last name" }),
         h(DateField, {

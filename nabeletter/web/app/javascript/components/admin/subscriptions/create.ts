@@ -1,5 +1,12 @@
 import { h } from "@cycle/react"
-import { Create, SimpleForm, TextInput, required, email } from "react-admin"
+import {
+  AutocompleteInput,
+  Create,
+  email,
+  required,
+  SimpleForm,
+  TextInput,
+} from "react-admin"
 
 import { NewsletterReferenceInput } from "../shared/NewsletterReferenceInput"
 
@@ -9,10 +16,24 @@ export const SubscriptionCreate = (props: Props) =>
   h(Create, { ...props }, [
     h(SimpleForm, { redirect: "list", submitOnEnter: true }, [
       h(NewsletterReferenceInput),
+      h(AutocompleteInput, {
+        alwaysOn: true,
+        choices: [
+          { id: 0, name: "email" },
+          { id: 1, name: "sms" },
+        ],
+        source: "channel",
+        validate: [required("Channel required.")],
+      }),
+      h(TextInput, {
+        source: "phone",
+        type: "tel",
+        fullWidth: true,
+      }),
       h(TextInput, {
         source: "email_address",
+        type: "email",
         fullWidth: true,
-        validate: [required("Email address required."), email()],
       }),
       h(TextInput, {
         label: "First name",
