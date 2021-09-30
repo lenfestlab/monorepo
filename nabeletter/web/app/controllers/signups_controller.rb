@@ -9,7 +9,8 @@ class SignupsController < ApplicationController
        newsletter_id: newsletter_id
      )
      if subscription.valid?
-       welcome subscription
+       # TODO: restore
+      #  welcome subscription
        render status: :ok, json: { email_address: email_address }
      else
        error = subscription.errors.full_messages
@@ -23,10 +24,11 @@ class SignupsController < ApplicationController
      params.permit!
    end
 
-   def welcome(subscription)
-     DeliveryService.new.welcome! subscription
-   rescue StandardError => error
-     Raven.capture_exception(error)
-   end
+  # TODO: restore
+  #  def welcome(subscription)
+  #    DeliveryService.new.welcome! subscription
+  #  rescue StandardError => error
+  #    Raven.capture_exception(error)
+  #  end
 
  end

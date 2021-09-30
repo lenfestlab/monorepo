@@ -3,9 +3,9 @@ import { dataProvider } from "components/admin/providers"
 import {
   Channel,
   Edition,
+  Lang,
   Newsletter,
   NewsletterReferenceField,
-  Lang,
 } from "components/admin/shared"
 import {
   all,
@@ -209,8 +209,8 @@ export class EmailBodyInput extends Component<Props, State> {
   constructor(props: Props) {
     super(props)
     // NOTE: set state from server-side config
-    const { record } = this.props
-    const bodyConfig: BodyConfig = get(record, "body_data") ?? {}
+    const { record, lang } = this.props
+    const bodyConfig: BodyConfig = get(record, `email_data_${lang}`) ?? {}
     const sections: SectionConfig[] = get(bodyConfig, "sections", [])
     const existingSectionKinds = map(sections, "kind")
     const allKinds = [
@@ -245,14 +245,14 @@ export class EmailBodyInput extends Component<Props, State> {
 
   componentDidMount() {
     // NOTE: sync sections' config & html with server
+    const { lang, record } = this.props
     const syncConfigs$ = this.configs$.pipe(
       tag("configs$"),
       skip(1),
       debounceTime(500),
       switchMap((sections) => {
-        const body_data = { sections }
-        const id = this.props.record?.id
-        const data = { body_data }
+        const data = { [`email_data_${lang}`]: { sections } }
+        const id = record?.id
         const request = dataProvider("UPDATE", "editions", { id, data })
         return from(request)
       }),
@@ -395,8 +395,9 @@ export class EmailBodyInput extends Component<Props, State> {
         })
       }),
       switchMap((html) => {
-        const id = this.props.record?.id
-        const data = { body_html: html }
+        const { record, lang } = this.props
+        const id = record?.id
+        const data = { [`email_html_${lang}`]: html }
         const request = dataProvider("UPDATE", "editions", { id, data })
         return onErrorResumeNext(from(request))
       }),

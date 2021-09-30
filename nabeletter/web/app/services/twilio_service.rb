@@ -7,7 +7,7 @@ class TwilioService
   @client = Twilio::REST::Client.new(@account_sid, @auth_token)
   @service = @client.notify.v1.services(@service_id)
 
-  def self.bind_sms! e164, subscription_id
+  def self.bind_sms e164, subscription_id
     binding = @service.bindings.create({
       identity: subscription_id,
       binding_type: 'sms',
@@ -20,7 +20,7 @@ class TwilioService
     @service.bindings.list()
   end
 
-  def self.deliver_sms_phones!(body, e164s=[])
+  def self.deliver_to_phones(body:, e164s:)
     to_binding = e164s.map { |e164|
       { binding_type: "sms", address: e164 }.to_json
     }
@@ -31,10 +31,10 @@ class TwilioService
     return notification.sid
   end
 
-  def self.deliver_sms_subs!(message_body, subscription_ids=[])
+  def self.deliver_to_ids body:, subscription_ids:
     notification = @service.notifications.create(
       identity: [subscription_ids].flatten,
-      body: message_body
+      body: body
     )
   end
 

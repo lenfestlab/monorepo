@@ -5,8 +5,6 @@ class Api::EditionResource < JSONAPI::Resource
   attributes(*%i[
              subject
              publish_at
-             body_data
-             body_html
              body_amp
              state
              newsletter_name
@@ -19,7 +17,12 @@ class Api::EditionResource < JSONAPI::Resource
              newsletter_timezone
              link_count
              kind
-             sms_data
+            sms_data_en
+            sms_data_es
+            email_data_en
+            email_data_es
+            email_html_en
+            email_html_es
              ])
 
 

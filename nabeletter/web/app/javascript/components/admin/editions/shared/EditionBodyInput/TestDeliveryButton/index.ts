@@ -19,6 +19,7 @@ import {
 import { Button, useDataProvider } from "react-admin"
 
 import { Channel, Edition, Lang } from "components/admin/shared"
+import get from "lodash/get"
 
 interface Props {
   record?: Edition
@@ -85,7 +86,7 @@ export const TestDeliveryButton = ({ record, channel, lang }: Props) => {
         setLoading(false)
       })
   }, [value])
-  const isDeliverable: boolean = record.body_html && true
+  const isDeliverable: boolean = get(record, `email_html_${lang}`) && true
   const disabled = !isDeliverable || loading
   const icon = {
     email: h(Drafts),

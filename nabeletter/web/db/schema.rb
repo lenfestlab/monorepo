@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2021_09_28_093851) do
+ActiveRecord::Schema.define(version: 2021_09_30_165942) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -58,15 +58,18 @@ ActiveRecord::Schema.define(version: 2021_09_28_093851) do
     t.datetime "publish_at"
     t.integer "state"
     t.string "subject"
-    t.text "body_html"
+    t.text "email_html_en"
     t.bigint "newsletter_id"
     t.datetime "created_at", precision: 6, null: false
     t.datetime "updated_at", precision: 6, null: false
-    t.jsonb "body_data", default: {}
+    t.jsonb "email_data_en", default: {}
     t.text "body_amp"
     t.integer "kind", default: 0
     t.integer "stat_delivered"
-    t.jsonb "sms_data", default: {}
+    t.jsonb "sms_data_en", default: {}
+    t.jsonb "sms_data_es", default: {}
+    t.jsonb "email_data_es", default: {}
+    t.text "email_html_es"
     t.index ["newsletter_id"], name: "index_editions_on_newsletter_id"
     t.index ["publish_at"], name: "index_editions_on_publish_at"
     t.index ["state"], name: "index_editions_on_state"
@@ -197,6 +200,7 @@ ActiveRecord::Schema.define(version: 2021_09_28_093851) do
     t.string "phone"
     t.string "e164"
     t.string "twilio_sms_binding_sid"
+    t.integer "lang", default: 0
     t.index ["email_address"], name: "index_subscriptions_on_email_address"
     t.index ["name_first"], name: "index_subscriptions_on_name_first"
     t.index ["name_last"], name: "index_subscriptions_on_name_last"
