@@ -8,55 +8,68 @@ class DeliveryError < StandardError
 end
 
 class DeliveryService
-  attr_reader :api_key
 
-  def initialize
-    @api_key = ENV["MAILGUN_API_KEY"]
+  def deliver_to_all_subscribers(edition:)
+    %w{ en es }.each do |lang|
+      deliver_email(edition: edition, lang: lang)
+      deliver_sms(edition: edition, lang: lang)
+    end
   end
 
-  def subscribe!(list_identifier:, subscriber_data:)
-    address, first, last =
-      subscriber_data.values_at(:email_address, :name_first, :name_last)
-    full_name = [first, last].compact.join(" ")
-    request_body = {
-      address: address,
-      name: full_name,
-      vars: JSON.generate(subscriber_data),
-      subscribed: true,
-      upsert: true,
-    }
-    Rails.logger.info("request_body #{request_body}")
-    response =
-      HTTParty.post(
-        url(path: "lists/#{list_identifier}/members"),
-        { body: request_body, debug_output: STDOUT },
-      )
-    Rails.logger.info("parsed_response #{response.parsed_response}")
-    raise(DeliveryError, response["errors"]) unless response.success?
+  def deliver_to(recipients: recipients, edition: edition, channel: channel, lang: lang)
+    case channel
+    when "sms"
+      self.deliver_sms(
+        edition: edition,
+        lang: lang,
+        recipients: recipients)
+    when "email"
+      self.deliver_email(
+        edition: edition,
+        lang: lang,
+        recipients: recipients)
+    end
   end
 
-  def deliver!(edition:, recipients: [], recipient_vars: {})
-    ap "deliver!(e: #{edition.id}, recipeints: #{recipients}, vars: #{recipient_vars})"
-    # NOTE: "to" default is edition's list address
+  def deliver_sms(edition:, lang:, recipients: [])
+    body = edition.send("sms_data_#{lang}")["text"]
+    if recipients.present?
+      e164s = recipients.map { |n| Phonelib.parse(n).full_e164 }
+      TwilioService.deliver_to_phones body: body, e164s: e164s
+    else
+      if (subscription_ids = edition.newsletter.subscriptions.where(
+        channel: "sms",
+        lang: lang
+        ).map(&:id)).present?
+        TwilioService.deliver_to_ids(
+          body: body,
+          subscription_ids: subscription_ids
+          )
+      end
+    end
+  end
+
+  def deliver_email(edition:, lang:, recipients: [], recipient_vars: {})
+    if recipients.empty? && edition.newsletter.subscriptions.where(channel: "email", lang: lang).empty?
+      ap "SKIP: no adhoc recipients or subscribers"
+      return true
+    end
     newsletter = edition.newsletter
     sender_name = newsletter.sender_name || "Lenfest Local Lab"
     sender_address = newsletter.sender_address || "mail@lenfestlab.org"
     from = "#{sender_name} <#{sender_address}>"
-    list_identifier = newsletter.mailgun_list_identifier
+    list_identifier = newsletter.list_identifier(lang: lang)
     list_name, list_domain = list_identifier.split("@")
     to = list_identifier
-    subject = edition.subject
-    html = edition.body_html
-    amp = edition.body_amp
+    subject = edition.subject # TODO: subject translation
+    html = edition.email_html(lang: lang)
     text = Nokogiri::HTML(html).text
 
-    # override "to" w/ the recipients, if provided
-    if recipients.present?
-      to = recipients.join(", ")
-    end
-    # interpolate mailgun vars unless sending directly to recipients
-    interpolate = !recipients.present? || recipient_vars.present?
+    # override "to" w/ recipients if provided
+    to = recipients.join(", ") if recipients.present?
 
+    # interpolate mailgun vars unless sending adhoc to test recipients
+    interpolate = !recipients.present? || recipient_vars.present?
     ap "interpolate: #{interpolate}"
     unsubscribe_var = interpolate \
       ?  (recipient_vars.present? \
@@ -70,51 +83,36 @@ class DeliveryService
     }
     ap subs
     re = Regexp.union(subs.keys)
-    html = edition.body_html.gsub(re, subs)
+    html = html.present? && html.gsub(re, subs)
+    eid = edition.id
 
-    request_body = {
+    ap MailgunService.deliver(
+      list_domain: list_domain,
       from: from,
       to: to,
       subject: subject,
       html: html,
       text: text,
-      "o:tag": "eid=#{edition.id}",
-      "recipient-variables": recipient_vars
-    }
-    Rails.logger.info("request_body #{request_body}")
-    response =
-      HTTParty.post(
-        url(path: "#{list_domain}/messages"),
-        { body: request_body, debug_output: STDOUT },
+      eid: eid,
+      recipient_vars: recipient_vars
       )
-    Rails.logger.info("parsed_response #{response.parsed_response}")
-    raise(DeliveryError, response["errors"]) unless response.success?
   end
 
-  def welcome! subscriptions
-    subscriptions = [subscriptions].flatten
-    edition = Edition.find ENV["WELCOME_EDITION_ID"]
-    recipient_vars = subscriptions.inject({}) do |hash, subscription|
-      hash.update(subscription.email_address => {
-        uid: subscription.id,
-      })
-    end
-    addresses = recipient_vars.keys
-    self.deliver!(
-      edition: edition,
-      recipients: addresses,
-      recipient_vars: recipient_vars.to_json)
-    Subscription.where(id: subscriptions.map(&:id)).update_all(welcomed_at: Time.zone.now)
-  end
+  # TODO: restore
+  # def welcome! subscriptions
+  #   subscriptions = [subscriptions].flatten
+  #   edition = Edition.find ENV["WELCOME_EDITION_ID"]
+  #   recipient_vars = subscriptions.inject({}) do |hash, subscription|
+  #     hash.update(subscription.email_address => {
+  #       uid: subscription.id,
+  #     })
+  #   end
+  #   addresses = recipient_vars.keys
+  #   self.deliver!(
+  #     edition: edition,
+  #     recipients: addresses,
+  #     recipient_vars: recipient_vars.to_json)
+  #   Subscription.where(id: subscriptions.map(&:id)).update_all(welcomed_at: Time.zone.now)
+  # end
 
-
-  private
-
-  def base_url
-    "https://api:#{api_key}@api.mailgun.net/v3/"
-  end
-
-  def url(path:)
-    base_url + path
-  end
 end

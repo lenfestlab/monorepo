@@ -1,7 +1,7 @@
 import { h } from "@cycle/react"
 import { a } from "@cycle/react-dom"
 import { EditionTrashButton } from "components/admin/editions/shared"
-import { Edition } from "components/admin/shared"
+import { Edition, Lang } from "components/admin/shared";
 import { get, truncate } from "fp"
 import {
   Datagrid,
@@ -45,8 +45,13 @@ const CustomUrlField = ({
   return a({ href, target: "_blank" }, truncate(href, { length: 50 }))
 }
 
-export const EditionShow = (props: {}) =>
-  h(Show, { ...props, actions: h(Actions) }, [
+interface Props {
+  record?: Edition
+  lang: Lang
+}
+export const EditionShow = (props: Props) => {
+  const { lang } = props
+  return h(Show, { ...props, actions: h(Actions) }, [
     h(TabbedShowLayout, [
       h(Tab, { label: "Preview" }, [
         h(
@@ -68,7 +73,7 @@ export const EditionShow = (props: {}) =>
         }),
         h(EditionPreviewField, {
           label: "Preview",
-          source: "body_html",
+          source: `email_html_${lang}`,
           addLabel: true,
         }),
       ]),
@@ -95,3 +100,5 @@ export const EditionShow = (props: {}) =>
       ]),
     ]),
   ])
+
+}

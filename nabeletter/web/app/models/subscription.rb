@@ -6,6 +6,7 @@ class Subscription < ApplicationRecord
   after_initialize { self.subscribed_at ||= Time.zone.now if new_record? }
 
   enum channel: %i[email sms]
+  enum lang: %i[en es]
 
   validates :email_address,
             presence: true,
@@ -17,10 +18,9 @@ class Subscription < ApplicationRecord
 
   after_save :upsert_to_list, if: Proc.new { |s| s.email? }
   def upsert_to_list
-    list_identifier = newsletter.list_identifier
+    list_identifier = newsletter.list_identifier(lang: self.lang)
     subscriber_data = self.slice(*%i[email_address name_first name_last]).merge({ uid: id })
-    deliverer = DeliveryService.new
-    deliverer.subscribe!(
+    MailgunService.subscribe(
       list_identifier: list_identifier, subscriber_data: subscriber_data,
     )
   end
@@ -58,7 +58,7 @@ class Subscription < ApplicationRecord
   after_save :sync, if: Proc.new { |s| s.sms? }
   def sync
     unless twilio_sms_binding_sid.present?
-      self.update!(twilio_sms_binding_sid: TwilioService.bind_sms!(e164, id))
+      self.update!(twilio_sms_binding_sid: TwilioService.bind_sms(e164, id))
     end
   end
 

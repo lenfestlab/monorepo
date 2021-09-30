@@ -1,5 +1,5 @@
 import { h } from "@cycle/react"
-import { Box, FormLabel } from "@material-ui/core"
+import { Box } from "@material-ui/core"
 import { get, truncate } from "fp"
 import { useEffect, useState } from "react"
 import { useDebounce } from "react-use"
@@ -10,7 +10,7 @@ import { TestDeliveryButton } from "../TestDeliveryButton"
 import { Form } from "./Form"
 import { Preview } from "./Preview"
 
-export type Config = { text: string }
+export type Config = Record<Lang, { text: string }>
 export type SetConfig = (config: Config) => void
 export type SetPayload = (payload: string) => void
 
@@ -25,8 +25,8 @@ const TWILIO_MAX_CHARS = 1600
 
 export const SmsBodyInput = ({ record, lang, visibility }: Props) => {
   const id = record?.id
-  const config: Config = get(record, "sms_data") ?? {}
-  const [text, setText] = useState(config.text ?? "")
+  const config: Config = get(record, `sms_data_${lang}`) ?? {}
+  const [text, setText] = useState(get(config, `text`, ""))
   const [textError, setTextError] = useState<string>()
 
   useEffect(() => {
@@ -39,8 +39,7 @@ export const SmsBodyInput = ({ record, lang, visibility }: Props) => {
 
   const [_isReady, _cancel] = useDebounce(
     async () => {
-      const sms_data = { text }
-      const data = { sms_data }
+      const data = { [`sms_data_${lang}`]: { text } }
       await dataProvider("UPDATE", "editions", { id, data })
     },
     2000,
@@ -64,7 +63,7 @@ export const SmsBodyInput = ({ record, lang, visibility }: Props) => {
       h(Form, { text, onChange, textError }),
       h(Box, { paddingLeft: 1 }, [
         h(Box, { display: "flex", flexDirection: "row-reverse" }, [
-          h(TestDeliveryButton, { record, lang, channel: Channel.sms })
+          h(TestDeliveryButton, { record, lang, channel: Channel.sms }),
         ]),
         h(Preview, { text: truncate(text, { length: TWILIO_MAX_CHARS }) }),
       ]),

@@ -7,8 +7,15 @@ class Newsletter < ApplicationRecord
 
   validates :name, presence: true, uniqueness: true
 
-  def list_identifier
-    self.mailgun_list_identifier
+  def list_identifier(lang: lang)
+    env_name = ENV["RAILS_ENV_ABBR"]
+    id = "#{mailgun_list_identifier}-#{env_name}"
+    if lang == "en"
+      # no-op: mailgun list ids are immutable, can't be edited to include "en"
+    else
+      id = "#{id}-#{lang}"
+    end
+    "#{id}@lenfestlab.org"
   end
 
   def get_timezone

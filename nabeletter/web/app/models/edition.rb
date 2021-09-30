@@ -12,13 +12,26 @@ class Edition < ApplicationRecord
   def lock_once_delivered
     return unless delivered?
     attrs = changed_attributes.keys
-    if (attrs & %w[subject body_data body_html deliver_at newsletter_id sms_data])
-         .present?
+    if (attrs & %w[
+      subject
+      deliver_at
+      newsletter_id
+      sms_data_en
+      sms_data_es
+      email_data_en
+      email_data_es
+      email_html_en
+      email_html_es
+      ]).present?
       errors.add(:base, "locked once delivered")
     end
   end
 
-  def web_preview
+  def email_html(lang: lang)
+    send("email_html_#{lang}")
+  end
+
+  def web_preview(lang: lang)
     subs = {
       # hide unsubscribe link
       "Unsubscribe" => "",
@@ -26,7 +39,7 @@ class Edition < ApplicationRecord
       "VAR-RECIPIENT-UID" => "ANON"
     }
     re = Regexp.union(subs.keys)
-    body_html.gsub(re, subs)
+    email_html(lang: lang).gsub(re, subs)
   end
 
   enum kind: %i[normal adhoc personal]
@@ -61,29 +74,9 @@ class Edition < ApplicationRecord
         }
 
 
-  ## Email delivery
-  #
-
-  # TODO: deliver all channel+lang permutations
-  def deliver(recipients: [])
-    deliverer = DeliveryService.new
-    deliverer.deliver!(edition: self, recipients: recipients)
+  def deliver
+    DeliveryService.new.deliver_to_all_subscribers edition: self
     return true # return truthy for AASM
-  end
-
-
-  ## SMS delilvery
-  #
-  def deliver_sms(recipients: [])
-    if recipients.present?
-      e164s = recipients.map {|n| Phonelib.parse(n).full_e164 }
-      body = self.sms_data["text"]
-      TwilioService.deliver_sms_phones!(body, e164s)
-    else
-      subs = self.newsletter.subscriptions.where(channel: "sms")
-      TwilioService.deliver_sms_subs!(body, subs)
-      raise "TODO"
-    end
   end
 
 end
