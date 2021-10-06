@@ -3,6 +3,7 @@ class Edition < ApplicationRecord
 
   belongs_to :newsletter
   has_many :links
+  has_many :deliveries
 
   validates :subject, presence: true, uniqueness: true, length: { in: 1...100 }
 
@@ -27,11 +28,11 @@ class Edition < ApplicationRecord
     end
   end
 
-  def email_html(lang: lang)
+  def email_html(lang:)
     send("email_html_#{lang}")
   end
 
-  def web_preview(lang: lang)
+  def web_preview(lang:)
     subs = {
       # hide unsubscribe link
       "Unsubscribe" => "",

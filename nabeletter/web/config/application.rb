@@ -49,7 +49,9 @@ module Web
     # whitelist value of RAILS_HOST
     # https://www.fngtps.com/2019/rails6-blocked-host/
     config.hosts << env_url_options[:host]
-
+    if (tunnel_host = ENV["TUNNEL_HOST"])
+      config.hosts <<  tunnel_host
+    end
 
     config.time_zone = 'Eastern Time (US & Canada)'
   end

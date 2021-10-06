@@ -16,7 +16,7 @@ class DeliveryService
     end
   end
 
-  def deliver_to(recipients: recipients, edition: edition, channel: channel, lang: lang)
+  def deliver_to(recipients:, edition:, channel:, lang:)
     case channel
     when "sms"
       self.deliver_sms(
@@ -33,18 +33,26 @@ class DeliveryService
 
   def deliver_sms(edition:, lang:, recipients: [])
     body = edition.send("sms_data_#{lang}")["text"]
+    newsletter = edition.newsletter
+    from = newsletter.sms_number(lang: lang).e164
     if recipients.present?
-      e164s = recipients.map { |n| Phonelib.parse(n).full_e164 }
-      TwilioService.deliver_to_phones body: body, e164s: e164s
+      to = recipients.map { |n| Phonelib.parse(n).full_e164 }
+      TwilioService.deliver_to_phones from: from, to: to, body: body
     else
-      if (subscription_ids = edition.newsletter.subscriptions.where(
-        channel: "sms",
-        lang: lang
-        ).map(&:id)).present?
-        TwilioService.deliver_to_ids(
-          body: body,
-          subscription_ids: subscription_ids
-          )
+      subscriptions = newsletter.live_sms_subscriptions(lang: lang)
+      ap subscriptions
+      subscriptions.each do |subscription|
+        delivered = edition.deliveries.where(subscription: subscription).present?
+        ap delivered
+        if delivered
+          Rails.logger.warn "skipping subscription #{subscription.id} - already delivered"
+        else
+          to = subscription.e164
+          result = TwilioService.deliver_to_phone from: from, to: to, body: body
+          ap result
+          raise(DeliveryError, message) if (message = result.error_message)
+          edition.deliveries.create!(subscription: subscription)
+        end
       end
     end
   end
