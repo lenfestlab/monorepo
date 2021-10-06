@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2021_09_30_165942) do
+ActiveRecord::Schema.define(version: 2021_10_06_152720) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -52,6 +52,15 @@ ActiveRecord::Schema.define(version: 2021_09_30_165942) do
     t.datetime "created_at", precision: 6, null: false
     t.datetime "updated_at", precision: 6, null: false
     t.index ["newsletter_id"], name: "index_ads_on_newsletter_id"
+  end
+
+  create_table "deliveries", force: :cascade do |t|
+    t.bigint "edition_id"
+    t.bigint "subscription_id"
+    t.datetime "created_at", precision: 6, null: false
+    t.datetime "updated_at", precision: 6, null: false
+    t.index ["edition_id"], name: "index_deliveries_on_edition_id"
+    t.index ["subscription_id"], name: "index_deliveries_on_subscription_id"
   end
 
   create_table "editions", force: :cascade do |t|
@@ -157,6 +166,7 @@ ActiveRecord::Schema.define(version: 2021_09_30_165942) do
     t.string "social_url_facebook"
     t.string "logo_url"
     t.string "timezone"
+    t.jsonb "sms_reply_data", default: {}
     t.index ["mailgun_list_identifier"], name: "index_newsletters_on_mailgun_list_identifier"
     t.index ["name"], name: "index_newsletters_on_name"
   end
@@ -186,6 +196,19 @@ ActiveRecord::Schema.define(version: 2021_09_30_165942) do
     t.index ["title"], name: "index_pages_on_title"
   end
 
+  create_table "sms_numbers", force: :cascade do |t|
+    t.string "e164"
+    t.integer "lang", default: 0
+    t.integer "env", default: 0
+    t.bigint "newsletter_id"
+    t.datetime "created_at", precision: 6, null: false
+    t.datetime "updated_at", precision: 6, null: false
+    t.index ["e164"], name: "index_sms_numbers_on_e164"
+    t.index ["env"], name: "index_sms_numbers_on_env"
+    t.index ["lang"], name: "index_sms_numbers_on_lang"
+    t.index ["newsletter_id"], name: "index_sms_numbers_on_newsletter_id"
+  end
+
   create_table "subscriptions", force: :cascade do |t|
     t.string "email_address"
     t.string "name_first"
@@ -199,7 +222,6 @@ ActiveRecord::Schema.define(version: 2021_09_30_165942) do
     t.integer "channel", default: 0
     t.string "phone"
     t.string "e164"
-    t.string "twilio_sms_binding_sid"
     t.integer "lang", default: 0
     t.index ["email_address"], name: "index_subscriptions_on_email_address"
     t.index ["name_first"], name: "index_subscriptions_on_name_first"
@@ -208,6 +230,16 @@ ActiveRecord::Schema.define(version: 2021_09_30_165942) do
     t.index ["subscribed_at"], name: "index_subscriptions_on_subscribed_at"
     t.index ["unsubscribed_at"], name: "index_subscriptions_on_unsubscribed_at"
     t.index ["welcomed_at"], name: "index_subscriptions_on_welcomed_at"
+  end
+
+  create_table "twilio_events", force: :cascade do |t|
+    t.jsonb "payload", default: {}
+    t.string "sms_id", null: false
+    t.bigint "sms_number_id"
+    t.datetime "created_at", precision: 6, null: false
+    t.datetime "updated_at", precision: 6, null: false
+    t.index ["sms_id"], name: "index_twilio_events_on_sms_id", unique: true
+    t.index ["sms_number_id"], name: "index_twilio_events_on_sms_number_id"
   end
 
   create_table "users", force: :cascade do |t|

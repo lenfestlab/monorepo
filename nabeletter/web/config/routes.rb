@@ -24,6 +24,7 @@ Rails.application.routes.draw do
     jsonapi_resources :units, only: %i[index create update show]
     jsonapi_resources :users, only: %i[index]
     jsonapi_resources :links, only: %i[index show update]
+    resources :sms, only: :create
   end
 
   # NOTE: https://bit.ly/2UEyLO1

@@ -1,5 +1,6 @@
 class Subscription < ApplicationRecord
   belongs_to :newsletter
+  has_many :deliveries
 
   validates :subscribed_at, presence: true
 
@@ -54,12 +55,6 @@ class Subscription < ApplicationRecord
   before_save :normalize, if: Proc.new { |s| s.sms? }
   def normalize
     self.e164 = Phonelib.parse(phone).full_e164.presence
-  end
-  after_save :sync, if: Proc.new { |s| s.sms? }
-  def sync
-    unless twilio_sms_binding_sid.present?
-      self.update!(twilio_sms_binding_sid: TwilioService.bind_sms(e164, id))
-    end
   end
 
 end
