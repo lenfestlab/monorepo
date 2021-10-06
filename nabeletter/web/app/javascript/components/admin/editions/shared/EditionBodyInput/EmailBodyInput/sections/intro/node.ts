@@ -26,6 +26,7 @@ export const node = ({ analytics, config, typestyle }: Props): Node | null => {
     cardSection({}, [
       column({}, [
         text({}, md({ markdown, analytics, typestyle })),
+        /* begin donation
         text({}, "<hr/>"),
         text(
           {
@@ -51,6 +52,7 @@ export const node = ({ analytics, config, typestyle }: Props): Node | null => {
           },
           buttonCopy
         ),
+        */
       ]),
     ]),
   ])
