@@ -6,13 +6,13 @@ import { translate } from "i18n"
 import {
   button,
   column as columnNode,
+  divider,
   image,
   mj,
   Node,
   section as sectionNode,
   text as textNode,
   TextAttributes,
-  divider,
 } from "mjml-json"
 import { colors } from "styles"
 import { SectionNodeProps } from "../section"
@@ -89,7 +89,7 @@ export const node = ({
         {},
         compact([
 
-          // donation
+          /* begin donation
           textNode(
             {
               fontSize: px(15),
@@ -118,7 +118,8 @@ export const node = ({
           ),
           divider({ borderWidth: px(1), borderColor: colors.white }),
           textNode({}, "<br/>"),
-          // end: donation
+          // end donation
+          */
 
           textNode(
             {

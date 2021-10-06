@@ -55,12 +55,13 @@ export const Editor = ({
               size: 20,
               disableShrink: true,
             }),
-          htmlSizeError &&
-            h(
-              Typography,
-              { variant: "subtitle1", color: "error" },
-              htmlSizeError
-            ),
+          // TODO: redesign
+          // htmlSizeError &&
+          //   h(
+          //     Typography,
+          //     { variant: "subtitle1", color: "error" },
+          //     htmlSizeError
+          //   ),
         ]
       ),
       h(
