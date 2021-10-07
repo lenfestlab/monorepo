@@ -13,8 +13,14 @@ class Api::EditionsController < ResourceController
         lang: lang,
         )
     end
-    if safe_params[:attributes][:trash] && edition = Edition.find(safe_params[:id])
-      edition.trash!
+    if (trash = safe_params[:attributes][:trash]).present?  &&\
+       edition = Edition.find(safe_params[:id])
+      case trash
+      when "trash"
+        edition.trash!
+      when "untrash"
+        edition.draft!
+      end
     end
     super
   end
