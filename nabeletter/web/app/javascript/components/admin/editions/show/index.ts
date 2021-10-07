@@ -1,5 +1,5 @@
 import { h } from "@cycle/react"
-import { a } from "@cycle/react-dom"
+import { a, span } from "@cycle/react-dom"
 import { EditionTrashButton } from "components/admin/editions/shared"
 import { Edition, Lang } from "components/admin/shared";
 import { get, truncate } from "fp"
@@ -18,6 +18,7 @@ import {
   TopToolbar,
 } from "react-admin"
 import { EditionPreviewField } from "./EditionPreviewField"
+import { useState } from "react";
 
 interface ActionProps {
   basePath: string
@@ -30,7 +31,8 @@ const Actions = ({ basePath, data: record }: ActionProps) => {
     state !== "delivered" &&
       state !== "trashed" &&
       h(EditButton, { basePath, record }),
-    state !== "trashed" && h(EditionTrashButton, { record }),
+    state !== "trashed" && h(EditionTrashButton, { record, state: "trash" }),
+    state === "trashed" && h(EditionTrashButton, { record, state: "untrash" }),
   ])
 }
 
@@ -50,7 +52,8 @@ interface Props {
   lang: Lang
 }
 export const EditionShow = (props: Props) => {
-  const { lang } = props
+  // TODO: select lang
+  const [lang, setLang] = useState('en')
   return h(Show, { ...props, actions: h(Actions) }, [
     h(TabbedShowLayout, [
       h(Tab, { label: "Preview" }, [
@@ -75,6 +78,7 @@ export const EditionShow = (props: Props) => {
           label: "Preview",
           source: `email_html_${lang}`,
           addLabel: true,
+          lang
         }),
       ]),
       h(Tab, { label: "Links" }, [
