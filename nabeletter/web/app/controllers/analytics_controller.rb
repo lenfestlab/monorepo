@@ -53,6 +53,40 @@ class AnalyticsController < ApplicationController
               disposition: "inline")
   end
 
+  def short
+    link = Link.find_by! short: safe["short"]
+    href = link.href
+    parsed = CGI::parse(URI::parse(href).query) rescue nil
+    parsed = parsed.map{ |k, v| [k, v.first] }.to_h
+    # NOTE: analytics URLs cached pre-send have uid/cd8 set to placeholder for
+    # interpolation by mailgun on send - override parsed value w/ provided uid.
+    uid = safe["uid"]
+    track(
+      user_id: uid, # parsed["uid"],
+      anon_id: parsed["aid"],
+      event_action: parsed["ea"],
+      properties: {
+        category: parsed["ec"],
+        label: parsed["el"],
+        cd1: parsed['cd1'],
+        cd2: parsed['cd2'],
+        cd3: parsed['cd3'],
+        cd4: parsed['cd4'],
+        cd5: parsed['cd5'],
+        cd6: parsed['cd6'],
+        cd7: parsed['cd7'],
+        # NOTE: cd8 dupes uid
+        cd9: parsed['cd9'],
+      }
+    )
+    redirect = link.redirect
+    if redirect
+      redirect_to redirect
+    else
+      head :ok
+    end
+  end
+
 
   protected
 

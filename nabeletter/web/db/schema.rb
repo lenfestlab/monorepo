@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2021_10_06_152720) do
+ActiveRecord::Schema.define(version: 2021_10_08_213919) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -119,17 +119,21 @@ ActiveRecord::Schema.define(version: 2021_10_06_152720) do
   create_table "links", force: :cascade do |t|
     t.bigint "edition_id", null: false
     t.string "href", null: false
-    t.string "section_name", null: false
+    t.string "section_name"
     t.datetime "created_at", precision: 6, null: false
     t.datetime "updated_at", precision: 6, null: false
     t.string "redirect"
     t.string "topic"
     t.string "subtopic"
     t.string "href_digest", null: false
-    t.index ["edition_id", "href_digest"], name: "index_links_on_edition_id_and_href_digest", unique: true
+    t.integer "state", default: 0, null: false
+    t.integer "channel", default: 0, null: false
+    t.integer "lang", default: 0, null: false
+    t.string "short"
     t.index ["edition_id"], name: "index_links_on_edition_id"
-    t.index ["href_digest"], name: "index_links_on_href_digest"
+    t.index ["href_digest"], name: "index_links_on_href_digest", unique: true
     t.index ["section_name"], name: "index_links_on_section_name"
+    t.index ["short"], name: "index_links_on_short", unique: true
     t.index ["subtopic"], name: "index_links_on_subtopic"
     t.index ["topic"], name: "index_links_on_topic"
   end

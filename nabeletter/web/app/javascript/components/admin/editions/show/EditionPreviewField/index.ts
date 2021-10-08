@@ -23,6 +23,6 @@ export const EditionPreviewField: React.FunctionComponent<Props> = ({
   const text = get(record, `${key}.text`)
   return span({ style: {display: "flex", flexDirection: "row", wrap: "nonwrap" }}, [
     span({ dangerouslySetInnerHTML: doc }),
-    h(SmsPreview, { text })
+    text && h(SmsPreview, { text })
   ])
 }

@@ -2,14 +2,16 @@ class Newsletter < ApplicationRecord
   has_many :editions, dependent: :destroy
 
   has_many :subscriptions, dependent: :destroy
-  def live_sms_subscriptions(lang: lang)
-    subscriptions.sms.where(unsubscribed_at: nil, lang: lang)
+  def live_sms_subscriptions(lang:)
+    subs = subscriptions.sms.where(lang: lang, unsubscribed_at: nil)
+    # NOTE: avoid sending to all subscribers in non-prod envs
+    Rails.env.prod? ? subs : subs.where(e164: ENV["DEBUG_PHONE_NUMBER"])
   end
 
   has_many :pages, dependent: :destroy
 
   has_many :sms_numbers
-  def sms_number(lang: lang)
+  def sms_number(lang:)
     sms_numbers.where(lang: lang, env: ENV["RAILS_ENV_ABBR"] ).first!
   end
 

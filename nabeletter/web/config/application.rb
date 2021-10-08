@@ -42,7 +42,7 @@ module Web
       host: ENV["RAILS_HOST"],
     }
     if Rails.env.development?
-      env_url_options[:port] = ENV["PORT"]
+      env_url_options[:port] = ENV["PORT_SSL"]
     end
     routes.default_url_options.merge!(env_url_options)
 

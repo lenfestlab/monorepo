@@ -5,6 +5,7 @@ Rails.application.routes.draw do
   get "/signup", controller: :packs, action: :signup
   post "/signups", controller: :signups, action: :signup
   get "/pixel", controller: :analytics, action: :pixel
+  get '/s/:short', to: "analytics#short", as: :short
 
   resources :editions, only: %i[index show]
 

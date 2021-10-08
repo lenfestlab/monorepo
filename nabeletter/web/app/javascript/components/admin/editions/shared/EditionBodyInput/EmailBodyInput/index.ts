@@ -378,19 +378,11 @@ export class EmailBodyInput extends Component<Props, State> {
         )
       }),
       distinctUntilChanged(),
-      // tag("html$"),
       tap((html) => {
-        const kb = new Blob([html]).size / 1000
-        // NOTE: warn if size Gmail's clip threshold. https://bit.ly/30q9ZFv
-        const htmlSizeError =
-          kb >= 102
-            ? "Warning: size exceeds 102KB; clients may truncate."
-            : null
         this.setState((prior: State) => {
           return {
             ...prior,
             html,
-            htmlSizeError,
           }
         })
       }),
@@ -401,10 +393,13 @@ export class EmailBodyInput extends Component<Props, State> {
         const request = dataProvider("UPDATE", "editions", { id, data })
         return onErrorResumeNext(from(request))
       }),
-      tap(() => {
+      tap((response) => {
+        // NOTE: display server-response HTML, which shortenslinks on save
+        const html: string = get(response, ["data", `email_html_${lang}`]) || ""
         this.setState((prior: State) => {
           return {
             ...prior,
+            html,
             syncing: false,
           }
         })
