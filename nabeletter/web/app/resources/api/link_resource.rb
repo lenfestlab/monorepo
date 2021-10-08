@@ -3,6 +3,9 @@ class Api::LinkResource < JSONAPI::Resource
   has_one :edition
 
   attributes(*%i[
+             state
+             channel
+             lang
              href
              redirect
              section
@@ -26,5 +29,8 @@ class Api::LinkResource < JSONAPI::Resource
   end
 
   filter :edition_id
+  filter :state, default: :live
+  filter :channel
+  filter :lang
 
 end

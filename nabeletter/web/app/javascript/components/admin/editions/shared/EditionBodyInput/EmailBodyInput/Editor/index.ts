@@ -50,12 +50,12 @@ export const Editor = ({
           height: 20,
         },
         [
-          syncing &&
-            h(CircularProgress, {
-              size: 20,
-              disableShrink: true,
-            }),
           // TODO: redesign
+          // syncing &&
+          //   h(CircularProgress, {
+          //     size: 20,
+          //     disableShrink: true,
+          //   }),
           // htmlSizeError &&
           //   h(
           //     Typography,

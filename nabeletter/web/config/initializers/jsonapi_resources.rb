@@ -17,5 +17,5 @@ JSONAPI.configure do |config|
   config.raise_if_parameters_not_allowed = false
 
   config.default_paginator = :paged
-  config.maximum_page_size = 100
+  config.maximum_page_size = 500
 end
