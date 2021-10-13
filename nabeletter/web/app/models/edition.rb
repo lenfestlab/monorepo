@@ -100,7 +100,7 @@ class Edition < ApplicationRecord
           section_name = params["cd4"].first rescue nil
           redirect = params["cd6"].first rescue nil
           # skip if redirect missing
-          next if redirect.empty?
+          next if redirect.blank?
           # skip if redirect malformed URL
           next unless URI::parse(redirect) rescue nil
           # NOTE: skip unsubscribe URL, interpolated by mailgun on send
