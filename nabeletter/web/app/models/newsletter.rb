@@ -37,6 +37,12 @@ class Newsletter < ApplicationRecord
   end
 
   def sms_reply kind, lang:
-    self.send("sms_reply_data")[lang][kind]
+    # TODO: self.send("sms_reply_data")[lang][kind]
+    {
+      start: "Welcome!",
+      already: "Already subscribed!",
+      stop: "Unsubscribed",
+      error: "Oops! Please try again later.",
+    }[kind.to_sym]
   end
 end

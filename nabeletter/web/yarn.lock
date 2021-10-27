@@ -1041,6 +1041,11 @@
   resolved "https://registry.yarnpkg.com/@base2/pretty-print-object/-/pretty-print-object-1.0.0.tgz#860ce718b0b73f4009e153541faff2cb6b85d047"
   integrity sha512-4Th98KlMHr5+JkxfcoDT//6vY8vM+iSPrLNpHhRyLx2CFYi8e2RfqPLdpbnpo0Q5lQC5hNB79yes07zb02fvCw==
 
+"@braintree/browser-detection@^1.12.0":
+  version "1.12.1"
+  resolved "https://registry.yarnpkg.com/@braintree/browser-detection/-/browser-detection-1.12.1.tgz#917af7834ea37615957f0e1eef67def9d0b142db"
+  integrity sha512-i/54qrax5o/WbJJhsE/7qqKE594/kGhR+xSu/w13rT7Mlr/uITkWDXzxffcKQ6l6FQxK0IG0EfgT6TJpWgZcUQ==
+
 "@csstools/convert-colors@^1.4.0":
   version "1.4.0"
   resolved "https://registry.yarnpkg.com/@csstools/convert-colors/-/convert-colors-1.4.0.tgz#ad495dc41b12e75d588c6db8b9834f08fa131eb7"
@@ -11216,6 +11221,13 @@ restore-cursor@^3.1.0:
   dependencies:
     onetime "^5.1.0"
     signal-exit "^3.0.2"
+
+restricted-input@3.0.4:
+  version "3.0.4"
+  resolved "https://registry.yarnpkg.com/restricted-input/-/restricted-input-3.0.4.tgz#6e4453097632f3f18aa8201d6c291357e5771211"
+  integrity sha512-HNrlYBkaQS3SPaTNp5PwqA2iY2hKHJAC1TSdPAi7Nst2jwW76ejantGp0BSf4ckMXPygmDPlxqDRvJ1rRd3mEQ==
+  dependencies:
+    "@braintree/browser-detection" "^1.12.0"
 
 ret@~0.1.10:
   version "0.1.15"

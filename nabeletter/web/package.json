@@ -66,6 +66,7 @@
     "react-markdown": "~4.3.1",
     "react-twitter-embed": "https://github.com/9renpoto/react-twitter-embed#feature/types",
     "react-use": "~15.0.1",
+    "restricted-input": "3.0.4",
     "rxjs": "~6.5.5",
     "rxjs-hooks": "~0.6.2",
     "rxjs-spy": "~7.5.1",

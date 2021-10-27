@@ -5,6 +5,9 @@ class Edition < ApplicationRecord
   @@langs = %w{ en es }.freeze
   cattr_reader :langs
 
+  @@channels = %w{ email sms }.freeze
+  cattr_reader :channels
+
   belongs_to :newsletter
   has_many :links
   has_many :deliveries
