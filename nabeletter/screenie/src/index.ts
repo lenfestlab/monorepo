@@ -65,9 +65,9 @@ app.get("/properties", async (req, res) => {
     attr: string
   ): string | null | undefined => {
     const element = outerEle.querySelector(sel);
-    if (!element) console.error("MIA: element", element);
+    if (!element) console.warn("MIA: element", element);
     const attribute = element?.getAttribute(attr);
-    if (!attribute) console.error("MIA: attribute", attribute);
+    if (!attribute) console.warn("MIA: attribute", attribute);
     return attribute;
   };
 
