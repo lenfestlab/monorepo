@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2021_10_08_213919) do
+ActiveRecord::Schema.define(version: 2021_10_27_171248) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -171,6 +171,8 @@ ActiveRecord::Schema.define(version: 2021_10_08_213919) do
     t.string "logo_url"
     t.string "timezone"
     t.jsonb "sms_reply_data", default: {}
+    t.string "signup_background_image_url"
+    t.string "theme_foreground_color"
     t.index ["mailgun_list_identifier"], name: "index_newsletters_on_mailgun_list_identifier"
     t.index ["name"], name: "index_newsletters_on_name"
   end
