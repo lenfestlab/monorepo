@@ -89,10 +89,9 @@ export const node = ({
         cardSection({}, [
           column({ paddingBottom: px(24) }, [
             imageNode({
-              src:
-                "http://www.zillow.com/widgets/GetVersionedResource.htm?path=/static/logos/Zillowlogo_200x50.gif",
-              width: px(200),
-              height: px(50),
+              src: "https://s.zillowstatic.com/pfs/static/z-logo-default.svg",
+              width: px(120),
+              height: px(25),
               alt: "Zillow Real Estate Search",
             }),
           ]),
