@@ -36,6 +36,7 @@ import {
   switchMap,
   tap,
   withLatestFrom,
+  delay,
 } from "rxjs/operators"
 
 import { either, find, omit, values } from "fp"
@@ -68,7 +69,7 @@ interface State extends SectionConfig {
   pending: boolean
   url: URL
   urlError: URLError
-  selection: number
+  selection: number | null
   postmap: PostMap
 }
 
@@ -86,7 +87,7 @@ export class Input extends Component<Props, State> {
 
   constructor(props: Props) {
     super(props)
-    const { config } = props
+    const { config, kind } = props
     const title = either(config.title, "")
     const { pre = "", post = "", post_es = "" } = config
     const postmap = either(config.postmap, {})
@@ -99,7 +100,7 @@ export class Input extends Component<Props, State> {
       pending: false,
       url: "",
       urlError: { error: false, helperText: "" },
-      selection: 1,
+      selection: (kind === "tweets") ? 1 : null,
       postmap,
     }
   }
@@ -142,8 +143,9 @@ export class Input extends Component<Props, State> {
       tag("urlInput$"),
       share()
     )
+    // TODO: restore w/ fb/insta screenshot service
     const selectionInput$ = merge(
-      of(1), // default to 1st
+      of((this.props.kind === "tweets") ? 1 : null), // default to 1st
       fromEvent<InputChangeEvent>(this.refSelection.current!, "input").pipe(
         map((event: InputChangeEvent) => {
           return event.target.value as string
@@ -167,11 +169,16 @@ export class Input extends Component<Props, State> {
       map(([_, pair]) => pair),
       tag("[url$, selection$]"),
       switchMap(([url, selection]) => {
-        return ajax
-          .getJSON<Post>(
+        return (this.props.kind === "tweets")
+        ? ajax.getJSON<Post>(
             `${process.env.SCREENSHOT_ENDPOINT}?selection=${selection}&url=${url}`
           )
           .pipe(materialize(), tag("addRequest$.getJSON.materialize$"))
+        :
+        of({ url, screenshot_url: `${selection}`, image_id: `${selection}`}).pipe(
+          materialize(),
+          delay(500),
+        )
       }),
       tag("addRequest$"),
       share()
@@ -231,22 +238,23 @@ export class Input extends Component<Props, State> {
 
     const urlError$: Observable<URLError> = merge(
       urlInput$.pipe(mapTo(urlErrorDefault)), // reset on URL edit
-      addRequest$.pipe(
-        map((notification: Notification<Post>) => {
-          if (notification.kind === "E") {
-            const {
-              response: data,
-              responseType,
-            } = notification.error as AjaxError
-            const error = true
-            return responseType === "json"
-              ? { error, helperText: data.message }
-              : { error, helperText: "Server error" }
-          } else {
-            return urlErrorDefault
-          }
-        })
-      )
+      // TODO:
+      // addRequest$.pipe(
+      //   map((notification: Notification<Post>) => {
+      //     if (notification.kind === "E") {
+      //       const {
+      //         response: data,
+      //         responseType,
+      //       } = notification.error as AjaxError
+      //       const error = true
+      //       return responseType === "json"
+      //         ? { error, helperText: data.message }
+      //         : { error, helperText: "Server error" }
+      //     } else {
+      //       return urlErrorDefault
+      //     }
+      //   })
+      // )
     ).pipe(startWith(urlErrorDefault), tag("urlError$"), shareReplay())
 
     const remove$: Observable<URL> = this.remove$$
@@ -389,14 +397,24 @@ export class Input extends Component<Props, State> {
             variant: "filled",
           },
         }),
-        h(TextField, {
-          ref: refSelection,
-          value: selection,
-          defaultValue: 1,
-          label: "Carousel image no.",
-          type: "number",
-          variant: "filled",
-        }),
+        (this.props.kind === "tweets") ?
+          h(TextField, {
+            ref: refSelection,
+            value: selection,
+            defaultValue: 1,
+            label: "Carousel image no.",
+            type: "number",
+            variant: "filled",
+            }) :
+          h(TextField, {
+            ref: refSelection,
+            value: selection,
+            ...{
+              fullWidth: true,
+              placeholder: `https://screenshots.com/...`,
+              variant: "filled",
+            },
+            }),
         h(
           ProgressButton,
           { disabled, pending, forwardRef: refAdd },
