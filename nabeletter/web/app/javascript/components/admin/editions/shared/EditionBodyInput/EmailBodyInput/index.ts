@@ -274,6 +274,7 @@ export class EmailBodyInput extends Component<Props, State> {
       switchMap((sections: SectionConfig[]) => {
         const nodes: Node[] = []
         const typestyle = createTypeStyle()
+        const channel = Channel.email
         const edition = this.props.record! as Edition
         const edition_id = edition.id
         const welcomeEditionId = process.env.WELCOME_EDITION_ID!
@@ -299,6 +300,8 @@ export class EmailBodyInput extends Component<Props, State> {
                   sectionRank, // NOTE: temporary, need evaluate node first
                   neighborhood,
                   edition: editionId,
+                  channel,
+                  lang,
                 },
               })
               if (node) {
@@ -308,6 +311,8 @@ export class EmailBodyInput extends Component<Props, State> {
                   sectionRank,
                   neighborhood,
                   edition: editionId,
+                  channel,
+                  lang
                 }
                 // @ts-ignore
                 nodes.push(makeNode({ config, context, typestyle, analytics }))

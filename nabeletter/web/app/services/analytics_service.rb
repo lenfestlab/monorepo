@@ -26,7 +26,11 @@ class AnalyticsService
       cd5: properties[:cd5],
       cd6: properties[:cd6],
       cd7: properties[:cd7],
-      cd8: properties[:cd8]
+      cd8: properties[:cd8],
+      cd9: properties[:cd9],
+      cd10: properties[:cd10],
+      cd11: properties[:cd11],
+      cd12: properties[:cd12],
     }
     ap data
     Event.create(data)

@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2021_10_27_171248) do
+ActiveRecord::Schema.define(version: 2021_11_03_193740) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -59,6 +59,7 @@ ActiveRecord::Schema.define(version: 2021_10_27_171248) do
     t.bigint "subscription_id"
     t.datetime "created_at", precision: 6, null: false
     t.datetime "updated_at", precision: 6, null: false
+    t.text "body"
     t.index ["edition_id"], name: "index_deliveries_on_edition_id"
     t.index ["subscription_id"], name: "index_deliveries_on_subscription_id"
   end
@@ -79,6 +80,8 @@ ActiveRecord::Schema.define(version: 2021_10_27_171248) do
     t.jsonb "sms_data_es", default: {}
     t.jsonb "email_data_es", default: {}
     t.text "email_html_es"
+    t.text "sms_body_es"
+    t.text "sms_body_en"
     t.index ["newsletter_id"], name: "index_editions_on_newsletter_id"
     t.index ["publish_at"], name: "index_editions_on_publish_at"
     t.index ["state"], name: "index_editions_on_state"
@@ -101,8 +104,15 @@ ActiveRecord::Schema.define(version: 2021_10_27_171248) do
     t.datetime "created_at", precision: 6, null: false
     t.datetime "updated_at", precision: 6, null: false
     t.string "aid"
+    t.string "cd9"
+    t.string "cd10"
+    t.string "cd11"
+    t.string "cd12"
     t.index ["aid"], name: "index_events_on_aid"
     t.index ["cd1"], name: "index_events_on_cd1"
+    t.index ["cd10"], name: "index_events_on_cd10"
+    t.index ["cd11"], name: "index_events_on_cd11"
+    t.index ["cd12"], name: "index_events_on_cd12"
     t.index ["cd2"], name: "index_events_on_cd2"
     t.index ["cd3"], name: "index_events_on_cd3"
     t.index ["cd4"], name: "index_events_on_cd4"
@@ -110,6 +120,7 @@ ActiveRecord::Schema.define(version: 2021_10_27_171248) do
     t.index ["cd6"], name: "index_events_on_cd6"
     t.index ["cd7"], name: "index_events_on_cd7"
     t.index ["cd8"], name: "index_events_on_cd8"
+    t.index ["cd9"], name: "index_events_on_cd9"
     t.index ["ea"], name: "index_events_on_ea"
     t.index ["ec"], name: "index_events_on_ec"
     t.index ["el"], name: "index_events_on_el"
