@@ -19,6 +19,8 @@ class Api::EditionResource < JSONAPI::Resource
              kind
             sms_data_en
             sms_data_es
+            sms_body_en
+            sms_body_es
             email_data_en
             email_data_es
             email_html_en

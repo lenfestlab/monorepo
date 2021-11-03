@@ -22,6 +22,9 @@ class AnalyticsController < ApplicationController
           cd7: safe['cd7'],
           # NOTE: cd8 dupes uid
           cd9: safe['cd9'],
+          cd10: safe['cd10'],
+          cd11: safe['cd11'],
+          cd12: safe['cd12'],
         }
       )
     end
@@ -41,6 +44,9 @@ class AnalyticsController < ApplicationController
         category: safe["ec"],
         cd1: safe["cd1"],
         cd2: safe["cd2"],
+        cd10: safe['cd10'],
+        cd11: safe['cd11'],
+        cd12: safe['cd12'],
       }
     )
     # https://stackoverflow.com/a/40569195
@@ -79,6 +85,9 @@ class AnalyticsController < ApplicationController
           cd7: parsed['cd7'],
           # NOTE: cd8 dupes uid
           cd9: parsed['cd9'],
+          cd10: safe['cd10'],
+          cd11: safe['cd11'],
+          cd12: safe['cd12'],
         }
       )
       # NOTE: remove non-ascii chars before redirecting, else occassionally:

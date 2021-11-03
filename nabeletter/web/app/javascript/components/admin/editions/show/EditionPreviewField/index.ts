@@ -19,8 +19,7 @@ export const EditionPreviewField: React.FunctionComponent<Props> = ({
 }) => {
   const __html = get(record, source) || "<h1>WIP</h1>"
   const doc = { __html }
-  const key = `sms_data_${lang}`
-  const text = get(record, `${key}.text`)
+  const text = get(record, `sms_body_${lang}`)
   return span({ style: {display: "flex", flexDirection: "row", wrap: "nonwrap" }}, [
     span({ dangerouslySetInnerHTML: doc }),
     text && h(SmsPreview, { text })

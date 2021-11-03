@@ -32,7 +32,7 @@ class DeliveryService
   end
 
   def deliver_sms(edition:, lang:, recipients: [])
-    body = edition.send("sms_data_#{lang}")["text"]
+    body = edition.send("sms_body_#{lang}")
     newsletter = edition.newsletter
     from = newsletter.sms_number(lang: lang).e164
     if recipients.present?
@@ -48,10 +48,12 @@ class DeliveryService
           Rails.logger.warn "skipping subscription #{subscription.id} - already delivered"
         else
           to = subscription.e164
+          # NOTE: emulate Mailgun uid interpolation just before sending.
+          body = body.gsub("VAR-RECIPIENT-UID", subscription.id.to_s)
           result = TwilioService.deliver_to_phone from: from, to: to, body: body
           ap result
           raise(DeliveryError, message) if (message = result.error_message)
-          edition.deliveries.create!(subscription: subscription)
+          edition.deliveries.create!(subscription: subscription, body: body)
         end
       end
     end

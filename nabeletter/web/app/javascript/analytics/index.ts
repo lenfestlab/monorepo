@@ -1,9 +1,12 @@
 import { stringifyUrl } from "query-string"
 export { Link, link } from "./Link"
+import { Channel, Lang } from "components/admin/shared"
 
 import { either } from "fp"
 
 export const safeTitle = (title: string | undefined | null) => either(title, "")
+
+export const shortenerPrefix = `${document.location.host}/s/`
 
 type Category = "interaction"
 type Action = "click"
@@ -19,10 +22,12 @@ export interface AnalyticsProps {
   label?: Label
   neighborhood: string
   edition: UUID
-  section: string
-  sectionRank: number
-  title: string
+  section?: string
+  sectionRank?: number
+  title?: string
   aid?: UUID
+  channel: Channel
+  lang: Lang
 }
 
 export const rewriteURL = (redirect: string, props: AnalyticsProps): string => {
@@ -36,6 +41,8 @@ export const rewriteURL = (redirect: string, props: AnalyticsProps): string => {
     sectionRank,
     title,
     aid,
+    channel,
+    lang,
   } = props
   const url = `https://${process.env.RAILS_HOST}/analytics`
   return stringifyUrl({
@@ -54,11 +61,15 @@ export const rewriteURL = (redirect: string, props: AnalyticsProps): string => {
       cd6: redirect,
       cd7: title,
       cd9: aid,
+      cd10: channel,
+      cd11: lang
     },
   })
 }
 
 export const pixelURL = (
+  channel: Channel,
+  lang: Lang,
   newsletter_analytics_name: string,
   edition: string | number,
   ours?: boolean
@@ -70,6 +81,8 @@ export const pixelURL = (
   const tid = process.env.GA_TID as string
   const cd1 = newsletter_analytics_name
   const cd2 = String(edition)
+  const cd10 = channel
+  const cd11 = lang
   const url = ours
     ? `https://${process.env.RAILS_HOST}/pixel`
     : `https://www.google-analytics.com/collect`
@@ -84,6 +97,8 @@ export const pixelURL = (
       uid,
       cd1,
       cd2,
+      cd10,
+      cd11,
     },
   })
 }

@@ -27,7 +27,9 @@ export const Preview = ({ text }: Props) => {
     [
       span({
         id: "sms-simulated-style-text",
-        style: { height: "100%" },
+        style: {
+          height: "100%",
+        },
         dangerouslySetInnerHTML: { __html },
       }),
     ]
@@ -35,9 +37,10 @@ export const Preview = ({ text }: Props) => {
 }
 
 function messageMarkup(message: string) {
-  // css source: https://stackoverflow.com/a/45944762
+  // NOTE: css source (font-size added): https://stackoverflow.com/a/45944762
   const css = `
   body {
+    font-size: 14px;
     font-family: helvetica;
     display: flex ;
     flex-direction: column;

@@ -74,6 +74,8 @@ export const node = ({
                 ),
               image({
                 src: pixelURL(
+                  analytics.channel,
+                  analytics.lang,
                   edition.newsletter_analytics_name,
                   edition.id,
                   true
