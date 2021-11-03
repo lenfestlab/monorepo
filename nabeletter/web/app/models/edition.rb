@@ -114,7 +114,7 @@ class Edition < ApplicationRecord
             edition_id: self.id,
             href: href,
             section_name: section_name,
-            redirect: redirect,
+            redirect: Link.ensure_ascii_only(redirect),
             href_digest: (href_digest = Digest::SHA1.hexdigest(href)),
             short: (short = href_digest.first(6)),
             }, unique_by: :index_links_on_href_digest)

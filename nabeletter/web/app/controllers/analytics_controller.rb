@@ -81,7 +81,9 @@ class AnalyticsController < ApplicationController
           cd9: parsed['cd9'],
         }
       )
-      redirect_to redirect
+      # NOTE: remove non-ascii chars before redirecting, else occassionally:
+      # > error: URI must be ascii only
+      redirect_to Link.ensure_ascii_only redirect
     else
       head :ok
     end
