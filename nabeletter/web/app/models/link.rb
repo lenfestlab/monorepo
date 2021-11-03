@@ -14,4 +14,15 @@ class Link < ApplicationRecord
     self.short = self.href_digest.first(6)
     self.save!
   end
+
+  # NOTE: remove non-ascii chars before redirecting, else occassionally:
+  # > error: URI must be ascii only
+  def self.ensure_ascii_only uri
+      uri.encode(Encoding.find('ASCII'), {
+        :invalid           => :replace,  # Replace invalid byte sequences
+        :undef             => :replace,  # Replace anything not defined in ASCII
+        :replace           => '',        # Use a blank for those replacements
+        :universal_newline => true       # Always break lines with \n
+      })
+  end
 end
