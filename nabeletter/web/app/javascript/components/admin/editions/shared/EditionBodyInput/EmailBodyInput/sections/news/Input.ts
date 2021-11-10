@@ -62,6 +62,7 @@ type EditDialogProps = {
   open: boolean
   selectionID?: string
   selectionSitePlaceholder?: string
+  selectionImagePlaceholder?: string
 }
 
 interface Props {
@@ -187,10 +188,12 @@ export class Input extends Component<Props, State> {
   onClickEdit = (url: string) => {
     const selection = find(this.articles$$.value, (item) => item.url === url)
     const selectionSitePlaceholder = selection?.site_name
+    const selectionImagePlaceholder = selection?.image
     this.dialogProps$$.next({
       open: true,
       selectionID: url,
       selectionSitePlaceholder,
+      selectionImagePlaceholder,
     })
   }
   onClose = () =>
@@ -199,12 +202,15 @@ export class Input extends Component<Props, State> {
     })
 
   siteRef = createRef<HTMLTextAreaElement>()
+  imageRef = createRef<HTMLInputElement>()
   onSave = () => {
     const siteValue = this.siteRef.current?.value
+    const imageValue = this.imageRef.current?.value
     const site_name_custom = isEmpty(siteValue) ? null : siteValue
+    const image_custom = isEmpty(imageValue) ? null : imageValue
     const newSelections = this.articles$$.value.map((article) => {
       return article.url === this.dialogProps$$.value.selectionID
-        ? { ...article, site_name_custom }
+        ? { ...article, site_name_custom, image_custom }
         : article
     })
     this.articles$$.next(newSelections)
@@ -357,7 +363,11 @@ export class Input extends Component<Props, State> {
       error: { error, helperText },
       articles,
     } = this.state
-    const { open, selectionSitePlaceholder } = this.state
+    const {
+      open,
+      selectionSitePlaceholder,
+      selectionImagePlaceholder
+    } = this.state
 
     const {
       setTitle,
@@ -448,6 +458,15 @@ export class Input extends Component<Props, State> {
               variant: "filled",
               placeholder: selectionSitePlaceholder,
               inputRef: this.siteRef,
+            }),
+            h(TextField, {
+              label: "Image",
+              autoFocus: true,
+              margin: "dense",
+              fullWidth: true,
+              variant: "filled",
+              placeholder: selectionImagePlaceholder,
+              inputRef: this.imageRef
             }),
           ]),
           h(DialogActions, [

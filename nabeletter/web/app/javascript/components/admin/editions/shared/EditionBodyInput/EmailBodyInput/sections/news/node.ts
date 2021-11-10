@@ -36,6 +36,7 @@ export const articlesNode = ({
           site_name: _site_name,
           site_name_custom,
           image: src,
+          image_custom: src_custom,
           published_time,
         } = article
 
@@ -58,13 +59,14 @@ export const articlesNode = ({
         }
         const className = typestyle.style(style)
 
+        const image_src = src_custom ?? src
         return cardSection({}, [
           column(
             { paddingBottom: px(12) },
             compact([
-              src &&
+              image_src &&
                 image({
-                  src,
+                  src: image_src,
                   alt: title,
                 }),
               title &&
