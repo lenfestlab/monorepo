@@ -9,6 +9,7 @@ export interface Article {
 
 export interface EditableArticle extends Article {
   site_name_custom?: string | null
+  image_custom?: string | null
 }
 
 import { SectionConfig } from "../section"
