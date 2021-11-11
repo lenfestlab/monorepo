@@ -25,6 +25,8 @@ class Api::EditionResource < JSONAPI::Resource
             email_data_es
             email_html_en
             email_html_es
+
+            email_html_en_preprocessed
              ])
 
 

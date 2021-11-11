@@ -22,16 +22,21 @@ export const Preview = ({ text }: Props) => {
       id: "preview-frame",
       width: queries.mobile.maxWidth,
       height: "100%",
-      style: { border: "0" },
+      style: {
+        border: "0px",
+        height: "100%",
+      },
     },
     [
       span({
         id: "sms-simulated-style-text",
         style: {
           height: "100%",
+          overflow: "scroll",
+          border: "0px"
         },
         dangerouslySetInnerHTML: { __html },
-      }),
+      })
     ]
   )
 }
@@ -50,14 +55,19 @@ function messageMarkup(message: string) {
   .chat {
     height: 100%;
     width: 300px;
-    border: solid 1px #EEE;
     display: flex;
     flex-direction: column;
+    /*
     padding: 10px;
+    border: solid 1px #EEE;
+    */
   }
 
   .messages {
+    /*
     margin-top: 30px;
+    */
+    margin-top: 1px;
     display: flex;
     flex-direction: column;
   }
