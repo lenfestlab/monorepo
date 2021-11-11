@@ -394,7 +394,10 @@ export class EmailBodyInput extends Component<Props, State> {
       switchMap((html) => {
         const { record, lang } = this.props
         const id = record?.id
-        const data = { [`email_html_${lang}`]: html }
+        const data = {
+          [`email_html_${lang}`]: html,
+          [`email_html_${lang}_preprocessed`]: html
+        }
         const request = dataProvider("UPDATE", "editions", { id, data })
         return onErrorResumeNext(from(request))
       }),

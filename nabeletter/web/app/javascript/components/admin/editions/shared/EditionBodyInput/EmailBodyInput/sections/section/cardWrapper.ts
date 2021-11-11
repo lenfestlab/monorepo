@@ -21,6 +21,8 @@ export const cardWrapper = (
 ): Node => {
   return wrapper(
     {
+      // @ts-ignore
+      cssClass: `section-${analytics.section}`,
       paddingTop: px(12),
       paddingBottom: px(12),
       paddingLeft: px(24),
@@ -32,6 +34,7 @@ export const cardWrapper = (
         {
           paddingTop: px(24),
           isFirstSection: true,
+          cssClass: "section-title"
         },
         [
           column({}, [

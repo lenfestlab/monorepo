@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2021_11_03_193740) do
+ActiveRecord::Schema.define(version: 2021_11_11_181423) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -82,6 +82,7 @@ ActiveRecord::Schema.define(version: 2021_11_03_193740) do
     t.text "email_html_es"
     t.text "sms_body_es"
     t.text "sms_body_en"
+    t.text "email_html_en_preprocessed"
     t.index ["newsletter_id"], name: "index_editions_on_newsletter_id"
     t.index ["publish_at"], name: "index_editions_on_publish_at"
     t.index ["state"], name: "index_editions_on_state"

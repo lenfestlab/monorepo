@@ -47,7 +47,7 @@ export const EditionBodyInput = ({ record }: Props) => {
       h(SmsBodyInput, {
         record,
         lang: Lang.es,
-        visibility: tab === 1 ? "visible" : "hidden"
+        visibility: tab === 1 ? "visible" : "hidden",
       }),
     ]),
   ])
