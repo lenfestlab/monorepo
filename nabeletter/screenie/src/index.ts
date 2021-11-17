@@ -74,7 +74,10 @@ app.get("/properties", async (req, res) => {
   try {
     const _url = req.query.url as string;
     if (!_url) throw new Error(`MIA: url param`);
-    const dom = await JSDOM.fromURL(_url, { runScripts: "dangerously" });
+    const dom = await JSDOM.fromURL(_url, {
+      runScripts: "dangerously",
+      pretendToBeVisual: true,
+    });
     const doc = dom.window.document;
     const head = doc.head;
     const body = doc.body;
@@ -85,7 +88,12 @@ app.get("/properties", async (req, res) => {
     // <meta property="og:url" content="https://www.zillow.com:443/homedetails/.."
     const url = get(head, `meta[property="og:url"]`, "content");
     // <meta property="og:image" content="https://....jpg">
-    const image = get(head, `meta[property="og:image"]`, "content");
+    let image = get(head, `meta[property="og:image"]`, "content");
+    // NOTE: workaround og:image bug
+    if (image && (image.match(/https/g) || []).length > 1) {
+      image = image.replace('https://photos.zillowstatic.com/fp/', '')
+      image = image.replace("p_d.jpg-p_d.jpg", "cc_ft_960.jpg")
+    }
     // <meta property="og:zillow_fb:address" content="420 E Thompson St, Philadelphia, PA 19125">
     const address = get(
       head,
@@ -105,6 +113,18 @@ app.get("/properties", async (req, res) => {
     // meta property="product:price:amount" content="339000.00"/>
     let price = null;
     price = get(head, `meta[property='product:price:amount']`, "content");
+    // try parsing api cache
+    const apiCacheJSON = body.querySelector(`script[id='hdpApolloPreloadedData']`)?.innerHTML
+    if (!price && apiCacheJSON) {
+      try {
+        const matched = apiCacheJSON.split(`price`)[1].split(",")[0].match(/\d+/)
+        if (matched) {
+          const money = parseMoney(matched[0])
+          if (money) price = money.amount.toString();
+        }
+      } catch (error) { /*no-op*/ }
+    }
+    // try parsing description
     if (!price && description) {
       const money = parseMoney(description);
       if (money) price = money.amount.toString();
