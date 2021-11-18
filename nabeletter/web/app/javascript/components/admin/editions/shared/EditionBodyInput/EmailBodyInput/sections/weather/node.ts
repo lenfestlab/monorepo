@@ -41,6 +41,15 @@ const iconMap: Record<string, ImageMap> = {
     60: "https://res.cloudinary.com/dh5yeyrsc/image/upload/v1584782166/weather/half-cloudy-icon_eltwzz.png",
     30: "https://res.cloudinary.com/hb8lfmjh0/image/upload/v1595622105/4f7a112a9b0d49e23578f72d5d91c022.png",
   },
+  // TODO: correct icons
+  sleet: {
+    60: "https://res.cloudinary.com/dh5yeyrsc/image/upload/v1584782167/weather/rain-icon_p3zrmg.png",
+    30: "https://res.cloudinary.com/hb8lfmjh0/image/upload/v1595620607/b55fb89881cce52ca6e6b100fcab8b86.png",
+  },
+  wind: {
+    60: "https://res.cloudinary.com/dh5yeyrsc/image/upload/v1584782166/weather/fog-icon_x3crqn.png",
+    30: "https://res.cloudinary.com/hb8lfmjh0/image/upload/v1595622015/19f4faec86839d26f61f9e1989ba2f45.png",
+  },
 }
 
 export const getIconURLs = (key: string): ImageMap => {
