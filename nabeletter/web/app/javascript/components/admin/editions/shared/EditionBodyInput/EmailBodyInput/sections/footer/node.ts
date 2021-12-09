@@ -1,18 +1,18 @@
 import { link } from "analytics"
 import { rewriteURL } from "analytics"
-import { px } from "csx"
-import { compact, get } from "fp"
+import { percent, px } from "csx"
+import { get } from "fp"
 import { translate } from "i18n"
 import {
-  button,
   column as columnNode,
-  divider,
+  group,
   image,
   mj,
   Node,
   section as sectionNode,
   text as textNode,
   TextAttributes,
+  wrapper,
 } from "mjml-json"
 import { colors } from "styles"
 import { SectionNodeProps } from "../section"
@@ -58,7 +58,8 @@ export const node = ({
   const footerTextAttributes: TextAttributes = {
     align: "center",
     color: white,
-    fontSize: px(16) as string,
+    fontSize: px(15) as string,
+    fontWeight: 400,
     lineHeight: 1.5,
   }
 
@@ -72,203 +73,168 @@ export const node = ({
     },
   }
 
-
-  const buttonCopy = process.env.DONATION_BUTTON_COPY!
-  const url = process.env.DONATION_BUTTON_URL!
-  const href = rewriteURL(url, { ...analytics, title: buttonCopy })
-  const cta = process.env.DONATION_CTA_FOOTER!
-
-  return sectionNode(
+  const data: {src: string, content: string}[] =  [
     {
-      backgroundColor: colors.darkBlue,
-      borderRadius: px(3) as string,
-      padding: px(24),
-    },
-    [
-      columnNode(
-        {},
-        compact([
-
-          /* begin donation
-          textNode(
-            {
-              fontSize: px(15),
-              fontWeight: 400,
-              lineHeight: px(22),
-              color: colors.white,
-              align: "center",
-            },
-            cta
-          ),
-          button(
-            {
-              align: "center",
-              paddingTop: px(17),
-              paddingLeft: px(0),
-              backgroundColor: colors.lightBlue,
-              borderRadius: px(0),
-              color: colors.textBlue,
-              fontSize: px(15),
-              fontWeight: 700,
-              lineHeight: px(18),
-              textTransform: "uppercase",
-              href,
-            },
-            buttonCopy
-          ),
-          divider({ borderWidth: px(1), borderColor: colors.white }),
-          textNode({}, "<br/>"),
-          // end donation
-          */
-
-          textNode(
-            {
-              ...footerTextAttributes,
-              paddingBottom: px(24),
-            },
-            [
-              translate("footer-feedback-prompt"),
-              translate("footer-feedback-cta"),
-              link({
-                analytics,
-                title: feedbackEmail,
-                url: `mailto:${feedbackEmail}`,
-                style: {
-                  ...styles.link,
-                  fontWeight: "bold",
-                },
-              }),
-            ]
-          ),
-
-          textNode(
-            {
-              ...footerTextAttributes,
-              paddingBottom: px(24),
-            },
-            [
-              translate("footer-signup-copy").replace(
-                "SIGN_UP",
-                link({
-                  analytics,
-                  title: "Sign up",
-                  url: `https://${process.env.RAILS_HOST}/signup?newsletter_id=${newsletter_id}`,
-                  style: {
-                    ...styles.link,
-                    fontWeight: "bold",
-                  },
-                })
-              ),
-            ]
-          ),
-
-          textNode(
-            {
-              ...footerTextAttributes,
-              paddingBottom: px(24),
-            },
-            [
-              translate("footer-past-editions").replace(
-                "HERE",
+      src: "https://res.cloudinary.com/ho6rcccn6/image/upload/v1639069657/20211209-footer-email_sdcwr7.png",
+      content: translate("footer-feedback-cta").replace("HERE",
                 link({
                   analytics,
                   title: "here",
-                  url: `https://${process.env.RAILS_HOST}/editions?newsletter_id=${newsletter_id}`,
+                  url: `mailto:${feedbackEmail}`,
                   style: {
                     ...styles.link,
                     fontWeight: "bold",
                   },
                 })
               ),
-            ]
-          ),
+    },{
+      src: "https://res.cloudinary.com/ho6rcccn6/image/upload/v1639408579/20211209-footer-signup_mipbtx.png",
+      content: translate("footer-signup-copy").replace(
+          "SIGN_UP",
+          link({
+            analytics,
+            title: "Sign up",
+            url: `https://${process.env.RAILS_HOST}/signup?newsletter_id=${newsletter_id}`,
+            style: {
+              ...styles.link,
+              fontWeight: "bold",
+            },
+          })
+        ),
+    },{
+      src: "https://res.cloudinary.com/ho6rcccn6/image/upload/v1639069657/20211209-footer-news_sxmofw.png",
+      content: translate("footer-past-editions").replace(
+        "HERE",
+        link({
+          analytics,
+          title: "here",
+          url: `https://${process.env.RAILS_HOST}/editions?newsletter_id=${newsletter_id}`,
+          style: {
+            ...styles.link,
+            fontWeight: "bold",
+          },
+        })
+      )
+    },
+  ]
 
-          textNode({ ...footerTextAttributes }, [
-            translate("footer-connect").replace(
-              "NEWSLETTER_NAME",
-              newsletter_name
-            ),
+  const iconRow = ({ src, content }: { src?: string, content: string }): Node => {
+      return sectionNode({
+        // @ts-ignore
+        textAlign: "left",
+        paddingBottom: px(24)
+      }, [
+
+        group({ verticalAlign: "middle" }, [
+
+          columnNode({
+              verticalAlign: "middle",
+              paddingRight: px(10),
+              // @ts-ignore
+              width: px(25),
+          }, [
+            image({
+              src,
+              // @ts-ignore
+              align: "left",
+            }),
           ]),
-          mj(
-            "mj-social",
-            {
-              align: "center",
-              containerBackgroundColor: colors.darkBlue,
-              color: colors.black,
-              iconSize: px(30) as string,
-              mode: "horizontal",
-              paddingTop: px(0),
-            },
-            [
-              ...socialLinks.map(({ title, url, src }: SocialLink) => {
-                const href = rewriteURL(url, {
-                  ...analytics,
-                  title,
-                })
-                return mj("mj-social-element", {
-                  name: `${title}-noshare`, // https://git.io/JJEie
-                  backgroundColor: colors.darkBlue,
-                  color: colors.white,
-                  href,
-                })
-              }),
-            ]
-          ),
 
-          textNode(
-            {
-              ...footerTextAttributes,
-              paddingBottom: px(24),
-            },
-            [`&copy;`, translate("footer-copyright")]
-          ),
+          columnNode({
+              verticalAlign: "middle",
+              // @ts-ignore
+              width: percent(89),
+          }, [
+            textNode(
+              {
+                ...footerTextAttributes,
+                align: "left",
+              }, [content]
+            )
 
-          textNode(
-            {
-              ...footerTextAttributes,
-              paddingBottom: px(24),
-            },
-            [
-              `This newsletter is brought to you by the `,
+          ])
+
+        ]),
+
+      ])
+  }
+
+  return wrapper({
+    backgroundColor: colors.darkBlue,
+    padding: px(24),
+  }, [
+
+    ...data.map(({ src, content }) => {
+      return iconRow({ src, content })
+    }),
+
+    sectionNode({}, [
+      columnNode({}, [
+        mj("mj-spacer", { height: px(40) })
+      ])
+    ]),
+
+    iconRow({
+      src: "https://res.cloudinary.com/ho6rcccn6/image/upload/v1639069657/20211209-footer-copyright_t0pe3n.png",
+      content: translate("footer-copyright")
+    }),
+
+    sectionNode({ }, [
+      columnNode({ }, [
+
+        textNode(
+          {
+            ...footerTextAttributes,
+            paddingBottom: px(24),
+            align: "left"
+          },
+          [
+            translate("footer-attribution").replace(
+              "Lenfest Lab",
               link({
                 analytics,
-                title: "Lenfest Lab,",
+                title: "Lenfest Lab",
                 url: "https://medium.com/the-lenfest-local-lab",
                 style: styles.link,
-              }),
-              ` a product and UX team at `,
+              })
+              ).replace(
+              "The Philadelphia Inquirer",
               link({
                 analytics,
                 title: "The Philadelphia Inquirer",
                 url: "https://www.inquirer.com",
                 style: styles.link,
-              }),
-              ` and founded by `,
+              })
+              ).replace(
+              "The Lenfest Institute for Journalism",
               link({
                 analytics,
                 title: "The Lenfest Institute for Journalism",
                 url: "https://www.lenfestinstitute.org",
                 style: styles.link,
-              }),
-              ` in 2018.`,
-            ]
-          ),
+              })
+            )
+          ]
+        ),
 
-          textNode(
-            {
-              ...footerTextAttributes,
-            },
-            [
-              link({
-                analytics,
-                title: translate("footer-unsubscribe"),
-                url: "VAR-UNSUBSCRIBE-URL",
-                style: styles.link,
-              }),
-            ]
-          ),
-        ])
-      ),
-    ]
-  )
+        textNode(
+          {
+            ...footerTextAttributes,
+            align: "left",
+          },
+          [
+            link({
+              analytics,
+              title: translate("footer-unsubscribe"),
+              url: "VAR-UNSUBSCRIBE-URL",
+              style: styles.link,
+            }),
+          ]
+        ),
+
+
+      ])
+    ]),
+
+  ])
 }
