@@ -157,7 +157,7 @@ class Edition < ApplicationRecord
     # skip if redirect malformed URL
     return unless URI::parse(redirect) rescue nil
     # NOTE: skip unsubscribe URL, interpolated by mailgun on send
-    return if redirect == "VAR-UNSUBSCRIBE-URL"
+    return href if redirect == "VAR-UNSUBSCRIBE-URL"
     link = Link.upsert({
       created_at: Time.zone.now,
       updated_at: Time.zone.now,
