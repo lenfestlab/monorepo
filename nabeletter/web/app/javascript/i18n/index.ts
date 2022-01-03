@@ -137,10 +137,10 @@ export const translate = (key: string): string => {
     "meetings-field-more": "View more meetings >>",
     "meetings-field-add": `Add our shared community meetings calendar to your Google Calendar.`,
     // footer
-    "footer-feedback-cta": "Send your feedback HERE",
+    "footer-feedback-cta": "Send your feedback HERE.",
     "footer-signup-copy": `SIGN_UP to receive the newsletter each week.`,
     "footer-past-editions": `View past editions of The Hook HERE.`,
-    "footer-copyright": "2021 The Lenfest Local Lab @ The Inquirer",
+    "footer-copyright": "Copyright © 2022 The Lenfest Local Lab @ The Inquirer",
     "footer-unsubscribe": "Unsubscribe",
     "footer-attribution":
       "This newsletter is brought to you by the Lenfest Lab, a product and UX team at The Philadelphia Inquirer and founded by The Lenfest Institute for Journalism in 2018.",
