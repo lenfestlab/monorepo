@@ -1,7 +1,7 @@
 import { link } from "analytics"
 import { rewriteURL } from "analytics"
 import { percent, px } from "csx"
-import { get } from "fp"
+import { compact, get } from "fp"
 import { translate } from "i18n"
 import {
   column as columnNode,
@@ -39,28 +39,14 @@ export const node = ({
     sectionRank: -1,
   }
   const newsletter_id = get(edition, ["newsletter", "id"])
-  const newsletter_name = get(edition, "newsletter_name")
-  const newsletter_social_url_facebook = get(
-    edition,
-    "newsletter_social_url_facebook"
-  )
-  const edition_id = get(edition, "id")
-
-  const socialLinks: SocialLink[] = [
-    {
-      title: "facebook",
-      url: newsletter_social_url_facebook,
-      src:
-        "https://res.cloudinary.com/dh5yeyrsc/image/upload/v1585124217/social/facebook-icon_yfgb3v.png",
-    },
-  ]
-
   const footerTextAttributes: TextAttributes = {
     align: "center",
     color: white,
     fontSize: px(15) as string,
     fontWeight: 400,
     lineHeight: 1.5,
+    paddingTop: px(10),
+    paddingBottom: px(10),
   }
 
   const styles = {
@@ -118,75 +104,29 @@ export const node = ({
     },
   ]
 
-  const iconRow = ({ src, content }: { src?: string, content: string }): Node => {
-      return sectionNode({
-        // @ts-ignore
-        textAlign: "left",
-        paddingBottom: px(24)
-      }, [
-
-        group({ verticalAlign: "middle" }, [
-
-          columnNode({
-              verticalAlign: "middle",
-              paddingRight: px(10),
-              // @ts-ignore
-              width: px(25),
-          }, [
-            image({
-              src,
-              // @ts-ignore
-              align: "left",
-            }),
-          ]),
-
-          columnNode({
-              verticalAlign: "middle",
-              // @ts-ignore
-              width: percent(89),
-          }, [
-            textNode(
-              {
-                ...footerTextAttributes,
-                align: "left",
-              }, [content]
-            )
-
-          ])
-
-        ]),
-
-      ])
-  }
-
-  return wrapper({
+  return sectionNode({
     backgroundColor: colors.darkBlue,
+    borderRadius: px(3) as string,
     padding: px(24),
   }, [
+    columnNode({}, [
 
-    ...data.map(({ src, content }) => {
-      return iconRow({ src, content })
-    }),
+      ...compact([
+        ...data.map(({ src, content }) => {
+          return textNode({
+            ...footerTextAttributes,
+          }, [ content ])
+        }),
 
-    sectionNode({}, [
-      columnNode({}, [
-        mj("mj-spacer", { height: px(40) })
-      ])
-    ]),
+        mj("mj-spacer", { height: px(40) }),
 
-    iconRow({
-      src: "https://res.cloudinary.com/ho6rcccn6/image/upload/v1639069657/20211209-footer-copyright_t0pe3n.png",
-      content: translate("footer-copyright")
-    }),
-
-    sectionNode({ }, [
-      columnNode({ }, [
+        textNode({
+          ...footerTextAttributes,
+        }, [ translate("footer-copyright") ]),
 
         textNode(
           {
             ...footerTextAttributes,
-            paddingBottom: px(24),
-            align: "left"
           },
           [
             translate("footer-attribution").replace(
@@ -220,7 +160,6 @@ export const node = ({
         textNode(
           {
             ...footerTextAttributes,
-            align: "left",
           },
           [
             link({
@@ -232,9 +171,8 @@ export const node = ({
           ]
         ),
 
-
       ])
-    ]),
-
+    ])
   ])
+
 }
