@@ -130,10 +130,10 @@ export const node = ({
           },
           [
             translate("footer-attribution").replace(
-              "Lenfest Lab",
+              "Lenfest Local Lab @ The Inquirer",
               link({
                 analytics,
-                title: "Lenfest Lab",
+                title: "Lenfest Local Lab @ The Inquirer",
                 url: "https://medium.com/the-lenfest-local-lab",
                 style: styles.link,
               })

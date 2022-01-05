@@ -143,7 +143,7 @@ export const translate = (key: string): string => {
     "footer-copyright": "Copyright © 2022 The Lenfest Local Lab @ The Inquirer",
     "footer-unsubscribe": "Unsubscribe",
     "footer-attribution":
-      "This newsletter is brought to you by the Lenfest Lab, a product and UX team at The Philadelphia Inquirer and founded by The Lenfest Institute for Journalism in 2018.",
+      "This newsletter is brought to you by the Lenfest Local Lab @ The Inquirer, a product and UX innovation team founded within The Lenfest Institute for Journalism in 2018 and joined The Philadelphia Inquirer in 2021.",
     "ad-input-set": "Set advertisement",
     "ad-input-edit": "Edit advertisement",
     "ad-input-title-label": "Title",
