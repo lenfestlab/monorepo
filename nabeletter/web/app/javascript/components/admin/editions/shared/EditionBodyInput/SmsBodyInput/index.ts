@@ -1,12 +1,13 @@
 import { h } from "@cycle/react"
-import { Box, TextareaAutosize, TextField } from "@material-ui/core"
+import { Box, Button, TextField } from "@material-ui/core"
+import { SaveAlt } from "@material-ui/icons"
 import Autolinker from "autolinker"
 import { get, truncate } from "fp"
 import { createRef, useState} from "react"
 import { useEffectOnce, useObservable } from "react-use"
 import { BehaviorSubject, Observable, Subscription } from "rxjs"
 import { tag } from "rxjs-spy/operators"
-import { debounceTime, map, share, startWith } from "rxjs/operators"
+import { debounceTime, map, share, startWith, tap } from "rxjs/operators"
 
 import { span } from "@cycle/react-dom"
 import { AnalyticsProps as AllAnalyticsProps, rewriteURL, shortenerPrefix } from "analytics"
@@ -22,12 +23,12 @@ type AnalyticsProps = Omit<AllAnalyticsProps, "section" | "sectionRank" | "title
 
 export interface Section {
   kind: string
-  body: string
+  origin: string | null
+  translation: string | null
 }
-export type SetSectionBody = (kind: string, body: string) => void
 
 export interface Config {
-  translation: Section[]
+  sections: Section[]
 }
 
 // NOTE: Twilio body max characters: https://bit.ly/3ihwCEx
@@ -39,10 +40,18 @@ const sections$: Observable<Section[]> = sections$$.asObservable().pipe(
   tag("sections$"),
   share()
 )
-const setSectionBody: SetSectionBody = (kind: string, body: string) => {
+
+const setSectionOrigin = (kind: string, body: string) => {
   const sections = sections$$.value
   const section = sections.find(section => section.kind === kind)
-  if (section) section.body = body
+  if (section) section.origin = body
+  sections$$.next(sections)
+}
+
+const setSectionTranslation = (kind: string, body: string) => {
+  const sections = sections$$.value
+  const section = sections.find(section => section.kind === kind)
+  if (section) section.translation = body
   sections$$.next(sections)
 }
 
@@ -55,11 +64,12 @@ export const SmsBodyInput = ({ record, lang, visibility }: Props) => {
   const channel = Channel.sms
   const id = String(record?.id)
   const config: Config = get(record, `sms_data_${lang}`) ?? {}
-  const translatedSections = get(config, `translation`)
-  // TODO: live update on edits to email
+  const translatedSections = get(config, `sections`)
   const emailSections = parseEmailHtml(get(record, `email_html_en_preprocessed`) ?? "")
-  const cleanedEmailSections = emailSections.map(section => {
-    return { ...section, body: null }
+  emailSections.unshift({ kind: "pre", origin: null, translation: null })
+  emailSections.push({ kind: "post", origin: null, translation: null })
+  const cleanedEmailSections: Section[] = emailSections.map(section => {
+    return { ...section, origin: null, translation: null }
   })
   const initialSections = translatedSections ?? cleanedEmailSections
   useEffectOnce(() => sections$$.next(initialSections))
@@ -73,14 +83,17 @@ export const SmsBodyInput = ({ record, lang, visibility }: Props) => {
     lang,
   }
 
+  const [sections, setSections] = useState<Section[]>([])
   const [body, setBody] = useState(get(record, `sms_body_${lang}`) ?? "")
+
   useEffectOnce(() => {
     const subscription: Subscription = sections$.pipe(
+      tap(s => setSections([...s])),
       debounceTime(500),
       tag("debounced$"),
       map(async sections => {
         const mergedSectionBodies = sections.reduce((prev, section, idx) => {
-          const rawText = section.body
+          const rawText = section.translation ?? ""
           const analyzedText = analyze(rawText, {
             ...analytics,
             section: section.kind,
@@ -89,7 +102,7 @@ export const SmsBodyInput = ({ record, lang, visibility }: Props) => {
           return `${prev}\n\n ${analyzedText}`.trim()
         }, "")
         const data = {
-          [`sms_data_${lang}`]: { translation: sections },
+          [`sms_data_${lang}`]: { sections },
           [`sms_body_${lang}`]: mergedSectionBodies,
         }
         const res = await dataProvider("UPDATE", "editions", { id, data })
@@ -103,8 +116,8 @@ export const SmsBodyInput = ({ record, lang, visibility }: Props) => {
     return () => subscription.unsubscribe()
   })
 
-  const sections = useObservable(sections$)
-  const inputRefs = sections$$.value.map(i=> createRef<HTMLTextAreaElement>())
+  const originRefs = sections$$.value.map(i=> createRef<HTMLTextAreaElement>())
+  const translationRefs = sections$$.value.map(i=> createRef<HTMLTextAreaElement>())
   return h(
     Box,
     {
@@ -122,57 +135,89 @@ export const SmsBodyInput = ({ record, lang, visibility }: Props) => {
         flexDirection: "column",
         overflow: "scroll"
       }, [
-        sections?.map(({ kind, body }, idx) => {
+        sections?.map(({ kind, origin, translation }, idx) => {
           const emailSection = emailSections.find(section => section.kind === kind)
-          const emailSectionBody = emailSection?.body
+          const emailOrigin = emailSection?.origin ?? ""
 
-          return h(Box, {
-            key: kind,
-            width: percent(100),
-            display: "flex",
-            flexDirection: "row-reverse",
-            alignItems: "flex-start",
-            justifyContent: "space-between",
-            paddingTop: 4,
-          }, [
-
-            h(TextField, {
-              key: kind,
-              defaultValue: body,
-              inputRef: inputRefs[idx],
-              ...{
-                onChange: (event) => {
-                  const value = event.target.value
-                  setSectionBody(kind, value)
+          return h(Box, { display: "flex", flexDirection: "column", alignItems: "left", paddingTop: 4 }, [
+            h(Box, { display: "flex", flexDirection: "row", }, [
+              h(Button, {
+                onClick: (_) => {
+                  const ref: React.Ref<HTMLTextAreaElement> = originRefs[idx]
+                  const textarea = ref.current
+                  if (textarea) textarea.value = emailOrigin
+                  setSectionOrigin(kind, emailOrigin)
                 },
-                color: "secondary",
-                name: "text",
-                multiline: true,
-                rows: Math.round((emailSectionBody?.length ?? 30) / 29),
                 variant: "outlined",
-                label: null,
-                placeholder: kind,
-              },
-              style: { flexGrow: 1 },
-            }),
+                color: "primary",
+                endIcon: (kind === "pre") || (kind === "post") || h(SaveAlt),
+                style: {
+                  margin: px(10),
+                  marginLeft: px(0)
+                }
+              }, kind),
+            ]),
 
-            h(TranslateButton, {
-              sourceBody: emailSectionBody,
-              onTranslate: (es) => {
-                const ref: React.Ref<HTMLTextAreaElement> = inputRefs[idx]
-                const textarea = ref.current
-                if (textarea) textarea.value = es
-                setSectionBody(kind, es)
-              }
-             }),
+            h(Box, {
+              key: kind,
+              width: percent(100),
+              display: "flex",
+              flexDirection: "row-reverse",
+              alignItems: "flex-start",
+              justifyContent: "space-between",
+            }, [
 
-            h(TextareaAutosize, {
-              disabled: true,
-              value: emailSectionBody,
-              rowsMin: 5,
-              style: { flexGrow: 1 },
-            }),
+              h(TextField, {
+                key: `translation-${kind}`,
+                defaultValue: translation,
+                inputRef: translationRefs[idx],
+                ...{
+                  onChange: (event) => {
+                    const value = event.target.value
+                    setSectionTranslation(kind, value)
+                  },
+                  color: "secondary",
+                  name: "text",
+                  multiline: true,
+                  rows: Math.round((origin?.length ?? 30) / 29),
+                  variant: "outlined",
+                  label: null,
+                  placeholder: kind,
+                },
+                style: { flexGrow: 1 },
+              }),
 
+              h(TranslateButton, {
+                sourceBody: origin ?? "",
+                onTranslate: (es) => {
+                  const ref: React.Ref<HTMLTextAreaElement> = translationRefs[idx]
+                  const textarea = ref.current
+                  if (textarea) textarea.value = es
+                  setSectionTranslation(kind, es)
+                }
+              }),
+
+              h(TextField, {
+                key: `origin-${kind}`,
+                defaultValue: origin,
+                inputRef: originRefs[idx],
+                ...{
+                  onChange: (event) => {
+                    const value = event.target.value
+                    setSectionOrigin(kind, value)
+                  },
+                  color: "secondary",
+                  name: "text",
+                  multiline: true,
+                  rows: Math.round((origin?.length ?? 30) / 29),
+                  variant: "outlined",
+                  label: null,
+                  placeholder: kind,
+                },
+                style: { flexGrow: 1 },
+              }),
+
+            ])
           ])
         })
       ]),
@@ -232,7 +277,7 @@ function parseEmailHtml(html: string): Section[] {
     sectionNode.querySelectorAll("tr").forEach((row) =>
      row.appendChild(doc.createElement("br")))
     const text = (sectionNode.textContent ?? "\n").trim().replace(/\n{2,}/g, '\n\n')
-    sections.push({ kind: sectionName, body: text })
+    sections.push({ kind: sectionName, origin: text, translation: null  })
   })
   return sections
 }
