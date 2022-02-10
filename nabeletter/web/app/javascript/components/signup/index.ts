@@ -140,22 +140,6 @@ export const App = (_: {}) => {
     [value]
   )
 
-  useEffectOnce(() => {
-    // eslint-disable-next-line
-    const element = document.querySelector(`${inputId}`)!
-    // if phone, constrain/format entry
-    if (channel === Channel.sms) {
-      // eslint-disable-next-line
-      const input = new RestrictedInput({
-        // @ts-ignore
-        element,
-        pattern: "({{999}}) {{999}}-{{9999}}",
-      })
-    }
-    // @ts-ignore
-    element.addEventListener("input", onChange, false)
-  })
-
   const disabled = !valid || loading
   return div({ className: classNames.background }, [
     div({ className: classNames.spacer }),
@@ -171,55 +155,12 @@ export const App = (_: {}) => {
       }, sender_name),
       div(
         { className: classNames.pitch },
-        channel === Channel.email
-        ? `Sign up for this free weekly email newsletter and get local news and information about ${name} straight to your inbox.`
-        : `Sign up for this weekly texting service and get local news and information in ${langVerbose} about ${name} straight to your phone.`
-      ),
-      div(
-        { className: classNames.description },
-        channel === Channel.email
-       ? `This newsletter will give you a rundown of local news, events, community meetings and more happening in your neighborhood!`
-       : `This free text will highlight local news articles, events, community meeting reminders and more!`
+        `We closed down on February 11th, but thanks for visiting!`
       ),
 
-      form({
-        id: "signup-form",
-        className: classNames.form,
-        onSubmit }, [
-        success &&
-          div({
-            className: classNames.success,
-            style: { color: theme_foreground_color }
-          }, "Thanks!"),
-        !success &&
-          div({ className: classNames.ready }, [
-            input({
-              placeholder,
-              className: classes(classNames.inputMobile, classNames.input),
-              style: { border: `1.5px solid ${theme_foreground_color}` },
-              id: inputId,
-              autoFocus: true,
-              type,
-            }),
-            button(
-              {
-                className: classes(classNames.submit, classNames.submitMobile),
-                disabled,
-                style: { backgroundColor: theme_foreground_color }
-              },
-              "Sign up"
-            ),
-          ]),
-        error && div({ className: classNames.error }, error),
-      ]),
-
-      channel === Channel.sms &&
-        div({ className: classNames.viaSMS }, [
-          `📲 Or text "NOTICIA" to ${phoneNumber}`
-        ])
     ]),
 
-    newsletter.id === 2 ?
+    false ?
     div({ className: classNames.footer }, [
       div({ className: classNames.footerRow }, [
         span({
